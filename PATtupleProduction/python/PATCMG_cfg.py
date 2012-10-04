@@ -128,6 +128,7 @@ from CMGTools.Common.Tools.visitorUtils import replaceSrc
 replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
 replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
 process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
+process.selectedPatJetsCHS.cut = 'pt()>10'
 
 
 ########################################################
