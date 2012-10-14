@@ -132,6 +132,7 @@ Gen_ana::~Gen_ana()
 Gen_ana::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	nEvt++;
+	//if(nEvt!=75)return;
 
 	Handle<reco::GenParticleCollection> genParticles;//define genParticle
 	iEvent.getByLabel(InputTag("genParticles"), genParticles);//connect genparticle to event . so p=genParticles->begin(); p!= genParticles->end() can loop over all event
@@ -148,7 +149,8 @@ Gen_ana::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	for(reco::GenParticleCollection::const_iterator p=genParticles->begin(); p!= genParticles->end(); ++p)
 	{
-		if((p->pdgId()==39)&&p->status()==3)//Graviton
+		//if(abs(p->pdgId())==24)cout<<p->mother()->pdgId()<<endl;
+		if((p->pdgId()==39||p->pdgId()==5000039)&&p->status()==3)//Graviton
 		{
 			//cout<<"graviton!"<<endl;
 			const reco::Candidate* ph = &(*p);
@@ -179,6 +181,7 @@ Gen_ana::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 			}//end of loop on higgs daughter
 		}//end of if higgs
 	}//end of partile loop
+	//if(hig.size()==0)cout<<nEvt<<" no graviton here"<<endl;
 	phig=&hig;
 	pwplus=&wplus;
 	pwminus=&wminus;
