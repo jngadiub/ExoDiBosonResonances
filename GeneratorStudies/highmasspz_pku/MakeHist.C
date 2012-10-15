@@ -96,24 +96,24 @@ void MakeHist(TString infilename = "Graviton_genlevel_3000.root")
 
 
 	//comparison hists
-	TH1F * pz_comparison1 = new TH1F("pz_comparison1","pz_comparison",100,-2,2);
-	TH1F * pz_comparison2 = new TH1F("pz_comparison2","pz_comparison",100,-2,2);
-	TH1F * pz_comparison2_1 = new TH1F("pz_comparison2_1","pz_comparison",100,-2,2);
-	TH1F * pz_comparison3 = new TH1F("pz_comparison3","pz_comparison",100,-2,2);
-	TH1F * pz_comparison4 = new TH1F("pz_comparison4","pz_comparison",100,-2,2);
-	TH1F * pz_comparison5 = new TH1F("pz_comparison5","pz_comparison",100,-2,2);
-	TH1F * pz_comparison5_2 = new TH1F("pz_comparison5_2","pz_comparison",100,-2,2);
-	TH1F * pz_comparison5_1 = new TH1F("pz_comparison5_1","pz_comparison",100,-2,2);
-	TH1F * pz_comparison6 = new TH1F("pz_comparison6","pz_comparison",100,-2,2);
-	TH1F * lvjj_comparison1 = new TH1F("lvjj_comparison1","lvjj_comparison",100,-2,2);
-	TH1F * lvjj_comparison2 = new TH1F("lvjj_comparison2","lvjj_comparison",100,-2,2);
-	TH1F * lvjj_comparison2_1 = new TH1F("lvjj_comparison2_1","lvjj_comparison",100,-2,2);
-	TH1F * lvjj_comparison3 = new TH1F("lvjj_comparison3","lvjj_comparison",100,-2,2);
-	TH1F * lvjj_comparison4 = new TH1F("lvjj_comparison4","lvjj_comparison",100,-2,2);
-	TH1F * lvjj_comparison5 = new TH1F("lvjj_comparison5","lvjj_comparison",100,-2,2);
-	TH1F * lvjj_comparison5_1 = new TH1F("lvjj_comparison5_1","lvjj_comparison",100,-2,2);
-	TH1F * lvjj_comparison5_2 = new TH1F("lvjj_comparison5_2","lvjj_comparison",100,-2,2);
-	TH1F * lvjj_comparison6 = new TH1F("lvjj_comparison6","lvjj_comparison",100,-2,2); 
+	TH1F * pz_comparison1 = new TH1F("pz_comparison1","pz_comparison",200,-1,1);
+	TH1F * pz_comparison2 = new TH1F("pz_comparison2","pz_comparison",200,-1,1);
+	TH1F * pz_comparison2_1 = new TH1F("pz_comparison2_1","pz_comparison",200,-1,1);
+	TH1F * pz_comparison3 = new TH1F("pz_comparison3","pz_comparison",200,-1,1);
+	TH1F * pz_comparison4 = new TH1F("pz_comparison4","pz_comparison",200,-1,1);
+	TH1F * pz_comparison5 = new TH1F("pz_comparison5","pz_comparison",200,-1,1);
+	TH1F * pz_comparison5_2 = new TH1F("pz_comparison5_2","pz_comparison",200,-1,1);
+	TH1F * pz_comparison5_1 = new TH1F("pz_comparison5_1","pz_comparison",200,-1,1);
+	TH1F * pz_comparison6 = new TH1F("pz_comparison6","pz_comparison",200,-1,1);
+	TH1F * lvjj_comparison1 = new TH1F("lvjj_comparison1","lvjj_comparison",200,-1,1);
+	TH1F * lvjj_comparison2 = new TH1F("lvjj_comparison2","lvjj_comparison",200,-1,1);
+	TH1F * lvjj_comparison2_1 = new TH1F("lvjj_comparison2_1","lvjj_comparison",200,-1,1);
+	TH1F * lvjj_comparison3 = new TH1F("lvjj_comparison3","lvjj_comparison",200,-1,1);
+	TH1F * lvjj_comparison4 = new TH1F("lvjj_comparison4","lvjj_comparison",200,-1,1);
+	TH1F * lvjj_comparison5 = new TH1F("lvjj_comparison5","lvjj_comparison",200,-1,1);
+	TH1F * lvjj_comparison5_1 = new TH1F("lvjj_comparison5_1","lvjj_comparison",200,-1,1);
+	TH1F * lvjj_comparison5_2 = new TH1F("lvjj_comparison5_2","lvjj_comparison",200,-1,1);
+	TH1F * lvjj_comparison6 = new TH1F("lvjj_comparison6","lvjj_comparison",200,-1,1); 
 
 	TCanvas * c1 = new TCanvas();	
 
@@ -285,8 +285,8 @@ void MakeHist(TString infilename = "Graviton_genlevel_3000.root")
         lvjj_comparison5->Fill((mlvjj-lvjjmass_true)/lvjjmass_true);
 
 
-		//4 
-		if( delta >= 0. )//choose the smaller pz
+		//4 choose the smaller pz
+		if( delta >= 0. )
         {   
             if(fabs(pz1)>fabs(pz2))pz=pz2;
             else pz=pz1;   
@@ -297,8 +297,32 @@ void MakeHist(TString infilename = "Graviton_genlevel_3000.root")
         pz_comparison4->Fill((pz-pnu->at(0)->pz())/pnu->at(0)->pz());
         lvjj_comparison4->Fill((mlvjj-lvjjmass_true)/lvjjmass_true);
 
-
+		//3 choose the one closest to lep pz
 		
+		if(fabs(pz1-lep.Pz())>fabs(pz2-lep.Pz()))pz=pz2;
+		else pz=pz1;
+        temp.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
+        mlvjj = (lep + jet1 + jet2 + temp).M();
+        if (mlvjj>masswindow_low&&mlvjj<masswindow_high)hlvjj3->Fill(mlvjj);
+        pz_comparison3->Fill((pz-pnu->at(0)->pz())/pnu->at(0)->pz());
+        lvjj_comparison3->Fill((mlvjj-lvjjmass_true)/lvjjmass_true);
+
+
+		//2  feimilab ---- choose the one closest to lep pz, when it is over 300, choose the central one
+		if(pz>300)
+		{
+			if(fabs(pz1)>fabs(pz2))pz=pz2;
+			else pz=pz1;
+		}
+        temp.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
+        mlvjj = (lep + jet1 + jet2 + temp).M();
+        if (mlvjj>masswindow_low&&mlvjj<masswindow_high)hlvjj2->Fill(mlvjj);
+        pz_comparison2->Fill((pz-pnu->at(0)->pz())/pnu->at(0)->pz());
+        lvjj_comparison2->Fill((mlvjj-lvjjmass_true)/lvjjmass_true);
+
+
+
+/*		
 		// 5_1 ---------------- Sara---if you have real roots, take the solutions where neutrino and charged lepton are the closest in DR.
 		if( delta >= 0. )	
 		{
@@ -318,7 +342,7 @@ void MakeHist(TString infilename = "Graviton_genlevel_3000.root")
 		if (mlvjj>masswindow_low&&mlvjj<masswindow_high)hlvjj5_1->Fill(mlvjj);
 		pz_comparison5_1->Fill((pz-pnu->at(0)->pz())/pnu->at(0)->pz());
 		lvjj_comparison5_1->Fill((mlvjj-lvjjmass_true)/lvjjmass_true);
-
+*/
 
 		//5_2 -------------------- another method to select right real root
 			//use also delta = 0 in real root case
@@ -330,7 +354,7 @@ void MakeHist(TString infilename = "Graviton_genlevel_3000.root")
         pz_comparison5_2->Fill((pz-pnu->at(0)->pz())/pnu->at(0)->pz());
         lvjj_comparison5_2->Fill((mlvjj-lvjjmass_true)/lvjjmass_true);
 		
-
+/*
 		// 6 --------------------- Fracesco----boost case lepton and neutrino are like parallel
 		pz = neu.Pt()/lep.Pt()*lep.Pz();
 		temp.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
@@ -339,7 +363,7 @@ void MakeHist(TString infilename = "Graviton_genlevel_3000.root")
         pz_comparison6->Fill((pz-pnu->at(0)->pz())/pnu->at(0)->pz());
         lvjj_comparison6->Fill((mlvjj-lvjjmass_true)/lvjjmass_true);
 
-
+*/
 
 
 		//------------------------------2D plots of Wjj and Wlv mass----------------------------------------
@@ -399,19 +423,19 @@ void MakeHist(TString infilename = "Graviton_genlevel_3000.root")
 	hlvjj1->Draw();
 	hlvjj1->SetTitle("lvjj_pz0");
 	c1->Print("lvjj_pz0.png","png");
-
+*/
 	hlvjj2->Draw();
-	hlvjj2->SetTitle("lvjj_leptonpz");
-	c1->Print("lvjj_leptonpz.png","png");
+	hlvjj2->SetTitle("lvjj_fermilab");
+	c1->Print("lvjj_fermilab.png","png");
 
-	hlvjj2_1->Draw();
-	hlvjj2_1->SetTitle("lvjj_leptonpz_improve");
-	c1->Print("lvjj_leptonpz_improve.png","png");
+//	hlvjj2_1->Draw();
+//	hlvjj2_1->SetTitle("lvjj_leptonpz_improve");
+//	c1->Print("lvjj_leptonpz_improve.png","png");
 
 	hlvjj3->Draw();
-	hlvjj3->SetTitle("lvjj_jetpz_angle");
-	c1->Print("lvjj_jetpz_angle.png","png");
-*/
+	hlvjj3->SetTitle("lvjj_close_to_lep_pz");
+	c1->Print("lvjj_close_to_lep_pz.png","png");
+
 	hlvjj4->Draw();
 	//hlvjj4->SetTitle("lvjj_jetpz_DeltaR");
 	//c1->Print("lvjj_jetpz_DeltaR.png","png");
@@ -448,29 +472,32 @@ void MakeHist(TString infilename = "Graviton_genlevel_3000.root")
 	TLegend *leg = new TLegend(0.65, 0.5, 1, 1, NULL, "brNDC");
 	/*
 	leg->AddEntry (pz_comparison1,"neu pz = 0","l") ;
-	leg->AddEntry (pz_comparison2,"neu pz = lep pz","l") ;
-	leg->AddEntry (pz_comparison2_1,"neu pz = lep pz - 20","l") ;
-	leg->AddEntry (pz_comparison3,"neu pz = theta far jet pz","l") ;
-	leg->AddEntry (pz_comparison4,"neu pz = dltaR far jet pz","l") ;
 */
+	leg->AddEntry (pz_comparison2,"neu pz = fermilab","l") ;
+//	leg->AddEntry (pz_comparison2_1,"neu pz = lep pz - 20","l") ;
+	leg->AddEntry (pz_comparison3,"neu pz = close to lep pz","l") ;
+	//leg->AddEntry (pz_comparison4,"neu pz = dltaR far jet pz","l") ;
+
 	leg->AddEntry (pz_comparison4,"neu pz = slove function smaller","l");
 	leg->AddEntry (pz_comparison5,"neu pz = slove function larger","l") ;
-	leg->AddEntry (pz_comparison5_1,"neu pz = slove function sara","l") ;
+	//leg->AddEntry (pz_comparison5_1,"neu pz = slove function sara","l") ;
 	leg->AddEntry (pz_comparison5_2,"neu pz = slove function +delta","l") ;
-	leg->AddEntry (pz_comparison6,"neu pz = Francesco","l") ;
+	//leg->AddEntry (pz_comparison6,"neu pz = Francesco","l") ;
 
 /*
 	pz_comparison1->SetLineColor(kYellow+3);
 	pz_comparison1->Draw();
-    pz_comparison2->SetLineColor(kOrange+7);
-    pz_comparison2->Draw("same");
-    pz_comparison2_1->SetLineColor(kGrey;
-    pz_comparison2_1->Draw("same");
-    pz_comparison3->SetLineColor(kMagenta+1);
-    pz_comparison3->Draw("same");
 */
+    pz_comparison2->SetLineColor(kOrange+7);
+    pz_comparison2->Draw();
+//    pz_comparison2_1->SetLineColor(kGrey;
+//    pz_comparison2_1->Draw("same");
+
+    pz_comparison3->SetLineColor(kYellow-2);
+    pz_comparison3->Draw("same");
+
     pz_comparison4->SetLineColor(kMagenta+1);
-    pz_comparison4->Draw();
+    pz_comparison4->Draw("same");
     pz_comparison5->SetLineColor(kBlue);
     pz_comparison5->Draw("same");
 	pz_comparison5_1->SetLineColor(kSpring-7);
@@ -485,15 +512,16 @@ void MakeHist(TString infilename = "Graviton_genlevel_3000.root")
 /*
     lvjj_comparison1->SetLineColor(kYellow+3);
     lvjj_comparison1->Draw();
-    lvjj_comparison2->SetLineColor(kOrange+7);
-    lvjj_comparison2->Draw("same");
-    lvjj_comparison2_1->SetLineColor(kGrey);
-    lvjj_comparison2_1->Draw("same");
-    lvjj_comparison3->SetLineColor(kMagenta+1);
-    lvjj_comparison3->Draw("same");
 */
+    lvjj_comparison2->SetLineColor(kOrange+7);
+    lvjj_comparison2->Draw();
+//    lvjj_comparison2_1->SetLineColor(kGrey);
+//    lvjj_comparison2_1->Draw("same");
+    lvjj_comparison3->SetLineColor(kYellow-2);
+    lvjj_comparison3->Draw("same");
+
     lvjj_comparison4->SetLineColor(kMagenta+1);
-    lvjj_comparison4->Draw();
+    lvjj_comparison4->Draw("same");
     lvjj_comparison5->SetLineColor(kBlue);
     lvjj_comparison5->Draw("same");
 	lvjj_comparison5_1->SetLineColor(kSpring-7);
@@ -513,13 +541,14 @@ void MakeHist(TString infilename = "Graviton_genlevel_3000.root")
     /*
 	hlvjj1->SetLineColor(kYellow+3);
     hlvjj1->Draw("same");
+*/
     hlvjj2->SetLineColor(kOrange+7);
     hlvjj2->Draw("same");
-    hlvjj2_1->SetLineColor(kGrey);
-    hlvjj2_1->Draw("same");
-    hlvjj3->SetLineColor(kMagenta+1);
+//    hlvjj2_1->SetLineColor(kGrey);
+//    hlvjj2_1->Draw("same");
+    hlvjj3->SetLineColor(kYellow-2);
     hlvjj3->Draw("same");
-*/
+
     hlvjj4->SetLineColor(kMagenta+1);
     hlvjj4->Draw("same");
 	hlvjj5->SetLineColor(kBlue);
