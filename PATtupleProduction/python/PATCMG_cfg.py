@@ -101,6 +101,9 @@ if runOnMC is False:
         process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
         process.patJetsCHSpruned.addGenJetMatch = False
         process.patJetsCHSpruned.addGenPartonMatch = False
+        process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
+        process.patJetsAK7CHSpruned.addGenJetMatch = False
+        process.patJetsAK7CHSpruned.addGenPartonMatch = False
 
     process.PATCMGTauSequence.remove( process.tauGenJets )
     process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
