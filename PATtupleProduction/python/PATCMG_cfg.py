@@ -76,6 +76,11 @@ print 'loading the main CMG sequence'
 
 process.load('CMGTools.Common.PAT.PATCMG_cff')
 
+#### Adding AK7 pruned jets
+
+from CMGTools.Common.PAT.jetSubstructure_cff import *
+process.PATCMGSequence += PATCMGJetSequenceAK7CHSpruned
+
 if runOnMC is False:
     # removing MC stuff
     print 'removing MC stuff, as we are running on Data'
@@ -117,6 +122,7 @@ if runOnMC is False:
     process.patJetCorrFactors.levels.append('L2L3Residual')
     if isNewerThan('CMSSW_5_2_0'):
         process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
+        process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
 
 
 print 'cloning the jet sequence to build PU chs jets'
