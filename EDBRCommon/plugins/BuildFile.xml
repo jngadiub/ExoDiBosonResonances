@@ -6,6 +6,6 @@
 <library name="ExoDiBosonResonancesEDBRCommonPlugins" file="*.cc">
   <use name="CMGTools/Common"/>
   <use name="DQMServices/Core"/>
-  <use name="ExoDibosonResonances/EDBRCommon"/>
+  <use name="ExoDiBosonResonances/EDBRCommon"/>
   <flags   EDM_PLUGIN="1"/>
 </library>

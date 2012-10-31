@@ -4,7 +4,6 @@
 
 
 //DEFINE_FWK_MODULE(PFJetSmearPOProducer);
-int lala = 
 DEFINE_FWK_MODULE(DiGenParticlePOProducer);
 
 DEFINE_FWK_MODULE(DiGenParticleDiGenParticlePOProducer);
