@@ -1,6 +1,6 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 
-#include "AnalysisDataFormats/HiggsAna/interface/CompoundTypesHZZLL.h"
+#include "AnalysisDataFormats/ExoDiBosonResonances/interface/CompoundTypesHZZLL.h"
 
 #include <vector>
 
@@ -26,21 +26,6 @@ namespace {
     std::vector<cmg::DiGenParticleDiGenParticle> dzggv;
     edm::Wrapper<cmg::DiGenParticleDiGenParticle> edzgg;
     edm::Wrapper<std::vector<cmg::DiGenParticleDiGenParticle> > edzggv;
-
-    cmg::DiMuonDiJetHiggs dzh_;
-    std::vector<cmg::DiMuonDiJetHiggs> dzvh;
-    edm::Wrapper<cmg::DiMuonDiJetHiggs> edzh;
-    edm::Wrapper<std::vector<cmg::DiMuonDiJetHiggs> > edzvh;
-
-    cmg::DiElectronDiJetHiggs dzeh_;
-    std::vector<cmg::DiElectronDiJetHiggs> dzevh;
-    edm::Wrapper<cmg::DiElectronDiJetHiggs> edezh;
-    edm::Wrapper<std::vector<cmg::DiElectronDiJetHiggs> > edzevh;
-
-    cmg::DiGenParticleDiGenParticleHiggs dzggh_;
-    std::vector<cmg::DiGenParticleDiGenParticleHiggs> dzggvh;
-    edm::Wrapper<cmg::DiGenParticleDiGenParticleHiggs> edzggh;
-    edm::Wrapper<std::vector<cmg::DiGenParticleDiGenParticleHiggs> > edzggvh;
 
     cmg::GenParticlePtr gpptr_;
 

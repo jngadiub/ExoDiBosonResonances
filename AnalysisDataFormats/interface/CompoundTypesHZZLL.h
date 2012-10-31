@@ -10,7 +10,7 @@
 
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
 
-#include "AnalysisDataFormats/HiggsAna/interface/HiggsCandidate.h"
+//#include "AnalysisDataFormats/HiggsAna/interface/HiggsCandidate.h"
 
 
 namespace cmg{
@@ -27,9 +27,9 @@ namespace cmg{
 
   //  typedef cmg::HiggsCandidate<cmg::DiMuon,cmg::DiJet> DiMuonDiJetHiggs;
   // typedef cmg::HiggsCandidate<cmg::DiElectron,cmg::DiJet> DiElectronDiJetHiggs;
-  typedef cmg::HiggsCandidate<cmg::DiMuon,cmg::DiPFJet> DiMuonDiJetHiggs;
-  typedef cmg::HiggsCandidate<cmg::DiElectron,cmg::DiPFJet> DiElectronDiJetHiggs;
-  typedef cmg::HiggsCandidate<cmg::DiGenParticle,cmg::DiGenParticle> DiGenParticleDiGenParticleHiggs;
+  //typedef cmg::HiggsCandidate<cmg::DiMuon,cmg::DiPFJet> DiMuonDiJetHiggs;
+  //typedef cmg::HiggsCandidate<cmg::DiElectron,cmg::DiPFJet> DiElectronDiJetHiggs;
+  //typedef cmg::HiggsCandidate<cmg::DiGenParticle,cmg::DiGenParticle> DiGenParticleDiGenParticleHiggs;
     
 
 

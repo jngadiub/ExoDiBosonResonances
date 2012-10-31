@@ -23,21 +23,4 @@
   <class name="std::vector<cmg::DiGenParticleDiGenParticle>"/>
   <class name="edm::Wrapper<cmg::DiGenParticleDiGenParticle>"/>
   <class name="edm::Wrapper<std::vector<cmg::DiGenParticleDiGenParticle> >"/>
-
-  <class name="cmg::DiMuonDiJetHiggs"/>
-  <class name="std::vector<cmg::DiMuonDiJetHiggs>"/>
-  <class name="edm::Wrapper<cmg::DiMuonDiJetHiggs>"/>
-  <class name="edm::Wrapper<std::vector<cmg::DiMuonDiJetHiggs> >"/>
-
-  <class name="cmg::DiElectronDiJetHiggs"/>
-  <class name="std::vector<cmg::DiElectronDiJetHiggs>"/>
-  <class name="edm::Wrapper<cmg::DiElectronDiJetHiggs>"/>
-  <class name="edm::Wrapper<std::vector<cmg::DiElectronDiJetHiggs> >"/>
-
-  <class name="cmg::DiGenParticleDiGenParticleHiggs"/>
-  <class name="std::vector<cmg::DiGenParticleDiGenParticleHiggs>"/>
-  <class name="edm::Wrapper<cmg::DiGenParticleDiGenParticleHiggs>"/>
-  <class name="edm::Wrapper<std::vector<cmg::DiGenParticleDiGenParticleHiggs> >"/>
-
-
 </lcgdict>
