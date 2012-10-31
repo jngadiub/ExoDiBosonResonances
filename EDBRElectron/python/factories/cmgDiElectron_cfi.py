@@ -1,0 +1,21 @@
+import FWCore.ParameterSet.Config as cms
+
+
+dimuonFactory = cms.PSet(
+       leg1Collection = cms.InputTag("electronPresel"),
+       leg2Collection = cms.InputTag("electronPresel"),
+       metCollection = cms.InputTag("")
+)
+from HiggsAna.HEEJJ.selections.zee_cfi import zee_kinematics
+from HiggsAna.HEEJJ.selections.zee_cfi import zee_quality
+
+cmgDiElectron2L2Q = cms.EDFilter(
+    "DiElectronPOProducer",
+    cfg = dimuonFactory.clone(),
+    cuts = cms.PSet(
+       zee_kinematics = zee_kinematics.clone(),
+       zee_quality = zee_quality.clone(),
+       charge = cms.PSet( charge = cms.string("leg1.charge != leg2.charge") ),#XXX
+       genP = cms.PSet(genP = cms.string("leg1.sourcePtr.get.hasOverlaps(\"genLeptons\") && leg2.sourcePtr.get.hasOverlaps(\"genLeptons\")"))
+      ),
+    )
