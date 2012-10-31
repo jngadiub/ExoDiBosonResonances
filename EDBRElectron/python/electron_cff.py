@@ -28,7 +28,6 @@ cmgElectron.cfg.inputCollection="selectedPatElectrons"
 
 # ele ID requirements
 cmgElectron.cuts.mvaTrigSel =mvaTrigEleId.clone() 
-cmgElectron.cuts.wp95c = wp95cEleId.clone()
 cmgElectron.cuts.cutBasedVeto = cutBasedVetoEleId.clone()
 cmgElectron.cuts.cutBasedLoose = cutBasedLooseEleId.clone()
 cmgElectron.cuts.conversionVeto = cms.PSet(

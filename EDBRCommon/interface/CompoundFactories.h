@@ -6,7 +6,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 //#include "ExoDiBosonResonances/EDBRCommon/interface/HiggsCandidateFactory.h"
 ///#include "ExoDiBosonResonances/EDBRCommon/interface/DiObjectKinFitFactory.h"
-//#include "ExoDiBosonResonances/EDBRCommon/interface/LeptonIsoCorrector.h"
+#include "ExoDiBosonResonances/EDBRCommon/interface/LeptonIsoCorrector.h"
 
 
 namespace cmg{

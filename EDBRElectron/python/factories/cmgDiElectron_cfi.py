@@ -6,10 +6,10 @@ dimuonFactory = cms.PSet(
        leg2Collection = cms.InputTag("electronPresel"),
        metCollection = cms.InputTag("")
 )
-from HiggsAna.HEEJJ.selections.zee_cfi import zee_kinematics
-from HiggsAna.HEEJJ.selections.zee_cfi import zee_quality
+from ExoDiBosonResonances.EDBRElectron.selections.zee_cfi import zee_kinematics
+from ExoDiBosonResonances.EDBRElectron.selections.zee_cfi import zee_quality
 
-cmgDiElectron2L2Q = cms.EDFilter(
+cmgDiElectronEDBR = cms.EDFilter(
     "DiElectronPOProducer",
     cfg = dimuonFactory.clone(),
     cuts = cms.PSet(

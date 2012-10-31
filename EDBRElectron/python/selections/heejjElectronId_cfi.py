@@ -22,7 +22,7 @@ cutBasedVetoEleId = cms.PSet(
                      dphi = cms.string('abs(deltaPhiSuperClusterTrackAtVtx)<0.7'),
                      deta = cms.string(' abs(deltaEtaSuperClusterTrackAtVtx)<0.01'),
                      dxy  = cms.string(' abs(dxy)<0.04'),
-                     dz   = cms.string('abs(dz)<0.2'))
+                     dz   = cms.string('abs(dz)<0.2')),
     eidEB= cms.PSet( eb = cms.string('sourcePtr().isEB'),
                      sigmaieie  = cms.string('abs(sigmaIetaIeta)<0.01'),
                      dphi = cms.string('abs(deltaPhiSuperClusterTrackAtVtx)<0.8'),
@@ -37,9 +37,9 @@ cutBasedLooseEleId = cms.PSet(
                      dphi = cms.string('abs(deltaPhiSuperClusterTrackAtVtx)<0.1'),
                      deta = cms.string('abs(deltaEtaSuperClusterTrackAtVtx)<0.01'),
                      dxy  = cms.string(' abs(dxy)<0.02'),
-                     dz   = cms.string('abs(dz)<0.2)'),
+                     dz   = cms.string('abs(dz)<0.2'),
                      hoe = cms.string('hadronicOverEm < 0.10'),
-                     eop = cms.string('abs(1.0/energy - 1.0/p)<0.05 '))
+                     eop = cms.string('abs(1.0/energy - 1.0/p)<0.05 ')),
     eidEB=cms.PSet(eb = cms.string('sourcePtr().isEB'),
                    sigmaieie  = cms.string('abs(sigmaIetaIeta)<0.01'),
                    dphi = cms.string('abs(deltaPhiSuperClusterTrackAtVtx)<0.15'),
