@@ -1,5 +1,3 @@
-<flags CXXFLAGS="-I$(CMSSW_RELEASE_BASE)/src/PhysicsTools/KinFitter/interface/"/>
-
 <use name="FWCore/Framework"/>
 <use name="FWCore/ParameterSet"/>
 <use name="FWCore/FWLite"/>
@@ -8,14 +6,12 @@
 <use name="rootcore"/>                                                         
 <use name="CondFormats/JetMETObjects"/>
 <use name="JetMETCorrections/Objects"/>
-<use name="HiggsAna/BTagSFUtil"/>
 <use name="rootrflx"/>
 <use name="roofit"/>
 
 <use name="AnalysisDataFormats/CMGTools"/>
-<use name="AnalysisDataFormats/HiggsAna"/>
+<use name="AnalysisDataFormats/ExoDiBosonResonances"/>
 <use name="CMGTools/Common"/>
-<use name="Francesco/KinFitter"/>
 
 <export>
   <lib   name="1"/>

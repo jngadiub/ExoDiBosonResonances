@@ -1,24 +1,11 @@
-<flags CXXFLAGS="-I$(CMSSW_RELEASE_BASE)/src/PhysicsTools/KinFitter/interface/"/>
-
 <use name="AnalysisDataFormats/CMGTools"/>
-<use name="AnalysisDataFormats/HiggsAna"/>
-<use name="Alessio/RooFitUtil"/>
-<use name="Francesco/QGLikelihood"/>
-<use name="pandolf/QuarkGluonTagger"/>
-###<use name="Francesco/BTagSFUtil"/>
-<use name="HiggsAna/BTagSFUtil"/>
+<use name="AnalysisDataFormats/ExoDiBosonResonances"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="PhysicsTools/Utilities"/>
 
-
-
-<export>
-  <use name="Alessio/RooFitUtil"/>
-</export>
-
-<library name="HiggsAnaHLLJJCommonPlugins" file="*.cc">
+<library name="ExoDiBosonResonancesEDBRCommonPlugins" file="*.cc">
   <use name="CMGTools/Common"/>
   <use name="DQMServices/Core"/>
-  <use name="HiggsAna/HLLJJCommon"/>
+  <use name="ExoDibosonResonances/EDBRCommon"/>
   <flags   EDM_PLUGIN="1"/>
 </library>
