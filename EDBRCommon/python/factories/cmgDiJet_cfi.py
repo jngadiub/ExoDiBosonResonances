@@ -8,7 +8,7 @@ diJetFactory = cms.PSet(
 
 
 #from CMGTools.Common.selections.kinematics_cfi import dijetKinematics
-from HiggsAna.HLLJJCommon.selections.jetKinematics_cfi import zjj,isSignal,isSideband
+from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import zjj,isSignal,isSideband
 cmgDiJet = cms.EDFilter(
     "DiPFJetPOProducer",
     cfg = diJetFactory.clone(),
