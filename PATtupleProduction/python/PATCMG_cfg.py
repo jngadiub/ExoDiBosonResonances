@@ -37,31 +37,17 @@ METLEPTON_KINCUT = ("pt > 10.0")
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 ## Input files
-from CMGTools.Production.datasetToSource import *
-process.source = datasetToSource(
-    # 'CMS',
-    # '/DoubleElectron/Run2012A-13Jul2012-v1/AOD'
-    # '/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM',
-    # '/DoubleMu/Run2012C-PromptReco-v2/AOD'
-    # '/DoubleMu/Run2012B-PromptReco-v1/AOD'
-    # '/TTH_HToBB_M-135_8TeV-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',
-    # '/BTag/Run2012B-PromptReco-v1/RECO', 
-    'cmgtools_group',
-    '/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
-   )
-
-process.source.fileNames = process.source.fileNames[:20]
-# If you want you can overwrite the previous input filenames like this:
-#process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/group/cmgtools/CMG/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PFAOD_0.root']
+process.load("ExoDiBosonResonances.PATtupleProduction.JHU_Bulk600_ZZ_c02_cff")
+outputFileName = "patTuple_JHU_Bulk600_ZZ_c02.root"
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(30) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 print sep_line
 print process.source.fileNames
@@ -139,14 +125,38 @@ replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
 process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
 process.selectedPatJetsCHS.cut = 'pt()>10'
 
-
 ########################################################
 ## Path definition
 ########################################################
 
+#process.genElectrons = cms.EDFilter("PdgIdAndStatusCandViewSelector",
+#                                    src = cms.InputTag("genParticles"),
+#                                    pdgId = cms.vint32( 11 ),
+#                                    status = cms.vint32( 3 ),
+#                                    filter = cms.bool(True)
+#                                    )
+#
+#process.PATCMGSequence.replace(process.genParticlesForJetsNoNu,process.genParticlesForJetsNoNu + process.genElectrons)
+
+
+### Add HEEP electrons
+from SHarper.HEEPAnalyzer.HEEPSelectionCuts_cfi import *
+process.heepPatElectrons = cms.EDProducer("HEEPAttStatusToPAT",
+                                          eleLabel = cms.InputTag("patElectrons"),
+                                          barrelCuts = cms.PSet(heepBarrelCuts),
+                                          endcapCuts = cms.PSet(heepEndcapCuts),
+                                          applyRhoCorrToEleIsol = cms.bool(True),
+                                          eleIsolEffectiveAreas = cms.PSet (heepEffectiveAreas),
+                                          eleRhoCorrLabel = cms.InputTag("kt6PFJetsForIso","rho"),
+                                          )
+
+process.selectedPatElectrons.src = "heepPatElectrons"
+process.PATCMGSequence.replace(process.patElectrons,process.patElectrons+process.heepPatElectrons)
+
 process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
 process.load('CMGTools.Common.PAT.addFilterPaths_cff')
+
 process.p = cms.Path(
     process.prePathCounter + 
     process.PATCMGSequence +
@@ -240,7 +250,7 @@ process.WToENUfilter = cms.EDFilter("CandViewCountFilter",
                                     minNumber = cms.uint32(1) )
 
 process.WToENUskimSequence = cms.Sequence( process.WToENUcand * process.WToENUfilter )
-process.WToENUskimPath = cms.Path( process.WToENUskimSequence )
+#process.WToENUskimPath = cms.Path( process.WToENUskimSequence )
 
 
 ## WToMUNU
@@ -256,7 +266,7 @@ process.WToMUNUfilter = cms.EDFilter("CandViewCountFilter",
                                      minNumber = cms.uint32(1) )
 
 process.WToMUNUskimSequence = cms.Sequence( process.WToMUNUcand * process.WToMUNUfilter )
-process.WToMUNUskimPath = cms.Path( process.WToMUNUskimSequence )
+#process.WToMUNUskimPath = cms.Path( process.WToMUNUskimSequence )
 
 
 ########################################################
@@ -264,14 +274,15 @@ process.WToMUNUskimPath = cms.Path( process.WToMUNUskimSequence )
 ########################################################
 
 ## Define event selection
-EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath')
+#EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath')
+EventSelection = cms.vstring()
 if not skimEvents:
     EventSelection.append('p')
 
 ## Output Module Configuration (expects a path 'p')
 from CMGTools.Common.eventContent.patEventContentCMG_cff import patEventContentCMG
 process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string('patTuple.root'),
+                               fileName = cms.untracked.string(outputFileName),
                                # save only events passing the full path
                                SelectEvents   = cms.untracked.PSet( SelectEvents = EventSelection ),
                                # save PAT Layer 1 output; you need a '*' to
@@ -331,10 +342,10 @@ print 'Global tag       : ', process.GlobalTag.globaltag
 from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
 process.schedule = getSchedule(process, runOnMC, runOnFastSim)
 ## Add filters to the schedule
-process.schedule.append( process.ZToEEskimPath )
-process.schedule.append( process.ZToMUMUskimPath )
-process.schedule.append( process.WToENUskimPath )
-process.schedule.append( process.WToMUNUskimPath )
+#process.schedule.append( process.ZToEEskimPath )
+#process.schedule.append( process.ZToMUMUskimPath )
+#process.schedule.append( process.WToENUskimPath )
+#process.schedule.append( process.WToMUNUskimPath )
 ## Close the schedule
 process.schedule.append( process.outpath )
 ## Print the schedule
