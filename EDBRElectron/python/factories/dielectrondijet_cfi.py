@@ -20,11 +20,10 @@ cmgDiElectronDiJet = cms.EDFilter(
                     kinematics = cms.PSet( mass = cms.string("mass > 180") #XXX
                                            ),
                     
-                    btags      = cms.PSet( btag0= cms.string("leg2.getSelection(\"cuts_btags_btag0\") "),
-                                           btag1= cms.string("leg2.getSelection(\"cuts_btags_btag1\") "),
-                                           btag2= cms.string("leg2.getSelection(\"cuts_btags_btag2\") "),
-                                           
-                                           ),
+##                     btags      = cms.PSet( btag0= cms.string("leg2.getSelection(\"cuts_btags_btag0\") "),
+##                                            btag1= cms.string("leg2.getSelection(\"cuts_btags_btag1\") "),
+##                                            btag2= cms.string("leg2.getSelection(\"cuts_btags_btag2\") "),
+##                                           ),
                     
                     )
     )
