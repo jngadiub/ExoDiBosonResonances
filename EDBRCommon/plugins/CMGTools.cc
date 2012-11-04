@@ -9,8 +9,8 @@ DEFINE_FWK_MODULE(DiGenParticlePOProducer);
 DEFINE_FWK_MODULE(DiGenParticleDiGenParticlePOProducer);
 DEFINE_FWK_MODULE(DiMuonDiJetPOProducer);
 DEFINE_FWK_MODULE(DiElectronDiJetPOProducer);
-//DEFINE_FWK_MODULE(DiPFJetKinFitPOProducer);
-//DEFINE_FWK_MODULE(DiJetKinFitPOProducer);
+DEFINE_FWK_MODULE(DiPFJetKinFitPOProducer);
+DEFINE_FWK_MODULE(DiJetKinFitPOProducer);
 
 //DEFINE_FWK_MODULE(DiGenParticleDiGenParticleHiggsPOProducer);
 //DEFINE_FWK_MODULE(DiMuonDiJetHiggsPOProducer);

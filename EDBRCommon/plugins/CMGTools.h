@@ -8,8 +8,8 @@
 //typedef PhysicsObjectProducer<cmg::PFJetSmearFactory> PFJetSmearPOProducer;
 
 typedef PhysicsObjectProducer<cmg::DiGenParticleFactory> DiGenParticlePOProducer;
-//typedef PhysicsObjectProducer<cmg::DiPFJetKinFitFactory> DiPFJetKinFitPOProducer;
-//typedef PhysicsObjectProducer<cmg::DiJetKinFitFactory> DiJetKinFitPOProducer;
+typedef PhysicsObjectProducer<cmg::DiPFJetKinFitFactory> DiPFJetKinFitPOProducer;
+typedef PhysicsObjectProducer<cmg::DiJetKinFitFactory> DiJetKinFitPOProducer;
 
 typedef PhysicsObjectProducer<cmg::DiMuonDiJetFactory> DiMuonDiJetPOProducer;
 typedef PhysicsObjectProducer<cmg::DiElectronDiJetFactory> DiElectronDiJetPOProducer;

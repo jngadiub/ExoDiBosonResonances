@@ -43,7 +43,7 @@ puJetMvaCustom= puJetMva.clone(
 ##puJetIdSequence = cms.Sequence(puJetIdCustom*puJetMvaCustom)
 puJetIdSequence = cms.Sequence(puJetMvaCustom)
 
-cmgJetR2 = cms.EDProducer("cmgPFJetCleaner",
+cmgJet = cms.EDProducer("cmgPFJetCleaner",
                           src = cms.InputTag("cmgJetRaw"),
                           preselection = cms.string(''),
                           checkOverlaps = cms.PSet( genLeptons = cms.PSet( src = cms.InputTag("genSelectorZDaughter"),
@@ -108,7 +108,7 @@ jetSequence = cms.Sequence(
     + puJetIdSequence
 #    + ak5PFJets*ak5PFJetsL1FastL2L3 *qglAK5PF 
     + cmgJetRaw
-    + cmgJetR2
+    + cmgJet
 #    + cmgJet
     ) 
 

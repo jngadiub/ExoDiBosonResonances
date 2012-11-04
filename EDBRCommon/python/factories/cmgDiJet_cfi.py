@@ -17,22 +17,22 @@ cmgDiJet = cms.EDFilter(
        isSignal = isSignal.clone(),
        isSideband = isSideband.clone(),
        genP = cms.PSet(genP = cms.string("leg1.getSelection(\"cuts_genParton\") && leg2.getSelection(\"cuts_genParton\")")),
-       btags= cms.PSet(btag0= cms.string("!leg1.getSelection(\"cuts_JP_loose\") "
-                                         +"&& !leg2.getSelection(\"cuts_JP_loose\") "
-                                         ),
-                       btag1= cms.string("!( !leg1.getSelection(\"cuts_JP_loose\")"
-                                         +  "&& !leg2.getSelection(\"cuts_JP_loose\") )" # not btag0
-                                         +" && !(leg1.getSelection(\"cuts_JP_medium\") " 
-                                         +"   && leg2.getSelection(\"cuts_JP_loose\") )" # not btag2a
-                                         +" && !(leg1.getSelection(\"cuts_JP_loose\")"
-                                         +"   && leg2.getSelection(\"cuts_JP_medium\") )"# not btag2b
-                                         ),
-                       btag2= cms.string("  (leg1.getSelection(\"cuts_JP_medium\")  "
-                                         +"&&leg2.getSelection(\"cuts_JP_loose\") )"
-                                         +"||(leg1.getSelection(\"cuts_JP_loose\") "
-                                         +"&& leg2.getSelection(\"cuts_JP_medium\") )"
-                                         ),
-                       ),
+##        btags= cms.PSet(btag0= cms.string("!leg1.getSelection(\"cuts_JP_loose\") "
+##                                          +"&& !leg2.getSelection(\"cuts_JP_loose\") "
+##                                          ),
+##                        btag1= cms.string("!( !leg1.getSelection(\"cuts_JP_loose\")"
+##                                          +  "&& !leg2.getSelection(\"cuts_JP_loose\") )" # not btag0
+##                                          +" && !(leg1.getSelection(\"cuts_JP_medium\") " 
+##                                          +"   && leg2.getSelection(\"cuts_JP_loose\") )" # not btag2a
+##                                          +" && !(leg1.getSelection(\"cuts_JP_loose\")"
+##                                          +"   && leg2.getSelection(\"cuts_JP_medium\") )"# not btag2b
+##                                          ),
+##                        btag2= cms.string("  (leg1.getSelection(\"cuts_JP_medium\")  "
+##                                          +"&&leg2.getSelection(\"cuts_JP_loose\") )"
+##                                          +"||(leg1.getSelection(\"cuts_JP_loose\") "
+##                                          +"&& leg2.getSelection(\"cuts_JP_medium\") )"
+##                                          ),
+##                         ),
        ),
     verbose = cms.untracked.bool( False )
 )

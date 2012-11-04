@@ -5,14 +5,14 @@
 #include "AnalysisDataFormats/ExoDiBosonResonances/interface/CompoundTypesHZZLL.h"
 #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 //#include "ExoDiBosonResonances/EDBRCommon/interface/HiggsCandidateFactory.h"
-///#include "ExoDiBosonResonances/EDBRCommon/interface/DiObjectKinFitFactory.h"
+#include "ExoDiBosonResonances/EDBRCommon/interface/DiObjectKinFitFactory.h"
 #include "ExoDiBosonResonances/EDBRCommon/interface/LeptonIsoCorrector.h"
 
 
 namespace cmg{
   typedef DiObjectFactory< cmg::DiGenParticle::type1, cmg::DiGenParticle::type2 > DiGenParticleFactory;
-  //typedef DiObjectKinFitFactory< cmg::DiPFJet::type1, cmg::DiPFJet::type2 > DiPFJetKinFitFactory;
-  // typedef DiObjectKinFitFactory< cmg::DiJet::type1, cmg::DiJet::type2 > DiJetKinFitFactory;
+  typedef DiObjectKinFitFactory< cmg::DiPFJet::type1, cmg::DiPFJet::type2 > DiPFJetKinFitFactory;
+  //typedef DiObjectKinFitFactory< cmg::DiJet::type1, cmg::DiJet::type2 > DiJetKinFitFactory;
   //typedef DiObjectKinFitFactory< cmg::DiPFJet::type1, cmg::DiPFJet::type2 > DiJetKinFitFactory;
   
   typedef DiObjectFactory< cmg::DiElectronDiJet::type1, cmg::DiElectronDiJet::type2 > DiElectronDiJetFactory;

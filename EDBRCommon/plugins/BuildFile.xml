@@ -2,6 +2,7 @@
 <use name="AnalysisDataFormats/ExoDiBosonResonances"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="PhysicsTools/Utilities"/>
+<use name="ExoDiBosonResonances/EDBRCommon"/>
 
 <library name="ExoDiBosonResonancesEDBRCommonPlugins" file="*.cc">
   <use name="CMGTools/Common"/>
