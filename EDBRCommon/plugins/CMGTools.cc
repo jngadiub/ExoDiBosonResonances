@@ -12,11 +12,11 @@ DEFINE_FWK_MODULE(DiElectronDiJetPOProducer);
 DEFINE_FWK_MODULE(DiPFJetKinFitPOProducer);
 DEFINE_FWK_MODULE(DiJetKinFitPOProducer);
 
-DEFINE_FWK_MODULE(DiGenParticleDiGenParticleHiggsPOProducer);
-DEFINE_FWK_MODULE(DiMuonDiJetHiggsPOProducer);
-DEFINE_FWK_MODULE(DiElectronDiJetHiggsPOProducer);
+DEFINE_FWK_MODULE(DiGenParticleDiGenParticleEDBRPOProducer);
+DEFINE_FWK_MODULE(DiMuonDiJetEDBRPOProducer);
+DEFINE_FWK_MODULE(DiElectronDiJetEDBRPOProducer);
 
-typedef PhysicsObjectProducer<cmg::DiElectronFactory> DiElectronPOProducer;
-DEFINE_FWK_MODULE(DiElectronPOProducer);
-typedef PhysicsObjectProducer<cmg::DiMuonFactory> DiMuonPOProducer;
-DEFINE_FWK_MODULE(DiMuonPOProducer);
+//typedef PhysicsObjectProducer<cmg::DiElectronFactory> DiElectronPOProducer;
+//DEFINE_FWK_MODULE(DiElectronPOProducer);
+//typedef PhysicsObjectProducer<cmg::DiMuonFactory> DiMuonPOProducer;
+//DEFINE_FWK_MODULE(DiMuonPOProducer);

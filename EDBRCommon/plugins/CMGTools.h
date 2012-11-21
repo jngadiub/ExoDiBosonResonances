@@ -15,9 +15,9 @@ typedef PhysicsObjectProducer<cmg::DiMuonDiJetFactory> DiMuonDiJetPOProducer;
 typedef PhysicsObjectProducer<cmg::DiElectronDiJetFactory> DiElectronDiJetPOProducer;
 typedef PhysicsObjectProducer<cmg::DiGenParticleDiGenParticleFactory> DiGenParticleDiGenParticlePOProducer;
 
-typedef PhysicsObjectProducer<cmg::DiMuonDiJetHiggsFactory> DiMuonDiJetHiggsPOProducer;
-typedef PhysicsObjectProducer<cmg::DiElectronDiJetHiggsFactory> DiElectronDiJetHiggsPOProducer;
-typedef PhysicsObjectProducer<cmg::DiGenParticleDiGenParticleHiggsFactory> DiGenParticleDiGenParticleHiggsPOProducer;
+typedef PhysicsObjectProducer<cmg::DiMuonDiJetEDBRFactory> DiMuonDiJetEDBRPOProducer;
+typedef PhysicsObjectProducer<cmg::DiElectronDiJetEDBRFactory> DiElectronDiJetEDBRPOProducer;
+typedef PhysicsObjectProducer<cmg::DiGenParticleDiGenParticleEDBRFactory> DiGenParticleDiGenParticleEDBRPOProducer;
 
 
 #endif

@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 HLTWeightsKinFit = cms.EDProducer("HLTWeightProducerMu",
-                                  src = cms.InputTag("cmgDiMuonDiJetKinFitHiggs") ,
+                                  src = cms.InputTag("cmgDiMuonDiJetKinFitEDBR") ,
                                   ranges = cms.VPSet( cms.PSet( lumi = cms.double(217.),#Run2011A1
                                                                 double1 = cms.VPSet( cms.PSet(bin = cms.vdouble(0.0,0.8,10.,20. ,0.975)),
                                                                                      cms.PSet(bin = cms.vdouble(0.0,0.8,20.,40. ,0.975)),
@@ -162,4 +162,4 @@ HLTWeightsKinFit = cms.EDProducer("HLTWeightProducerMu",
 
  
 HLTWeights = HLTWeightsKinFit.clone()
-HLTWeights.src = "cmgDiMuonDiJetHiggs"
+HLTWeights.src = "cmgDiMuonDiJetEDBR"

@@ -98,7 +98,7 @@ process.analysisSequenceJets = cms.Sequence(
 
 # build X->ZZ->eejj
 process.load('ExoDiBosonResonances.EDBRElectron.resonance_cff')
-cloneProcessingSnippet(process,process.resonanceSequence, "Ele")
+cloneProcessingSnippet(process,process.edbrSequenceEE, "Ele")
 
 
 process.analysisSequenceZZEE = cms.Sequence(
@@ -106,19 +106,19 @@ process.analysisSequenceZZEE = cms.Sequence(
 
     process.analysisSequenceJets +
     
-    process.resonanceSequenceEle 
+    process.edbrSequenceEEEle 
     )
 
 # build X->ZZ->mmjj
 process.load('ExoDiBosonResonances.EDBRMuon.resonance_cff')
-cloneProcessingSnippet(process,process.resonanceSequence, "Mu")
+cloneProcessingSnippet(process,process.edbrSequenceMM, "Mu")
 
 process.analysisSequenceZZMM = cms.Sequence(
     process.analysisSequenceMuons +
 
     process.analysisSequenceJets +
     
-    process.resonanceSequenceMu 
+    process.edbrSequenceMMMu 
     )
 
 

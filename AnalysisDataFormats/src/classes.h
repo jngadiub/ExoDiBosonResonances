@@ -5,7 +5,7 @@
 #include <vector>
 
 namespace {
-  struct HiggsAna_DataFormats {
+  struct EDBR_DataFormats {
 
     cmg::DiGenParticle dgg_;
     std::vector<cmg::DiGenParticle> dggv;

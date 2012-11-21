@@ -1,57 +1,57 @@
 import FWCore.ParameterSet.Config as cms
 
-from ExoDiBosonResonances.EDBRElectron.factories.dielectrondijet_cfi import * 
-#from ExoDiBosonResonances.EDBRElectron.factories.diElectronDiJetHiggs_cfi import *
-#from ExoDiBosonResonances.EDBRElectron.skims.cmgHiggsSel_cff import *
-#from ExoDiBosonResonances.EDBRElectron.skims.selEventsHiggs_cfi import *
-#from ExoDiBosonResonances.EDBRElectron.HLTWeights_cff import *
+from ExoDiBosonResonances.EDBRElectron.factories.cmgdielectrondijet_cfi import * 
+from ExoDiBosonResonances.EDBRElectron.factories.cmgdielectrondijetEDBR_cfi import *
+from ExoDiBosonResonances.EDBRElectron.skims.cmgEDBRSel_cff import *
+from ExoDiBosonResonances.EDBRElectron.skims.selEventsEDBR_cfi import *
+from ExoDiBosonResonances.EDBRElectron.HLTWeights_cff import *
 
 
-## cmgHiggsKinFitWeighted2012A = cms.EDProducer("DiElectronDiJetHiggsWeightAdder",
-##                                         src=cms.InputTag("HLTWeightsKinFit"),
-##                                         weight=cms.InputTag("PUWeights2012A"),
-##                                         )
-## cmgHiggsWeighted2012A = cms.EDProducer("DiElectronDiJetHiggsWeightAdder",
-##                                   src=cms.InputTag("HLTWeights"),
-##                                   weight=cms.InputTag("PUWeights2012A"),
-##                                   )
-## cmgHiggsKinFitWeighted2012B = cms.EDProducer("DiElectronDiJetHiggsWeightAdder",
-##                                         src=cms.InputTag("cmgHiggsKinFitWeighted2012A"),
-##                                         weight=cms.InputTag("PUWeights2012B"),
-##                                         )
-## cmgHiggsWeighted2012B = cms.EDProducer("DiElectronDiJetHiggsWeightAdder",
-##                                   src=cms.InputTag("cmgHiggsWeighted2012A"),
-##                                   weight=cms.InputTag("PUWeights2012B"),
-##                                   )
-## cmgHiggsKinFitWeighted = cms.EDProducer("DiElectronDiJetHiggsWeightAdder",
-##                                         src=cms.InputTag("cmgHiggsKinFitWeighted2012B"),
-##                                         weight=cms.InputTag("PUWeights"),
-##                                         )
-## cmgHiggsWeighted = cms.EDProducer("DiElectronDiJetHiggsWeightAdder",
-##                                   src=cms.InputTag("cmgHiggsWeighted2012B"),
-##                                   weight=cms.InputTag("PUWeights"),
-##                                   )
+cmgEDBRKinFitWeighted2012A = cms.EDProducer("DiElectronDiJetEDBRWeightAdder",
+                                        src=cms.InputTag("HLTWeightsKinFit"),
+                                        weight=cms.InputTag("PUWeights2012A"),
+                                        )
+cmgEDBRWeighted2012A = cms.EDProducer("DiElectronDiJetEDBRWeightAdder",
+                                  src=cms.InputTag("HLTWeights"),
+                                  weight=cms.InputTag("PUWeights2012A"),
+                                  )
+cmgEDBRKinFitWeighted2012B = cms.EDProducer("DiElectronDiJetEDBRWeightAdder",
+                                        src=cms.InputTag("cmgEDBRKinFitWeighted2012A"),
+                                        weight=cms.InputTag("PUWeights2012B"),
+                                        )
+cmgEDBRWeighted2012B = cms.EDProducer("DiElectronDiJetEDBRWeightAdder",
+                                  src=cms.InputTag("cmgEDBRWeighted2012A"),
+                                  weight=cms.InputTag("PUWeights2012B"),
+                                  )
+cmgEDBRKinFitWeighted = cms.EDProducer("DiElectronDiJetEDBRWeightAdder",
+                                        src=cms.InputTag("cmgEDBRKinFitWeighted2012B"),
+                                        weight=cms.InputTag("PUWeights"),
+                                        )
+cmgEDBRWeighted = cms.EDProducer("DiElectronDiJetEDBRWeightAdder",
+                                  src=cms.InputTag("cmgEDBRWeighted2012B"),
+                                  weight=cms.InputTag("PUWeights"),
+                                  )
 
                                                          
-resonanceSequence = cms.Sequence(
+edbrSequenceEE = cms.Sequence(
     cmgDiElectronDiJet +
-    cmgDiElectronDiJetKinFit 
+    cmgDiElectronDiJetKinFit +
     
-##     cmgDiElectronDiJetHiggs +
-##     cmgDiElectronDiJetKinFitHiggs +
+    cmgDiElectronDiJetEDBR +
+    cmgDiElectronDiJetKinFitEDBR +
 
-##     HLTWeights +
-##     HLTWeightsKinFit +
+    HLTWeights +
+    HLTWeightsKinFit +
     
-##     cmgHiggsKinFitWeighted2012A +
-##     cmgHiggsWeighted2012A +
-##     cmgHiggsKinFitWeighted2012B +
-##     cmgHiggsWeighted2012B +
-##     cmgHiggsKinFitWeighted +
-##     cmgHiggsWeighted +
+    cmgEDBRKinFitWeighted2012A +
+    cmgEDBRWeighted2012A +
+    cmgEDBRKinFitWeighted2012B +
+    cmgEDBRWeighted2012B +
+    cmgEDBRKinFitWeighted +
+    cmgEDBRWeighted +
 
-##     cmgHiggsSel +
-##     cmgHiggsSelKinFit +    
+    cmgEDBRSel +
+    cmgEDBRSelKinFit +    
     
-##     selectedHiggsCandFilter
+    selectedEDBRCandFilter
 )
