@@ -17,12 +17,12 @@ dimuondijethiggsfactory = cms.PSet(
 
 
 #from CMGTools.Common.selections.zmumu_cfi import zmumu
-cmgDiMuonDiJetHiggs = cms.EDFilter(
-    "DiMuonDiJetHiggsPOProducer",
+cmgDiMuonDiJetEDBR = cms.EDFilter(
+    "DiMuonDiJetEDBRPOProducer",
     cfg = dimuondijethiggsfactory.clone(),
     cuts = cms.PSet( genMatch = cms.PSet(genMatch = cms.string("leg1.getSelection(\"cuts_genP\") && leg2.getSelection(\"cuts_genP\")"))
                     )
     )
 
-cmgDiMuonDiJetKinFitHiggs = cmgDiMuonDiJetHiggs.clone()
-cmgDiMuonDiJetKinFitHiggs.cfg.inputs = cms.InputTag("cmgDiMuonDiJetKinFit")
+cmgDiMuonDiJetKinFitEDBR = cmgDiMuonDiJetEDBR.clone()
+cmgDiMuonDiJetKinFitEDBR.cfg.inputs = cms.InputTag("cmgDiMuonDiJetKinFit")

@@ -10,5 +10,5 @@ diMuonSequence = cms.Sequence(
     cmgDiMuon  
    + cmgDiMuonSel 
    + cmgDiMuonCount 
-   +cmgDiMuonHistograms
+###   +cmgDiMuonHistograms
 )

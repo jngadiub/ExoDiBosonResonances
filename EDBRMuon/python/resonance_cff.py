@@ -2,8 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 from ExoDiBosonResonances.EDBRMuon.factories.cmgdimuondijet_cfi import * 
 from ExoDiBosonResonances.EDBRMuon.factories.cmgdimuondijethiggs_cfi import *
-from ExoDiBosonResonances.EDBRMuon.skims.cmgHiggsSel_cff import *
-from ExoDiBosonResonances.EDBRMuon.skims.selEventsHiggs_cfi import *
+from ExoDiBosonResonances.EDBRMuon.skims.cmgEDBRSel_cff import *
+from ExoDiBosonResonances.EDBRMuon.skims.selEventsEDBR_cfi import *
 from ExoDiBosonResonances.EDBRMuon.HLTWeights_cff import *
 
 cmgEDBRKinFitWeighted2012A = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",

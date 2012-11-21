@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 muonPreselNoIso = cms.EDFilter(
-    "CMGMuonSelector",
+    "CmgMuonSelector",
     src = cms.InputTag("cmgMuon"),
     cut = cms.string( "getSelection(\"cuts_kinematics\") && getSelection(\"cuts_tightPFmuon\") " )
     )

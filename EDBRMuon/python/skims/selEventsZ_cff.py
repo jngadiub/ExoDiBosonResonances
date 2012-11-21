@@ -12,6 +12,6 @@ selectedZmmCandFilter = cms.EDFilter("CandViewCountFilter",
  )
 
 
-selectedZSequence = cms.Sequence(ZmmCand+selectedZmmCandFilter)
+selectedZMMSequence = cms.Sequence(ZmmCand+selectedZmmCandFilter)
 
 
