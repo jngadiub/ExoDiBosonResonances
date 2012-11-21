@@ -1,5 +1,5 @@
-#ifndef HIGGSCANDIDATEFACTORY_H_
-#define HIGGSCANDIDATEFACTORY_H_
+#ifndef EDBRCANDIDATEFACTORY_H_
+#define EDBRCANDIDATEFACTORY_H_
 
 #include "AnalysisDataFormats/ExoDiBosonResonances/interface/EDBRCandidate.h"
 #include "CMGTools/Common/interface/Factory.h"

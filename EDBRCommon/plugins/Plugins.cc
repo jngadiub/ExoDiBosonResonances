@@ -1,13 +1,13 @@
-//#include "ExoDiBosonResonances/EDBRCommon/plugins/PUWeightProducer.h" 
+#include "ExoDiBosonResonances/EDBRCommon/plugins/PUWeightProducer.h" 
 //#include "ExoDiBosonResonances/EDBRCommon/plugins/RhoWeightProducer.h" 
-//#include "ExoDiBosonResonances/EDBRCommon/plugins/PTWeightProducer.h" 
-//#include "ExoDiBosonResonances/EDBRCommon/plugins/HLTWeightProducer.h" 
-//#include "ExoDiBosonResonances/EDBRCommon/plugins/PTWeightAnalyzer.h" 
+#include "ExoDiBosonResonances/EDBRCommon/plugins/PTWeightProducer.h" 
+#include "ExoDiBosonResonances/EDBRCommon/plugins/HLTWeightProducer.h" 
+#include "ExoDiBosonResonances/EDBRCommon/plugins/PTWeightAnalyzer.h" 
 //#include "ExoDiBosonResonances/EDBRCommon/plugins/LDProducer.h" 
 //#include "ExoDiBosonResonances/EDBRCommon/plugins/QGLDSelector.h" 
-//#include "ExoDiBosonResonances/EDBRCommon/plugins/WeightAdder.h" 
-//#include "ExoDiBosonResonances/EDBRCommon/plugins/BestCandidateSelector.h" 
-//#include "ExoDiBosonResonances/EDBRCommon/plugins/HiggsTagger.h" 
+#include "ExoDiBosonResonances/EDBRCommon/plugins/WeightAdder.h" 
+#include "ExoDiBosonResonances/EDBRCommon/plugins/BestCandidateSelector.h" 
+#include "ExoDiBosonResonances/EDBRCommon/plugins/EDBRTagger.h" 
 //#include "CMGTools/Common/plugins/HistogramAnalyzer.h" 
 //#include "ExoDiBosonResonances/EDBRCommon/interface/JetCountingHistograms.h" 
 
@@ -28,56 +28,59 @@
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiPFJet> > DiJetSelector;
 DEFINE_FWK_MODULE(DiJetSelector);
 
-//typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiGenParticleDiGenParticleHiggs> > DiGenParticleDiGenParticleHiggsSelector;
-//DEFINE_FWK_MODULE(DiGenParticleDiGenParticleHiggsSelector);
-//typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiElectronDiJetHiggs> > CmgDiElectronDiJetHiggsSelector;
-//DEFINE_FWK_MODULE(CmgDiElectronDiJetHiggsSelector);
-//typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiMuonDiJetHiggs> > CmgDiMuonDiJetHiggsSelector;
-//DEFINE_FWK_MODULE(CmgDiMuonDiJetHiggsSelector);
+//define selectors for Resonance-like objects
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiGenParticleDiGenParticleEDBR> > DiGenParticleDiGenParticleEDBRSelector;
+DEFINE_FWK_MODULE(DiGenParticleDiGenParticleEDBRSelector);
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiElectronDiJetEDBR> > CmgDiElectronDiJetEDBRSelector;
+DEFINE_FWK_MODULE(CmgDiElectronDiJetEDBRSelector);
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiMuonDiJetEDBR> > CmgDiMuonDiJetEDBRSelector;
+DEFINE_FWK_MODULE(CmgDiMuonDiJetEDBRSelector);
 
-//typedef Merger<std::vector<cmg::DiElectronDiJetHiggs>, std::vector<cmg::DiElectronDiJetHiggs> > CmgDiElectronDiJetHiggsMerger;
-//DEFINE_FWK_MODULE( CmgDiElectronDiJetHiggsMerger );
-//typedef Merger<std::vector<cmg::DiMuonDiJetHiggs>, std::vector<cmg::DiMuonDiJetHiggs> > CmgDiMuonDiJetHiggsMerger;
-//DEFINE_FWK_MODULE( CmgDiMuonDiJetHiggsMerger );
+//define mergers for Resonance-like objects
+typedef Merger<std::vector<cmg::DiElectronDiJetEDBR>, std::vector<cmg::DiElectronDiJetEDBR> > CmgDiElectronDiJetEDBRMerger;
+DEFINE_FWK_MODULE( CmgDiElectronDiJetEDBRMerger );
+typedef Merger<std::vector<cmg::DiMuonDiJetEDBR>, std::vector<cmg::DiMuonDiJetEDBR> > CmgDiMuonDiJetEDBRMerger;
+DEFINE_FWK_MODULE( CmgDiMuonDiJetEDBRMerger );
 
-//DEFINE_FWK_MODULE(PUWeightProducer);
-//DEFINE_FWK_MODULE(PTWeightProducer);
-//DEFINE_FWK_MODULE(PTWeightAnalyzer);
+DEFINE_FWK_MODULE(PUWeightProducer);
+DEFINE_FWK_MODULE(PTWeightProducer);
+DEFINE_FWK_MODULE(PTWeightAnalyzer);
+
+//////for the time being, we do not calculate a kinematic discriminant out of the hel angles...
+//typedef LDProducer<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRLDProducer;
+//typedef LDProducer<cmg::DiMuonDiJetEDBR>     DiMuonDiJetEDBRLDProducer;
+//typedef LDProducer<cmg::DiGenParticleDiGenParticleEDBR>     DiGenParticleDiGenParticleEDBRLDProducer;
+//DEFINE_FWK_MODULE(DiElectronDiJetEDBRLDProducer);
+//DEFINE_FWK_MODULE(DiMuonDiJetEDBRLDProducer);
+//DEFINE_FWK_MODULE(DiGenParticleDiGenParticleEDBRLDProducer);
+
+//typedef QGLDSelector<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRQGLDSelector;
+//typedef QGLDSelector<cmg::DiMuonDiJetEDBR>     DiMuonDiJetEDBRQGLDSelector;
+//DEFINE_FWK_MODULE(DiElectronDiJetEDBRQGLDSelector);
+//DEFINE_FWK_MODULE(DiMuonDiJetEDBRQGLDSelector);
+
+//////define candidate selectors
+typedef BestCandidateSelector<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRBestCandidateSelector;
+typedef BestCandidateSelector<cmg::DiMuonDiJetEDBR>     DiMuonDiJetEDBRBestCandidateSelector;
+DEFINE_FWK_MODULE(DiElectronDiJetEDBRBestCandidateSelector);
+DEFINE_FWK_MODULE(DiMuonDiJetEDBRBestCandidateSelector);
+
+/////define weight adders (weight because of PU, HLT...)
+typedef WeightAdder<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRWeightAdder;
+typedef WeightAdder<cmg::DiMuonDiJetEDBR>     DiMuonDiJetEDBRWeightAdder;
+DEFINE_FWK_MODULE(DiElectronDiJetEDBRWeightAdder);
+DEFINE_FWK_MODULE(DiMuonDiJetEDBRWeightAdder);
+typedef HLTWeightProducer<cmg::DiElectronDiJetEDBR> HLTWeightProducerElectron;
+typedef HLTWeightProducer<cmg::DiMuonDiJetEDBR>     HLTWeightProducerMu;
+DEFINE_FWK_MODULE(HLTWeightProducerElectron);
+DEFINE_FWK_MODULE(HLTWeightProducerMu);
 
 
-//typedef LDProducer<cmg::DiElectronDiJetHiggs> DiElectronDiJetHiggsLDProducer;
-//typedef LDProducer<cmg::DiMuonDiJetHiggs>     DiMuonDiJetHiggsLDProducer;
-//typedef LDProducer<cmg::DiGenParticleDiGenParticleHiggs>     DiGenParticleDiGenParticleHiggsLDProducer;
-//DEFINE_FWK_MODULE(DiElectronDiJetHiggsLDProducer);
-//DEFINE_FWK_MODULE(DiMuonDiJetHiggsLDProducer);
-//DEFINE_FWK_MODULE(DiGenParticleDiGenParticleHiggsLDProducer);
-
-//typedef QGLDSelector<cmg::DiElectronDiJetHiggs> DiElectronDiJetHiggsQGLDSelector;
-//typedef QGLDSelector<cmg::DiMuonDiJetHiggs>     DiMuonDiJetHiggsQGLDSelector;
-//DEFINE_FWK_MODULE(DiElectronDiJetHiggsQGLDSelector);
-//DEFINE_FWK_MODULE(DiMuonDiJetHiggsQGLDSelector);
-
-
-//typedef BestCandidateSelector<cmg::DiElectronDiJetHiggs> DiElectronDiJetHiggsBestCandidateSelector;
-//typedef BestCandidateSelector<cmg::DiMuonDiJetHiggs>     DiMuonDiJetHiggsBestCandidateSelector;
-//DEFINE_FWK_MODULE(DiElectronDiJetHiggsBestCandidateSelector);
-//DEFINE_FWK_MODULE(DiMuonDiJetHiggsBestCandidateSelector);
-
-//typedef WeightAdder<cmg::DiElectronDiJetHiggs> DiElectronDiJetHiggsWeightAdder;
-//typedef WeightAdder<cmg::DiMuonDiJetHiggs>     DiMuonDiJetHiggsWeightAdder;
-//DEFINE_FWK_MODULE(DiElectronDiJetHiggsWeightAdder);
-//DEFINE_FWK_MODULE(DiMuonDiJetHiggsWeightAdder);
-
-//typedef HLTWeightProducer<cmg::DiElectronDiJetHiggs> HLTWeightProducerElectron;
-//typedef HLTWeightProducer<cmg::DiMuonDiJetHiggs>     HLTWeightProducerMu;
-//DEFINE_FWK_MODULE(HLTWeightProducerElectron);
-//DEFINE_FWK_MODULE(HLTWeightProducerMu);
-
-
-//typedef HiggsTagger<cmg::DiElectronDiJetHiggs> DiElectronDiJetHiggsTagger;
-//typedef HiggsTagger<cmg::DiMuonDiJetHiggs>     DiMuonDiJetHiggsTagger;
-//DEFINE_FWK_MODULE(DiElectronDiJetHiggsTagger);
-//DEFINE_FWK_MODULE(DiMuonDiJetHiggsTagger);
+//define VBF taggers
+typedef EDBRTagger<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRTagger;
+typedef EDBRTagger<cmg::DiMuonDiJetEDBR>     DiMuonDiJetEDBRTagger;
+DEFINE_FWK_MODULE(DiElectronDiJetEDBRTagger);
+DEFINE_FWK_MODULE(DiMuonDiJetEDBRTagger);
 
 
 DEFINE_FWK_MODULE(DummyGenProducer);
