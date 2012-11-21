@@ -10,7 +10,7 @@
 
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
 
-//#include "AnalysisDataFormats/HiggsAna/interface/HiggsCandidate.h"
+#include "AnalysisDataFormats/ExoDiBosonResonances/interface/EDBRCandidate.h"
 
 
 namespace cmg{
@@ -25,11 +25,11 @@ namespace cmg{
   typedef cmg::DiObject<cmg::DiElectron,cmg::DiPFJet> DiElectronDiPFJet;
   typedef cmg::DiObject<cmg::DiGenParticle,cmg::DiGenParticle> DiGenParticleDiGenParticle;
 
-  //  typedef cmg::HiggsCandidate<cmg::DiMuon,cmg::DiJet> DiMuonDiJetHiggs;
-  // typedef cmg::HiggsCandidate<cmg::DiElectron,cmg::DiJet> DiElectronDiJetHiggs;
-  //typedef cmg::HiggsCandidate<cmg::DiMuon,cmg::DiPFJet> DiMuonDiJetHiggs;
-  //typedef cmg::HiggsCandidate<cmg::DiElectron,cmg::DiPFJet> DiElectronDiJetHiggs;
-  //typedef cmg::HiggsCandidate<cmg::DiGenParticle,cmg::DiGenParticle> DiGenParticleDiGenParticleHiggs;
+  // // // typedef cmg::EDBRCandidate<cmg::DiMuon,cmg::DiJet> DiMuonDiJetEDBR;
+  // // // typedef cmg::EDBRCandidate<cmg::DiElectron,cmg::DiJet> DiElectronDiJetEDBR;
+  typedef cmg::EDBRCandidate<cmg::DiMuon,cmg::DiPFJet> DiMuonDiJetEDBR;
+  typedef cmg::EDBRCandidate<cmg::DiElectron,cmg::DiPFJet> DiElectronDiJetEDBR;
+  typedef cmg::EDBRCandidate<cmg::DiGenParticle,cmg::DiGenParticle> DiGenParticleDiGenParticleEDBR;
     
 
 
