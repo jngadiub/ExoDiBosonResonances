@@ -1,6 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 from PhysicsTools.PatAlgos.tools.helpers import *
 
+### read steering options from cmd file:
+from ExoDiBosonResonances.EDBRCommon.cmdLine import options
+options.parseArguments()
+
 
 process = cms.Process("CMG")
 ###########
@@ -32,17 +36,44 @@ process.source = cms.Source("PoolSource",
 readFiles.extend(['/store/cmst3/user/bonato//patTuple/2012/EXOVVtest/newPatTuple_ZZ_600_c1.root'])
 
 
-process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string("test.root"),
-                               outputCommands = cms.untracked.vstring('drop *',
-                                                                      'keep *_*_*_*'
-                                                                      )
-                               )
-
+### define output
+process.load('ExoDiBosonResonances.EDBRCommon.outputModules_cff')
 process.outpath = cms.EndPath(process.out)
 
 
+###################
+# JSON Filtering  #
+###################
+### #only do this for data
+# if options.mcordata == "DATA" and options.json!="" :
+#     import PhysicsTools.PythonAnalysis.LumiList as LumiList
+#     import FWCore.ParameterSet.Types as CfgTypes
+#     myLumis = LumiList.LumiList(filename = options.json).getCMSSWString().split(',')
+#     process.source.lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange())
+#     process.source.lumisToProcess.extend(myLumis)
 
+
+
+############
+# Event filter    #
+############
+
+process.badEventFilter = cms.EDFilter("HLTHighLevel",
+                                     TriggerResultsTag =
+                                      cms.InputTag("TriggerResults","","PAT"),
+                                      HLTPaths =
+                                      cms.vstring('primaryVertexFilterPath',
+                                                  'noscrapingFilterPath',
+                                                  'hcalLaserEventFilterPath',
+                                                  'HBHENoiseFilterPath',
+    #                                              'totalKinematicsFilterPath' #only for Madgraph MC
+                                                  ),
+                                      eventSetupPathsKey = cms.string(''),
+                                       # how to deal with multiple triggers: True (OR) accept if ANY is true, False
+                                      #(AND) accept if ALL are true
+                                      andOr = cms.bool(False), 
+                                      throw = cms.bool(True)    # throw exception on unknown path names
+                                      ) 
 
 
 ###################################################################
@@ -135,6 +166,6 @@ process.analysisSequenceZZMM = cms.Sequence(
     )
 
 
-process.preselElePath = cms.Path( process.analysisSequenceZZEE )
-process.preselMuPath = cms.Path( process.analysisSequenceZZMM )
+process.preselElePath = cms.Path(process.badEventFilter+ process.analysisSequenceZZEE )
+process.preselMuPath = cms.Path(process.badEventFilter+ process.analysisSequenceZZMM )
 
