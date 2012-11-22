@@ -42,6 +42,9 @@ process.out = cms.OutputModule("PoolOutputModule",
 process.outpath = cms.EndPath(process.out)
 
 
+
+
+
 ###################################################################
 # Ele Sequence: select electrons and build di-electrons from them #
 ###################################################################
@@ -58,6 +61,16 @@ process.analysisSequenceElectrons = cms.Sequence(
     process.diElectronSequence +
     process.selectedZSequence
     )
+
+##############
+# PU weights #
+##############
+process.load('ExoDiBosonResonances.EDBRCommon.PUweights_cff')
+## process.PUWeights.filenameData=cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/Pileup_2011_to_173692_LPLumiScale_NEW.root")
+## process.PUWeights.filenameMC=cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/Pileup_2011_MC_Oct2011_35bins.root")
+
+process.eleSequence.insert(0,process.PUseq)
+
 
 ############################################################
 # Muon Sequence: select muons and build di-muons from them #
