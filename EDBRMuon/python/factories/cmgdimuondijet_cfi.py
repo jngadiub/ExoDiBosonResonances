@@ -19,12 +19,13 @@ cmgDiMuonDiJet = cms.EDFilter(
                                                              +"deltaR(leg1.leg1.eta,leg1.leg1.phi,leg2.leg2.sourcePtr.eta,leg2.leg2.sourcePtr.phi) < 0.5 ||"
                                                              +"deltaR(leg1.leg2.eta,leg1.leg2.phi,leg2.leg2.sourcePtr.eta,leg2.leg2.sourcePtr.phi) < 0.5 ")),
                    
-                    
-                    btags      = cms.PSet( btag0= cms.string("leg2.getSelection(\"cuts_btags_btag0\") "),
-                                           btag1= cms.string("leg2.getSelection(\"cuts_btags_btag1\") "),
-                                           btag2= cms.string("leg2.getSelection(\"cuts_btags_btag2\") "),                                           
-                                           ),
-                    ),
+
+##### NO B-TAGGING for the time being                    
+###                    btags      = cms.PSet( btag0= cms.string("leg2.getSelection(\"cuts_btags_btag0\") "),
+###                                           btag1= cms.string("leg2.getSelection(\"cuts_btags_btag1\") "),
+###                                           btag2= cms.string("leg2.getSelection(\"cuts_btags_btag2\") "),
+###                    ),
+                    )
     )
 
 cmgDiMuonDiJetKinFit=cmgDiMuonDiJet.clone()
