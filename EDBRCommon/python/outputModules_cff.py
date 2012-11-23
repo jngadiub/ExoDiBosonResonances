@@ -4,20 +4,12 @@ from ExoDiBosonResonances.EDBRCommon.cmdLine import options
 options.parseArguments()
 
 
-#out = cms.OutputModule("PoolOutputModule",
-#                               fileName = cms.untracked.string("test.root"),
-#                               outputCommands = cms.untracked.vstring('drop *',
-#                                                                      'keep *_*_*_CMG'
-#                                                                      )
-#                               )
-
-
 out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string("test.root"),
-                               outputCommands = cms.untracked.vstring('drop *',
-                                                                      'keep *_*_*_*'
-                                                                      )
-                               )
+                              fileName = cms.untracked.string("test.root"),
+                              outputCommands = cms.untracked.vstring('drop *',
+                                                                     'keep *_*_*_CMG'
+                                                                     )
+                              )
 
 
 #### filter contents according to option in steering file 

@@ -11,7 +11,7 @@ process = cms.Process("CMG")
 # Options #
 ###########
 #process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents))
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000))
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
@@ -26,17 +26,26 @@ process.GlobalTag.globaltag = cms.string("START53_V7A::All")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("JetMETCorrections.Configuration.JetCorrectionServicesAllAlgos_cff")
 
-readFiles = cms.untracked.vstring()
-process.source = cms.Source("PoolSource",
-                            noEventSort = cms.untracked.bool(True),
-                            duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-                            fileNames = readFiles
-                            )
 
-readFiles.extend(['/store/cmst3/user/bonato//patTuple/2012/EXOVVtest/newPatTuple_ZZ_600_c1.root'])
+###########
+# Input   #
+###########
 
 
-### define output
+###fullname  = "ExoDiBosonResonances.EDBRCommon.datasets." + options.infile
+fullname  = "ExoDiBosonResonances.EDBRCommon.datasets.test_RSGZZ600_cff" 
+print 'Importing dataset from '
+print fullname
+process.load(fullname)
+####for synch studies
+#process.source.eventsToProcess = cms.untracked.VEventRange(cms.EventRange("166699:715236831"),cms.EventRange("173389:180639524"))
+#process.source.eventsToProcess  = cms.untracked.VEventRange(cms.EventRange("1:231104"))
+
+
+
+###########
+# Output  #
+###########
 process.load('ExoDiBosonResonances.EDBRCommon.outputModules_cff')
 process.outpath = cms.EndPath(process.out)
 
