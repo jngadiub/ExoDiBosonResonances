@@ -54,12 +54,12 @@ process.outpath = cms.EndPath(process.out)
 # JSON Filtering  #
 ###################
 ### #only do this for data
-# if options.mcordata == "DATA" and options.json!="" :
-#     import PhysicsTools.PythonAnalysis.LumiList as LumiList
-#     import FWCore.ParameterSet.Types as CfgTypes
-#     myLumis = LumiList.LumiList(filename = options.json).getCMSSWString().split(',')
-#     process.source.lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange())
-#     process.source.lumisToProcess.extend(myLumis)
+if options.mcordata == "DATA" and options.json!="" :
+     import PhysicsTools.PythonAnalysis.LumiList as LumiList
+     import FWCore.ParameterSet.Types as CfgTypes
+     myLumis = LumiList.LumiList(filename = options.json).getCMSSWString().split(',')
+     process.source.lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange())
+     process.source.lumisToProcess.extend(myLumis)
 
 
 
