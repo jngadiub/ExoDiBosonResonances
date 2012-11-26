@@ -148,6 +148,9 @@ process.analysisSequenceJets = cms.Sequence(
     process.cmgDiJetKinFit
     )
 
+###########################################################
+# Resonance Sequence: build EXO resonance from Z bosons   #
+###########################################################
 
 # build X->ZZ->eejj
 process.load('ExoDiBosonResonances.EDBRElectron.resonance_cff')

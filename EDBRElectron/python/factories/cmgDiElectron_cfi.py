@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 
-dimuonFactory = cms.PSet(
+dieleFactory = cms.PSet(
        leg1Collection = cms.InputTag("electronPresel"),
        leg2Collection = cms.InputTag("electronPresel"),
        metCollection = cms.InputTag("")
@@ -11,7 +11,7 @@ from ExoDiBosonResonances.EDBRElectron.selections.zee_cfi import zee_quality
 
 cmgDiElectronEDBR = cms.EDFilter(
     "DiElectronPOProducer",
-    cfg = dimuonFactory.clone(),
+    cfg = dieleFactory.clone(),
     cuts = cms.PSet(
        zee_kinematics = zee_kinematics.clone(),
        zee_quality = zee_quality.clone(),
