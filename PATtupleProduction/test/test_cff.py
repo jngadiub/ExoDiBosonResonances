@@ -52,4 +52,18 @@ process.test = cms.EDProducer("NjettinessAdder",
                               cone=cms.double(0.5)
                               )
 
-process.testp = cms.Path(process.test)
+process.test2 = cms.EDProducer("QjetsAdder",
+                               src=cms.InputTag("test"),
+                               zcut=cms.double(0.1),
+                               dcutfctr=cms.double(0.5),
+                               expmin=cms.double(0.0),
+                               expmax=cms.double(0.0),
+                               rigidity=cms.double(0.1),
+                               ntrial = cms.int32(50),
+                               cutoff=cms.double(10.0),
+                               jetRad= cms.double(0.5),
+                               jetAlgo=cms.string("AK"),
+                               preclustering = cms.int32(50),
+                              )
+
+process.testp = cms.Path(process.test+process.test2 )
