@@ -2,6 +2,7 @@
 <use name="DataFormats/PatCandidates"/>
 <use name="FWCore/Framework"/>
 <use name="fastjet"/>
+<use name="ExoDiBosonResonances/PATtupleProduction"/>
 
 
 <library name="ExoDiBosonResonancesPATtupleProductionPlugins" file="*.cc">
