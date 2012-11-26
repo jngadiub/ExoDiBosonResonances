@@ -80,11 +80,15 @@ process.highPtMuons = cms.EDFilter("PATMuonSelector",
 ANALYSIS_SOURCE = "highPtMuons"
 ANALYSIS_SOURCE = "patMuonsWithTrigger"
 
-process.hptmAnalyzer = cms.EDAnalyzer("IsolationMuonStudy",
+process.hptmAnalyzer = cms.EDAnalyzer("HighPtMuonStudy",
                                       muons=cms.InputTag(ANALYSIS_SOURCE),
-                                      #singleMuonID = cms.string("TRACKER"),
-                                      #dimuonID = cms.string("HPTTRK"),
+                                      singleMuonID = cms.string("TRACKER"),
+                                      dimuonID = cms.string("HPTTRK"),
                                       )
+
+process.isoAnalyzer = cms.EDAnalyzer("IsolationMuonStudy",
+                                      muons=cms.InputTag(ANALYSIS_SOURCE),
+                                     )
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string(outputFileName)
@@ -92,4 +96,5 @@ process.TFileService = cms.Service("TFileService",
  
 process.p = cms.Path(process.genMuons +
                      #                         process.highPtMuons +
-                     process.hptmAnalyzer)
+                     process.hptmAnalyzer +
+                     process.isoAnalyzer)
