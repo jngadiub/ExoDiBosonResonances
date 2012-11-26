@@ -15,10 +15,10 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
+#include "ExoDiBosonResonances/EDBRMuon/interface/HPTMMuonSelector.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "CommonTools/CandUtils/interface/AddFourMomenta.h"
-#include "CommonTools/Utils/interface/StringToEnumValue.h"
 
 #include "TEfficiency.h"
 #include "TH1F.h"
@@ -68,34 +68,27 @@ class HighPtMuonStudy : public edm::EDAnalyzer {
   TH1F* h_dB_trackerMuon;      
   TH1F* h_dZ_trackerMuon;      
   TH1F* h_muonStations_trackerMuon;
-  TH1F*  h_pixelHits_trackerMuon;
+  TH1F* h_pixelHits_trackerMuon;
+  TH1F* h_muonHits_trackerMuon;
 
-  TEfficiency* h_efficiency;
-  TEfficiency* h_effXdR;
-  TH1F* h_dR;
-  TH1F* h_dR_passed;
-  TH1F* h_dR_failed;
-  TH1F* h_numMuonHits;
   TH1F* h_passingBits;
+
+  TH1F* h_dR;
   TH1F* h_category;
+  TH1F* h_muonPt;
   TH1F* h_deltaPtOverPt;
   TH1F* h_deltaPtOverPtTracker;
-  TH1F* h_numMuons;
-  TH1F* h_numMatchedMuons;
-  TH1F* h_numGoodMuons;
-  TH1F* h_muonPt;
+
   int muonsAnalyzed;
 
   /// Muon ID
-  enum MuonIDType {HIGHPT_OLD, TRACKER};
   enum DimuonIDType {HPTHPT, HPTTRK};
   std::string smID;
   std::string dmID;
-  MuonIDType   singleMuonID_;
-  DimuonIDType dimuonID_;
+  hptm::MuonSelector muonSelector_;
+  hptm::MuonIDType   singleMuonID_;
+  DimuonIDType       dimuonID_;
   
-  bool checkMuonID(const reco::Muon&, MuonIDType);
-  std::bitset<8> muonBits(const reco::Muon&, MuonIDType);
 };  
   
 HighPtMuonStudy::HighPtMuonStudy(const edm::ParameterSet& iConfig)
@@ -128,23 +121,17 @@ HighPtMuonStudy::HighPtMuonStudy(const edm::ParameterSet& iConfig)
   h_dB_trackerMuon           = fs->make<TH1F>("dB_trackerMuon",";dB;",50,0,0.25);
   h_dZ_trackerMuon           = fs->make<TH1F>("dZ_trackerMuon",";dZ;",120,0,0.6);
   h_muonStations_trackerMuon = fs->make<TH1F>("muonStations_trackerMuon",";Number of muon stations;",50,-0.5,49.5);
-  h_pixelHits_trackerMuon = fs->make<TH1F>("pixelHits_trackerMuon",";Number of pixel hits;",50,-0.5,49.5);
+  h_pixelHits_trackerMuon    = fs->make<TH1F>("pixelHits_trackerMuon",";Number of pixel hits;",50,-0.5,49.5);
+  h_muonHits_trackerMuon     = fs->make<TH1F>("muonHits_trackerMuon",";Number of muon hits;",50,-0.5,49.5);
   
+  h_passingBits = fs->make<TH1F>("passingBits","passingBits",9,0,9);
   
-
-  h_efficiency = fs->make<TEfficiency>("efficiency",";Muon p_{T} (GeV); Efficiency",50,0,1000); 
-  h_effXdR = fs->make<TEfficiency>("effXdR",";Delta R; Efficiency",150,0,1.5); 
   h_dR = fs->make<TH1F>("dR",";DeltaR;",150,0,1.5);
-  h_dR_passed = fs->make<TH1F>("dR_passed",";DeltaR;",150,0,1.5);
-  h_dR_failed = fs->make<TH1F>("dR_failed",";DeltaR;",150,0,1.5);
-  h_passingBits = fs->make<TH1F>("passingBits","passingBits",8,0,8);
   h_category = fs->make<TH1F>("category","category",4,0,4);
-  h_numMuons = fs->make<TH1F>("numMuons",";Number of muons;",10,-0.5,9.5);
-  h_numMatchedMuons = fs->make<TH1F>("numMatchedMuons",";Number of muons;",10,-0.5,9.5);
-  h_numGoodMuons = fs->make<TH1F>("numGoodMuons",";Number of muons;",10,-0.5,9.5);
   h_muonPt = fs->make<TH1F>("muonPt",";Muon p_{T} (GeV);",50,0,1000);
   h_deltaPtOverPt = fs->make<TH1F>("deltaPtOverPt",";#Delta p_{T}/p_{T};",100,-0.5,0.5);
   h_deltaPtOverPtTracker = fs->make<TH1F>("deltaPtOverPtTracker",";#Delta p_{T}/p_{T};",100,-0.5,0.5);
+  
   h_passingBits->SetBit(TH1::kCanRebin);
   h_passingBits->Sumw2();
   h_category->SetBit(TH1::kCanRebin);
@@ -183,14 +170,14 @@ HighPtMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<edm::View<reco::Candidate> > genMuonHandle;
   iEvent.getByLabel("genMuons",genMuonHandle);
   const edm::View<reco::Candidate>& genMuons = *(genMuonHandle.product());
-
-  int numMuons = muons.size();
-  int numMatchedMuons = 0;
-  int numGoodMuons = 0;
+  //int numMuons = muons.size();
+  //int numMatchedMuons = 0;
+  //int numGoodMuons = 0;
 
   // Run over the muons and get the indices of RECO muons
   // which have a match to a GEN muon.
   std::vector<size_t> matchedMuons;
+  std::vector<size_t> matchedGenMuons;
 
   for(size_t muonNr = 0; muonNr != muons.size(); ++muonNr) {
      
@@ -200,13 +187,13 @@ HighPtMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     // First, let's see if this muon has a gen match
     double minDeltaR = 10000;
-    int matchedGuy = 9999;
+    size_t matchedGenMuon = 9999;
     for(size_t genMuonNr = 0; genMuonNr != genMuons.size(); ++genMuonNr) {
       const reco::Candidate& genMuon = genMuons[genMuonNr];
       double dR= deltaR(recoMu.eta(),recoMu.phi(),genMuon.eta(),genMuon.phi());
       if(dR < minDeltaR) {
 	minDeltaR = dR;
-	matchedGuy = (int)genMuonNr;
+	matchedGenMuon = genMuonNr;
       }   
     }
 
@@ -214,6 +201,7 @@ HighPtMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     // If we got here the muon is matched
     matchedMuons.push_back(muonNr);
+    matchedGenMuons.push_back(matchedGenMuon);
   }
 
   if(matchedMuons.size() != 2) return; // Don't care about corner cases where we managed to match different number of muons.
@@ -233,23 +221,39 @@ HighPtMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   double lmuEta = m0.pt() > m1.pt() ? m0.eta() : m1.eta();
   double dR = deltaR(m0.eta(),m0.phi(),m1.eta(),m1.phi());
   int numVertices = vertices.size();
-  
-  bool firstMuonPassedHPT = checkMuonID(m0, HIGHPT_OLD);
-  bool secondMuonPassedHPT = checkMuonID(m1, HIGHPT_OLD);
-  bool firstMuonPassedTRK = checkMuonID(m0, TRACKER);
-  bool secondMuonPassedTRK = checkMuonID(m1, TRACKER);
-  //printf("First muon passed HPT: %i\n",firstMuonPassedHPT);
-  //printf("First muon passed TRK: %i\n",firstMuonPassedTRK);
-  //printf("Second muon passed HPT: %i\n",secondMuonPassedHPT);
-  //printf("Second muon passed TRK: %i\n",secondMuonPassedTRK);
 
-  bool firstMuonPassed = checkMuonID(m0,singleMuonID_);
-  bool secondMuonPassed = checkMuonID(m1,singleMuonID_);
+  h_dR->Fill(dR);
+  
+  if(m0.isGlobalMuon())
+    h_category->Fill("GLOBAL",1);
+  if(m0.isTrackerMuon())
+    h_category->Fill("TRACKER",1);
+  if(m0.isStandAloneMuon())
+    h_category->Fill("STANDALONE",1);
+  if(m0.isPFMuon())
+    h_category->Fill("PFMUON",1);
+
+  if(m1.isGlobalMuon())
+    h_category->Fill("GLOBAL",1);
+  if(m1.isTrackerMuon())
+    h_category->Fill("TRACKER",1);
+  if(m1.isStandAloneMuon())
+    h_category->Fill("STANDALONE",1);
+  if(m1.isPFMuon())
+    h_category->Fill("PFMUON",1);
+
+  bool firstMuonPassedHPT  = muonSelector_.checkMuonID(m0, hptm::HIGHPT_OLD);
+  bool secondMuonPassedHPT = muonSelector_.checkMuonID(m1, hptm::HIGHPT_OLD);
+  bool firstMuonPassedTRK  = muonSelector_.checkMuonID(m0, hptm::TRACKER);
+  bool secondMuonPassedTRK = muonSelector_.checkMuonID(m1, hptm::TRACKER);
+
+  bool firstMuonPassed  = muonSelector_.checkMuonID(m0,singleMuonID_);
+  bool secondMuonPassed = muonSelector_.checkMuonID(m1,singleMuonID_);
+
   bool passedHPTHPT = (firstMuonPassedHPT and secondMuonPassedHPT);
   bool passedHPTTRK = ((firstMuonPassedHPT and secondMuonPassedTRK) or (firstMuonPassedTRK and secondMuonPassedHPT));
 
   bool passed = false;
-  bool leadingMuonPassed = m0.pt() > m1.pt() ? firstMuonPassed : secondMuonPassed;
  
   if(dimuonID_ == HPTHPT)
     passed = passedHPTHPT;
@@ -293,6 +297,18 @@ HighPtMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   h_oneLegEffNumVert->Fill(firstMuonPassed,numVertices);
   h_oneLegEffNumVert->Fill(secondMuonPassed,numVertices);
 
+  // Check the delta pt over pt for the HPT muon
+  double deltaPtOverPt;
+  if(firstMuonPassedHPT) {
+    double genPt = genMuons[matchedGenMuons[0]].pt();
+    deltaPtOverPt = (genPt-m0.pt())/genPt;
+  }
+  if(secondMuonPassedHPT) {
+    double genPt = genMuons[matchedGenMuons[1]].pt();
+    deltaPtOverPt = (genPt-m1.pt())/genPt;
+  }
+  h_deltaPtOverPt->Fill(deltaPtOverPt);
+
   // For the tracker muon which did not pass HPT - 
   // which cuts does it pass?
   if((firstMuonPassedHPT and secondMuonPassedTRK and !secondMuonPassedHPT) or
@@ -303,16 +319,22 @@ HighPtMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     trackerMuonBits.reset(); // All to false
 
     const reco::Muon* theMuon = NULL;
+    bool thisMuonPassed = false;
+    int whichMuon = -1;
     // First muon is tracker
     if(firstMuonPassedTRK and (!firstMuonPassedHPT)) {
       //printf("First muon passed TRK\n");
-      trackerMuonBits = muonBits(m0,singleMuonID_); 
+      trackerMuonBits = muonSelector_.muonBits(m0,singleMuonID_); 
+      thisMuonPassed = firstMuonPassedTRK;
+      whichMuon = 0;
       theMuon = &m0;
     }
     // Second muon is tracker
     if(secondMuonPassedTRK and (!secondMuonPassedHPT)) {
       //printf("Second muon passed TRK\n");
-      trackerMuonBits = muonBits(m1,singleMuonID_); 
+      trackerMuonBits = muonSelector_.muonBits(m1,singleMuonID_); 
+      thisMuonPassed = secondMuonPassedTRK;
+      whichMuon = 1;
       theMuon = &m1;
     }  
     
@@ -327,26 +349,34 @@ HighPtMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     double dBValue = 9999.9;
     double dZValue = 9999.9;
     int numPixelHits = 9999;
+    int numMuonHits = 9999;
     int numMuonStations = recoMu.numberOfMatchedStations();
+    
+    // Check the delta pt over pt for the TRK muon
+    double deltaPtOverPt;
+    double genPt = genMuons[matchedGenMuons[whichMuon]].pt();
+    deltaPtOverPt = (genPt-recoMu.pt())/genPt;
+    h_deltaPtOverPtTracker->Fill(deltaPtOverPt);
 
     if(innerTrackRef.isNonnull()) {
       dBValue = fabs(innerTrackRef->dxy(vertex));
       dZValue = fabs(innerTrackRef->dz(vertex));
       numPixelHits = innerTrackRef->hitPattern().numberOfValidPixelHits();
-
+      numMuonHits = innerTrackRef->hitPattern().numberOfValidMuonHits();
     }
     else {
       dBValue = -1.0;
       dZValue = -1.0;
       numPixelHits = -1;
+      numMuonHits = -1;
      }
 
- 
-      
+    // Fill the histograms
     h_dB_trackerMuon->Fill(dBValue);
     h_dZ_trackerMuon->Fill(dZValue);
     h_muonStations_trackerMuon->Fill(numMuonStations);
     h_pixelHits_trackerMuon->Fill(numPixelHits);
+    h_muonHits_trackerMuon->Fill(numMuonHits);
 
     bool isGlobal = trackerMuonBits[0];
     bool muonChamberHit  = trackerMuonBits[2];
@@ -356,7 +386,7 @@ HighPtMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     bool pixelHit = trackerMuonBits[6];
     bool trackerLayers = trackerMuonBits[7];
       
-    h_passingBits->Fill("TOTAL",1);
+    h_passingBits->Fill("A_NORM",1);
     if(isGlobal)
       h_passingBits->Fill("GLOBAL",1);
     if(muonChamberHit)
@@ -371,116 +401,20 @@ HighPtMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       h_passingBits->Fill("PIXELHITS",1);
     if(trackerLayers)
       h_passingBits->Fill("TRACKERLAYERS",1);
+    if(thisMuonPassed)
+      h_passingBits->Fill("Z_TOTAL",1);
     
   }
 }
-
-
-
-
-/// My methods
-bool
-HighPtMuonStudy::checkMuonID(const reco::Muon& recoMu, MuonIDType idType){
-
-  std::bitset<8> result = muonBits(recoMu, idType);
-  
-  bool isGlobal = result[0];
-  bool isTracker = result[1];
-  bool muonChamberHit = result[2];
-  bool matchedStations = result[3];
-  bool dBCut = result[4];
-  bool longiCut = result[5];
-  bool pixelHit = result[6];
-  bool trackerLayers = result[7];
-
-  bool passed = false;
-  if(idType == HIGHPT_OLD)
-    passed = (isGlobal and muonChamberHit and matchedStations and dBCut and longiCut and pixelHit and trackerLayers);
-  if(idType == TRACKER)
-    passed = (isTracker and matchedStations and dBCut and longiCut and pixelHit and trackerLayers);
-  
-  return passed;
-}
-
-std::bitset<8>
-HighPtMuonStudy::muonBits(const reco::Muon& recoMu, MuonIDType idType){
-
-  bool isGlobal = false;
-  bool isTracker = false;
-  bool muonChamberHit = false;
-  bool matchedStations = false;
-  bool dBCut = false;
-  bool longiCut = false;
-  bool pixelHit = false;
-  bool trackerLayers = false;
-
-  isGlobal = recoMu.isGlobalMuon();
-  isTracker = recoMu.isTrackerMuon();
-  matchedStations = (recoMu.numberOfMatchedStations() > 1);
-
-  // The HIGHPT_OLD Muon ID will explicitly ask for the
-  // global track, the best track and the inner track separately.
-  if(idType == HIGHPT_OLD) {
-    const reco::TrackRef& globalTrackRef = recoMu.globalTrack();
-    if(globalTrackRef.isNonnull()) {
-      muonChamberHit = (globalTrackRef->hitPattern().numberOfValidMuonHits() > 0);
-    }
-    
-    const reco::Candidate::Point& vertex = recoMu.vertex();
-    const reco::TrackRef& bestTrackRef = recoMu.muonBestTrack();
-    if(bestTrackRef.isNonnull()) {
-      dBCut    = (fabs(bestTrackRef->dxy(vertex)) < 0.2);  
-      longiCut = (fabs(bestTrackRef->dz(vertex)) < 0.5);
-    }
-    
-    const reco::TrackRef& innerTrackRef = recoMu.innerTrack();
-    if(innerTrackRef.isNonnull())
-    pixelHit = (innerTrackRef->hitPattern().numberOfValidPixelHits() > 0);
-    
-    const reco::TrackRef& trackRef = recoMu.track();
-    if(trackRef.isNonnull())
-      trackerLayers = (trackRef->hitPattern().trackerLayersWithMeasurement() > 8);
-  }
-
-  // The TRACKER Muon ID will just ask for the inner track
-  // (since there may be no other track)
-  if(idType == TRACKER) {
-    const reco::Candidate::Point& vertex = recoMu.vertex();
-    const reco::TrackRef& innerTrackRef = recoMu.innerTrack();
-    if(innerTrackRef.isNonnull()) {
-      dBCut         = (fabs(innerTrackRef->dxy(vertex)) < 0.2);
-      longiCut      = (fabs(innerTrackRef->dz(vertex)) < 0.5);
-      pixelHit      = (innerTrackRef->hitPattern().numberOfValidPixelHits() > 0);
-      trackerLayers = (innerTrackRef->hitPattern().trackerLayersWithMeasurement() > 8);
-    }
-  }
-    
-  std::bitset<8> result;
-  result.reset(); // everything get's set to false
-  
-  result[0] = isGlobal;
-  result[1] = isTracker;
-  result[2] = muonChamberHit;
-  result[3] = matchedStations;
-  result[4] = dBCut;
-  result[5] = longiCut;
-  result[6] = pixelHit;
-  result[7] = trackerLayers;
-  
-  return result;
-}
-
-
-
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
 HighPtMuonStudy::beginJob()
 {
   if(smID.compare("HIGHPT_OLD")==0)
-    singleMuonID_ = HIGHPT_OLD;
+    singleMuonID_ = hptm::HIGHPT_OLD;
   else if(smID.compare("TRACKER")==0)
-    singleMuonID_ = TRACKER;
+    singleMuonID_ = hptm::TRACKER;
   else
     throw cms::Exception("InvalidParameter")
       << "Muon ID " << smID << " is unknown\n";
@@ -502,9 +436,13 @@ HighPtMuonStudy::beginJob()
 void 
 HighPtMuonStudy::endJob() 
 {
-  double total = h_passingBits->GetBinContent(1);
-  h_passingBits->Scale(1.0/total);
-  
+   double total = h_category->GetBinContent(1);
+   h_category->Scale(1.0/total);
+   total = h_passingBits->GetBinContent(1);
+   h_passingBits->Scale(1.0/total);
+   
+   h_category->GetXaxis()->LabelsOption("av");
+   h_passingBits->GetXaxis()->LabelsOption("av");
 }
 
 // ------------ method called when starting to processes a run  ------------
