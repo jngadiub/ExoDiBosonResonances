@@ -31,7 +31,7 @@ void QjetsAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
     fastjet::ClusterSequence thisClustering_basic(allconstits, jetDef);
     std::vector<fastjet::PseudoJet> out_jets_basic = sorted_by_pt(thisClustering_basic.inclusive_jets(cutoff_));
-    std::cout << newCand.pt() << " " << out_jets_basic.size() <<std::endl;
+    //std::cout << newCand.pt() << " " << out_jets_basic.size() <<std::endl;
     if(out_jets_basic.size()==0){ // jet reclustering failed, most likely due to the higher cutoff. Use a recognizeable default value for this jet
       newCand.addUserFloat("qjetsvolatility", -1. );
       outJets.push_back(newCand);
@@ -44,7 +44,6 @@ void QjetsAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
     fastjet::JetDefinition qjet_def(&qjetsAlgo_);
 
     std::vector<double> qjetmass;
-    qjetmass.resize(ntrial_);
 
     vector<fastjet::PseudoJet> constits;
     unsigned int nqjetconstits = out_jets_basic.at(0).constituents().size(); // there should always be exactly one reclsutered jet => always "at(0)"
@@ -55,16 +54,13 @@ void QjetsAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
     for(unsigned int ii = 0 ; ii < (unsigned int) ntrial_ ; ii++){
       fastjet::ClusterSequence qjet_seq(constits, qjet_def);
       vector<fastjet::PseudoJet> inclusive_jets2 = sorted_by_pt(qjet_seq.inclusive_jets(cutoff_));
-      if (inclusive_jets2.size()>0) {
-	qjetmass[ii] = inclusive_jets2[0].m();
-      }else{
-	qjetmass[ii] = 1.;
-      }
+      if (inclusive_jets2.size()>0) // fill the massvalue only if the reclustering was successfull
+	qjetmass.push_back(inclusive_jets2[0].m());
       
     }
     
-    double RMS = sqrt ( ( std::inner_product( qjetmass.begin(), qjetmass.end(), qjetmass.begin(), 0 ))/ntrial_  );
-    double mean = std::accumulate( qjetmass.begin( ) , qjetmass.end( ) , 0 ) /ntrial_ ;
+    double RMS = sqrt ( ( std::inner_product( qjetmass.begin(), qjetmass.end(), qjetmass.begin(), 0 ))/qjetmass.size()  );
+    double mean = std::accumulate( qjetmass.begin( ) , qjetmass.end( ) , 0 ) /qjetmass.size() ;
     
     newCand.addUserFloat("qjetsvolatility", RMS/mean );
 
