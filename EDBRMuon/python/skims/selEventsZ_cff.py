@@ -8,7 +8,7 @@ ZmmCand = cms.EDFilter(
 
 selectedZmmCandFilter = cms.EDFilter("CandViewCountFilter",
    src = cms.InputTag('ZmmCand'),
-   minNumber = cms.uint32(0)
+   minNumber = cms.uint32(1)
  )
 
 

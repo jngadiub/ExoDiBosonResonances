@@ -6,6 +6,10 @@ ZeeCand = cms.EDFilter(
     cut = cms.string( "getSelection(\"cuts_zee_kinematics\") && getSelection(\"cuts_zee_quality\") && getSelection(\"cuts_charge\")" )
     )
 
+selectedZeeCandFilter = cms.EDFilter("CandViewCountFilter",
+   src = cms.InputTag('ZeeCand'),
+   minNumber = cms.uint32(1)
+ )
 
-selectedZSequence = cms.Sequence(ZeeCand)
+selectedZSequence = cms.Sequence(ZeeCand+selectedZeeCandFilter)
 
