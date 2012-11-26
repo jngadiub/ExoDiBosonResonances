@@ -19,10 +19,10 @@
 // class declaration
 //
 
-class HEEPElectronTurnon : public edm::EDAnalyzer {
+class HEEPIsolationTest : public edm::EDAnalyzer {
    public:
-      explicit HEEPElectronTurnon(const edm::ParameterSet&);
-      ~HEEPElectronTurnon();
+      explicit HEEPIsolationTest(const edm::ParameterSet&);
+      ~HEEPIsolationTest();
 
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -65,7 +65,7 @@ class HEEPElectronTurnon : public edm::EDAnalyzer {
 //
 // constructors and destructor
 //
-HEEPElectronTurnon::HEEPElectronTurnon(const edm::ParameterSet& iConfig)
+HEEPIsolationTest::HEEPIsolationTest(const edm::ParameterSet& iConfig)
 {
   eleLabel_=iConfig.getParameter<edm::InputTag>("eleLabel");
 
@@ -88,7 +88,7 @@ HEEPElectronTurnon::HEEPElectronTurnon(const edm::ParameterSet& iConfig)
 }
 
 
-HEEPElectronTurnon::~HEEPElectronTurnon()
+HEEPIsolationTest::~HEEPIsolationTest()
 {
  
    // do anything here that needs to be done at desctruction time
@@ -103,7 +103,7 @@ HEEPElectronTurnon::~HEEPElectronTurnon()
 
 // ------------ method called for each event  ------------
 void
-HEEPElectronTurnon::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+HEEPIsolationTest::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   // Get the electrons
   edm::Handle<edm::View<pat::Electron> > eleHandle;
@@ -135,19 +135,19 @@ HEEPElectronTurnon::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     
     // Let's see if this guy has a match
     double minDeltaR = 10000;
-    size_t matchedGuy = 9999;
+    size_t matchedEle = 9999;
     for(size_t genEleNr = 0; genEleNr != genEles.size(); ++ genEleNr) {
       const reco::Candidate& genEle = genEles[genEleNr];
       double dR= deltaR(ele.eta(),ele.phi(),genEle.eta(),genEle.phi());
       if(dR < minDeltaR) {
 	minDeltaR = dR;
-	matchedGuy = genEleNr;
+	matchedEle = genEleNr;
       }   
     }
     
     if(minDeltaR < 0.05) {
       ++numOfWellRecoElectrons;
-      wellRecoEles.push_back(matchedGuy);
+      wellRecoEles.push_back(matchedEle);
     }
   }
   
@@ -160,157 +160,64 @@ HEEPElectronTurnon::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   const pat::Electron& ele2 = eles[wellRecoEles[1]];
   int ele1CutCode = ele1.userInt("HEEPId");
   int ele2CutCode = ele2.userInt("HEEPId");
-  bool passed1 = (ele1CutCode==0x0);
-  bool passed2 = (ele2CutCode==0x0);
+  printf("ele1CutCode = %i\n",ele1CutCode);
+  printf("ele2CutCode = %i\n",ele2CutCode);
+  double userIsol0 = ele1.userIso(0);
+  double userIsol1 = ele1.userIso(1);
+  double userIsol2 = ele1.userIso(2);
+  printf("First electron has et = %g, eta = %g, phi = %g, trackIsol %g, ECALIsol = %g, HCALIsol = %g\n",
+	 ele1.et(), ele1.eta(),ele1.phi(),userIsol0,userIsol1,userIsol2);
+  userIsol0 = ele2.userIso(0); 
+  userIsol1 = ele2.userIso(1);
+  userIsol2 = ele2.userIso(2);
+  printf("Second electron has et = %g, eta = %g, phi = %g, trackIsol %g, ECALIsol = %g, HCALIsol = %g\n",
+	 ele2.et(), ele2.eta(),ele2.phi(),userIsol0,userIsol1,userIsol2);
+
   
-  if(ele1.pt() > ele2.pt()) {
-    h_efficiency_leadingEle->Fill(passed1,ele1.et());
-    h_efficiency_secondEle->Fill(passed2,ele2.et());
-  }
-  else {
-   h_efficiency_leadingEle->Fill(passed2,ele2.et());
-   h_efficiency_secondEle->Fill(passed1,ele1.et());
-  }
- 
-  // Check all electrons
-  for(size_t eleNr = 0; eleNr != wellRecoEles.size(); ++eleNr) {
-    
-    size_t matchedElectron = wellRecoEles[eleNr];
-    const pat::Electron& ele = eles[matchedElectron];
-    
-    // Check that the electron is in the right region
-    // (for the time being, barrel only)
-    double et = ele.et();
-    //double pt = ele.closestCtfTrackRef()->pt();
-    //double eta = ele.eta();
-    //printf("Electron has pt = %g, eta = %g\n",pt, eta);
-    double inBarrel = ele.isEB();
-    if(!inBarrel) continue;
-    
-    ++electronsAnalyzed;
-    
-    // Fill the efficiency. Notice that the HEEPId bit
-    // is defined with NO isolation cuts.
-    int eleCutCode = ele.userInt("HEEPId");
-    bool passed = (eleCutCode==0x0);
-    h_efficiency->Fill(passed,et);
-    h_efficiency_coarse->Fill(passed,et);
-    
-    // Let's find out WHY this didn't pass
-    
-    h_passingBits->Fill("TOTAL",1);
-    
-    if((eleCutCode&heep::CutCodes::ET)==0x0)
-      h_passingBits->Fill("ET",1);
-    if((eleCutCode&heep::CutCodes::DETETA)==0x0)
-      h_passingBits->Fill("DETETA",1);
-    if((eleCutCode&heep::CutCodes::CRACK)==0x0)
-      h_passingBits->Fill("CRACK",1);
-    if((eleCutCode&heep::CutCodes::DETAIN)==0x0)
-      h_passingBits->Fill("DETAIN",1);
-    if((eleCutCode&heep::CutCodes::DPHIIN)==0x0)
-      h_passingBits->Fill("DPHIIN",1);
-    if((eleCutCode&heep::CutCodes::HADEM)==0x0)
-      h_passingBits->Fill("HADEM",1);
-    if((eleCutCode&heep::CutCodes::SIGMAIETAIETA)==0x0)
-      h_passingBits->Fill("SIGMAIETAIETA",1);
-    if((eleCutCode&heep::CutCodes::E2X5OVER5X5)==0x0)
-      h_passingBits->Fill("E2X5OVER5X5",1);
-    
-    // This one is not used right now...
-    //if((eleCutCode&heep::CutCodes::ISOLHADDEPTH2)==0x0)
-    //h_passingBits->Fill("ISOLHADDEPTH2",1);
-    
-    /// *** This is what we would be doing if we were using the regular isolation 
-    //double sumCaloEt = ele.dr03EcalRecHitSumEt()+ele.dr03HcalDepth1TowerSumEt();
-    /// ***But let's use the modified isolation
-    
-    double sumCaloEt = ele.userIsolation(pat::User2Iso)+ele.userIsolation(pat::User3Iso);
-    bool isolEmHadD1 = false;
-    //printf("sumCaloEt new = %g\n",sumCaloEt);
-    if(sumCaloEt < (2.0 + 0.03*et + 0.28*rho)) {
-      h_passingBits->Fill("ISOLEMHADDEPTH1",1);
-      isolEmHadD1 = true;
-    }
-    h_caloIsol->Fill(sumCaloEt);
-    //
-    sumCaloEt = ele.dr03EcalRecHitSumEt()+ele.dr03HcalDepth1TowerSumEt();
-    //printf("sumCaloEt old = %g\n",sumCaloEt);
-    if(sumCaloEt < (2.0 + 0.03*et + 0.28*rho)) 
-      h_passingBits->Fill("ISOLEMHADDEPTH1_ORIG",1);
-    h_caloIsolOrig->Fill(sumCaloEt);
-      
-   // double sumTrackPt = ele.dr03TkSumPt()
-    double sumTrackPt = ele.userIsolation(pat::User1Iso);
-    bool isolPtTracks = false;
-    //printf("sumTrackPt new = %g\n",sumTrackPt);
-    if(sumTrackPt < 5.0) {
-      h_passingBits->Fill("ISOLPTTRKS",1);
-      isolPtTracks = true;
-    }
-    h_trackIsol->Fill(sumTrackPt);
-    sumTrackPt = ele.dr03TkSumPt();
-    //printf("sumTrackPt old = %g\n",sumTrackPt);
-    if(sumTrackPt < 5.0)
-      h_passingBits->Fill("ISOLPTTRKS_ORIG",1);
-    h_trackIsolOrig->Fill(sumTrackPt);
-    
-    //printf("***********************\n");
-    
-    if((eleCutCode&heep::CutCodes::NRMISSHITS)==0x0)
-      h_passingBits->Fill("NRMISSHITS",1);
-    if((eleCutCode&heep::CutCodes::DXY)==0x0)
-      h_passingBits->Fill("DXY",1);
-    if((eleCutCode&heep::CutCodes::ECALDRIVEN)==0x0)
-      h_passingBits->Fill("ECALDRIVEN",1);
-    
-    h_efficiency_withIsol->Fill(passed&&isolEmHadD1&&isolPtTracks,et);
-    h_efficiency_withIsol_coarse->Fill(passed&&isolEmHadD1&&isolPtTracks,et);
-  }
-  
-}
+}  
+
 
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-HEEPElectronTurnon::beginJob()
+HEEPIsolationTest::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-HEEPElectronTurnon::endJob() 
+HEEPIsolationTest::endJob() 
 {
   h_passingBits->Scale(1.0/electronsAnalyzed);
 }
 
 // ------------ method called when starting to processes a run  ------------
 void 
-HEEPElectronTurnon::beginRun(edm::Run const&, edm::EventSetup const&)
+HEEPIsolationTest::beginRun(edm::Run const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a run  ------------
 void 
-HEEPElectronTurnon::endRun(edm::Run const&, edm::EventSetup const&)
+HEEPIsolationTest::endRun(edm::Run const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
 void 
-HEEPElectronTurnon::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
+HEEPIsolationTest::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
 void 
-HEEPElectronTurnon::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
+HEEPIsolationTest::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-HEEPElectronTurnon::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+HEEPIsolationTest::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -319,4 +226,4 @@ HEEPElectronTurnon::fillDescriptions(edm::ConfigurationDescriptions& description
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(HEEPElectronTurnon);
+DEFINE_FWK_MODULE(HEEPIsolationTest);

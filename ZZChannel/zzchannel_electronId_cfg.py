@@ -4,7 +4,7 @@ import sys
 process = cms.Process("Demo")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
@@ -71,30 +71,12 @@ process.genGravitons = cms.EDFilter("PdgIdAndStatusCandViewSelector",
                                     )
 
 ## ZToEE
- ### Add HEEP electrons
-from SHarper.HEEPAnalyzer.HEEPSelectionCuts_cfi import *
-process.heepPatElectrons = cms.EDProducer("HEEPAttStatusToPAT",
-                                          eleLabel = cms.InputTag("patElectronsWithTrigger"),
-                                          barrelCuts = cms.PSet(heepBarrelCuts),
-                                          endcapCuts = cms.PSet(heepEndcapCuts),
-                                          applyRhoCorrToEleIsol = cms.bool(True),
-                                          eleIsolEffectiveAreas = cms.PSet (heepEffectiveAreas),
-                                          eleRhoCorrLabel = cms.InputTag("kt6PFJetsForIso","rho"),
-                                          verticesLabel = cms.InputTag("offlinePrimaryVerticesWithBS")
-                                          )
-
-process.heepAnalyzer = cms.EDAnalyzer("HEEPElectronTurnon",
-                                      eleLabel=cms.InputTag("heepPatElectrons")
+process.heepAnalyzer = cms.EDAnalyzer("HEEPIsolationTest",
+                                      eleLabel=cms.InputTag("patElectronsWithTrigger")
                                       )
-
-process.electronID = cms.EDFilter("CandViewSelector",
-                                  src = cms.InputTag("heepPatElectrons"),
-                                  cut = cms.string("userInt('HEEPId')==0"),
-                                  filter = cms.bool(True)
-                                  )
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string(outputFileName)
                                    )
  
-process.pHEEP = cms.Path(process.genElectrons + process.heepPatElectrons + process.heepAnalyzer + process.electronID)
+process.pHEEP = cms.Path(process.genElectrons + process.heepAnalyzer)
