@@ -100,7 +100,7 @@ process.selectedPatJetsAK7CHSwithNsub = cms.EDProducer("NjettinessAdder",
                               cone=cms.double(0.7)
                               )
 process.PATCMGSequence += process.selectedPatJetsAK7CHSwithNsub
-patEventContentCMG+=['drop *_selectedPatJetsAK7CHS_*_*']
+patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHS_*_*']
 
 #### Adding QJets
 
@@ -119,7 +119,7 @@ if runQJets:
                                preclustering = cms.int32(50),
                               )
     process.PATCMGSequence += process.selectedPatJetsAK7CHSwithQjets
-    patEventContentCMG+=['drop *_selectedPatJetsAK7CHSwithNsub_*_*']
+    patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHSwithNsub_*_*']
 
 if runOnMC is False:
     # removing MC stuff
