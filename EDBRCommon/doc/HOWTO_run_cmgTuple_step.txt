@@ -1,0 +1,66 @@
+
+Instructions for running the second step of the analysis:
+starting from already made PAT-tuples, run the analysis code
+that applieas ALL selections, builds di-boson resonances (informally 
+called "EDBR")and writes the collections in a cmgTuple (edm-tuple with 
+objects belinging to the CMG data format).
+
+
+
+=== INPUTS and STEERING ===
+
+*) the main cfg is ExoDiBosonResonances/EDBRCommon/prod/EDBR_main_cfg.py
+
+*) the file ExoDiBosonResonances/EDBRCommon/python/cmdLine.py contains some
+steering parameters used by EDBR_main_cfg.py for deciding what to run and
+how. They can be changed via command line giving more flexibility 
+to the system.
+
+*) the PU-rew histograms are in ExoDiBosonResonances/EDBRCommon/data/
+and they are used in ExoDiBosonResonances/EDBRCommon/python/PUweights_cff.py
+
+*) many collections of objects are created: electrons, muons, jets at
+different stage of selection, similar thing for V bosons and for EDBR
+candidates. A full list with explanation of meanings and location of
+files where they are created is in
+ExoDiBosonResonances/EDBRCommon/doc/Summary_Collections.pdf
+
+*) the collections of objects saved in the final cmgTuple are specified
+in ExoDiBosonResonances/EDBRCommon/python/outputModules_cff.py
+
+
+=== RUNNING ===
+
+
+1) Prepare a list of input PAT-tuples following the example of
+ExoDiBosonResonances/EDBRCommon/python/datasets/test_RSGZZ600_cff.py
+
+and copy it in the directory ExoDiBosonResonances/EDBRCommon/python/datasets/
+
+2) Specify output contents and output file name in outputModules_cff.py
+
+3) make it run:  
+
+cd prod/
+cmsRun EDBR_main_cfg.py
+
+4) you can steer from command line several options. 
+For example you can switch from a file list to another in this way :
+cmsRun EDBR_main_cfg.py infile="newFileList_cff"
+
+If you want to run on dat instead of MC:
+cmsRun EDBR_main_cfg.py mcordata=DATA
+
+If you want to store only certain products:
+cmsRun EDBR_main_cfg.py content=gen
+(for knowing what are the possibilities and what they are 
+actually doing, look in ExoDiBosonResonances/EDBRCommon/python/outputModules_cff.py)
+
+You can change many options at the same time
+cmsRun EDBR_main_cfg.py maxEvents=1234 infile="newFileList_cff" selection="presel" mcordata=DATA json="jsonOfToday.json"
+
+A full list of options allowed is in 
+ExoDiBosonResonances/EDBRCommon/python/cmdLine.py 
+FWCore/ParameterSet/python/VarParsing.py
+
+

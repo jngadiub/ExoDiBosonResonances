@@ -10,8 +10,8 @@ process = cms.Process("CMG")
 ###########
 # Options #
 ###########
-#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents))
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000))
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents))
+###process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000))
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
@@ -32,8 +32,8 @@ process.load("JetMETCorrections.Configuration.JetCorrectionServicesAllAlgos_cff"
 ###########
 
 
-###fullname  = "ExoDiBosonResonances.EDBRCommon.datasets." + options.infile
-fullname  = "ExoDiBosonResonances.EDBRCommon.datasets.test_RSGZZ600_cff" 
+fullname  = "ExoDiBosonResonances.EDBRCommon.datasets." + options.infile
+###fullname  = "ExoDiBosonResonances.EDBRCommon.datasets.test_RSGZZ600_cff" 
 print 'Importing dataset from '
 print fullname
 process.load(fullname)
@@ -48,7 +48,6 @@ process.load(fullname)
 ###########
 process.load('ExoDiBosonResonances.EDBRCommon.outputModules_cff')
 process.outpath = cms.EndPath(process.out)
-
 
 ###################
 # JSON Filtering  #

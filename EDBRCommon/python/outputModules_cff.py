@@ -1,8 +1,8 @@
 ### read steering options from cmd file:
 from PhysicsTools.PatAlgos.tools.helpers import *
-from ExoDiBosonResonances.EDBRCommon.cmdLine import options
-options.parseArguments()
 
+from ExoDiBosonResonances.EDBRCommon.cmdLine import options
+####options.parseArguments() # to be decommented only if you copy all this module in the main
 
 out = cms.OutputModule("PoolOutputModule",
                               fileName = cms.untracked.string("test.root"),
