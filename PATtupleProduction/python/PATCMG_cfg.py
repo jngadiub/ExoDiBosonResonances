@@ -90,6 +90,8 @@ process.PATCMGSequence.remove(process.PATCMGJetSequenceCHSpruned) # don't produc
 process.jetMCSequenceAK7CHSpruned.remove(process.ak7GenJetsNoNu) # don't cluster the ak7GenJetsNoNu twice
 process.selectedPatJetsAK7CHSpruned.cut = 'pt()>20'
 process.PATCMGSequence += process.PATCMGJetSequenceAK7CHSpruned
+patEventContentCMG+=['keep *_ak7PFJetsCHSpruned_SubJets_*']
+
 
 #### Adding Nsubjetiness
 
