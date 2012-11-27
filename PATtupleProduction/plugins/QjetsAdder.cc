@@ -17,6 +17,13 @@ void QjetsAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
     pat::Jet newCand(*jetIt);
     //edm::Ptr<pat::Jet> jetPtr = jets->ptrAt(jetIt - jets->begin());
 
+    if(newCand.pt()<cutoff_)
+    {
+      newCand.addUserFloat("qjetsvolatility", -1. );
+      outJets.push_back(newCand);
+      continue;
+    }
+
     //refill and recluster
     vector<fastjet::PseudoJet> allconstits;
     for (unsigned k =0; k < newCand.getPFConstituents().size(); k++){
@@ -35,7 +42,7 @@ void QjetsAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
     if(out_jets_basic.size()==0){ // jet reclustering failed, most likely due to the higher cutoff. Use a recognizeable default value for this jet
       newCand.addUserFloat("qjetsvolatility", -1. );
       outJets.push_back(newCand);
-      break;
+      continue;
     }
     assert( out_jets_basic.size()==1 ); // jet reclustering of one jet should yield exactly one jet at this stage
     

@@ -20,10 +20,11 @@ print 'querying database for source files'
 ## Basic options
 createPATtuple = True
 createCMGtuple = False
-skimEvents = True
+skimEvents = False
 runOnMC    = True
 runOld5XGT = False
 runOnFastSim = False
+runQJets = True
 
 ## Z-->ee/mumu filter
 EE = ("patElectronsWithTrigger patElectronsWithTrigger")
@@ -75,11 +76,48 @@ print sep_line
 print 'loading the main CMG sequence'
 
 process.load('CMGTools.Common.PAT.PATCMG_cff')
+from CMGTools.Common.eventContent.patEventContentCMG_cff import patEventContentCMG
+
+#### Adding AK7 jets
+
+process.load("ExoDiBosonResonances.PATtupleProduction.PAT_ak7jets_cff")
+process.PATCMGSequence += process.PATCMGJetSequenceAK7CHS
 
 #### Adding AK7 pruned jets
 
-from CMGTools.Common.PAT.jetSubstructure_cff import *
-process.PATCMGSequence += PATCMGJetSequenceAK7CHSpruned
+process.load("CMGTools.Common.PAT.jetSubstructure_cff")
+process.PATCMGSequence.remove(process.PATCMGJetSequenceCHSpruned) # don't produce the AK5 pruned collections
+process.jetMCSequenceAK7CHSpruned.remove(process.ak7GenJetsNoNu) # don't cluster the ak7GenJetsNoNu twice
+process.selectedPatJetsAK7CHSpruned.cut = 'pt()>20'
+process.PATCMGSequence += process.PATCMGJetSequenceAK7CHSpruned
+
+#### Adding Nsubjetiness
+
+process.selectedPatJetsAK7CHSwithNsub = cms.EDProducer("NjettinessAdder",
+                              src=cms.InputTag("selectedPatJetsAK7CHS"),
+                              cone=cms.double(0.7)
+                              )
+process.PATCMGSequence += process.selectedPatJetsAK7CHSwithNsub
+patEventContentCMG+=['drop *_selectedPatJetsAK7CHS_*_*']
+
+#### Adding QJets
+
+if runQJets:
+    process.selectedPatJetsAK7CHSwithQjets = cms.EDProducer("QjetsAdder",
+                               src=cms.InputTag("selectedPatJetsAK7CHSwithNsub"),
+                               zcut=cms.double(0.1),
+                               dcutfctr=cms.double(0.5),
+                               expmin=cms.double(0.0),
+                               expmax=cms.double(0.0),
+                               rigidity=cms.double(0.1),
+                               ntrial = cms.int32(50),
+                               cutoff=cms.double(100.0),
+                               jetRad= cms.double(0.7),
+                               jetAlgo=cms.string("AK"),
+                               preclustering = cms.int32(50),
+                              )
+    process.PATCMGSequence += process.selectedPatJetsAK7CHSwithQjets
+    patEventContentCMG+=['drop *_selectedPatJetsAK7CHSwithNsub_*_*']
 
 if runOnMC is False:
     # removing MC stuff
@@ -101,6 +139,9 @@ if runOnMC is False:
         process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
         process.patJetsCHSpruned.addGenJetMatch = False
         process.patJetsCHSpruned.addGenPartonMatch = False
+        process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
+        process.patJetsAK7CHS.addGenJetMatch = False
+        process.patJetsAK7CHS.addGenPartonMatch = False
         process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
         process.patJetsAK7CHSpruned.addGenJetMatch = False
         process.patJetsAK7CHSpruned.addGenPartonMatch = False
@@ -125,6 +166,7 @@ if runOnMC is False:
     process.patJetCorrFactors.levels.append('L2L3Residual')
     if isNewerThan('CMSSW_5_2_0'):
         process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
+        process.patJetCorrFactorsAK7CHS.levels.append('L2L3Residual')
         process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
 
 
@@ -269,7 +311,6 @@ if not skimEvents:
     EventSelection.append('p')
 
 ## Output Module Configuration (expects a path 'p')
-from CMGTools.Common.eventContent.patEventContentCMG_cff import patEventContentCMG
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('patTuple.root'),
                                # save only events passing the full path
