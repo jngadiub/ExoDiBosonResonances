@@ -23,4 +23,20 @@
   <class name="std::vector<cmg::DiGenParticleDiGenParticle>"/>
   <class name="edm::Wrapper<cmg::DiGenParticleDiGenParticle>"/>
   <class name="edm::Wrapper<std::vector<cmg::DiGenParticleDiGenParticle> >"/>
+
+
+  <class name="cmg::DiMuonDiJetEDBR"/>
+  <class name="std::vector<cmg::DiMuonDiJetEDBR>"/>
+  <class name="edm::Wrapper<cmg::DiMuonDiJetEDBR>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiMuonDiJetEDBR> >"/>
+
+  <class name="cmg::DiElectronDiJetEDBR"/>
+  <class name="std::vector<cmg::DiElectronDiJetEDBR>"/>
+  <class name="edm::Wrapper<cmg::DiElectronDiJetEDBR>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiElectronDiJetEDBR> >"/>
+
+  <class name="cmg::DiGenParticleDiGenParticleEDBR"/>
+  <class name="std::vector<cmg::DiGenParticleDiGenParticleEDBR>"/>
+  <class name="edm::Wrapper<cmg::DiGenParticleDiGenParticleEDBR>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiGenParticleDiGenParticleEDBR> >"/>
 </lcgdict>
