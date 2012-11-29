@@ -66,10 +66,14 @@ void QjetsAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
       
     }
     
-    double RMS = sqrt ( ( std::inner_product( qjetmass.begin(), qjetmass.end(), qjetmass.begin(), 0 ))/qjetmass.size()  );
     double mean = std::accumulate( qjetmass.begin( ) , qjetmass.end( ) , 0 ) /qjetmass.size() ;
+    float totalsquared = 0.;
+    for (unsigned int i = 0; i < qjetmass.size(); i++){
+      totalsquared += (qjetmass[i] - mean)*(qjetmass[i] - mean) ;
+    }
+    float variance = sqrt( totalsquared/qjetmass.size() );  
     
-    newCand.addUserFloat("qjetsvolatility", RMS/mean );
+    newCand.addUserFloat("qjetsvolatility", variance/mean );
 
     outJets.push_back(newCand);
   }
