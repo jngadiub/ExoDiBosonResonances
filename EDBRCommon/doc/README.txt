@@ -10,8 +10,7 @@ Follow these: https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsReleasesExperimen
 scram b -j 4
 
 cvs co -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
-cvs co -d ExoDiBosonResonances/EDBRCommon UserCode/ExoDiBosonResonances/EDBRCommon
-cvs co -d ExoDiBosonResonances/EDBRElectron UserCode/ExoDiBosonResonances/EDBRElectron
+cvs co -d ExoDiBosonResonances UserCode/ExoDiBosonResonances
 rm -rf ExoDiBosonResonances/AnalysisDataFormats
 cvs co -d Francesco/KinFitter/src UserCode/pandolf/KinematicFit
 rm -f Francesco/KinFitter/src/T*
@@ -23,12 +22,13 @@ rm -f Francesco/KinFitter/src/LeptonNeutrinoKinFitter.*
 #template <typename T, typename U> class DiObjectKinFitFactory; near the top and
 #friend class cmg::DiObjectKinFitFactory<T,U>; near the bottom.
 
-cd Francesco; scram b; cd -
-cd AnalysisDataFormats; scram b; cd -
 
-cd ExoDiBosonResonances
-scram b -j 4
+scram b -j 7
 
 *** Running instructions ***
 
-See ExoDiBosonResonances/EDBRCommon/doc/HOWTO_run_cmgTuple_step.txt
+Step 1: make PAT-tuples
+Step 2: make cmgTuple from the PAT-tuples, 
+        see ExoDiBosonResonances/EDBRCommon/doc/HOWTO_run_cmgTuple_step.txt
+Step 3: make TTree from cmgTuple
+        see ExoDiBosonResonances/EDBRCommon/doc/HOWTO_run_TreeMaking_step.txt
