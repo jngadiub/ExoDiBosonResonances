@@ -1,16 +1,16 @@
 #include "ExoDiBosonResonances/EDBRCommon/plugins/AnalyzerEDBR.h"
 
-#include "FWCore/Framework/interface/MakerMacros.h"
-DEFINE_FWK_MODULE(AnalyzerEDBR);
 
-/*
-//template <typename T> 
-class AnalyzerEDBR : public edm::EDAnalyzer{
+AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 
- public:
-  AnalyzerEDBR(const edm::ParameterSet &ps){
-    cout << "AnalyzerEDBR constructor..." << endl;
-    
+    debug_    = ps.getParameter<bool>("debug");
+    if(debug_)    cout << "AnalyzerEDBR constructor 555..." << endl;
+    cout<<"pippo1"<<endl;
+    isMC_       = ps.getParameter<bool>("isMC");
+    treatVBFAsMultiple_    = ps.getParameter<bool>("treatVBFAsMultiple");
+    Ngen_     = ps.getParameter<unsigned int>("Ngen");
+    xsec_     = ps.getParameter<double>("xsec"); // in fb
+    cout<<"pippo2"<<endl;
     cat_             = ps.getParameter<std::string>("EventCategory");
     XEEColl_         = ps.getParameter<edm::InputTag>("EDBREECollection");
     XEENoKinFitColl_ = ps.getParameter<edm::InputTag>("EDBREENoKinFitCollection");
@@ -22,79 +22,47 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     //XEENoKinFitLDMap_=ps.getParameter<edm::InputTag>("EDBREENoKinFitLDValueMap");
     //XMMNoKinFitLDMap_=ps.getParameter<edm::InputTag>("EDBRMMNoKinFitLDValueMap");
     
+    cout<<"pippo3"<<endl;
     if(XEELDMap_.label()=="" ||XMMLDMap_.label()=="" ) readLDFromUserFloat_=true;
     else readLDFromUserFloat_=false;
     
     if(XQGMap_.label()=="") readQGFromUserFloat_=true;
     else readQGFromUserFloat_=false;
     
+
     outFileName_ = ps.getParameter<string>("outFileName");
     outFile_ = new TFile(outFileName_.c_str(),"recreate");
+    if(debug_)cout<<"Storing output TTree in "<<outFileName_.c_str()<<endl;
     
-    debug_    = ps.getParameter<bool>("debug");
-    isMC_       = ps.getParameter<bool>("isMC");
-    treatVBFAsMultiple_    = ps.getParameter<bool>("treatVBFAsMultiple");
-    Ngen_     = ps.getParameter<unsigned int>("Ngen");
-    xsec_     = ps.getParameter<double>("xsec"); // in fb
     triggerNames_ = ps.getParameter< vector<string> >("triggerNames");
     
-    if(cat_!="mmjj" &&cat_!="eejj" && cat_!="mmj" && cat_!="eej"){
+    if(cat_!=""){
+      if( cat_!="mmjj" &&cat_!="eejj" && cat_!="mmj" && cat_!="eej"){
       throw cms::Exception("AnalyzerEDBR: Wrong event category passed as input. Possibilities are: mmjj, eejj, mmj, eej");
     }
+    }
 
+    if(debug_)cout<<"Initializing"<<endl;
 
     init();
+    if(debug_)cout<<"Initialization is over"<<endl;
+
   }//end constructor
 
 
-  virtual ~AnalyzerEDBR(){
-
-
-  cout << "AnalyzerEDBR destructor..." << endl;
-
-  outFile_->cd();
-  outTree_->Write();
-  outFile_->Close();
-  }
-
-  ///Method where the analysis is done.
- 
-  void beginRun(edm::Run const& iRun, edm::EventSetup const& eventSetup){
-    bool aaa;
-    hltConfig.init(iRun,eventSetup,"HLT",aaa);
-  }
-
-  void endRun(edm::Run const& iRun, edm::EventSetup const& eventSetup){
-
-  }
-
-
- void analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
+void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
   if(debug_) cout<<"\n\nAnalyzing event"<<endl;
 
   initDataMembers();
 
-  if(isMC_){
-    lumi = xsec_/Ngen;
-    edm::Handle<GenEventInfoProduct> hGenEvtInfo;
-    // cout<<"Am I crashing ?  "<<flush;
-    if(iEvent.getByLabel("generator",hGenEvtInfo)){
-      genw=hGenEvtInfo->weights()[0];
-      // cout<<"  No ! "<<genw<<endl;
-    }
-  }
-  if(debug_)
-    cout<<"lumi "<<lumi<<endl;
 
-  bool eleEvent   = false;
-  bool muEvent    = false;
-  bool goodKinFit = true;
-
+ 
   nevent = iEvent.eventAuxiliary().event();
   run    = iEvent.eventAuxiliary().run();
   ls     = iEvent.eventAuxiliary().luminosityBlock();
   if(debug_) cout<<endl<<" Run "<<run<<"  Event "<<nevent<<endl;
+
 
   // GET VERTICES
   edm::Handle<reco::VertexCollection> vertexCollection;
@@ -103,7 +71,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     if(debug_)cout<<"WARNING: VertexCollection called \'offlinePrimaryVertices\' NOT FOUND !"<<endl;
     nvtx=0;
   }
+  npu=-1;
 
+//total number of pre-selected jets in the event
   edm::Handle<std::vector<cmg::PFJet> > allJets;
   iEvent.getByLabel("jetIDJet", allJets);
   njets = allJets->size();
@@ -114,15 +84,20 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   met     = metHandle->at(0).pt();
   metSign = metHandle->at(0).significance(); 
 
-
   analyzeTrigger(iEvent, eventSetup);
+
+  bool eleEvent   = elePath_; //&&(cat_=="eejj" || cat_=="eej")
+  bool muEvent    = muPath_;
+  bool goodKinFit = true;
+
+
 
   edm::Handle<std::vector<reco::GenParticle> > genParticles;
   iEvent.getByLabel(std::string("genParticles"), genParticles);
-  reco::GenParticle genHiggs;
+  reco::GenParticle genEDBR;
 
   for(std::vector<reco::GenParticle>::const_iterator genParticle=genParticles->begin(); genParticle!=genParticles->end(); ++genParticle){
-    if(genParticle->pdgId()==25||genParticle->pdgId()==39) genHiggs=(*genParticle);
+    if(genParticle->pdgId()==25||genParticle->pdgId()==39) genEDBR=(*genParticle);
       // if(debug_) cout<<"particle "<<genParticle->pdgId()<<" status "<<genParticle->status()<<endl;
   }
 
@@ -148,139 +123,81 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     // }
     int ih = 0;
     for(int iih=0;iih<nCandidates;iih++){
-      
-    if(muPath_){
+       
       lep=1; 
       edm::RefToBase<cmg::DiMuonDiJetEDBR> edbrM =finalEDBRcand->refAt(iih);
       edm::RefToBase<cmg::DiMuonDiJetEDBR> edbrM_2 =finalEDBRcand_2->refAt(iih);
       analyzeGeneric(edbrM, edbrM_2,ih,goodKinFit);
+      analyzeMuon(edbrM,ih);
+  
+      
       ih++;
-      nCands = ih;
-    }
     }//end loop on candidates
-
+    // if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
+      nCands += ih;
   }//end if mmjj
 
 
   if(cat_=="eejj"){
     edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > finalEDBRcand;
     edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > finalEDBRcand_2;
-    iEvent.getByLabel(XMMColl_        , finalEDBRcand  );  // With kinfit
-    iEvent.getByLabel(XMMNoKinFitColl_, finalEDBRcand_2);  // Without kinfit
+    iEvent.getByLabel(XEEColl_        , finalEDBRcand  );  // With kinfit
+    iEvent.getByLabel(XEENoKinFitColl_, finalEDBRcand_2);  // Without kinfit
+ 
+    int nCandidates=finalEDBRcand->size();
+    if (nCandidates > nMaxCand) nCandidates = nMaxCand-1;
+    if(debug_)cout<<"read from ELE event, there are "<<nCandidates<<" H cands"<<endl;
+    //  if(nCandidates>0){
+    //  if(muPath_)    muEvent = true;
+    //  if(elePath_)   eleEvent = true;
+    // }
+    int ih = 0;
+    for(int iih=0;iih<nCandidates;iih++){
+       
+      lep=0; 
+      edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE =finalEDBRcand->refAt(iih);
+      edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE_2 =finalEDBRcand_2->refAt(iih);
+      analyzeGeneric(edbrE, edbrE_2,ih,goodKinFit);
+      analyzeElectron(edbrE,ih);
+      ih++;
 
+    
+    }//end loop on candidates
+    // if(debug_)cout<<"Adding "<<ih<<" eleCands"<<endl;
+    nCands += ih;
   }//end if eejj
-  
+
+
+  //EVENT WEIGHTS
+  if(isMC_){
+    // Ngen=Ngen_;
+    lumiw = xsec_/Ngen_;
+    edm::Handle<GenEventInfoProduct> hGenEvtInfo;
+    // cout<<"Am I crashing ?  "<<flush;
+    if(iEvent.getByLabel("generator",hGenEvtInfo)){
+      genw=hGenEvtInfo->weights()[0];
+      // cout<<"  No ! "<<genw<<endl;
+    }
+  }
+  if(debug_)  cout<<"lumi weight="<<lumiw<<"  PU weight="<<PU<<endl;
+  w  = PU *HLTSF*genw*lumiw;
+  wA = PUA*HLTSF*genw*lumiw;
+  wB = PUB*HLTSF*genw*lumiw;
+
+
   bool passCuts=true;
   bool storeEvt=goodKinFit && (muPath_ || elePath_) && lep<2 && passCuts;
   if(storeEvt){
+    //  if(debug_)cout<<"Filling the tree ("<<nCands<<endl;//" cands -> pTlep1="<< ptlep1[nCands-1]<<")"<<endl;
     outTree_->Fill(); 
+    //  if(debug_)cout<<" filled."<<endl;
   }
 
   /// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
- 
+ if(debug_)cout<<"Finished AnalyzerEDBR::analyze for Run "<<run<<"  Event "<<nevent<<endl;
 }//
 //end AnalyzerEDBR::analyze
-  
-
-// /// //void analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup);
-
-
-
- private:
-  bool debug_, isMC_,  treatVBFAsMultiple_;            // flags
-  std::string cat_;
-  std::string outFileName_;
-  int Ngen_;
-  double xsec_;
-
-  void init();
-  void initTree();
-  void initDataMembers();
-  void analyzeTrigger(edm::Event const& iEvent, edm::EventSetup const& eventSetup);
-  // void analyzeGeneric(edbr,int ih, bool goodKinFit);
-
-
-
-   //////////////////////////////////////
-   /////////////////////////////////////
-   //////////////////////////////////////
-   /////////////////////////////////////
-
-  template < typename T > void analyzeGeneric(T *edbr,T *edbr_2,int ih, bool & goodKinFit){
-
-  if(edbr->leg2().mass()<90 ||edbr->leg2().mass()>92){
-     cout<<"WARNING from AnalyzeEDBR::analyzeGeneric : KIN FIT badly converged!!"<<endl;
-     goodKinFit = false;
-   }
-   //example for the future
-   //   if(edbr->getSelection("cuts_btags_btag2")){
-   //  btag[ih] = 2;
-   // }	
-
-   MCmatch[ih] = edbr->getSelection("cuts_genMatch");
-   // deltaREDBR[ih] = deltaR(edbr->phi(),edbr->eta(),genEDBR.phi(),genEDBR.eta());
-
-  }//end analyzeGeneric
-   //////////////////////////////////////
-   /////////////////////////////////////
-   //////////////////////////////////////
-   /////////////////////////////////////
-
-
-
-
-
-  edm::InputTag XEEColl_,XEENoKinFitColl_,XEELDMap_;//XEENoKinFitLDMap_;
-  edm::InputTag XMMColl_,XMMNoKinFitColl_,XMMLDMap_;//XMMNoKinFitLDMap_;
-    edm::InputTag  XQGMap_;
-
-  const static int nMaxCand = 30;
-  const static int nMaxTrig = 20;
-  int nCands_;
-
-  const static int metSignMax = 10;
-
-  /// variables to be stored in the output tree
-  TTree* outTree_;
-  TFile* outFile_;
-
-  std::vector<std::string> triggerNames_;
-  int triggerRes[nMaxTrig];  
-
-  //flags indicating whether the cand passed a certain cms.Path of the analysis
-  bool preselM_, finalM_,sbM_;
-  bool preselE_, finalE_,sbE_;
-  bool anyPath_,muPath_,elePath_;
-
-  int nCands;
-  double hs[nMaxCand], h1[nMaxCand], h2[nMaxCand], phi[nMaxCand], phiS1[nMaxCand], LD[nMaxCand]; // Helicity angles, and LD.
-  double mzz[nMaxCand], mzzNoKinFit[nMaxCand], mll[nMaxCand], mjj[nMaxCand], mjjNoKinFit[nMaxCand];           // masses
-  double ptmzz[nMaxCand], ptmzzNoKinFit[nMaxCand];
-  double ptlep1[nMaxCand], ptlep2[nMaxCand], etalep1[nMaxCand], etalep2[nMaxCand];  // lepton kinematics
-  double ptjet1[nMaxCand], ptjet2[nMaxCand], etajet1[nMaxCand], etajet2[nMaxCand];  // jet kinematicse
-  double deltaREDBR[nMaxCand];
-  double ptZll[nMaxCand], ptZjj[nMaxCand], yZll[nMaxCand], yZjj[nMaxCand], deltaRleplep[nMaxCand], deltaRjetjet[nMaxCand];
-  double phiZll[nMaxCand];//={init};
-  double phiZjj[nMaxCand];//={init};
-  double met, metSign;            // MET and its significance
-  double btag[nMaxCand], lep, reg[nMaxCand];    // b-tags, lep category, region (sig, sideband)
-  double qgjet1[nMaxCand], qgjet2[nMaxCand], qgProduct[nMaxCand];    // QG likelihoods
-  double betajet1[nMaxCand],betajet2[nMaxCand],puMvajet1[nMaxCand],puMvajet2[nMaxCand];//jet ID 
-  double isolep1[nMaxCand], isolep2[nMaxCand], eleMVAId1[nMaxCand], eleMVAId2[nMaxCand];//lepton ID 
-  double HLTSF,PU,PUA,PUB,lumi,genw,w,wA,wB;          // weight
-  double MCmatch[nMaxCand];            // mc matching flag
-  unsigned int Ngen;         // number of generated events
-
-
-
-  unsigned int nevent,run,ls, njets, nvtx,npu;
-  int q1fl[nMaxCand], q2fl[nMaxCand];
-  //int jjfl[nMaxCand];
-  bool readLDFromUserFloat_,  readQGFromUserFloat_;
-  HLTConfigProvider hltConfig;
-
-};//end class AnalyzerEDBR 
 
 
 
@@ -297,7 +214,7 @@ void AnalyzerEDBR::init(){
 
 void AnalyzerEDBR::initTree(){
 
- 
+  if(debug_)cout<<"creating the output TTree"<<endl;
   outTree_ = new TTree("SelectedCandidates","angles etc.");
   outTree_->Branch("nCands"          ,&nCands        ,"nCands/I"               );
   outTree_->Branch("cosThetaStar"    ,&hs            ,"cosThetaStar[nCands]/D" );
@@ -346,7 +263,7 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("eleMVAId1"       ,&eleMVAId1     ,"eleMVAId1[nCands]/D"    );
   outTree_->Branch("eleMVAId2"       ,&eleMVAId2     ,"eleMVAId2[nCands]/D"    );
   outTree_->Branch("LD"              ,&LD            ,"LD[nCands]/D"           );
-  //  outTree_->Branch("aplanarity"      ,&aplanarity    ,"aplanarity[nCands]/D"   );
+  //outTree_->Branch("aplanarity"      ,&aplanarity    ,"aplanarity[nCands]/D"   );
   // outTree_->Branch("sphericity"      ,&sphericity    ,"sphericity[nCands]/D"   );
   // outTree_->Branch("centrality"      ,&centrality    ,"centrality[nCands]/D"   );
   outTree_->Branch("q1fl"            ,&q1fl          ,"q1fl[nCands]/I"         );
@@ -360,7 +277,7 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("PUweight"        ,&PU            ,"PUweight/D"             ); 
   outTree_->Branch("PUweight2012A"   ,&PUA           ,"PUweight2012A/D"        ); 
   outTree_->Branch("PUweight2012B"   ,&PUB           ,"PUweight2012B/D"        );
-  outTree_->Branch("LumiWeight"      ,&lumi          ,"LumiWeight/D"           );  // For correct lumi scaling
+  outTree_->Branch("LumiWeight"      ,&lumiw          ,"LumiWeight/D"           );  // For correct lumi scaling
   outTree_->Branch("GenWeight"       ,&genw          ,"GenWeight/D"            );  // Gen level MC weights
   outTree_->Branch("weight"          ,&w             ,"weight/D"               );  // Product of PU and lumi weights
   outTree_->Branch("weight2012A"     ,&wA            ,"weight2012A/D"          );
@@ -369,6 +286,8 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("run"             ,&run           ,"run/i"                  );
   outTree_->Branch("ls"              ,&ls            ,"ls/i"                   );
 
+  if(triggerNames_.size()>0){
+  if(debug_)cout<<"Adding branches with trigger names"<<endl;
   //flags for telling if the event passed a certain trig path
   char triggerNamePiuI[200];
   for(unsigned int iTrig=0;iTrig<triggerNames_.size();iTrig++) {
@@ -376,21 +295,23 @@ void AnalyzerEDBR::initTree(){
     outTree_->Branch((triggerNames_.at(iTrig)).c_str(),        &triggerRes[iTrig],       triggerNamePiuI);
   }
 
+  }
+
 }//end initTree()
 
 void AnalyzerEDBR::initDataMembers(){
 
  lep   = -99;
-  lumi  =   1;
-  PU    =   1;
-  PUA   =   1;
-  PUB   =   11;
+  lumiw  =   1.0;
+  PU    =   1.0;
+  PUA   =   1.0;
+  PUB   =   11.0;
   genw  =   1.0;
   w     =   0.0;
-  wA    =   1;
-  wB    =   1;
-  HLTSF =   1;
-
+  wA    =   1.0;
+  wB    =   1.0;
+  HLTSF =   1.0;
+  nCands=0;
 }//end AnalyzeEDBR::initDataMembers()
 
 void AnalyzerEDBR::analyzeTrigger(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
@@ -409,14 +330,12 @@ void AnalyzerEDBR::analyzeTrigger(edm::Event const& iEvent, edm::EventSetup cons
   //this matters as we can ask for some specific things according to the 
   //path (for example electron specific quantitites for cands passing the eejj path)
 
-  preselM_=iEvent.triggerResultsByName("CMG").accept("preselMu");
-  finalM_= iEvent.triggerResultsByName("CMG").accept("cmgXZZMM");
-  sbM_=iEvent.triggerResultsByName("CMG").triggerIndex("cmgXZZMMSideband")!=iEvent.triggerResultsByName("CMG").size() && 
-    iEvent.triggerResultsByName("CMG").accept("cmgXZZMMSideband");
-  preselE_=iEvent.triggerResultsByName("CMG").accept("preselEle");
-  finalE_= iEvent.triggerResultsByName("CMG").accept("cmgXZZEE");
-  sbE_=iEvent.triggerResultsByName("CMG").triggerIndex("cmgXZZEESideband")!=iEvent.triggerResultsByName("CMG").size() && 
-    iEvent.triggerResultsByName("CMG").accept("cmgXZZEESideband");
+  preselM_=iEvent.triggerResultsByName("CMG").accept("preselMuPath");
+  finalM_=false;// iEvent.triggerResultsByName("CMG").accept("cmgXZZMM");
+  sbM_=false;//iEvent.triggerResultsByName("CMG").triggerIndex("cmgXZZMMSideband")!=iEvent.triggerResultsByName("CMG").size() &&     iEvent.triggerResultsByName("CMG").accept("cmgXZZMMSideband");
+  preselE_=iEvent.triggerResultsByName("CMG").accept("preselElePath");
+  finalE_=false;// iEvent.triggerResultsByName("CMG").accept("cmgXZZEE");
+  sbE_=false;//iEvent.triggerResultsByName("CMG").triggerIndex("cmgXZZEESideband")!=iEvent.triggerResultsByName("CMG").size() &&  iEvent.triggerResultsByName("CMG").accept("cmgXZZEESideband");
 
   muPath_=false;
   elePath_=false;
@@ -427,9 +346,49 @@ void AnalyzerEDBR::analyzeTrigger(edm::Event const& iEvent, edm::EventSetup cons
 
 }//end  AnalyzeEDBR::analyzeTrigger()
 
+void AnalyzerEDBR::analyzeMuon(edm::RefToBase<cmg::DiMuonDiJetEDBR > edbr, int ih){
+  //nothing to be done
+  //
+  //
+  if(debug_)cout<<"AnalyzerEDBR::analyzeMuon"<<endl;
+  //dummy for muons 
+  eleMVAId1[ih] = -1.0;
+  eleMVAId2[ih] = -1.0;
+}
+
+void AnalyzerEDBR::analyzeElectron(edm::RefToBase<cmg::DiElectronDiJetEDBR > edbr, int ih){
+
+  if(debug_)cout<<"AnalyzerEDBR::analyzeElectron"<<endl;
+  bool highptLep1=true;
+  if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
+  
+
+  if(highptLep1){
+    eleMVAId1[ih] = edbr->leg1().leg1().mvaTrigV0(); 
+    eleMVAId2[ih] = edbr->leg1().leg2().mvaTrigV0();
+  } 
+  else{
+    eleMVAId1[ih] = edbr->leg1().leg2().mvaTrigV0(); 
+    eleMVAId2[ih] = edbr->leg1().leg1().mvaTrigV0();
+  }
+}
+
+double AnalyzerEDBR::deltaR(reco::LeafCandidate p1,reco::LeafCandidate p2){
+  double deltaEta = fabs(p1.eta()-p2.eta());
+  double deltaPhi = (p1.phi()-p2.phi());
+  while (deltaPhi > 3.14) deltaPhi -= 2*3.14;
+  while (deltaPhi <= -3.14) deltaPhi += 2*3.14;     
+  return sqrt(deltaPhi*deltaPhi + deltaEta*deltaEta);
+}
+double AnalyzerEDBR::deltaR(double phi1,double eta1,double phi2,double eta2){
+  double deltaEta = fabs(eta1-eta2);
+  double deltaPhi = (phi1-phi2);
+  while (deltaPhi > 3.14) deltaPhi -= 2*3.14;
+  while (deltaPhi <= -3.14) deltaPhi += 2*3.14;     
+  return sqrt(deltaPhi*deltaPhi + deltaEta*deltaEta);
+}
 
 
-#endif
 
-
-*/
+#include "FWCore/Framework/interface/MakerMacros.h"
+DEFINE_FWK_MODULE(AnalyzerEDBR);
