@@ -1,7 +1,7 @@
 
 Works in CMSSW_5_3_3_patch3 (not tested with higher releases)
 Based on CMG V5_10_0
-Most recent recommended tag for analysis code : edbr_zz2l2j_20121127A (but the HEAD might be better)
+Most recent recommended tag for analysis code : edbr_zz2l2j_20121203A (but the HEAD might be better)
 
 
 *** Installation instructions ***
