@@ -1,8 +1,7 @@
 #include "ExoDiBosonResonances/EDBRMuon/interface/HPTMMuonSelector.h"
 
 std::bitset<8>
-hptm::MuonSelector::muonBits(const reco::Muon& recoMu, hptm::MuonIDType idType){
-
+hptm::MuonSelector::muonBits(const reco::Muon& recoMu, const hptm::MuonSelector::Point& vertex, hptm::MuonIDType idType){
   bool isGlobal = false;
   bool isTracker = false;
   bool muonChamberHit = false;
@@ -24,18 +23,22 @@ hptm::MuonSelector::muonBits(const reco::Muon& recoMu, hptm::MuonIDType idType){
       muonChamberHit = (globalTrackRef->hitPattern().numberOfValidMuonHits() > 0);
     }
     
-    const reco::Candidate::Point& vertex = recoMu.vertex();
     const reco::TrackRef& bestTrackRef = recoMu.muonBestTrack();
+    const reco::TrackRef& innerTrackRef = recoMu.innerTrack();
+    const reco::TrackRef& trackRef = recoMu.track();
+
     if(bestTrackRef.isNonnull()) {
       dBCut    = (fabs(bestTrackRef->dxy(vertex)) < 0.2);  
       longiCut = (fabs(bestTrackRef->dz(vertex)) < 0.5);
     }
-    
-    const reco::TrackRef& innerTrackRef = recoMu.innerTrack();
+    else if(innerTrackRef.isNonnull()) {
+      dBCut    = (fabs(innerTrackRef->dxy(vertex)) < 0.2);  
+      longiCut = (fabs(innerTrackRef->dz(vertex)) < 0.5);
+    }
+
     if(innerTrackRef.isNonnull())
     pixelHit = (innerTrackRef->hitPattern().numberOfValidPixelHits() > 0);
     
-    const reco::TrackRef& trackRef = recoMu.track();
     if(trackRef.isNonnull())
       trackerLayers = (trackRef->hitPattern().trackerLayersWithMeasurement() > 8);
   }
@@ -43,7 +46,6 @@ hptm::MuonSelector::muonBits(const reco::Muon& recoMu, hptm::MuonIDType idType){
   // The TRACKER Muon ID will just ask for the inner track
   // (since there may be no other track).
   if(idType == TRACKER) {
-    const reco::Candidate::Point& vertex = recoMu.vertex();
     const reco::TrackRef& innerTrackRef = recoMu.innerTrack();
     if(innerTrackRef.isNonnull()) {
       dBCut         = (fabs(innerTrackRef->dxy(vertex)) < 0.2);
@@ -69,9 +71,9 @@ hptm::MuonSelector::muonBits(const reco::Muon& recoMu, hptm::MuonIDType idType){
 }
 
 bool
-hptm::MuonSelector::checkMuonID(const reco::Muon& recoMu, hptm::MuonIDType idType){
+hptm::MuonSelector::checkMuonID(const reco::Muon& recoMu, const hptm::MuonSelector::Point& vertex, hptm::MuonIDType idType){
 
-  std::bitset<8> result = muonBits(recoMu, idType);
+  std::bitset<8> result = muonBits(recoMu, vertex, idType);
   
   bool isGlobal = result[0];
   bool isTracker = result[1];
