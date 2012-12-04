@@ -30,23 +30,24 @@ if 'input' in myOptions:
 if 'suffix' in myOptions:
     suffix = '_'+myOptions[myOptions.index('suffix')+1]+'_'
 
-outputFileName = 'histograms'+suffix+inputFileName
+outputFileName = 'histograms'+suffix+'.root '
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(numEvents) )
 
 process.source = cms.Source("PoolSource",
-    # replace 'myfile.root' with the source file you want to use
-    fileNames = cms.untracked.vstring(
-        "file:"+inputFileName
-    )
-)
+                            # replace 'myfile.root' with the source file you want to use
+                            fileNames = cms.untracked.vstring("file:"+inputFileName)
+                            )   
 
-### Histograms
-from ExoDiBosonResonances.GeneratorStudies.simpleJetHistos_cff import histograms as jetHistos
-from ExoDiBosonResonances.GeneratorStudies.simpleLeptonHistos_cff import histograms as leptonHistos
-from ExoDiBosonResonances.GeneratorStudies.simpleZhistos_cff import histograms as ZHistos
-from ExoDiBosonResonances.GeneratorStudies.simpleXhistos_cff import histograms as XHistos
-from ExoDiBosonResonances.GeneratorStudies.simpleMETHistos_cff import histograms as METhistos
+process.source.fileNames = cms.untracked.vstring(
+    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/58267D63-C30D-E211-96D5-1CC1DE04DF70.root",
+    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/78F0A3A9-C60D-E211-8846-1CC1DE1D03EA.root",
+    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/2035357C-CB0D-E211-88BC-00266CFFBE14.root",
+    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/8AAE6874-D00D-E211-A92C-0025B3E022C2.root",
+    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/4E9985CD-CE0D-E211-ADD8-1CC1DE04FF50.root",
+    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/2E7F3D3D-D20D-E211-8E5C-1CC1DE04DF70.root",
+    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/AE870704-CD0D-E211-8CF5-1CC1DE1CE128.root"
+    )
 
 ## For gen-level comparison
 process.genElectrons = cms.EDFilter("PdgIdAndStatusCandViewSelector",
@@ -79,6 +80,7 @@ process.highPtMuons = cms.EDFilter("PATMuonSelector",
 
 ANALYSIS_SOURCE = "highPtMuons"
 ANALYSIS_SOURCE = "patMuonsWithTrigger"
+ANALYSIS_SOURCE = "muons"
 
 process.hptmAnalyzer = cms.EDAnalyzer("HighPtMuonStudy",
                                       muons=cms.InputTag(ANALYSIS_SOURCE),
@@ -90,11 +92,18 @@ process.isoAnalyzer = cms.EDAnalyzer("IsolationMuonStudy",
                                       muons=cms.InputTag(ANALYSIS_SOURCE),
                                      )
 
+
+process.finalAnalyzer = cms.EDAnalyzer("FinalMuonStudy",
+                                      muons=cms.InputTag(ANALYSIS_SOURCE),
+                                     )
+
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string(outputFileName)
                                    )
  
 process.p = cms.Path(process.genMuons +
                      #                         process.highPtMuons +
-                     process.hptmAnalyzer +
-                     process.isoAnalyzer)
+                     #                     process.hptmAnalyzer +
+                     #                     process.isoAnalyzer +
+                     process.finalAnalyzer
+                     )
