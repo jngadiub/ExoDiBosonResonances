@@ -145,6 +145,15 @@ FinalMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<edm::View<reco::Candidate> > genMuonHandle;
   iEvent.getByLabel("genMuons",genMuonHandle);
   const edm::View<reco::Candidate>& genMuons = *(genMuonHandle.product());
+
+  edm::Handle<edm::View<reco::Candidate> > otherMuonHandle;
+  iEvent.getByLabel("otherMuons",otherMuonHandle);
+  const edm::View<reco::Candidate>& otherMuons = *(otherMuonHandle.product());
+
+  edm::Handle<edm::View<reco::Candidate> > photonHandle;
+  iEvent.getByLabel("hptPhotons",photonHandle);
+  const edm::View<reco::Candidate>& photons = *(photonHandle.product());
+
   //int numMuons = muons.size();
   //int numMatchedMuons = 0;
   //int numGoodMuons = 0;
@@ -251,6 +260,10 @@ FinalMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   bool eventSelected = (eventHasTwoGoodMuons and
 			eventHasTwoIsolatedMuons and 
 			dimuonWindow);
+
+  
+  if(eventHasTwoGoodIsolatedMuons) {
+  }
   
   //if(eventSelected)
   //printf("Event Selected\n");
@@ -290,6 +303,27 @@ FinalMuonStudy::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       double deltaPtOverPt = (recoMu.pt() - genMu.pt())/genMu.pt();
       
       if(deltaPtOverPt < (-0.2)) {
+	
+	printf("*******\n");
+	int eventNumber = iEvent.id().event();
+	printf("genMu.pt = %g for recoMu.pt = %g\n",genMu.pt(),recoMu.pt());
+	printf("Gen muons:\n");
+	for(size_t ii = 0; ii != genMuons.size(); ++ii) {
+          const reco::Candidate& xm = genMuons[ii];
+          printf("Status 3 muon:.pt = %g, eta = %g, phi = %g\n",xm.pt(),xm.eta(),xm.phi());
+        }
+	for(size_t ii = 0; ii != otherMuons.size(); ++ii) {
+	  const reco::Candidate& xm = otherMuons[ii];
+	  printf("Status 1 muon:.pt = %g, eta = %g, phi = %g\n",xm.pt(),xm.eta(),xm.phi());
+	}
+	for(size_t ii = 0; ii != photons.size(); ++ii) {
+	  const reco::Candidate& xm = photons[ii];
+	  printf("Status 1 photon:.pt = %g, eta = %g, phi = %g\n",xm.pt(),xm.eta(),xm.phi());
+	}
+
+	double m0pt = m0.pt();
+	double m1pt = m1.pt();
+	printf("Event number %i, m0.pt = %g, m1.pt = %g\n",eventNumber,m0pt,m1pt);
 	
 	numberOfBadMuonsPerEvent++;
 	
