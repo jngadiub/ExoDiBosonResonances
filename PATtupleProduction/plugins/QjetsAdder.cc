@@ -61,11 +61,17 @@ void QjetsAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
     for(unsigned int ii = 0 ; ii < (unsigned int) ntrial_ ; ii++){
       fastjet::ClusterSequence qjet_seq(constits, qjet_def);
       vector<fastjet::PseudoJet> inclusive_jets2 = sorted_by_pt(qjet_seq.inclusive_jets(cutoff_));
-      if (inclusive_jets2.size()>0) // fill the massvalue only if the reclustering was successfull
+      if (inclusive_jets2.size()>0){ // fill the massvalue only if the reclustering was successfull
 	qjetmass.push_back(inclusive_jets2[0].m());
-      
+      }
+
+    }//end loop on trials
+
+    if (qjetmass.size()<1) {//protection against dummy case
+      newCand.addUserFloat("qjetsvolatility", -1. );
+      continue;
     }
-    
+
     double mean = std::accumulate( qjetmass.begin( ) , qjetmass.end( ) , 0 ) /qjetmass.size() ;
     float totalsquared = 0.;
     for (unsigned int i = 0; i < qjetmass.size(); i++){
@@ -76,7 +82,7 @@ void QjetsAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
     newCand.addUserFloat("qjetsvolatility", variance/mean );
 
     outJets.push_back(newCand);
-  }
+  }//end loop on jets
 
   std::auto_ptr<std::vector<pat::Jet> > out(new std::vector<pat::Jet>(outJets));
   iEvent.put(out);
