@@ -40,14 +40,13 @@ process.source = cms.Source("PoolSource",
                             )   
 
 process.source.fileNames = cms.untracked.vstring(
-    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/58267D63-C30D-E211-96D5-1CC1DE04DF70.root",
-    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/78F0A3A9-C60D-E211-8846-1CC1DE1D03EA.root",
-    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/2035357C-CB0D-E211-88BC-00266CFFBE14.root",
-    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/8AAE6874-D00D-E211-A92C-0025B3E022C2.root",
-    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/4E9985CD-CE0D-E211-ADD8-1CC1DE04FF50.root",
-    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/2E7F3D3D-D20D-E211-8E5C-1CC1DE04DF70.root",
-    "/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-1000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/AE870704-CD0D-E211-8CF5-1CC1DE1CE128.root"
-    )
+"/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-2000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/C8A95927-8E0E-E211-9878-00266CFFBF68.root",
+"/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-2000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/8655772B-850E-E211-BA84-1CC1DE1CE170.root",
+"/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-2000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/7062F4BD-7E0E-E211-820C-1CC1DE1D1F80.root",
+"/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-2000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/121923F3-800E-E211-90F1-78E7D1E49636.root",
+"/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-2000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/D6C415F8-870E-E211-8869-00237DA12CA0.root",
+"/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-2000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/5CBC1DA2-710E-E211-8DBF-0017A4770430.root",
+"/store/mc/Summer12_DR53X/RSGravitonToZZToLLNuNu_kMpl005_M-2000_TuneZ2star_8TeV-pythia6-tauola/AODSIM/PU_S10_START53_V7A-v1/00000/166E6D6F-890E-E211-A395-1CC1DE051118.root"    )
 
 ## For gen-level comparison
 process.genElectrons = cms.EDFilter("PdgIdAndStatusCandViewSelector",
@@ -63,6 +62,17 @@ process.genMuons = cms.EDFilter("PdgIdAndStatusCandViewSelector",
                                 status = cms.vint32( 3 ),
                                 filter = cms.bool(True)
                                 )
+
+process.otherMuons = cms.EDFilter("CandViewSelector",
+                                  src = cms.InputTag("genParticles"),
+                                  cut = cms.string("pt > 5 & abs(pdgId) == 13 & status == 1"),
+                                  filter = cms.bool(True)
+                                  )
+
+process.hptPhotons = cms.EDFilter("CandViewSelector",
+                                  src = cms.InputTag("genParticles"),
+                                  cut = cms.string("pt > 20 & abs(pdgId) == 22 & status == 1"),
+                                  )
 
 process.genGravitons = cms.EDFilter("PdgIdAndStatusCandViewSelector",
                                     src = cms.InputTag("genParticles"),
@@ -102,6 +112,8 @@ process.TFileService = cms.Service("TFileService",
                                    )
  
 process.p = cms.Path(process.genMuons +
+                     process.otherMuons + 
+                     process.hptPhotons + 
                      #                         process.highPtMuons +
                      #                     process.hptmAnalyzer +
                      #                     process.isoAnalyzer +
