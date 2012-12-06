@@ -29,16 +29,16 @@ runQJets = True
 ## Z-->ee/mumu filter
 EE = ("patElectronsWithTrigger patElectronsWithTrigger")
 MUMU = ("patMuonsWithTrigger patMuonsWithTrigger")
-DILEPTON_KINCUT = ("70.0 < mass < 110.0 && pt > 5.0")
+DILEPTON_KINCUT = ("70.0 < mass < 110.0 && pt > 80.0")
 
 ## W-->enu/munu filter
 ENU = ("patMETs patElectronsWithTrigger")
 MUNU = ("patMETs patMuonsWithTrigger")
-METLEPTON_KINCUT = ("pt > 10.0")
+METLEPTON_KINCUT = ("pt > 80.0")
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
