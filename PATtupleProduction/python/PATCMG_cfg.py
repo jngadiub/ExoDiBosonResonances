@@ -102,6 +102,72 @@ process.selectedPatJetsAK7CHSwithNsub = cms.EDProducer("NjettinessAdder",
 process.PATCMGSequence += process.selectedPatJetsAK7CHSwithNsub
 patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHS_*_*']
 
+#### Adding HEEP and modified isolation
+### Boosted electrons isolation
+### Remake the HEEP ID with no isolation cuts
+process.load("RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi")
+from SHarper.HEEPAnalyzer.HEEPSelectionCuts_cfi import *
+
+process.heepIdNoIso = cms.EDProducer("HEEPIdValueMapProducer",
+                                     eleLabel = cms.InputTag("gsfElectrons"),
+                                     barrelCuts = cms.PSet(heepBarrelCuts),
+                                     endcapCuts = cms.PSet(heepEndcapCuts),
+                                     eleIsolEffectiveAreas = cms.PSet(heepEffectiveAreas),
+                                     eleRhoCorrLabel = cms.InputTag("kt6PFJets", "rho"),
+                                     verticesLabel = cms.InputTag("offlinePrimaryVertices"),
+                                     applyRhoCorrToEleIsol = cms.bool(True),
+                                     writeIdAsInt = cms.bool(True)
+                                     )
+
+process.heepIdNoIso.barrelCuts.cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:e2x5Over5x5:nrMissHits:dxy")
+process.heepIdNoIso.endcapCuts.cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:nrMissHits:dxy")
+
+process.heepIdNoIsoEles = cms.EDProducer("tsw::HEEPGsfProducer",
+                                         cutValueMap = cms.InputTag("heepIdNoIso"),
+                                         inputGsfEles = cms.InputTag("gsfElectrons")
+                                         )
+
+from TSWilliams.BstdZeeTools.bstdzeemodisolproducer_cff import *
+
+process.modElectronIso = cms.EDProducer("BstdZeeModIsolProducer",
+                                        bstdZeeModIsolParams,
+                                        vetoGsfEles = cms.InputTag("heepIdNoIsoEles")
+                                        )
+
+# Adding these new value maps to the patElectrons
+process.patElectrons.userIsolation.user = cms.VPSet(
+    cms.PSet(src = cms.InputTag("modElectronIso","track")),
+    cms.PSet(src = cms.InputTag("modElectronIso","ecal")),
+    cms.PSet(src = cms.InputTag("modElectronIso","hcalDepth1")),
+    )
+
+# And now redo the PAT electrons with Mathias' module
+process.heepPatElectrons = cms.EDProducer("HEEPAttStatusToPAT",
+                                          eleLabel = cms.InputTag("patElectrons"),
+                                          barrelCuts = cms.PSet(heepBarrelCuts),
+                                          endcapCuts = cms.PSet(heepEndcapCuts),
+                                          applyRhoCorrToEleIsol = cms.bool(True),
+                                          eleIsolEffectiveAreas = cms.PSet (heepEffectiveAreas),
+                                          eleRhoCorrLabel = cms.InputTag("kt6PFJets","rho"),
+                                          verticesLabel = cms.InputTag("offlinePrimaryVerticesWithBS"),
+                                          )
+
+# With no isolation cuts. In this way, the newly created PAT electrons have a complete HEEP ID, minus isolation cuts,
+# while they ALSO have three userIsolations corresponding to the modified isolations.
+process.heepPatElectrons.barrelCuts.cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:e2x5Over5x5:nrMissHits:dxy")
+process.heepPatElectrons.endcapCuts.cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:nrMissHits:dxy")
+
+process.PATCMGSequence.replace( process.patElectrons,
+                                process.heepIdNoIso +
+                                process.heepIdNoIsoEles +
+                                process.modElectronIso +
+                                process.patElectrons +
+                                process.heepPatElectrons )
+
+# Finally, change the source of the selectedPatElectrons.
+# The changes trickle down from here.
+process.selectedPatElectrons.src = cms.InputTag("heepPatElectrons")
+
 #### Adding QJets
 
 if runQJets:
