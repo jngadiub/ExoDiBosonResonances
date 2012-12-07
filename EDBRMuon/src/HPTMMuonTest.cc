@@ -10,6 +10,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "ExoDiBosonResonances/EDBRMuon/interface/HPTMMuonSelector.h"
 //
 // class declaration
@@ -80,14 +81,20 @@ HPTMMuonTest::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(muons_,muonHandle);
   const edm::View<pat::Muon>& muons = *(muonHandle.product());
 
+  edm::Handle<edm::View<reco::Vertex> > vertexHandle;
+  iEvent.getByLabel("offlinePrimaryVertices",vertexHandle);
+  const edm::View<reco::Vertex>& vertices = *(vertexHandle.product());
+
+  const reco::Vertex& vertex = vertices[0];
+
   size_t numMuonsPassed = 0;
 
   for(size_t muonNr = 0; muonNr != muons.size(); ++muonNr) {
     
     const pat::Muon& recoMu = muons[muonNr];
     
-    bool passedHPT = muonSelector_.checkMuonID(recoMu, hptm::HIGHPT_OLD);
-    bool passedTRK = muonSelector_.checkMuonID(recoMu, hptm::TRACKER);
+    bool passedHPT = muonSelector_.checkMuonID(recoMu, vertex.position(), hptm::HIGHPT_OLD);
+    bool passedTRK = muonSelector_.checkMuonID(recoMu, vertex.position(), hptm::TRACKER);
     if(passedHPT)  muonsPassedHPT_++;
     if(passedTRK)  muonsPassedTRK_++;
 
