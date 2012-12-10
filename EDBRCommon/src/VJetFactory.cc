@@ -114,20 +114,22 @@ void cmg::VJetFactory::set(const edm::Event& iEvent, const edm::EventSetup& iSet
     //loop over pruned jet collection and find the one matching
     //the not-pruned one. From the matched pruned one extract substructure info
       iEvent.getByLabel(prunedJetLabel_,prunedJetCands);
-      long unsigned indexTmp=0,index2 = 0;
+      long unsigned indexTmp=0;
+      int index2 = -1;
       double dRmin=99.0;
       for(pat::JetCollection::const_iterator pj = prunedJetCands->begin();
 	  pj != prunedJetCands->end(); ++pj, ++indexTmp ){
 	
 	pat::JetPtr pjTMPPtr( prunedJetCands, indexTmp ); 
 	double dRtmp=deltaR(*output,*pjTMPPtr);
-	if(dRtmp<dRmin){
+	if(dRtmp<dRmin && dRtmp<0.7 ){//matching failed if greater than jet radius
 	  dRmin=dRtmp;
 	  index2=indexTmp;
 	}
       }//end loop on pruned jet collection
       
-  
+      if(index2>=0){
+
       pat::JetPtr pjPtr( prunedJetCands, index2 ); 
       output->setPrunedJetPtr(pjPtr);
 
@@ -141,7 +143,7 @@ void cmg::VJetFactory::set(const edm::Event& iEvent, const edm::EventSetup& iSet
       }
       else output->mdrop_=-99.0;
 
-/*
+      /*
       std::vector<const reco::Candidate*> candPtrs = pjPtr->getJetConstituentsQuick();
       for(unsigned i=0; i<candPtrs.size(); ++i) {
 	const pat::Jet& subjet = pat::Jet(*dynamic_cast<const reco::PFJet*>(&*(candPtrs[i])));
@@ -151,9 +153,9 @@ void cmg::VJetFactory::set(const edm::Event& iEvent, const edm::EventSetup& iSet
 	output->subJetCollection_.push_back(cmgsubjet);
       }//end loop over subjets
       
-*/
+      */
 
-
+      }//end if we matched a pruned jet to the std one
     }//end if label of pruned jets is not emtpy
 
 
