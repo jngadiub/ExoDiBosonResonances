@@ -4,7 +4,7 @@ import sys
 process = cms.Process("Demo")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
@@ -71,7 +71,7 @@ process.genGravitons = cms.EDFilter("PdgIdAndStatusCandViewSelector",
                                     )
 
 ## ZToEE
-process.heepAnalyzer = cms.EDAnalyzer("HEEPIsolationTest",
+process.heepAnalyzer = cms.EDAnalyzer("HEEPElectronStudy",
                                       eleLabel=cms.InputTag("patElectronsWithTrigger")
                                       )
 
