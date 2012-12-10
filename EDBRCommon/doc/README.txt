@@ -1,13 +1,18 @@
 
 Works in CMSSW_5_3_3_patch3 (not tested with higher releases)
 Based on CMG V5_10_0
-Most recent recommended tag for analysis code : edbr_zz2l2j_20121203A (but the HEAD might be better)
+Most recent recommended tag for analysis code : edbr_zz_20121210 (but the HEAD might be better)
 
 
 *** Installation instructions ***
 
 Follow these: https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsReleasesExperimental#Mike_Cris_533_V5_10_0
 scram b -j 4
+
+# Add the HEEP code and the modified HEEP isolation for boosted case.
+cvs co -r V00-09-03 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer
+cvs co -r V00-02-01  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/BstdZeeTools
+
 
 cvs co -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
 cvs co -d ExoDiBosonResonances UserCode/ExoDiBosonResonances
