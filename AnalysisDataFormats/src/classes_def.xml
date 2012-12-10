@@ -39,4 +39,10 @@
   <class name="std::vector<cmg::DiGenParticleDiGenParticleEDBR>"/>
   <class name="edm::Wrapper<cmg::DiGenParticleDiGenParticleEDBR>"/>
   <class name="edm::Wrapper<std::vector<cmg::DiGenParticleDiGenParticleEDBR> >"/>
+
+  <class name="cmg::VJet" />
+  <class name="edm::Wrapper<cmg::VJet>" />
+  <class name="std::vector<cmg::VJet>" />
+  <class name="edm::Wrapper<std::vector<cmg::VJet> >" />
+
 </lcgdict>

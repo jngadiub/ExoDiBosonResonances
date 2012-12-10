@@ -1,6 +1,7 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 
 #include "AnalysisDataFormats/ExoDiBosonResonances/interface/CompoundTypesHZZLL.h"
+#include "AnalysisDataFormats/ExoDiBosonResonances/interface/VJet.h"
 
 #include <vector>
 
@@ -45,7 +46,10 @@ namespace {
     edm::Wrapper<std::vector<cmg::DiGenParticleDiGenParticleEDBR> > edzggvh;
 
 
-
+    cmg::VJet vjet_;
+    std::vector<cmg::VJet> vjetv;
+    edm::Wrapper<cmg::VJet> evjet;
+    edm::Wrapper<std::vector<cmg::VJet> > vevjet;
 
     cmg::GenParticlePtr gpptr_;
 
