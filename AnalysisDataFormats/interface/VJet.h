@@ -33,10 +33,10 @@ namespace cmg {
     ///number of subjets in pruned jet
     //   static const unsigned NSUBJETS;
     //empty constructor
-    VJet() :  qjet_(-1.0), tau1_(0.0), tau2_(-1.0), tau3_(99.0){};
+    VJet() :  qjet_(-1.0), tau1_(0.0), tau2_(-1.0), tau3_(99.0),mdrop_(-99.0), prunedMass_(-111.0){};
 
     //constructor
-      VJet(const value& j): PFJet(j), qjet_(-1.0), tau1_(0.0), tau2_(-1.0), tau3_(99.0){};
+      VJet(const value& j): PFJet(j), qjet_(-1.0), tau1_(0.0), tau2_(-1.0), tau3_(99.0),mdrop_(-99.0), prunedMass_(-111.0){};
 
     virtual ~VJet(){}
 
