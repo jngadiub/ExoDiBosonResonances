@@ -12,8 +12,7 @@ pfJetFactory = cms.PSet(
                             ),
        puIds=cms.VInputTag("puJetMvaCustom:cutbasedId",
                            "puJetMvaCustom:fullId",
-                           "puJetMvaCustom:simpleId",
-                           
+                           "puJetMvaCustom:simpleId",                           
                            )
        )
 
@@ -38,6 +37,41 @@ cmgJet = cms.EDFilter(
  #      recoLepton = cms.PSet( recoLepton = cms.string("sourcePtr().get().hasOverlaps('recoLeptons')")),
        ),    
     verbose = cms.untracked.bool( False )
+)
+
+
+structJetFactory = cms.PSet(
+       inputCollection = cms.InputTag("selectedPatJets"),
+       prunedJetCollection=cms.InputTag("selectedPatJetsPruned"),
+       baseJetFactory = baseJetFactory.clone(),
+       pfJetFactory = pfJetFactory.clone(),
+       useConstituents=cms.bool(False),
+       puVariables=cms.InputTag("puJetId"), #puJetIdAK5NoPUSub
+       puMvas=cms.VInputTag("puJetMvaCustom:cutbasedDiscriminant",
+                            "puJetMvaCustom:fullDiscriminant", #puJetMvaAK5NoPUSub
+                            "puJetMvaCustom:simpleDiscriminant"
+                            ),
+       puIds=cms.VInputTag("puJetMvaCustom:cutbasedId",
+                           "puJetMvaCustom:fullId",
+                           "puJetMvaCustom:simpleId",                           
+                           ),
+       verbose = cms.untracked.bool( True )
+       )
+
+cmgStructuredJet = cms.EDFilter(
+    "VJetPOProducer", 
+    cfg = structJetFactory.clone(),
+ #   cfg.prunedJetCollection=cms.InputTag("selectedPatJetsPruned"),
+    cuts = cms.PSet(
+ #       btag = trackCountingHighEffBJetTags.clone(),
+ #       TCHE = trackCountingHighEffBJetTags.clone(),
+ #       JP = jetProbabilityBJetTags.clone(),
+ #       CSV = combinedSecondaryVertexBJetTags.clone(),
+       jetKinematics = jetKinematics.clone(),
+       looseJetId = looseJetId.clone(),
+ #      genLepton = cms.PSet( genLepton = cms.string("sourcePtr().get().hasOverlaps('genLeptons')")),
+ #      recoLepton = cms.PSet( recoLepton = cms.string("sourcePtr().get().hasOverlaps('recoLeptons')")),
+       )
 )
 
 

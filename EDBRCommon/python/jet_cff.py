@@ -67,8 +67,9 @@ cmgJet = cms.EDProducer("cmgPFJetCleaner",
 
 
 
-
-
+from ExoDiBosonResonances.EDBRCommon.factories.cmgJet_cfi import cmgStructuredJet as cmgJetStructuredRaw
+cmgJetStructuredRaw.cfg.inputCollection=cms.InputTag('selectedPatJets')
+cmgJetStructuredRaw.cfg.prunedJetCollection=cms.InputTag('selectedPatJetsCHSpruned')
                         
 
 
@@ -109,6 +110,7 @@ jetSequence = cms.Sequence(
 #    + ak5PFJets*ak5PFJetsL1FastL2L3 *qglAK5PF 
     + cmgJetRaw
     + cmgJet
+    + cmgJetStructuredRaw
 #    + cmgJet
     ) 
 

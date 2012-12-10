@@ -2,9 +2,12 @@
 #define __ExoDiBosonResonances_EDBRCommon_CMGTools_h__
 
 #include "ExoDiBosonResonances/EDBRCommon/interface/CompoundFactories.h"
+#include "ExoDiBosonResonances/EDBRCommon/interface/VJetFactory.h"
 //#include "ExoDiBosonResonances/EDBRCommon/interface/PFJetSmearFactory.h"
 #include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
 
+
+typedef PhysicsObjectProducer<cmg::VJetFactory> VJetPOProducer;
 //typedef PhysicsObjectProducer<cmg::PFJetSmearFactory> PFJetSmearPOProducer;
 
 typedef PhysicsObjectProducer<cmg::DiGenParticleFactory> DiGenParticlePOProducer;

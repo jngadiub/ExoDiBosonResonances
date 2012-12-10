@@ -22,9 +22,9 @@ rm -f Francesco/KinFitter/src/LeptonNeutrinoKinFitter.*
 #template <typename T, typename U> class DiObjectKinFitFactory; near the top and
 #friend class cmg::DiObjectKinFitFactory<T,U>; near the bottom.
 
-# Add the HEEP code and the modified HEEP isolation for boosted case.
-cvs co -r V00-09-03 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer
-cvs co -r V00-02-01  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/BstdZeeTools
+#In AnalysisDataFormats/CMGTools/interface/PFJet.h add these two lines 
+#friend class VJetFactory;
+#just after the line   :  friend class PFJetFactory;
 
 scram b -j 7
 

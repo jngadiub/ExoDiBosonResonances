@@ -2,7 +2,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 
-
+DEFINE_FWK_MODULE(VJetPOProducer);
 //DEFINE_FWK_MODULE(PFJetSmearPOProducer);
 DEFINE_FWK_MODULE(DiGenParticlePOProducer);
 
