@@ -9,13 +9,27 @@ Most recent recommended tag for analysis code : edbr_zz_20121210 (but the HEAD m
 Follow these: https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsReleasesExperimental#Mike_Cris_533_V5_10_0
 scram b -j 4
 
+cvs up -r 1.7 CMGTools/Common/python/PAT/jetSubstructure_cff.py
+cvs up -r 1.53 PhysicsTools/PatAlgos/python/tools/tauTools.py
+cvs up -r 1.12 PhysicsTools/PatAlgos/python/producersLayer1/tauProducer_cff.py
+cvs up -r 1.15 PhysicsTools/PatAlgos/python/recoLayer0/tauDiscriminators_cff.py
+chmod +x CMGTools/Production/scripts/*.py
+chmod +x CMGTools/Common/scripts/*.py
+cd EGamma/EGammaAnalysisTools/data
+cat download.url | xargs wget
+cd -
+
 # Add the HEEP code and the modified HEEP isolation for boosted case.
 cvs co -r V00-09-03 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer
 cvs co -r V00-02-01  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/BstdZeeTools
 
 
 cvs co -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
-cvs co -d ExoDiBosonResonances UserCode/ExoDiBosonResonances
+cvs co -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
+cvs co -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
+cvs co -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
+cvs co -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
+
 rm -rf ExoDiBosonResonances/AnalysisDataFormats
 cvs co -d Francesco/KinFitter/src UserCode/pandolf/KinematicFit
 rm -f Francesco/KinFitter/src/T*
