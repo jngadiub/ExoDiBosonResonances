@@ -187,6 +187,14 @@ if runQJets:
     process.PATCMGSequence += process.selectedPatJetsAK7CHSwithQjets
     patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHSwithNsub_*_*']
 
+######ADD PU JET ID
+    from  CMGTools.External.pujetidsequence_cff import puJetId
+    process.puJetIdAK7CHS = puJetId.clone(
+        jets ='selectedPatJetsAK7CHSwithQjets'
+        )
+    process.PATCMGSequence += process.puJetIdAK7CHS
+    patEventContentCMG+=['keep *_puJetIdAK7CHS_*_*']
+
 if runOnMC is False:
     # removing MC stuff
     print 'removing MC stuff, as we are running on Data'
