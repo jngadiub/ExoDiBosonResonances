@@ -19,7 +19,7 @@ patJetCorrFactorsCA8CHS = patJetCorrFactors.clone()
 patJetCorrFactorsCA8CHS.src = jetSource
 # will need to add L2L3 corrections in the cfg
 patJetCorrFactorsCA8CHS.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
-patJetCorrFactorsCA8CHS.payload = 'CA8PFchs'
+patJetCorrFactorsCA8CHS.payload = 'AK7PFchs'
 patJetCorrFactorsCA8CHS.useRho = True
 
 # parton and gen jet matching
@@ -96,7 +96,7 @@ patJetCorrFactorsCA8CHSpruned = patJetCorrFactors.clone()
 patJetCorrFactorsCA8CHSpruned.src = jetSource
 # will need to add L2L3 corrections in the cfg
 patJetCorrFactorsCA8CHSpruned.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
-patJetCorrFactorsCA8CHSpruned.payload = 'CA8PFchs'
+patJetCorrFactorsCA8CHSpruned.payload = 'AK7PFchs'
 patJetCorrFactorsCA8CHSpruned.useRho = True
 
 # parton and gen jet matching
@@ -170,4 +170,4 @@ selectedPatJetsCA8CHSwithQjets = cms.EDProducer("QjetsAdder",
                                preclustering = cms.int32(50),
                               )
 
-ca8Jets = cms.Sequence( jetMCSequenceCA8CHS + PATCMGJetSequenceCA8CHS + jetMCSequenceCA8CHSpruned + PATCMGJetSequenceCA8CHSpruned + selectedPatJetsCA8CHSwithNsub + selectedPatJetsCA8CHSwithQjets )
+ca8Jets = cms.Sequence( PATCMGJetSequenceCA8CHS + PATCMGJetSequenceCA8CHSpruned + selectedPatJetsCA8CHSwithNsub + selectedPatJetsCA8CHSwithQjets )
