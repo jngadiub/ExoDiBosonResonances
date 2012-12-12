@@ -166,7 +166,7 @@ selectedPatJetsCA8CHSwithQjets = cms.EDProducer("QjetsAdder",
                                ntrial = cms.int32(50),
                                cutoff=cms.double(100.0),
                                jetRad= cms.double(0.8),
-                               jetAlgo=cms.string("CambridgeAachen"),
+                               jetAlgo=cms.string("CA"),
                                preclustering = cms.int32(50),
                               )
 
