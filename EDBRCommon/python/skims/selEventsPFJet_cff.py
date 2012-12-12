@@ -18,5 +18,27 @@ vbfJet = cms.EDFilter("CmgPFJetSelector",
                       )
 
 
+
 selectedJetSequence = cms.Sequence(vbfJet + jetIDJet + selectedJetCandFilter)
 #selectedJetSequence = cms.Sequence(jetIDJet) #for PU studies I want all the jets
+
+
+######## for Merged topology
+vbfJetMerged = cms.EDFilter("CmgVJetSelector",
+                      src = cms.InputTag("cmgJetStructured"),
+                      cut = cms.string("getSelection(\"cuts_looseJetId\") && getSelection(\"cuts_jetKinematics_pt\")")
+                      )
+
+
+jetIDMerged = cms.EDFilter(
+    "CmgVJetSelector",
+    src = cms.InputTag("cmgJetStructured"),
+    cut = cms.string( " getSelection(\"cuts_mergedJetKinematics\") && getSelection(\"cuts_mergedJetVTagging\")") ### && getSelection(\"cuts_signalBoostedZ\")
+    )
+
+selectedVJetCandFilter = cms.EDFilter("CandViewCountFilter",
+   src = cms.InputTag('jetIDMerged'),
+   minNumber = cms.uint32(1)
+ )
+
+selectedMergedJetSequence = cms.Sequence(vbfJetMerged + jetIDMerged + selectedVJetCandFilter)

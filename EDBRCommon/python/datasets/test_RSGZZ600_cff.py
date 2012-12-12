@@ -7,5 +7,8 @@ source = cms.Source("PoolSource",
                                                 fileNames = readFiles
                                                 )
 readFiles.extend([
-    '/store/cmst3/user/bonato//patTuple/2012/EXOVVtest/newPatTuple_ZZ_600_c1.root'
+ #   '/store/cmst3/user/bonato//patTuple/2012/EXOVVtest/newPatTuple_ZZ_600_c1.root'
+#    '/store/cmst3/user/bonato//patTuple/2012/EXOVVtest/newPatTuple_ZZ_1000_c1.root'
+#        '/store/cmst3/user/bonato//patTuple/2012/EXOVVtest/patExoWW_M600_10_1_KPf.root'
+            '/store/cmst3/user/bonato//patTuple/2012/EXOVVtest/patZZ_M1000_5k_20121212.root'
     ])

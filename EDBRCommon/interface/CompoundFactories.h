@@ -22,7 +22,12 @@ namespace cmg{
   typedef EDBRCandidateFactory< cmg::DiElectronDiJet::type1, cmg::DiElectronDiJet::type2 > DiElectronDiJetEDBRFactory;
   typedef EDBRCandidateFactory< cmg::DiMuonDiJet::type1, cmg::DiMuonDiJet::type2 > DiMuonDiJetEDBRFactory;
   typedef EDBRCandidateFactory< cmg::DiGenParticleDiGenParticle::type1, cmg::DiGenParticleDiGenParticle::type2 > DiGenParticleDiGenParticleEDBRFactory;
- 
+
+
+  typedef DiObjectFactory< cmg::DiElectronSingleJet::type1, cmg::DiElectronSingleJet::type2 > DiElectronSingleJetFactory;
+  typedef DiObjectFactory< cmg::DiMuonSingleJet::type1, cmg::DiMuonSingleJet::type2 > DiMuonSingleJetFactory;
+  typedef EDBRCandidateFactory< cmg::DiElectronSingleJet::type1, cmg::DiElectronSingleJet::type2 > DiElectronSingleJetEDBRFactory;
+  typedef EDBRCandidateFactory< cmg::DiMuonSingleJet::type1, cmg::DiMuonSingleJet::type2 > DiMuonSingleJetEDBRFactory;
  
 }
 

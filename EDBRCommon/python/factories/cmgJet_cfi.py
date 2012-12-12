@@ -6,13 +6,15 @@ pfJetFactory = cms.PSet(
        baseJetFactory = baseJetFactory.clone(),
        useConstituents=cms.bool(False),
        puVariables=cms.InputTag("puJetId"), #puJetIdAK5NoPUSub
-       puMvas=cms.VInputTag("puJetMvaCustom:cutbasedDiscriminant",
+       puMvas=cms.VInputTag(
                             "puJetMvaCustom:fullDiscriminant", #puJetMvaAK5NoPUSub
                             "puJetMvaCustom:simpleDiscriminant"
+                            #"puJetMvaCustom:cutbasedDiscriminant",
                             ),
-       puIds=cms.VInputTag("puJetMvaCustom:cutbasedId",
+       puIds=cms.VInputTag(
                            "puJetMvaCustom:fullId",
-                           "puJetMvaCustom:simpleId",                           
+                           "puJetMvaCustom:simpleId"
+                           #"puJetMvaCustom:cutbasedId",
                            )
        )
 
@@ -40,6 +42,11 @@ cmgJet = cms.EDFilter(
 )
 
 
+from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import mergedJetKinematics
+from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import mergedJetVTagging
+from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import isMergedSideband
+from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import isMergedSignal
+
 structJetFactory = cms.PSet(
        inputCollection = cms.InputTag("selectedPatJets"),
        prunedJetCollection=cms.InputTag("selectedPatJetsPruned"),
@@ -48,12 +55,12 @@ structJetFactory = cms.PSet(
        useConstituents=cms.bool(False),
        puVariables=cms.InputTag("puJetId"), #puJetIdAK5NoPUSub
        puMvas=cms.VInputTag("puJetMvaCustom:cutbasedDiscriminant",
-                            "puJetMvaCustom:fullDiscriminant", #puJetMvaAK5NoPUSub
-                            "puJetMvaCustom:simpleDiscriminant"
+                            "puJetMvaCustom:simpleDiscriminant", #puJetMvaAK5NoPUSub
+                            "puJetMvaCustom:fullDiscriminant"
                             ),
        puIds=cms.VInputTag("puJetMvaCustom:cutbasedId",
-                           "puJetMvaCustom:fullId",
-                           "puJetMvaCustom:simpleId",                           
+                           "puJetMvaCustom:simpleId",
+                           "puJetMvaCustom:fullId",                           
                            ),
        verbose = cms.untracked.bool( True )
        )
@@ -67,9 +74,13 @@ cmgStructuredJet = cms.EDFilter(
  #       TCHE = trackCountingHighEffBJetTags.clone(),
  #       JP = jetProbabilityBJetTags.clone(),
  #       CSV = combinedSecondaryVertexBJetTags.clone(),
-       jetKinematics = jetKinematics.clone(),
-       looseJetId = looseJetId.clone(),
- #      genLepton = cms.PSet( genLepton = cms.string("sourcePtr().get().hasOverlaps('genLeptons')")),
+    jetKinematics = jetKinematics.clone(),
+    mergedJetKinematics = mergedJetKinematics.clone(),
+    looseJetId = looseJetId.clone(),
+    mergedJetVTagging = mergedJetVTagging.clone(),
+    signalBoostedZ = isMergedSignal.clone(),
+    sidebandBoostedZ = isMergedSideband.clone(),
+    genP = cms.PSet( genLepton = cms.string("sourcePtr().get().hasOverlaps('genJets')"))
  #      recoLepton = cms.PSet( recoLepton = cms.string("sourcePtr().get().hasOverlaps('recoLeptons')")),
        )
 )

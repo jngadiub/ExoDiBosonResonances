@@ -4,6 +4,7 @@
 
 DEFINE_FWK_MODULE(VJetPOProducer);
 //DEFINE_FWK_MODULE(PFJetSmearPOProducer);
+DEFINE_FWK_MODULE(CmgVJetSelector);
 DEFINE_FWK_MODULE(DiGenParticlePOProducer);
 
 DEFINE_FWK_MODULE(DiGenParticleDiGenParticlePOProducer);
@@ -12,9 +13,16 @@ DEFINE_FWK_MODULE(DiElectronDiJetPOProducer);
 DEFINE_FWK_MODULE(DiPFJetKinFitPOProducer);
 DEFINE_FWK_MODULE(DiJetKinFitPOProducer);
 
+DEFINE_FWK_MODULE(DiMuonSingleJetPOProducer);
+DEFINE_FWK_MODULE(DiElectronSingleJetPOProducer);
+
 DEFINE_FWK_MODULE(DiGenParticleDiGenParticleEDBRPOProducer);
 DEFINE_FWK_MODULE(DiMuonDiJetEDBRPOProducer);
 DEFINE_FWK_MODULE(DiElectronDiJetEDBRPOProducer);
+
+DEFINE_FWK_MODULE(DiMuonSingleJetEDBRPOProducer);
+DEFINE_FWK_MODULE(DiElectronSingleJetEDBRPOProducer);
+
 
 //typedef PhysicsObjectProducer<cmg::DiElectronFactory> DiElectronPOProducer;
 //DEFINE_FWK_MODULE(DiElectronPOProducer);

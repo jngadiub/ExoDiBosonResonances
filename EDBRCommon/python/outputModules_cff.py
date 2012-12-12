@@ -59,5 +59,7 @@ if options.selection == "full":
 if options.selection == "presel":
     if options.lepton == "both" or options.lepton == "ele":
         out.SelectEvents.SelectEvents.append("preselElePath")
-    if options.lepton == "both" or options.lepton == "mu":
+        out.SelectEvents.SelectEvents.append("preselEleMergedPath")
+if options.lepton == "both" or options.lepton == "mu":
         out.SelectEvents.SelectEvents.append("preselMuPath")
+        out.SelectEvents.SelectEvents.append("preselMuMergedPath")

@@ -35,12 +35,21 @@ typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiElectr
 DEFINE_FWK_MODULE(CmgDiElectronDiJetEDBRSelector);
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiMuonDiJetEDBR> > CmgDiMuonDiJetEDBRSelector;
 DEFINE_FWK_MODULE(CmgDiMuonDiJetEDBRSelector);
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiElectronSingleJetEDBR> > CmgDiElectronSingleJetEDBRSelector;
+DEFINE_FWK_MODULE(CmgDiElectronSingleJetEDBRSelector);
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiMuonSingleJetEDBR> > CmgDiMuonSingleJetEDBRSelector;
+DEFINE_FWK_MODULE(CmgDiMuonSingleJetEDBRSelector);
+
 
 //define mergers for Resonance-like objects
 typedef Merger<std::vector<cmg::DiElectronDiJetEDBR>, std::vector<cmg::DiElectronDiJetEDBR> > CmgDiElectronDiJetEDBRMerger;
 DEFINE_FWK_MODULE( CmgDiElectronDiJetEDBRMerger );
 typedef Merger<std::vector<cmg::DiMuonDiJetEDBR>, std::vector<cmg::DiMuonDiJetEDBR> > CmgDiMuonDiJetEDBRMerger;
 DEFINE_FWK_MODULE( CmgDiMuonDiJetEDBRMerger );
+typedef Merger<std::vector<cmg::DiElectronSingleJetEDBR>, std::vector<cmg::DiElectronSingleJetEDBR> > CmgDiElectronSingleJetEDBRMerger;
+DEFINE_FWK_MODULE( CmgDiElectronSingleJetEDBRMerger );
+typedef Merger<std::vector<cmg::DiMuonSingleJetEDBR>, std::vector<cmg::DiMuonSingleJetEDBR> > CmgDiMuonSingleJetEDBRMerger;
+DEFINE_FWK_MODULE( CmgDiMuonSingleJetEDBRMerger );
 
 DEFINE_FWK_MODULE(PUWeightProducer);
 DEFINE_FWK_MODULE(PTWeightProducer);
@@ -74,13 +83,24 @@ typedef HLTWeightProducer<cmg::DiElectronDiJetEDBR> HLTWeightProducerElectron;
 typedef HLTWeightProducer<cmg::DiMuonDiJetEDBR>     HLTWeightProducerMu;
 DEFINE_FWK_MODULE(HLTWeightProducerElectron);
 DEFINE_FWK_MODULE(HLTWeightProducerMu);
-
+typedef WeightAdder<cmg::DiElectronSingleJetEDBR> DiElectronVJetEDBRWeightAdder;
+typedef WeightAdder<cmg::DiMuonSingleJetEDBR>     DiMuonVJetEDBRWeightAdder;
+DEFINE_FWK_MODULE(DiElectronVJetEDBRWeightAdder);
+DEFINE_FWK_MODULE(DiMuonVJetEDBRWeightAdder);
+typedef HLTWeightProducer<cmg::DiElectronSingleJetEDBR> HLTWeightProducerEleVJet;
+typedef HLTWeightProducer<cmg::DiMuonSingleJetEDBR>     HLTWeightProducerMuVJet;
+DEFINE_FWK_MODULE(HLTWeightProducerEleVJet);
+DEFINE_FWK_MODULE(HLTWeightProducerMuVJet);
 
 //define VBF taggers
 typedef EDBRTagger<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRTagger;
 typedef EDBRTagger<cmg::DiMuonDiJetEDBR>     DiMuonDiJetEDBRTagger;
 DEFINE_FWK_MODULE(DiElectronDiJetEDBRTagger);
 DEFINE_FWK_MODULE(DiMuonDiJetEDBRTagger);
+typedef EDBRTagger<cmg::DiElectronSingleJetEDBR> DiElectronVJetEDBRTagger;
+typedef EDBRTagger<cmg::DiMuonSingleJetEDBR>     DiMuonVJetEDBRTagger;
+DEFINE_FWK_MODULE(DiElectronVJetEDBRTagger);
+DEFINE_FWK_MODULE(DiMuonVJetEDBRTagger);
 
 
 DEFINE_FWK_MODULE(DummyGenProducer);

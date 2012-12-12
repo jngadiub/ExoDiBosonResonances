@@ -11,3 +11,9 @@ cmgEDBRSelKinFit = cms.EDFilter(
     src = cms.InputTag( "cmgEDBRKinFitWeighted" ),
     cut = cms.string( "!getSelection(\"cuts_overlap\")" )
     )
+
+cmgEDBRMergedSel = cms.EDFilter(
+    "CmgDiElectronSingleJetEDBRSelector",
+    src = cms.InputTag( "cmgEDBRMergedWeighted" ),
+    cut = cms.string( "!getSelection(\"cuts_overlap\")" )
+    )

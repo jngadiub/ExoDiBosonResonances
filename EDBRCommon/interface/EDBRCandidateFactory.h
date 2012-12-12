@@ -2,6 +2,7 @@
 #define EDBRCANDIDATEFACTORY_H_
 
 #include "AnalysisDataFormats/ExoDiBosonResonances/interface/EDBRCandidate.h"
+#include "AnalysisDataFormats/ExoDiBosonResonances/interface/VJet.h"
 #include "CMGTools/Common/interface/Factory.h"
 #include "CMGTools/Common/interface/SettingTool.h"
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
@@ -31,11 +32,27 @@ namespace cmg{
 
     //need to override from Factory to insert "typename"
     typedef typename cmg::Factory<typename cmg::EDBRCandidate<T,U> >::event_ptr event_ptr;
-    virtual event_ptr create(const edm::Event&, const edm::EventSetup&) ;
-    
+    typedef cmg::Factory<cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> >::event_ptr EEJ_event_ptr;
+    typedef cmg::Factory<cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> >::event_ptr MMJ_event_ptr;
+    virtual event_ptr create(const edm::Event& iEvent, const edm::EventSetup& iSetup);
+
+
+    // virtual event_ptr2 create(const edm::Event& iEvent, const edm::EventSetup& iSetup);
+
+    /*
+     typedef typename cmg::Factory<typename cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> >::event_ptr event_ptr2;
+    //    template<> 
+     typename cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::event_ptr create(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
+      std::cout<<"Blah"<<std::endl;      
+      typename cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::event_ptr result(new collection);
+ 
+      return result;
+    }//end create (2)
+    */
+
     ///Set angular variables etc
-    virtual void set(const cmg::DiObject<T,U>& pair, cmg::EDBRCandidate<T,U>* const obj) const;
-    
+    virtual void set(const cmg::DiObject<T,U>& pair, cmg::EDBRCandidate<T,U>* const obj, bool isMergedJet=false) const;
+    // virtual void set(const cmg::DiObject<cmg::DiElectron,cmg::VJet>& in, cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet>* const obj) const;  
   private:       
     const edm::InputTag inLabel_;
     const edm::InputTag vbftag_;
@@ -43,8 +60,10 @@ namespace cmg{
   };
 
 
-}
-template< typename T, typename U > typename cmg::EDBRCandidateFactory<T,U>::event_ptr cmg::EDBRCandidateFactory<T,U>::create(const edm::Event& iEvent, const edm::EventSetup&){
+
+
+  
+template< typename T, typename U > typename cmg::EDBRCandidateFactory<T,U>::event_ptr cmg::EDBRCandidateFactory<T,U>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   
   typedef  std::vector< cmg::EDBRCandidate<T,U> > collection;
   typedef  edm::View< cmg::DiObject<T,U> > diOcollection;
@@ -76,7 +95,78 @@ template< typename T, typename U > typename cmg::EDBRCandidateFactory<T,U>::even
   return result;
 }
 
-template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const cmg::DiObject<T,U>& in, cmg::EDBRCandidate<T,U>* const obj) const{
+
+template<>  cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::EEJ_event_ptr cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+
+  // std::cout<<"USING SINGLE JET cmg::EDBRCandidateFactory::create (EEJ)"<<std::endl;
+
+  typedef  std::vector< cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> > collection;
+  typedef  edm::View< cmg::DiObject<cmg::DiElectron,cmg::VJet> > diOcollection;
+  
+  edm::Handle<diOcollection> diCands;
+  iEvent.getByLabel(inLabel_,diCands);
+    
+  edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
+  iEvent.getByLabel(vbftag_,vbfPairs);
+
+  
+  typename cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::EEJ_event_ptr result(new collection);
+  for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
+    // first create the  "pure" EDBR candidate without vbf tags
+    cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> cmgTmp(*it);
+    cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::set(cmgTmp,&cmgTmp,true);
+    result->push_back(cmgTmp);
+    // loop over vbf tagging pairs, but only add non-overlapping candidates
+    if( vbfPairs.isValid()) {
+      for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
+	cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> cmgTmpVBF(cmgTmp);
+	edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
+	cmgTmpVBF.vbfptr_=tmpptr;
+	if(vbfoverlapveto_(cmgTmpVBF))
+	  result->push_back(cmgTmpVBF);
+	  }
+    }
+  }
+  return result;
+}
+
+
+template<>  cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::MMJ_event_ptr cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+
+  // std::cout<<"USING SINGLE JET cmg::EDBRCandidateFactory::create (MMJ)"<<std::endl;
+
+  typedef  std::vector< cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> > collection;
+  typedef  edm::View< cmg::DiObject<cmg::DiMuon,cmg::VJet> > diOcollection;
+  
+  edm::Handle<diOcollection> diCands;
+  iEvent.getByLabel(inLabel_,diCands);
+    
+  edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
+  iEvent.getByLabel(vbftag_,vbfPairs);
+
+  
+  typename cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::MMJ_event_ptr result(new collection);
+  for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
+    // first create the  "pure" EDBR candidate without vbf tags
+    cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> cmgTmp(*it);
+    cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::set(cmgTmp,&cmgTmp,true);
+    result->push_back(cmgTmp);
+    // loop over vbf tagging pairs, but only add non-overlapping candidates
+    if( vbfPairs.isValid()) {
+      for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
+	cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> cmgTmpVBF(cmgTmp);
+	edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
+	cmgTmpVBF.vbfptr_=tmpptr;
+	if(vbfoverlapveto_(cmgTmpVBF))
+	  result->push_back(cmgTmpVBF);
+	  }
+    }
+  }
+  return result;
+}
+
+
+template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const cmg::DiObject<T,U>& in, cmg::EDBRCandidate<T,U>* const obj, bool isMergedJet) const{
   double costhetastar=-77.0;
   double helphi=-77.0;
   double helphiZll=-77.0;
@@ -134,10 +224,31 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
   // careful to the order: L1, the z-axis and Z->ll make a right-handed (non-orthogonal) frame (xyz); at the end we want the angle btw x and y
   
   v_2=(ZllboostedX->momentum().Cross(NegLeptboostedX->momentum().unit())).unit();
+  helphiZll=fabs( acos(v_1.Dot(v_2)) );//two-fold ambiguity when doing the acos
 
+  //resolve sign ambiguities: clockwise rotation around ZllboostedX flight direction
+  if(v_pbeamLAB.Dot(v_2)>0.0)helphiZll=-1.0*helphiZll;
+  else helphiZll=+1.0*helphiZll;
+
+
+  //std::cout << "cloning" << std::endl;
+  //cosThetaZll
+  std::auto_ptr<reco::Candidate> XboostedZll =cloneDecayTree( in );
+  std::auto_ptr<reco::Candidate> ZllboostedZll =cloneDecayTree( in.leg1() );
+  boostZll.set(*ZllboostedZll);
+  boostZll.set(*XboostedZll);
+  const reco::Candidate& lepton_neg=(*ZllboostedZll->daughter(negLeptInd));
+  helcosthetaZll = (-1.0*(lepton_neg.p4().x()* XboostedZll->p4().x()+
+			  lepton_neg.p4().y()* XboostedZll->p4().y()+
+			  lepton_neg.p4().z()* XboostedZll->p4().z())/
+		    (lepton_neg.p4().P()* XboostedZll->p4().P())  );
+
+ 
+
+ 
+  if(!isMergedJet){
   //the sign is undefined (impossible to distinguish q from qbar)
-  math::XYZVector v_3(0.,-22222.,888.);
-
+    math::XYZVector v_3(0.,-22222.,888.);
   //possible convention: take the jet with highest pt in LAB
   //is it really a good idea? are we losing resolution ? possible pT mismatch GEN vs RECO
   //other idea: just pick the jet with pos azim angle in the Zjj rest frame
@@ -162,33 +273,17 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
   //unit vector v_4 =  (v_pbeamLAB.Cross(  (ZjjboostedX->momentum()).unit()) ).unit();//versor normal to z-Zjj plane
 
   //phi1 and phi2
-  helphiZll=fabs( acos(v_1.Dot(v_2)) );//two-fold ambiguity when doing the acos
+
   helphiZjj=fabs( acos(v_1.Dot(v_3)) );//two-fold ambiguity when doing the acos
   //phi
   helphi    =fabs( acos(v_2.Dot(v_3)) );//two-fold ambiguity when doing the acos + pi ambiguity from sign of v_3
-  
-  //resolve sign ambiguities: clockwise rotation around ZllboostedX flight direction
-  if(v_pbeamLAB.Dot(v_2)>0.0)helphiZll=-1.0*helphiZll;
-  else helphiZll=+1.0*helphiZll;
 
-  if(v_pbeamLAB.Dot(v_3)>0.0)helphiZjj=+1.0*helphiZjj;
-  else helphiZjj=-1.0*helphiZjj;
-  if(NegLeptboostedX->momentum().Dot(v_3)>0.0)helphi= +1.0 * helphi;
-  else helphi= -1.0 * helphi;
+  //resolve sign ambiguities
+    if(v_pbeamLAB.Dot(v_3)>0.0)helphiZjj=+1.0*helphiZjj;
+    else helphiZjj=-1.0*helphiZjj;
+    if(NegLeptboostedX->momentum().Dot(v_3)>0.0)helphi= +1.0 * helphi;
+    else helphi= -1.0 * helphi;
 
-  //std::cout << "cloning" << std::endl;
-  //cosThetaZll
-  std::auto_ptr<reco::Candidate> XboostedZll =cloneDecayTree( in );
-  std::auto_ptr<reco::Candidate> ZllboostedZll =cloneDecayTree( in.leg1() );
-  boostZll.set(*ZllboostedZll);
-  boostZll.set(*XboostedZll);
-  const reco::Candidate& lepton_neg=(*ZllboostedZll->daughter(negLeptInd));
-  helcosthetaZll = (-1.0*(lepton_neg.p4().x()* XboostedZll->p4().x()+
-			  lepton_neg.p4().y()* XboostedZll->p4().y()+
-			  lepton_neg.p4().z()* XboostedZll->p4().z())/
-		    (lepton_neg.p4().P()* XboostedZll->p4().P())  );
-
-  //calc cosThetaZjj
   std::auto_ptr<reco::Candidate> XboostedZjj =cloneDecayTree( in );
   boostZjj.set(*XboostedZjj);
 
@@ -208,6 +303,9 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
     }
   }
 
+  }  //end if it is NOT Merged Jet case
+
+
     obj->costhetastar_ = costhetastar;
     obj->helphi_ = helphi;
     obj->helphiZll_ = helphiZll;
@@ -217,5 +315,8 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
     obj->phistarZll_ = phistarZll;
     obj->phistarZjj_ = phistarZjj; 
 }
+
+
+}//end namespace cmg
 
 #endif

@@ -13,6 +13,11 @@ jetCountFilter = cms.EDFilter("CandViewCountFilter",
                                  minNumber = cms.uint32(2)
 )
 
+genSelectorZQQ = cms.EDFilter("GenParticleSelector",
+    src = cms.InputTag("genParticles"),
+    cut = cms.string(' abs(pdgId)==23 &&numberOfDaughters> 0 && abs(daughter(0).pdgId)<9 && status==3')
+)
+
 genSelectorZDaughter = cms.EDFilter("GenParticleSelector",
     src = cms.InputTag("genParticles"),
     cut = cms.string(' (abs(pdgId)==11 || abs(pdgId)==13)&& abs(mother.pdgId)==23 ')
@@ -24,24 +29,32 @@ genSelectorZQDaughter = cms.EDFilter("GenParticleSelector",
 
 
 
-# PF base jets (light PF jets, do not store constituents) -------
-# must make cmgJet as first  PFJetFactory needs the  puMVA VM
-# and they are done with the PAT-jets in PAT-tuples. Impossible
-# to remake the puMVA VM because PF jets in our PAT-tuple miss
-# embedded PF constituents
-from ExoDiBosonResonances.EDBRCommon.factories.cmgJet_cfi import cmgJet as cmgJetRaw
-cmgJetRaw.cfg.inputCollection=cms.InputTag('selectedPatJets')#"selectedPatJets")
-#cmgJet = cmgJetRaw.clone()
 
 from  CMGTools.External.pujetidsequence_cff import puJetId, puJetMva
+from CMGTools.External.pujetidproducer_cfi import  stdalgos_4x, stdalgos_5x, stdalgos, cutbased, chsalgos_4x, chsalgos_5x, chsalgos
 ## puJetIdCustom = puJetId.clone( jets = 'selectedPatJets')
+##puJetIdCustom = puJetId.clone( jets = 'selectedPatJetsAK7CHSwithQjets')
 puJetMvaCustom= puJetMva.clone(
-    jetids = cms.InputTag("puJetId"),
-    jets ='selectedPatJets',
+    jetids = cms.InputTag("puJetIdAK7CHS"),
+#    jetids = cms.InputTag("puJetIdCustom"),
+    jets ='selectedPatJetsAK7CHSwithQjets',
+    algos =  chsalgos
     )
-
-##puJetIdSequence = cms.Sequence(puJetIdCustom*puJetMvaCustom)
+###puJetIdSequence = cms.Sequence(puJetIdCustom*puJetMvaCustom)
 puJetIdSequence = cms.Sequence(puJetMvaCustom)
+
+
+
+# PF base jets (light PF jets, do not store constituents) -------
+# must make cmgJet as first  PFJetFactory needs the  puMVA VM
+# and they are done with the PAT-jets in PAT-tuples.
+from ExoDiBosonResonances.EDBRCommon.factories.cmgJet_cfi import cmgJet as cmgJetRaw
+cmgJetRaw.cfg.inputCollection=cms.InputTag('selectedPatJetsAK7CHSwithQjets')#"selectedPatJets")
+cmgJetRaw.cfg.puVariables=cms.InputTag("puJetIdAK7CHS")
+#cmgJet = cmgJetRaw.clone()
+
+
+
 
 cmgJet = cms.EDProducer("cmgPFJetCleaner",
                           src = cms.InputTag("cmgJetRaw"),
@@ -68,10 +81,22 @@ cmgJet = cms.EDProducer("cmgPFJetCleaner",
 
 
 from ExoDiBosonResonances.EDBRCommon.factories.cmgJet_cfi import cmgStructuredJet as cmgJetStructuredRaw
-cmgJetStructuredRaw.cfg.inputCollection=cms.InputTag('selectedPatJets')
-cmgJetStructuredRaw.cfg.prunedJetCollection=cms.InputTag('selectedPatJetsCHSpruned')
-                        
-
+cmgJetStructuredRaw.cfg.inputCollection=cms.InputTag('selectedPatJetsAK7CHSwithQjets')
+cmgJetStructuredRaw.cfg.prunedJetCollection=cms.InputTag('selectedPatJetsAK7CHSpruned')
+cmgJetStructuredRaw.cfg.puVariables=cms.InputTag("puJetIdAK7CHS")
+cmgJetStructured = cms.EDProducer("cmgVJetCleaner",
+                          src = cms.InputTag("cmgJetStructuredRaw"),
+                          preselection = cms.string(''),
+                          checkOverlaps = cms.PSet( genJets = cms.PSet( src = cms.InputTag("genSelectorZQQ"),
+                                                                           preselection        = cms.string(""),  # don't preselect the muons
+                                                                           deltaR              = cms.double(0.3),
+                                                                           checkRecoComponents = cms.bool(False), # don't check if they share some AOD object ref
+                                                                           pairCut             = cms.string(""),
+                                                                           requireNoOverlaps = cms.bool(False), # overlaps don't cause the electron to be discared
+                                                                           ),              
+                                                    ),
+                                  finalCut = cms.string('')
+                                  )
 
 #################################
 #################################
@@ -110,7 +135,14 @@ jetSequence = cms.Sequence(
 #    + ak5PFJets*ak5PFJetsL1FastL2L3 *qglAK5PF 
     + cmgJetRaw
     + cmgJet
-    + cmgJetStructuredRaw
+ 
 #    + cmgJet
-    ) 
+    )
 
+mergedJetSequence = cms.Sequence(
+    highPtJets*jetCountFilter
+    + genSelectorZQQ
+    + puJetIdSequence
+    + cmgJetStructuredRaw
+    + cmgJetStructured
+)

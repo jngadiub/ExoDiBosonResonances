@@ -127,7 +127,8 @@ process.analysisSequenceMuons = cms.Sequence(
     process.diMuonSequence +
     process.selectedZMMSequence
     )
-
+if not ( options.lepton == "both" or options.lepton == "ele"): #only muon
+     process.muonSequence.insert(0,process.PUseq)
 
 ###################################################################
 # Jet Sequence: select jets and build di-jets from them           #
@@ -147,36 +148,61 @@ process.analysisSequenceJets = cms.Sequence(
     process.cmgDiJetKinFit
     )
 
+process.analysisSequenceMergedJets = cms.Sequence(
+    process.mergedJetSequence +
+    process.selectedMergedJetSequence 
+    )
+
 ###########################################################
 # Resonance Sequence: build EXO resonance from Z bosons   #
 ###########################################################
 
 # build X->ZZ->eejj
-process.load('ExoDiBosonResonances.EDBRElectron.resonance_cff')
-cloneProcessingSnippet(process,process.edbrSequenceEE, "Ele")
+process.load('ExoDiBosonResonances.EDBRElectron.resonanceEle_cff')
+cloneProcessingSnippet(process,process.edbrSequenceEEJJ, "Ele")
 
 
-process.analysisSequenceZZEE = cms.Sequence(
+process.analysisSequenceEEJJ = cms.Sequence(
     process.analysisSequenceElectrons +
 
     process.analysisSequenceJets +
     
-    process.edbrSequenceEEEle 
+    process.edbrSequenceEEJJEle
     )
 
-# build X->ZZ->mmjj
-process.load('ExoDiBosonResonances.EDBRMuon.resonance_cff')
-cloneProcessingSnippet(process,process.edbrSequenceMM, "Mu")
+# build X->ZZ->eej
+cloneProcessingSnippet(process,process.edbrSequenceMerged, "Ele")
+process.analysisSequenceEEJ = cms.Sequence(
+    process.analysisSequenceElectrons +
+    process.analysisSequenceMergedJets +
+    process.edbrSequenceMergedEle 
+    )
 
-process.analysisSequenceZZMM = cms.Sequence(
+
+# build X->ZZ->mmjj
+process.load('ExoDiBosonResonances.EDBRMuon.resonanceMu_cff')
+cloneProcessingSnippet(process,process.edbrSequenceMMJJ, "Mu")
+
+process.analysisSequenceMMJJ = cms.Sequence(
     process.analysisSequenceMuons +
 
     process.analysisSequenceJets +
     
-    process.edbrSequenceMMMu 
+    process.edbrSequenceMMJJMu
     )
 
+# build X->ZZ->mmj
+cloneProcessingSnippet(process,process.edbrSequenceMerged, "Mu")
+process.analysisSequenceMMJ = cms.Sequence(
+    process.analysisSequenceMuons +
+    process.analysisSequenceMergedJets +
+    process.edbrSequenceMergedMu 
+    )
 
-process.preselElePath = cms.Path(process.badEventFilter+ process.analysisSequenceZZEE )
-process.preselMuPath = cms.Path(process.badEventFilter+ process.analysisSequenceZZMM )
-
+if ( options.lepton == "both" or options.lepton == "ele"):
+     process.preselElePath = cms.Path(process.badEventFilter+ process.analysisSequenceEEJJ )
+     process.preselEleMergedPath = cms.Path(process.badEventFilter+ process.analysisSequenceEEJ )
+     
+if ( options.lepton == "both" or options.lepton == "mu"):
+     process.preselMuPath = cms.Path(process.badEventFilter+ process.analysisSequenceMMJJ )
+     process.preselMuMergedPath = cms.Path(process.badEventFilter+ process.analysisSequenceMMJ )
