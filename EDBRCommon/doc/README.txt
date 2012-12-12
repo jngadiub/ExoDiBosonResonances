@@ -10,6 +10,7 @@ Follow these: https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsReleasesExperimen
 scram b -j 4
 
 cvs up -r 1.7 CMGTools/Common/python/PAT/jetSubstructure_cff.py
+cvs up -r 1.10 CMGTools/Common/python/Tools/getGlobalTag.py
 cvs up -r 1.53 PhysicsTools/PatAlgos/python/tools/tauTools.py
 cvs up -r 1.12 PhysicsTools/PatAlgos/python/producersLayer1/tauProducer_cff.py
 cvs up -r 1.15 PhysicsTools/PatAlgos/python/recoLayer0/tauDiscriminators_cff.py
