@@ -91,6 +91,7 @@ process.jetMCSequenceAK7CHSpruned.remove(process.ak7GenJetsNoNu) # don't cluster
 process.selectedPatJetsAK7CHSpruned.cut = 'pt()>20'
 process.PATCMGSequence += process.PATCMGJetSequenceAK7CHSpruned
 patEventContentCMG+=['keep *_ak7PFJetsCHSpruned_SubJets_*']
+patEventContentCMG+=['keep *_ak7GenJetsNoNu_*_*']
 
 
 #### Adding CA8 jets and CA8 pruned jets
@@ -98,7 +99,8 @@ patEventContentCMG+=['keep *_ak7PFJetsCHSpruned_SubJets_*']
 process.load("ExoDiBosonResonances.PATtupleProduction.PAT_ca8jets_cff")
 process.PATCMGSequence += process.PATCMGJetSequenceCA8CHS
 process.PATCMGSequence += process.PATCMGJetSequenceCA8CHSpruned
-patEventContentCMG+=['keep *_ak7PFJetsCHSpruned_SubJets_*']
+patEventContentCMG+=['keep *_ca8PFJetsCHSpruned_SubJets_*']
+patEventContentCMG+=['keep *_ca8GenJetsNoNu_*_*']
 
 
 #### Adding Nsubjetiness
