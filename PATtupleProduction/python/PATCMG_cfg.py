@@ -93,6 +93,14 @@ process.PATCMGSequence += process.PATCMGJetSequenceAK7CHSpruned
 patEventContentCMG+=['keep *_ak7PFJetsCHSpruned_SubJets_*']
 
 
+#### Adding CA8 jets and CA8 pruned jets
+
+process.load("ExoDiBosonResonances.PATtupleProduction.PAT_ca8jets_cff")
+process.PATCMGSequence += process.PATCMGJetSequenceCA8CHS
+process.PATCMGSequence += process.PATCMGJetSequenceCA8CHSpruned
+patEventContentCMG+=['keep *_ak7PFJetsCHSpruned_SubJets_*']
+
+
 #### Adding Nsubjetiness
 
 process.selectedPatJetsAK7CHSwithNsub = cms.EDProducer("NjettinessAdder",
@@ -101,6 +109,105 @@ process.selectedPatJetsAK7CHSwithNsub = cms.EDProducer("NjettinessAdder",
                               )
 process.PATCMGSequence += process.selectedPatJetsAK7CHSwithNsub
 patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHS_*_*']
+process.PATCMGSequence += process.selectedPatJetsCA8CHSwithNsub
+patEventContentCMG+=['drop patJets_selectedPatJetsCA8CHS_*_*']
+
+#### Adding QJets
+
+process.selectedPatJetsAK7CHSwithQjets = cms.EDProducer("QjetsAdder",
+			   src=cms.InputTag("selectedPatJetsAK7CHSwithNsub"),
+			   zcut=cms.double(0.1),
+			   dcutfctr=cms.double(0.5),
+			   expmin=cms.double(0.0),
+			   expmax=cms.double(0.0),
+			   rigidity=cms.double(0.1),
+			   ntrial = cms.int32(50),
+			   cutoff=cms.double(100.0),
+			   jetRad= cms.double(0.7),
+			   jetAlgo=cms.string("AK"),
+			   preclustering = cms.int32(50),
+			  )
+if not runQJets:
+    process.selectedPatJetsAK7CHSwithQjets.cutoff=100000.0
+process.PATCMGSequence += process.selectedPatJetsAK7CHSwithQjets
+patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHSwithNsub_*_*']
+process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQjets
+patEventContentCMG+=['drop patJets_selectedPatJetsCA8CHSwithNsub_*_*']
+
+######ADD PU JET ID
+
+from  CMGTools.External.pujetidsequence_cff import puJetId
+process.puJetIdAK7CHS = puJetId.clone(
+    jets ='selectedPatJetsAK7CHSwithQjets',
+    jec = 'AK7chs'
+    )
+process.PATCMGSequence += process.puJetIdAK7CHS
+patEventContentCMG+=['keep *_puJetIdAK7CHS_*_*']
+process.puJetIdCA8CHS = puJetId.clone(
+    jets ='selectedPatJetsCA8CHSwithQjets',
+    jec = 'AK7chs'
+    )
+process.PATCMGSequence += process.puJetIdCA8CHS
+patEventContentCMG+=['keep *_puJetIdCA8CHS_*_*']
+
+if runOnMC is False:
+    # removing MC stuff
+    print 'removing MC stuff, as we are running on Data'
+
+    process.patElectrons.addGenMatch = False
+    process.makePatElectrons.remove( process.electronMatch )
+    
+    process.patMuons.addGenMatch = False
+    process.makePatMuons.remove( process.muonMatch )
+    
+    process.PATCMGSequence.remove( process.PATCMGGenSequence )
+    process.PATCMGJetSequence.remove( process.jetMCSequence )
+    process.PATCMGJetSequence.remove( process.patJetFlavourId )
+    process.patJets.addGenJetMatch = False
+    process.patJets.addGenPartonMatch = False
+
+    if isNewerThan('CMSSW_5_2_0'):
+        process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
+        process.patJetsCHSpruned.addGenJetMatch = False
+        process.patJetsCHSpruned.addGenPartonMatch = False
+        process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
+        process.patJetsAK7CHS.addGenJetMatch = False
+        process.patJetsAK7CHS.addGenPartonMatch = False
+        process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
+        process.patJetsAK7CHSpruned.addGenJetMatch = False
+        process.patJetsAK7CHSpruned.addGenPartonMatch = False
+        process.PATCMGJetSequenceCA8CHS.remove( process.jetMCSequenceCA8CHS )
+        process.patJetsCA8CHS.addGenJetMatch = False
+        process.patJetsCA8CHS.addGenPartonMatch = False
+        process.PATCMGJetSequenceCA8CHSpruned.remove( process.jetMCSequenceCA8CHSpruned )
+        process.patJetsCA8CHSpruned.addGenJetMatch = False
+        process.patJetsCA8CHSpruned.addGenPartonMatch = False
+
+    process.PATCMGTauSequence.remove( process.tauGenJets )
+    process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
+    process.PATCMGTauSequence.remove( process.tauGenJetMatch )
+    process.PATCMGTauSequence.remove( process.tauMatch )
+    process.patTaus.addGenJetMatch = False
+    process.patTaus.addGenMatch = False
+
+    process.patMETs.addGenMET = False 
+    process.patMETsRaw.addGenMET = False 
+
+    # setting up JSON file
+    # json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/DCSOnly/json_DCSONLY.txt'
+    # print 'using json file: ', json
+    # from CMGTools.Common.Tools.applyJSON_cff import *
+    # applyJSON(process, json )
+
+    # adding L2L3Residual corrections
+    process.patJetCorrFactors.levels.append('L2L3Residual')
+    if isNewerThan('CMSSW_5_2_0'):
+        process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
+        process.patJetCorrFactorsAK7CHS.levels.append('L2L3Residual')
+        process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
+        process.patJetCorrFactorsCA8CHS.levels.append('L2L3Residual')
+        process.patJetCorrFactorsCA8CHSpruned.levels.append('L2L3Residual')
+
 
 #### Adding HEEP and modified isolation
 ### Boosted electrons isolation
@@ -167,84 +274,6 @@ process.PATCMGSequence.replace( process.patElectrons,
 # Finally, change the source of the selectedPatElectrons.
 # The changes trickle down from here.
 process.selectedPatElectrons.src = cms.InputTag("heepPatElectrons")
-
-#### Adding QJets
-
-if runQJets:
-    process.selectedPatJetsAK7CHSwithQjets = cms.EDProducer("QjetsAdder",
-                               src=cms.InputTag("selectedPatJetsAK7CHSwithNsub"),
-                               zcut=cms.double(0.1),
-                               dcutfctr=cms.double(0.5),
-                               expmin=cms.double(0.0),
-                               expmax=cms.double(0.0),
-                               rigidity=cms.double(0.1),
-                               ntrial = cms.int32(50),
-                               cutoff=cms.double(100.0),
-                               jetRad= cms.double(0.7),
-                               jetAlgo=cms.string("AK"),
-                               preclustering = cms.int32(50),
-                              )
-    process.PATCMGSequence += process.selectedPatJetsAK7CHSwithQjets
-    patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHSwithNsub_*_*']
-
-######ADD PU JET ID
-    from  CMGTools.External.pujetidsequence_cff import puJetId
-    process.puJetIdAK7CHS = puJetId.clone(
-        jets ='selectedPatJetsAK7CHSwithQjets'
-        )
-    process.PATCMGSequence += process.puJetIdAK7CHS
-    patEventContentCMG+=['keep *_puJetIdAK7CHS_*_*']
-
-if runOnMC is False:
-    # removing MC stuff
-    print 'removing MC stuff, as we are running on Data'
-
-    process.patElectrons.addGenMatch = False
-    process.makePatElectrons.remove( process.electronMatch )
-    
-    process.patMuons.addGenMatch = False
-    process.makePatMuons.remove( process.muonMatch )
-    
-    process.PATCMGSequence.remove( process.PATCMGGenSequence )
-    process.PATCMGJetSequence.remove( process.jetMCSequence )
-    process.PATCMGJetSequence.remove( process.patJetFlavourId )
-    process.patJets.addGenJetMatch = False
-    process.patJets.addGenPartonMatch = False
-
-    if isNewerThan('CMSSW_5_2_0'):
-        process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
-        process.patJetsCHSpruned.addGenJetMatch = False
-        process.patJetsCHSpruned.addGenPartonMatch = False
-        process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
-        process.patJetsAK7CHS.addGenJetMatch = False
-        process.patJetsAK7CHS.addGenPartonMatch = False
-        process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
-        process.patJetsAK7CHSpruned.addGenJetMatch = False
-        process.patJetsAK7CHSpruned.addGenPartonMatch = False
-
-    process.PATCMGTauSequence.remove( process.tauGenJets )
-    process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
-    process.PATCMGTauSequence.remove( process.tauGenJetMatch )
-    process.PATCMGTauSequence.remove( process.tauMatch )
-    process.patTaus.addGenJetMatch = False
-    process.patTaus.addGenMatch = False
-
-    process.patMETs.addGenMET = False 
-    process.patMETsRaw.addGenMET = False 
-
-    # setting up JSON file
-    # json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/DCSOnly/json_DCSONLY.txt'
-    # print 'using json file: ', json
-    # from CMGTools.Common.Tools.applyJSON_cff import *
-    # applyJSON(process, json )
-
-    # adding L2L3Residual corrections
-    process.patJetCorrFactors.levels.append('L2L3Residual')
-    if isNewerThan('CMSSW_5_2_0'):
-        process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
-        process.patJetCorrFactorsAK7CHS.levels.append('L2L3Residual')
-        process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
-
 
 print 'cloning the jet sequence to build PU chs jets'
 
