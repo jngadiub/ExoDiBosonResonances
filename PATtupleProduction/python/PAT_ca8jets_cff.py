@@ -151,7 +151,7 @@ PATCMGJetSequenceCA8CHSpruned = cms.Sequence(
 
 selectedPatJetsCA8CHSwithNsub = cms.EDProducer("NjettinessAdder",
                               src=cms.InputTag("selectedPatJetsCA8CHS"),
-                              cone=cms.double(0.7)
+                              cone=cms.double(0.8)
                               )
 
 #### Adding QJets
@@ -165,8 +165,8 @@ selectedPatJetsCA8CHSwithQjets = cms.EDProducer("QjetsAdder",
                                rigidity=cms.double(0.1),
                                ntrial = cms.int32(50),
                                cutoff=cms.double(100.0),
-                               jetRad= cms.double(0.7),
-                               jetAlgo=cms.string("AK"),
+                               jetRad= cms.double(0.8),
+                               jetAlgo=cms.string("CambridgeAachen"),
                                preclustering = cms.int32(50),
                               )
 
