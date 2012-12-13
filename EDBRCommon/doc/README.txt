@@ -1,7 +1,7 @@
 
 Works in CMSSW_5_3_3_patch3 (not tested with higher releases)
 Based on CMG V5_10_0
-Most recent recommended tag for analysis code : edbr_zz_20121210 (but the HEAD might be better)
+Most recent recommended tag for analysis code : edbr_zz_20121213 (but the HEAD might be better)
 
 
 *** Installation instructions ***
@@ -25,11 +25,11 @@ cvs co -r V00-09-03 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer
 cvs co -r V00-02-01  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/BstdZeeTools
 
 
-cvs co -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
-cvs co -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
-cvs co -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
-cvs co -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
-cvs co -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
+cvs co -r edbr_zz_20121213 -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
+cvs co -r edbr_zz_20121213 -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
+cvs co -r edbr_zz_20121213 -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
+cvs co -r edbr_zz_20121213 -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
+cvs co -r edbr_zz_20121213 -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 
 rm -rf ExoDiBosonResonances/AnalysisDataFormats
 cvs co -d Francesco/KinFitter/src UserCode/pandolf/KinematicFit
@@ -42,7 +42,7 @@ rm -f Francesco/KinFitter/src/LeptonNeutrinoKinFitter.*
 #template <typename T, typename U> class DiObjectKinFitFactory; near the top and
 #friend class cmg::DiObjectKinFitFactory<T,U>; near the bottom.
 
-#In AnalysisDataFormats/CMGTools/interface/PFJet.h add these two lines 
+#In AnalysisDataFormats/CMGTools/interface/PFJet.h add this line 
 #friend class VJetFactory;
 #just after the line   :  friend class PFJetFactory;
 

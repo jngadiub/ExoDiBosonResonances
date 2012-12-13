@@ -30,7 +30,7 @@ options.register ('mcordata',
                   'MC',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.string,
-                  "sample contains data or MC: MC/DATA")
+                  "sample contains data or MC: MC/DATAELE/DATAMU/DATASE/DATASM")
 
 options.register ('content',
                   '',
