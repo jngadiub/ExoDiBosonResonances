@@ -24,9 +24,13 @@ cd -
 cvs co -r V00-09-03 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer
 cvs co -r V00-02-01  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/BstdZeeTools
 
+cvs co -r edbr_zz_20121213 -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
+
+### end part needed just for PAT-production, compile with: scram b -j7
+###########################################
+### if you want to run the analysis, you need also the following
 
 cvs co -r edbr_zz_20121213 -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
-cvs co -r edbr_zz_20121213 -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
 cvs co -r edbr_zz_20121213 -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
 cvs co -r edbr_zz_20121213 -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
 cvs co -r edbr_zz_20121213 -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
