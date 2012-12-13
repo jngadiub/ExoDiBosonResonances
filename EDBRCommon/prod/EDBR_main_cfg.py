@@ -13,7 +13,7 @@ process = cms.Process("CMG")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents))
 ###process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000))
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
@@ -53,7 +53,7 @@ process.outpath = cms.EndPath(process.out)
 # JSON Filtering  #
 ###################
 ### #only do this for data
-if options.mcordata == "DATA" and options.json!="" :
+if "DATA" in options.mcordata and options.json!="" :
      import PhysicsTools.PythonAnalysis.LumiList as LumiList
      import FWCore.ParameterSet.Types as CfgTypes
      myLumis = LumiList.LumiList(filename = options.json).getCMSSWString().split(',')
@@ -83,6 +83,61 @@ process.badEventFilter = cms.EDFilter("HLTHighLevel",
                                       throw = cms.bool(True)    # throw exception on unknown path names
                                       ) 
 
+
+###########
+# HLT filter
+###########
+
+# provide list of HLT paths (or patterns) you want
+HLTlistMu  = cms.vstring("HLT_Mu*_Mu*")   # triggers for DoubleMuon PD   
+HLTlistEle = cms.vstring("HLT_Ele17_Calo*_Ele8_Calo*") # triggers for DoubleElectron PD
+
+### for SingleElectron and SingleMuon PD, request single lept trigger and
+#veto the same triggers used for double ele and DoubleMu PD: in this way
+#remove events in both PDs
+HLTlistSE = cms.vstring("HLT_Ele80_CaloIdVT_GsfTrkIdT_v1 AND NOT HLT_Ele17_Calo*_Ele8_Calo*") # triggers fro SingleElectron PD
+HLTlistSM  = cms.vstring("HLT_Mu40_* AND NOT HLT_Mu*_Mu*")
+
+process.hltHighLevelEle = cms.EDFilter("HLTHighLevel",
+                                       TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+                                       HLTPaths = cms.vstring(HLTlistEle),
+                                       eventSetupPathsKey = cms.string(''), # not empty => use read paths from AlCaRecoTriggerBitsRcd via this key
+                                       andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
+                                       throw = cms.bool(True)    # throw exception on unknown path names
+                                       )
+process.hltHighLevelMu = cms.EDFilter("HLTHighLevel",
+                                       TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+                                       HLTPaths = cms.vstring(HLTlistMu),
+                                       eventSetupPathsKey = cms.string(''), # not empty => use read paths from AlCaRecoTriggerBitsRcd via this key
+                                       andOr = cms.bool(True),   # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
+                                       throw = cms.bool(True)    # throw exception on unknown path names
+   )
+process.hltHighLevelSM = cms.EDFilter("HLTHighLevel",
+                                       TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+                                       HLTPaths = cms.vstring(HLTlistSM),
+                                       eventSetupPathsKey = cms.string(''), # not empty => use read paths from AlCaRecoTriggerBitsRcd via this key
+                                       andOr = cms.bool(True),   # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
+                                       throw = cms.bool(True)    # throw exception on unknown path names
+   )
+
+process.hltHighLevelSE = cms.EDFilter("HLTHighLevel",
+                                       TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+                                       HLTPaths = cms.vstring(HLTlistSE),
+                                       eventSetupPathsKey = cms.string(''),
+                                       andOr = cms.bool(True),
+                                       throw = cms.bool(True) 
+                                      )
+
+### add them to event filter
+process.eventFilterSequence = cms.Sequence(process.badEventFilter)
+if options.mcordata == "DATAELE" :
+     process.eventFilterSequence +=process.hltHighLevelEle
+if options.mcordata == "DATASE" :
+     process.eventFilterSequence +=process.hltHighLevelSE
+if options.mcordata == "DATAMU" :
+     process.eventFilterSequence +=process.hltHighLevelMu
+if options.mcordata == "DATASM" :
+     process.eventFilterSequence +=process.hltHighLevelSM
 
 ###################################################################
 # Ele Sequence: select electrons and build di-electrons from them #
@@ -185,9 +240,7 @@ cloneProcessingSnippet(process,process.edbrSequenceMMJJ, "Mu")
 
 process.analysisSequenceMMJJ = cms.Sequence(
     process.analysisSequenceMuons +
-
     process.analysisSequenceJets +
-    
     process.edbrSequenceMMJJMu
     )
 
@@ -200,9 +253,9 @@ process.analysisSequenceMMJ = cms.Sequence(
     )
 
 if ( options.lepton == "both" or options.lepton == "ele"):
-     process.preselElePath = cms.Path(process.badEventFilter+ process.analysisSequenceEEJJ )
-     process.preselEleMergedPath = cms.Path(process.badEventFilter+ process.analysisSequenceEEJ )
+     process.preselElePath = cms.Path(process.eventFilterSequence + process.analysisSequenceEEJJ )
+     process.preselEleMergedPath = cms.Path(process.eventFilterSequence + process.analysisSequenceEEJ )
      
 if ( options.lepton == "both" or options.lepton == "mu"):
-     process.preselMuPath = cms.Path(process.badEventFilter+ process.analysisSequenceMMJJ )
-     process.preselMuMergedPath = cms.Path(process.badEventFilter+ process.analysisSequenceMMJ )
+     process.preselMuPath = cms.Path(process.eventFilterSequence + process.analysisSequenceMMJJ )
+     process.preselMuMergedPath = cms.Path(process.eventFilterSequence + process.analysisSequenceMMJ )
