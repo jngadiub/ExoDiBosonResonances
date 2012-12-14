@@ -80,6 +80,7 @@ template< typename T, typename U > typename cmg::EDBRCandidateFactory<T,U>::even
     // first create the  "pure" EDBR candidate without vbf tags
     cmg::EDBRCandidate<T, U> cmgTmp(*it);
     cmg::EDBRCandidateFactory<T, U>::set(cmgTmp,&cmgTmp);
+    cmgTmp.nj_=2;
     result->push_back(cmgTmp);
     // loop over vbf tagging pairs, but only add non-overlapping candidates
     if( vbfPairs.isValid()) {
@@ -115,6 +116,7 @@ template<>  cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::EEJ_event_ptr 
     // first create the  "pure" EDBR candidate without vbf tags
     cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> cmgTmp(*it);
     cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::set(cmgTmp,&cmgTmp,true);
+    cmgTmp.nj_=1;
     result->push_back(cmgTmp);
     // loop over vbf tagging pairs, but only add non-overlapping candidates
     if( vbfPairs.isValid()) {
@@ -150,6 +152,7 @@ template<>  cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::MMJ_event_ptr cmg:
     // first create the  "pure" EDBR candidate without vbf tags
     cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> cmgTmp(*it);
     cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::set(cmgTmp,&cmgTmp,true);
+    cmgTmp.nj_=1;
     result->push_back(cmgTmp);
     // loop over vbf tagging pairs, but only add non-overlapping candidates
     if( vbfPairs.isValid()) {
