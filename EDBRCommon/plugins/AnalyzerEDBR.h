@@ -98,7 +98,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
    //////////////////////////////////////
    /////////////////////////////////////
 
-  template < typename T > void analyzeGeneric(T edbr,T edbr_2,int& ih, bool & goodKinFit){
+  template < typename T > void analyzeGeneric(T edbr,int& ih, bool & goodKinFit){
 
   if(edbr->leg2().mass()<90 ||edbr->leg2().mass()>92){
      cout<<"WARNING from AnalyzeEDBR::analyzeGeneric : KIN FIT badly converged!! M_jj="<<edbr->leg2()<<endl;
@@ -114,9 +114,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
    //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric "<<ih<<" "<<flush;
    mzz[ih]=edbr->mass();
-   mzzNoKinFit[ih]=edbr_2->mass();
-   ptmzz[ih]=edbr->mass();
-   ptmzzNoKinFit[ih]=edbr_2->mass();
+ 
+   ptmzz[ih]=edbr->pt();
+  
    //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric mzz="<<mzz[ih]<<"  pT(noKinFit)="<<ptmzzNoKinFit[ih] <<endl;
 
    if(finalM_||sbM_||finalE_||sbE_){
@@ -135,8 +135,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
    //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling mLL" <<endl;
    mll[ih]=edbr->leg1().mass();
-   mjj[ih]=edbr->leg2().mass();
-   mjjNoKinFit[ih]=edbr_2->leg2().mass();
+ 
    ptZll[ih]=edbr->leg1().pt();
    ptZjj[ih]=edbr->leg2().pt();
    yZll[ih]=edbr->leg1().rapidity();
@@ -146,68 +145,111 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
    //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling leptons" <<endl;
 
-   //fill lepton kine vars (only the lept flav independent ones)
-   bool highptLep1=true;
-   if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
-   if(highptLep1){
-     ptlep1[ih]=edbr->leg1().leg1().pt();
-     ptlep2[ih]=edbr->leg1().leg2().pt();
-     etalep1[ih]=edbr->leg1().leg1().eta();
-     etalep2[ih]=edbr->leg1().leg2().eta();
-     philep1[ih]=edbr->leg1().leg1().phi();
-     philep2[ih]=edbr->leg1().leg2().phi();
+   
+  
 
-     isolep1[ih] = edbr->leg1().leg1().relIso(); 
-     isolep2[ih] = edbr->leg1().leg2().relIso(); 
-   }
-   else{
-     ptlep2[ih]=edbr->leg1().leg1().pt();
-     ptlep1[ih]=edbr->leg1().leg2().pt();
-     etalep2[ih]=edbr->leg1().leg1().eta();
-     etalep1[ih]=edbr->leg1().leg2().eta();
-     philep2[ih]=edbr->leg1().leg1().phi();
-     philep1[ih]=edbr->leg1().leg2().phi();
+  if(finalM_||sbM_||finalE_||sbE_){
+    // THESE WEIGHTS=1 FOR REAL DATA
+    PU  = edbr->userFloat("PUWeights");
+    PUA = edbr->userFloat("PUWeights2012A");
+    PUB = edbr->userFloat("PUWeights2012B");
+    HLTSF = edbr->userFloat("HLTWeight");
+  }//end if finalM_ || ....
 
-     isolep2[ih] = edbr->leg1().leg1().relIso(); 
-     isolep1[ih] = edbr->leg1().leg2().relIso();
-   }
+  //  if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric finishing Cand #" <<ih<<endl;
+  
+  }//end analyzeGeneric
 
-   deltaRleplep[ih]=deltaR(edbr->leg1().leg1().phi(),
-			    edbr->leg1().leg1().eta(),
-			    edbr->leg1().leg2().phi(),
-			    edbr->leg1().leg2().eta());
+  //////////////////////////////////////
+  /////////////////////////////////////
+  //////////////////////////////////////
+  /////////////////////////////////////
 
-   //  if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling jet vars  " <<ih<<endl;
-   ////fill jet kine vars
-   bool highptJet1=true;
-   if(edbr->leg2().leg2().pt()>edbr->leg2().leg1().pt())highptJet1=false;
-   if(highptJet1){
-     ptjet1[ih]=edbr->leg2().leg1().pt();
-     ptjet2[ih]=edbr->leg2().leg2().pt();
-     etajet1[ih]=edbr->leg2().leg1().eta();
-     etajet2[ih]=edbr->leg2().leg2().eta();
+  //functions specific for boosted and not-boosted topologies  
+  template < typename T > void  analyzeSingleJet(T edbr,int& ih){
+    //  if(debug_)cout<<"AnalyzerEDBR::analyzeSingleJet filling jet vars  " <<ih<<endl;
+    mzzNoKinFit[ih]=edbr->mass();
+    mjj[ih]=edbr->leg2().prunedMass();
+    mjjNoKinFit[ih]=mjj[ih];
+    ptmzzNoKinFit[ih]=edbr->pt();
+    ////fill jet kine vars: first jet vars refer to jet used for building EDBR,
+    ////                    second jet vars are dummy
+ 
+    bool highptJet1=true;
+    if(highptJet1){
+      ptjet1[ih]=edbr->leg2().pt();
+      ptjet2[ih]=-99.0;
+      etajet1[ih]=edbr->leg2().eta();
+      etajet2[ih]=-99.0;
+      
+      betajet1[ih] = edbr->leg2().beta(); 
+      betajet2[ih] = -1.0;
+      puMvajet1[ih] = edbr->leg2().puMva("full"); 
+      puMvajet2[ih] = -9999.0;
+    }
 
-     betajet1[ih] = edbr->leg2().leg1().beta(); 
-     betajet2[ih] = edbr->leg2().leg2().beta(); 
-     puMvajet1[ih] = edbr->leg2().leg1().puMva("full"); 
-     puMvajet2[ih] = edbr->leg2().leg2().puMva("full"); 
-   }
-   else{
-     ptjet2[ih]=edbr->leg2().leg1().pt();
-     ptjet1[ih]=edbr->leg2().leg2().pt();
-     etajet2[ih]=edbr->leg2().leg1().eta();
-     etajet1[ih]=edbr->leg2().leg2().eta();
+    deltaRjetjet[ih]=0.0;
 
-     betajet2[ih] = edbr->leg2().leg1().beta(); 
-     betajet1[ih] = edbr->leg2().leg2().beta(); 
-     puMvajet2[ih] = edbr->leg2().leg1().puMva("full"); 
-     puMvajet1[ih] = edbr->leg2().leg2().puMva("full");
-   }
+    //jet sub-structure 
+    prunedmass[ih]=edbr->leg2().prunedMass();
+    mdrop[ih]=edbr->leg2().mdrop();
+    qjet[ih]= edbr->leg2().qjet();
+    nsubj12[ih]=edbr->leg2().ntau12();
+    nsubj23[ih]=edbr->leg2().ntau23();
+    tau1[ih]=edbr->leg2().tau1();
+    tau2[ih]=edbr->leg2().tau2();
 
-  deltaRjetjet[ih]=deltaR(edbr->leg2().leg1().phi(),
+  }//end analyzeSingleJet();
+
+
+  template < typename T > void  analyzeDoubleJet(T edbr,T edbr_2,int& ih){
+
+    mzzNoKinFit[ih]=edbr_2->mass();
+    ptmzzNoKinFit[ih]=edbr_2->pt();
+    mjj[ih]=edbr->leg2().mass();
+    mjjNoKinFit[ih]=edbr_2->leg2().mass();
+    //  if(debug_)cout<<"AnalyzerEDBR::analyzeDoubleJet filling jet vars  " <<ih<<endl;
+    ////fill jet kine vars
+    bool highptJet1=true;
+    if(edbr->leg2().leg2().pt()>edbr->leg2().leg1().pt())highptJet1=false;
+    if(highptJet1){
+      ptjet1[ih]=edbr->leg2().leg1().pt();
+      ptjet2[ih]=edbr->leg2().leg2().pt();
+      etajet1[ih]=edbr->leg2().leg1().eta();
+      etajet2[ih]=edbr->leg2().leg2().eta();
+      
+      betajet1[ih] = edbr->leg2().leg1().beta(); 
+      betajet2[ih] = edbr->leg2().leg2().beta(); 
+      puMvajet1[ih] = edbr->leg2().leg1().puMva("full"); 
+      puMvajet2[ih] = edbr->leg2().leg2().puMva("full"); 
+    }
+    else{
+      ptjet2[ih]=edbr->leg2().leg1().pt();
+      ptjet1[ih]=edbr->leg2().leg2().pt();
+      etajet2[ih]=edbr->leg2().leg1().eta();
+      etajet1[ih]=edbr->leg2().leg2().eta();
+
+      betajet2[ih] = edbr->leg2().leg1().beta(); 
+      betajet1[ih] = edbr->leg2().leg2().beta(); 
+      puMvajet2[ih] = edbr->leg2().leg1().puMva("full"); 
+      puMvajet1[ih] = edbr->leg2().leg2().puMva("full");
+    }
+
+    deltaRjetjet[ih]=deltaR(edbr->leg2().leg1().phi(),
 			    edbr->leg2().leg1().eta(),
 			    edbr->leg2().leg2().phi(),
 			    edbr->leg2().leg2().eta());
+
+    //jet sub-structure is dummy for double jet
+  //jet sub-structure 
+    prunedmass[ih]=-99.0;
+    mdrop[ih]=-999.0;
+    qjet[ih]=-999.0;
+    nsubj12[ih]=-999.0;
+    nsubj23[ih]=-999.0;
+    tau1[ih]=-999.0;
+    tau2[ih]=-999.0;
+
 
   
   //  if(finalM_||sbM_||finalE_||sbE_){
@@ -228,29 +270,40 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   //   }
   //  }// end else recalculate qgProd
   //  }//end if finalM_||sbM_||finalE_||sbE_
-  
+ 
 
-  if(finalM_||sbM_||finalE_||sbE_){
-    // THESE WEIGHTS=1 FOR REAL DATA
-    PU  = edbr->userFloat("PUWeights");
-    PUA = edbr->userFloat("PUWeights2012A");
-    PUB = edbr->userFloat("PUWeights2012B");
-    HLTSF = edbr->userFloat("HLTWeight");
-  }//end if finalM_ || ....
-
-  //  if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric finishing Cand #" <<ih<<endl;
-  
-  }//end analyzeGeneric
-
-  //////////////////////////////////////
-  /////////////////////////////////////
-  //////////////////////////////////////
-  /////////////////////////////////////
-  
+  }//end analyzeDoubleJet();
 
   //functions specific for lepton flavors
-  void analyzeMuon(edm::RefToBase<cmg::DiMuonDiJetEDBR > edbr, int ih);
-  void analyzeElectron(edm::RefToBase<cmg::DiElectronDiJetEDBR >edbr, int ih);
+  // void analyzeMuon(edm::RefToBase<cmg::DiMuonDiJetEDBR > edbr, int ih);
+  template < typename T > void  analyzeMuon(T edbr, int ih){
+    //nothing to be done
+    //
+    //
+    if(debug_)cout<<"AnalyzerEDBR::analyzeMuon"<<endl;
+    //dummy for muons 
+    eleMVAId1[ih] = -1.0;
+    eleMVAId2[ih] = -1.0;
+  }//end analyzeMuon
+
+
+  template < typename T > void analyzeElectron(T edbr, int ih){
+
+
+    if(debug_)cout<<"AnalyzerEDBR::analyzeElectron"<<endl;
+    bool highptLep1=true;
+    if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
+    
+    
+    if(highptLep1){
+      eleMVAId1[ih] = edbr->leg1().leg1().mvaTrigV0(); 
+      eleMVAId2[ih] = edbr->leg1().leg2().mvaTrigV0();
+    } 
+    else{
+      eleMVAId1[ih] = edbr->leg1().leg2().mvaTrigV0(); 
+      eleMVAId2[ih] = edbr->leg1().leg1().mvaTrigV0();
+    }
+  }//end analyzeElectron
 
 
 
@@ -259,8 +312,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
    // DATA MEMBERS
 
 
-  edm::InputTag XEEColl_,XEENoKinFitColl_,XEELDMap_;//XEENoKinFitLDMap_;
-  edm::InputTag XMMColl_,XMMNoKinFitColl_,XMMLDMap_;//XMMNoKinFitLDMap_;
+  edm::InputTag XEEColl_,XEENoKinFitColl_,XEELDMap_,XEEJColl_,XEEJLDMap_;//XEENoKinFitLDMap_;
+  edm::InputTag XMMColl_,XMMNoKinFitColl_,XMMLDMap_,XMMJColl_,XMMJLDMap_;//XMMNoKinFitLDMap_;
     edm::InputTag  XQGMap_;
 
   const static int nMaxCand = 30;
@@ -279,7 +332,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   //flags indicating whether the cand passed a certain cms.Path of the analysis
   bool preselM_, finalM_,sbM_;
   bool preselE_, finalE_,sbE_;
-  bool anyPath_,muPath_,elePath_;
+  bool preselM1J_, finalM1J_,sbM1J_;
+  bool preselE1J_, finalE1J_,sbE1J_;
+  bool anyPath_,muPath_,elePath_, singleJetPath_,doubleJetPath_;
 
   int nCands;
   double hs[nMaxCand], h1[nMaxCand], h2[nMaxCand], phi[nMaxCand], phiS1[nMaxCand], LD[nMaxCand]; // Helicity angles, and LD.
@@ -299,11 +354,14 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double HLTSF,PU,PUA,PUB,lumiw,genw,w,wA,wB;          // weight
   double MCmatch[nMaxCand];            // mc matching flag
  
+  double qjet[nMaxCand],tau1[nMaxCand],tau2[nMaxCand],nsubj12[nMaxCand],nsubj23[nMaxCand];
+  double mdrop[nMaxCand],prunedmass[nMaxCand];
 
 
 
   unsigned int nevent,run,ls, njets, nvtx,npu;
   int q1fl[nMaxCand], q2fl[nMaxCand];
+  int nXjets[nMaxCand];//by how many jets is the hadronic V made
   //int jjfl[nMaxCand];
   bool readLDFromUserFloat_,  readQGFromUserFloat_;
   HLTConfigProvider hltConfig;

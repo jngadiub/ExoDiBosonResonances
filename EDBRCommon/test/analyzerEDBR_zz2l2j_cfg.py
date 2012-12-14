@@ -19,23 +19,11 @@ readFiles.extend([
     'file:/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/CMGTools/CMSSW_5_3_3_patch3/src/ExoDiBosonResonances/EDBRCommon/prod/test.root'
     ])
 
+#process.load("ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi.py")
+from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi.py import AnalyzerXZZ
+process.ANEDBR = AnalyzerXZZ.clone(
 
-process.ANEDBR = cms.EDAnalyzer("AnalyzerEDBR",
-                                EventCategory=cms.string(""),
-                                EDBREECollection=cms.InputTag("cmgEDBRSelKinFitEle"),
-                                EDBREENoKinFitCollection=cms.InputTag("cmgEDBRSelEle"),
-                                EDBREELDValueMap=cms.InputTag("dummyForNow"),
-                                EDBRMMCollection=cms.InputTag("cmgEDBRSelKinFitMu"),
-                                EDBRMMNoKinFitCollection=cms.InputTag("cmgEDBRSelMu"),
-                                EDBRMMLDValueMap=cms.InputTag("dummyForNow"),
-                                EDBRQGValueMap=cms.InputTag("dummyforNow2"),
-                                outFileName=cms.string("tree_TEST.root"),
-                                debug=cms.bool(False),
-                                isMC=cms.bool(True),
-                                treatVBFAsMultiple=cms.bool(True),
-                                Ngen=cms.uint32(1000),
-                                xsec=cms.double(1.0),
-                                triggerNames=cms.vstring()
-                                )
+    )
+
 
 process.p=cms.Path(process.ANEDBR)

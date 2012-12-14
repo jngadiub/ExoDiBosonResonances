@@ -228,7 +228,7 @@ process.analysisSequenceEEJJ = cms.Sequence(
 # build X->ZZ->eej
 cloneProcessingSnippet(process,process.edbrSequenceMerged, "Ele")
 process.analysisSequenceEEJ = cms.Sequence(
-    process.analysisSequenceElectrons +
+  #  process.analysisSequenceElectrons +
     process.analysisSequenceMergedJets +
     process.edbrSequenceMergedEle 
     )
@@ -247,7 +247,7 @@ process.analysisSequenceMMJJ = cms.Sequence(
 # build X->ZZ->mmj
 cloneProcessingSnippet(process,process.edbrSequenceMerged, "Mu")
 process.analysisSequenceMMJ = cms.Sequence(
-    process.analysisSequenceMuons +
+ #   process.analysisSequenceMuons +
     process.analysisSequenceMergedJets +
     process.edbrSequenceMergedMu 
     )

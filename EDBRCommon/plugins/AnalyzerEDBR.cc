@@ -12,12 +12,16 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
     xsec_     = ps.getParameter<double>("xsec"); // in fb
     cout<<"pippo2"<<endl;
     cat_             = ps.getParameter<std::string>("EventCategory");
-    XEEColl_         = ps.getParameter<edm::InputTag>("EDBREECollection");
-    XEENoKinFitColl_ = ps.getParameter<edm::InputTag>("EDBREENoKinFitCollection");
-    XEELDMap_        = ps.getParameter<edm::InputTag>("EDBREELDValueMap");
-    XMMColl_         = ps.getParameter<edm::InputTag>("EDBRMMCollection");
-    XMMNoKinFitColl_ = ps.getParameter<edm::InputTag>("EDBRMMNoKinFitCollection");
-    XMMLDMap_        = ps.getParameter<edm::InputTag>("EDBRMMLDValueMap");
+    XEEColl_         = ps.getParameter<edm::InputTag>("EDBREEJJColl");
+    XEENoKinFitColl_ = ps.getParameter<edm::InputTag>("EDBREEJJNoKinFitColl");
+    XEELDMap_        = ps.getParameter<edm::InputTag>("EDBREEJJLDValueMap");
+    XMMColl_         = ps.getParameter<edm::InputTag>("EDBRMMJJColl");
+    XMMNoKinFitColl_ = ps.getParameter<edm::InputTag>("EDBRMMJJNoKinFitColl");
+    XMMLDMap_        = ps.getParameter<edm::InputTag>("EDBRMMJJLDValueMap");
+    XEEJColl_        = ps.getParameter<edm::InputTag>("EDBREEJColl");
+    XEEJLDMap_       = ps.getParameter<edm::InputTag>("EDBREEJLDValueMap");
+    XMMJColl_        = ps.getParameter<edm::InputTag>("EDBRMMJColl");
+    XMMJLDMap_       = ps.getParameter<edm::InputTag>("EDBRMMJLDValueMap");
     XQGMap_          = ps.getParameter<edm::InputTag>("EDBRQGValueMap");
     //XEENoKinFitLDMap_=ps.getParameter<edm::InputTag>("EDBREENoKinFitLDValueMap");
     //XMMNoKinFitLDMap_=ps.getParameter<edm::InputTag>("EDBRMMNoKinFitLDValueMap");
@@ -109,36 +113,84 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
 
   if(muPath_){
-    edm::Handle<edm::View< cmg::DiMuonDiJetEDBR > > finalEDBRcand;
-    edm::Handle<edm::View< cmg::DiMuonDiJetEDBR > > finalEDBRcand_2;
-    iEvent.getByLabel(XMMColl_        , finalEDBRcand  );  // With kinfit
-    iEvent.getByLabel(XMMNoKinFitColl_, finalEDBRcand_2);  // Without kinfit
-
-    int nCandidates=finalEDBRcand->size();
-    if (nCandidates > nMaxCand) nCandidates = nMaxCand;
-    if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" H cands"<<endl;
-    //  if(nCandidates>0){
-    //  if(muPath_)    muEvent = true;
-    //  if(elePath_)   eleEvent = true;
-    // }
-    int ih = 0;
-    for(int iih=0;iih<nCandidates;iih++){
        
       lep=1; 
-      edm::RefToBase<cmg::DiMuonDiJetEDBR> edbrM =finalEDBRcand->refAt(iih);
-      edm::RefToBase<cmg::DiMuonDiJetEDBR> edbrM_2 =finalEDBRcand_2->refAt(iih);
-      analyzeGeneric(edbrM, edbrM_2,ih,goodKinFit);
-      analyzeMuon(edbrM,ih);
-  
-      
-      ih++;
-    }//end loop on candidates
-    // if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
-      nCands += ih;
+
+      if(singleJetPath_){
+	edm::Handle<edm::View< cmg::DiMuonSingleJetEDBR > > finalEDBRcand;
+	iEvent.getByLabel(XMMJColl_        , finalEDBRcand  );  // With kinfit
+
+	
+	int nCandidates=finalEDBRcand->size();
+	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
+	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" H cands"<<endl;
+	//  if(nCandidates>0){
+	//  if(muPath_)    muEvent = true;
+	//  if(elePath_)   eleEvent = true;
+	// }
+	int ih = 0;
+	for(int iih=0;iih<nCandidates;iih++){
+	  
+	  edm::RefToBase<cmg::DiMuonSingleJetEDBR> edbrM =finalEDBRcand->refAt(iih);
+	  
+	  if(edbrM->nJets()!=1){
+	    throw cms::Exception("Mismatched param") <<"Event in SingleJet Path has "<<edbrM->nJets()
+						     <<" jets"<<std::endl;  
+	  }
+	  nXjets[ih]=edbrM->nJets();
+ 
+	  analyzeGeneric(edbrM, ih,goodKinFit);
+	  analyzeSingleJet(edbrM,ih);        
+	  analyzeMuon(edbrM,ih);
+
+	
+	ih++;
+      }//end loop on candidates
+	// if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
+	nCands += ih;
+
+      }//end if singleJetPath
+
+      if(doubleJetPath_){
+	edm::Handle<edm::View< cmg::DiMuonDiJetEDBR > > finalEDBRcand;
+	edm::Handle<edm::View< cmg::DiMuonDiJetEDBR > > finalEDBRcand_2;
+	iEvent.getByLabel(XMMColl_        , finalEDBRcand  );  // With kinfit
+	iEvent.getByLabel(XMMNoKinFitColl_, finalEDBRcand_2);  // Without kinfit
+	
+	int nCandidates=finalEDBRcand->size();
+	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
+	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" H cands"<<endl;
+	//  if(nCandidates>0){
+	//  if(muPath_)    muEvent = true;
+	//  if(elePath_)   eleEvent = true;
+	// }
+	int ih = 0;
+	for(int iih=0;iih<nCandidates;iih++){
+	  
+	  edm::RefToBase<cmg::DiMuonDiJetEDBR> edbrM =finalEDBRcand->refAt(iih);
+	  edm::RefToBase<cmg::DiMuonDiJetEDBR> edbrM_2 =finalEDBRcand_2->refAt(iih);
+	  
+	  if(edbrM->nJets()!=2){
+	    throw cms::Exception("Mismatched param") <<"Event in DoubleJet Path has "<<edbrM->nJets()
+						     <<" jets"<<std::endl;  
+	  }
+	  nXjets[ih]=edbrM->nJets();
+	  analyzeGeneric(edbrM,ih,goodKinFit);
+	  analyzeDoubleJet(edbrM, edbrM_2,ih);        
+	  analyzeMuon(edbrM,ih);
+
+	
+	ih++;
+      }//end loop on candidates
+	// if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
+	nCands += ih;
+      }//end if doubleJetPath
+
   }//end if mmjj
 
 
-  if(cat_=="eejj"){
+  //  if(cat_=="eejj"){
+  if(elePath_){
     edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > finalEDBRcand;
     edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > finalEDBRcand_2;
     iEvent.getByLabel(XEEColl_        , finalEDBRcand  );  // With kinfit
@@ -157,7 +209,18 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
       lep=0; 
       edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE =finalEDBRcand->refAt(iih);
       edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE_2 =finalEDBRcand_2->refAt(iih);
-      analyzeGeneric(edbrE, edbrE_2,ih,goodKinFit);
+      nXjets[ih]=edbrE->nJets();
+      //      if(nXjets[ih]==1)analyzeSingleJet(edbrE,ih);  
+      // else if(nXjets[ih]==2)
+
+//      else{
+//	std::cout<<"What the hell is this EDBR(Ele) ? I see it is made wtih "<<nXjets[ih]
+//		 <<" jets. Unrecognized value, skipping"<<std::endl;
+//	continue;
+//     }
+
+      analyzeGeneric(edbrE, ih,goodKinFit);
+      analyzeDoubleJet(edbrE,edbrE_2,ih);        
       analyzeElectron(edbrE,ih);
       ih++;
 
@@ -258,6 +321,14 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("betajet2"        ,&betajet2      ,"betajet2[nCands]/D"     ); 
   outTree_->Branch("puMvajet1"       ,&puMvajet1     ,"puMvajet1[nCands]/D"    ); 
   outTree_->Branch("puMvajet2"       ,&puMvajet2     ,"puMvajet2[nCands]/D"    ); 
+  outTree_->Branch("nXjets"       ,&nXjets     ,"nXjets[nCands]/I"    ); 
+  outTree_->Branch("prunedmass"       ,&prunedmass    ,"prunedmass[nCands]/D"    ); 
+  outTree_->Branch("mdrop"       ,&mdrop     ,"mdrop[nCands]/D"    ); 
+  outTree_->Branch("nsubj12"       ,&nsubj12    ,"nsubj12[nCands]/D"    ); 
+  outTree_->Branch("nsubj23"       ,&nsubj23     ,"nsubj23[nCands]/D"    ); 
+  outTree_->Branch("tau1"       ,&tau1     ,"tau1[nCands]/D"    ); 
+  outTree_->Branch("tau2"       ,&tau2    ,"tau2[nCands]/D"    ); 
+  outTree_->Branch("qjet"       ,&qjet    ,"qjet[nCands]/D"    ); 
   outTree_->Branch("isolep1"         ,&isolep1       ,"isolep1[nCands]/D"      ); 
   outTree_->Branch("isolep2"         ,&isolep2       ,"isolep2[nCands]/D"      ); 
   outTree_->Branch("eleMVAId1"       ,&eleMVAId1     ,"eleMVAId1[nCands]/D"    );
@@ -337,15 +408,29 @@ void AnalyzerEDBR::analyzeTrigger(edm::Event const& iEvent, edm::EventSetup cons
   finalE_=false;// iEvent.triggerResultsByName("CMG").accept("cmgXZZEE");
   sbE_=false;//iEvent.triggerResultsByName("CMG").triggerIndex("cmgXZZEESideband")!=iEvent.triggerResultsByName("CMG").size() &&  iEvent.triggerResultsByName("CMG").accept("cmgXZZEESideband");
 
+  preselM1J_=iEvent.triggerResultsByName("CMG").accept("preselMuMergedPath");
+  finalM1J_=false;// iEvent.triggerResultsByName("CMG").accept("cmgXZZMMJ");
+  sbM1J_=false;//iEvent.triggerResultsByName("CMG").triggerIndex("cmgXZZMMJSideband")!=iEvent.triggerResultsByName("CMG").size() &&     iEvent.triggerResultsByName("CMG").accept("cmgXZZMMJSideband");
+  preselE1J_=iEvent.triggerResultsByName("CMG").accept("preselEleMergedPath");
+  finalE1J_=false;// iEvent.triggerResultsByName("CMG").accept("cmgXZZEEJ");
+  sbE1J_=false;//iEvent.triggerResultsByName("CMG").triggerIndex("cmgXZZEEJSideband")!=iEvent.triggerResultsByName("CMG").size() &&  iEvent.triggerResultsByName("CMG").accept("cmgXZZEEJSideband");
+
+
+
   muPath_=false;
   elePath_=false;
   anyPath_=false;
-  if(preselM_ || finalM_ || sbM_)muPath_=true;
-  if(preselE_ || finalE_ || sbE_)elePath_=true;
+  singleJetPath_=false;
+  doubleJetPath_=false;
+  if(preselM_ || finalM_ || sbM_||preselM1J_ || finalM1J_ || sbM1J_)muPath_=true;
+  if(preselE_ || finalE_ || sbE_||preselE1J_ || finalE1J_ || sbE1J_)elePath_=true;
+  if(preselE1J_ || finalE1J_ || sbE1J_|| preselM1J_ || finalM1J_ || sbM1J_ )singleJetPath_=true;
+  if(preselE_ || finalE_ || sbE_|| preselM_ || finalM_ || sbM_ )doubleJetPath_=true;
   if(muPath_ || elePath_) anyPath_=true;
 
 }//end  AnalyzeEDBR::analyzeTrigger()
 
+/*********************
 void AnalyzerEDBR::analyzeMuon(edm::RefToBase<cmg::DiMuonDiJetEDBR > edbr, int ih){
   //nothing to be done
   //
@@ -356,7 +441,8 @@ void AnalyzerEDBR::analyzeMuon(edm::RefToBase<cmg::DiMuonDiJetEDBR > edbr, int i
   eleMVAId2[ih] = -1.0;
 }
 
-void AnalyzerEDBR::analyzeElectron(edm::RefToBase<cmg::DiElectronDiJetEDBR > edbr, int ih){
+//void AnalyzerEDBR::analyzeElectron(edm::RefToBase<cmg::DiElectronDiJetEDBR > edbr, int ih){
+void AnalyzerEDBR::analyzeElectron(T edbr, int ih){
 
   if(debug_)cout<<"AnalyzerEDBR::analyzeElectron"<<endl;
   bool highptLep1=true;
@@ -372,6 +458,8 @@ void AnalyzerEDBR::analyzeElectron(edm::RefToBase<cmg::DiElectronDiJetEDBR > edb
     eleMVAId2[ih] = edbr->leg1().leg1().mvaTrigV0();
   }
 }
+*************************/
+
 
 double AnalyzerEDBR::deltaR(reco::LeafCandidate p1,reco::LeafCandidate p2){
   double deltaEta = fabs(p1.eta()-p2.eta());
