@@ -6,3 +6,7 @@ zmumu = cms.PSet(
                                pt = cms.string('(leg1().pt() > 20 && leg2().pt() > 40)||(leg1().pt() > 40 && leg2().pt() > 20)'),
                                )
 )
+
+HPTmuGlob = cms.PSet(
+    isGB=cms.string('leg1().getSelection(\"cuts_HPTGBmuon\") || leg2().getSelection(\"cuts_HPTGBmuon\")')
+    )

@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 muonPreselNoIso = cms.EDFilter(
     "CmgMuonSelector",
     src = cms.InputTag("cmgMuon"),
-    cut = cms.string( "getSelection(\"cuts_kinematics\") && getSelection(\"cuts_tightPFmuon\") " )
+    cut = cms.string( "getSelection(\"cuts_kinematics\") && getSelection(\"cuts_HPTTKmuon\") " )
     )
 
 
@@ -20,8 +20,8 @@ muonPresel = cms.EDProducer(
     )
 
 selectedMuonCandFilter = cms.EDFilter("CandViewCountFilter",
-   src = cms.InputTag('muonPresel'),
+   src = cms.InputTag('muonPreselNoIso'),
    minNumber = cms.uint32(0)
  )
 
-selectedMuonSequence = cms.Sequence(muonPreselNoIso+muonPresel+selectedMuonCandFilter)
+selectedMuonSequence = cms.Sequence(muonPreselNoIso+selectedMuonCandFilter)

@@ -11,7 +11,7 @@ muonFactory = cms.PSet(
 
 #from CMGTools.Common.selections.isolation_cfi import isomuon
 
-from ExoDiBosonResonances.EDBRMuon.selections.hmmjjMuonId_cfi import vbtfmuon,pfmuonId2012
+from ExoDiBosonResonances.EDBRMuon.selections.hmmjjMuonId_cfi import *
 from ExoDiBosonResonances.EDBRMuon.selections.muKinematics_cfi import muKinematics
 #from ExoDiBosonResonances.EDBRMuon.selections.muontrigger_cfi import muontrigger
 
@@ -21,7 +21,8 @@ cmgMuon = cms.EDFilter("MuonPOProducer",
                kinematics = muKinematics.clone(),
                isomuon = cms.PSet ( reliso = cms.string('((sourcePtr().get().trackIso() + sourcePtr().get().caloIso())/sourcePtr().get().pt())< 0.15')), #AB: PF iso by defualt, to be corrected by eff area
                vbtfmuon = vbtfmuon.clone(),
-               tightPFmuon = pfmuonId2012.clone()
+               HPTTKmuon = HPTmuonTKId2012.clone(),
+               HPTGBmuon = HPTmuonGlobalId2012.clone()
 #               trigger = muontrigger.clone()
        )    
 )
