@@ -20,7 +20,7 @@ print 'querying database for source files'
 ## Basic options
 createPATtuple = True
 createCMGtuple = False
-skimEvents = False
+skimEvents = True
 runOnMC    = True
 runOld5XGT = False
 runOnFastSim = False
