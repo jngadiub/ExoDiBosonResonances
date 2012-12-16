@@ -122,6 +122,7 @@ template<>  cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::EEJ_event_ptr 
     if( vbfPairs.isValid()) {
       for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
 	cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> cmgTmpVBF(cmgTmp);
+	cmgTmpVBF.nj_=1;
 	edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
 	cmgTmpVBF.vbfptr_=tmpptr;
 	if(vbfoverlapveto_(cmgTmpVBF))
@@ -158,6 +159,7 @@ template<>  cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::MMJ_event_ptr cmg:
     if( vbfPairs.isValid()) {
       for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
 	cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> cmgTmpVBF(cmgTmp);
+	cmgTmpVBF.nj_=1;
 	edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
 	cmgTmpVBF.vbfptr_=tmpptr;
 	if(vbfoverlapveto_(cmgTmpVBF))

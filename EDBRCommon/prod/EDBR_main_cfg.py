@@ -215,8 +215,6 @@ process.analysisSequenceMergedJets = cms.Sequence(
 # build X->ZZ->eejj
 process.load('ExoDiBosonResonances.EDBRElectron.resonanceEle_cff')
 cloneProcessingSnippet(process,process.edbrSequenceEEJJ, "Ele")
-
-
 process.analysisSequenceEEJJ = cms.Sequence(
     process.analysisSequenceElectrons +
 
@@ -228,7 +226,7 @@ process.analysisSequenceEEJJ = cms.Sequence(
 # build X->ZZ->eej
 cloneProcessingSnippet(process,process.edbrSequenceMerged, "Ele")
 process.analysisSequenceEEJ = cms.Sequence(
-  #  process.analysisSequenceElectrons +
+    process.analysisSequenceElectrons +
     process.analysisSequenceMergedJets +
     process.edbrSequenceMergedEle 
     )
@@ -237,7 +235,6 @@ process.analysisSequenceEEJ = cms.Sequence(
 # build X->ZZ->mmjj
 process.load('ExoDiBosonResonances.EDBRMuon.resonanceMu_cff')
 cloneProcessingSnippet(process,process.edbrSequenceMMJJ, "Mu")
-
 process.analysisSequenceMMJJ = cms.Sequence(
     process.analysisSequenceMuons +
     process.analysisSequenceJets +
@@ -247,7 +244,7 @@ process.analysisSequenceMMJJ = cms.Sequence(
 # build X->ZZ->mmj
 cloneProcessingSnippet(process,process.edbrSequenceMerged, "Mu")
 process.analysisSequenceMMJ = cms.Sequence(
- #   process.analysisSequenceMuons +
+    process.analysisSequenceMuons +
     process.analysisSequenceMergedJets +
     process.edbrSequenceMergedMu 
     )

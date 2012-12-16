@@ -1,4 +1,4 @@
-
+import FWCore.ParameterSet.Config as cms
 
 AnalyzerXZZ = cms.EDAnalyzer("AnalyzerEDBR",
                              EventCategory=cms.string(""),
@@ -10,9 +10,9 @@ AnalyzerXZZ = cms.EDAnalyzer("AnalyzerEDBR",
                              EDBRMMJJNoKinFitColl=cms.InputTag("cmgEDBRSelMu"),
                              EDBRMMJJLDValueMap=cms.InputTag("dummyForNow"),
                              ###input collections for merged jet topology
-                             EDBREEJColl=cms.InputTag("cmgEDBRMergedSelKinFitEle"),
+                             EDBREEJColl=cms.InputTag("cmgEDBRMergedSelEle"),
                              EDBREEJLDValueMap=cms.InputTag("dummyForNow"),
-                             EDBRMMJColl=cms.InputTag("cmgEDBRMergedSelKinFitMu"),
+                             EDBRMMJColl=cms.InputTag("cmgEDBRMergedSelMu"),
                              EDBRMMJLDValueMap=cms.InputTag("dummyForNow"),
                              ### other steering configurations
                              EDBRQGValueMap=cms.InputTag("dummyforNow2"),

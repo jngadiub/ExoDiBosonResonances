@@ -98,12 +98,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
    //////////////////////////////////////
    /////////////////////////////////////
 
-  template < typename T > void analyzeGeneric(T edbr,int& ih, bool & goodKinFit){
+  template < typename T > void analyzeGeneric(T edbr,int& ih){
 
-  if(edbr->leg2().mass()<90 ||edbr->leg2().mass()>92){
-     cout<<"WARNING from AnalyzeEDBR::analyzeGeneric : KIN FIT badly converged!! M_jj="<<edbr->leg2()<<endl;
-     goodKinFit = false;
-   }
+ 
    //example for the future
    //   if(edbr->getSelection("cuts_btags_btag2")){
    //  btag[ih] = 2;
@@ -202,7 +199,13 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   }//end analyzeSingleJet();
 
 
-  template < typename T > void  analyzeDoubleJet(T edbr,T edbr_2,int& ih){
+  template < typename T > void  analyzeDoubleJet(T edbr,T edbr_2,int& ih, bool & goodKinFit){
+
+
+    if(edbr->leg2().mass()<90 ||edbr->leg2().mass()>92){
+      cout<<"WARNING from AnalyzeEDBR::analyzeDoubleJet : KIN FIT badly converged!! M_jj="<<edbr->leg2()<<endl;
+      goodKinFit = false;
+    }
 
     mzzNoKinFit[ih]=edbr_2->mass();
     ptmzzNoKinFit[ih]=edbr_2->pt();

@@ -20,10 +20,8 @@ readFiles.extend([
     ])
 
 #process.load("ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi.py")
-from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi.py import AnalyzerXZZ
-process.ANEDBR = AnalyzerXZZ.clone(
-
-    )
+from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
+process.ANEDBR = AnalyzerXZZ.clone(    )
 
 
 process.p=cms.Path(process.ANEDBR)

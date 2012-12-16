@@ -123,7 +123,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	
 	int nCandidates=finalEDBRcand->size();
 	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
-	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" H cands"<<endl;
+	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" X->ZZ->2L1J cands"<<endl;
 	//  if(nCandidates>0){
 	//  if(muPath_)    muEvent = true;
 	//  if(elePath_)   eleEvent = true;
@@ -133,13 +133,13 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	  
 	  edm::RefToBase<cmg::DiMuonSingleJetEDBR> edbrM =finalEDBRcand->refAt(iih);
 	  
-	  if(edbrM->nJets()!=1){
-	    throw cms::Exception("Mismatched param") <<"Event in SingleJet Path has "<<edbrM->nJets()
-						     <<" jets"<<std::endl;  
-	  }
+	  //	  if(edbrM->nJets()!=1){
+	  //throw cms::Exception("Mismatched param") <<"Event in SingleJet Path has "<<edbrM->nJets()
+	  //				     <<" jets"<<std::endl;  
+	  //}
 	  nXjets[ih]=edbrM->nJets();
  
-	  analyzeGeneric(edbrM, ih,goodKinFit);
+	  analyzeGeneric(edbrM, ih);
 	  analyzeSingleJet(edbrM,ih);        
 	  analyzeMuon(edbrM,ih);
 
@@ -159,7 +159,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	
 	int nCandidates=finalEDBRcand->size();
 	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
-	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" H cands"<<endl;
+	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" X->ZZ->2L2J cands"<<endl;
 	//  if(nCandidates>0){
 	//  if(muPath_)    muEvent = true;
 	//  if(elePath_)   eleEvent = true;
@@ -170,13 +170,13 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	  edm::RefToBase<cmg::DiMuonDiJetEDBR> edbrM =finalEDBRcand->refAt(iih);
 	  edm::RefToBase<cmg::DiMuonDiJetEDBR> edbrM_2 =finalEDBRcand_2->refAt(iih);
 	  
-	  if(edbrM->nJets()!=2){
-	    throw cms::Exception("Mismatched param") <<"Event in DoubleJet Path has "<<edbrM->nJets()
-						     <<" jets"<<std::endl;  
-	  }
+	  //  if(edbrM->nJets()!=2){
+	  //  throw cms::Exception("Mismatched param") <<"Event in DoubleJet Path has "<<edbrM->nJets()
+	  //						     <<" jets"<<std::endl;  
+	  // }
 	  nXjets[ih]=edbrM->nJets();
-	  analyzeGeneric(edbrM,ih,goodKinFit);
-	  analyzeDoubleJet(edbrM, edbrM_2,ih);        
+	  analyzeGeneric(edbrM,ih);
+	  analyzeDoubleJet(edbrM, edbrM_2,ih,goodKinFit);        
 	  analyzeMuon(edbrM,ih);
 
 	
@@ -191,44 +191,81 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
   //  if(cat_=="eejj"){
   if(elePath_){
-    edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > finalEDBRcand;
-    edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > finalEDBRcand_2;
-    iEvent.getByLabel(XEEColl_        , finalEDBRcand  );  // With kinfit
-    iEvent.getByLabel(XEENoKinFitColl_, finalEDBRcand_2);  // Without kinfit
- 
-    int nCandidates=finalEDBRcand->size();
-    if (nCandidates > nMaxCand) nCandidates = nMaxCand-1;
-    if(debug_)cout<<"read from ELE event, there are "<<nCandidates<<" H cands"<<endl;
-    //  if(nCandidates>0){
-    //  if(muPath_)    muEvent = true;
-    //  if(elePath_)   eleEvent = true;
-    // }
-    int ih = 0;
-    for(int iih=0;iih<nCandidates;iih++){
        
       lep=0; 
-      edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE =finalEDBRcand->refAt(iih);
-      edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE_2 =finalEDBRcand_2->refAt(iih);
-      nXjets[ih]=edbrE->nJets();
-      //      if(nXjets[ih]==1)analyzeSingleJet(edbrE,ih);  
-      // else if(nXjets[ih]==2)
 
-//      else{
-//	std::cout<<"What the hell is this EDBR(Ele) ? I see it is made wtih "<<nXjets[ih]
-//		 <<" jets. Unrecognized value, skipping"<<std::endl;
-//	continue;
-//     }
+   if(singleJetPath_){
+	edm::Handle<edm::View< cmg::DiElectronSingleJetEDBR > > finalEDBRcand;
+	iEvent.getByLabel(XEEJColl_        , finalEDBRcand  );  // With kinfit
 
-      analyzeGeneric(edbrE, ih,goodKinFit);
-      analyzeDoubleJet(edbrE,edbrE_2,ih);        
-      analyzeElectron(edbrE,ih);
-      ih++;
+	
+	int nCandidates=finalEDBRcand->size();
+	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
+	if(debug_)cout<<"read from ELECTRON event, there are "<<nCandidates<<" X->ZZ->2L1J cands"<<endl;
+	//  if(nCandidates>0){
+	//  if(muPath_)    muEvent = true;
+	//  if(elePath_)   eleEvent = true;
+	// }
+	int ih = 0;
+	for(int iih=0;iih<nCandidates;iih++){
+	  
+	  edm::RefToBase<cmg::DiElectronSingleJetEDBR> edbrE =finalEDBRcand->refAt(iih);
+	  
+	  //  if(edbrE->nJets()!=1){
+	  //  throw cms::Exception("Mismatched param") <<"Event in SingleJet Path has "<<edbrE->nJets()
+	  //						     <<" jets"<<std::endl;  
+	  // }
+	  nXjets[ih]=edbrE->nJets();
+ 
+	  analyzeGeneric(edbrE, ih);
+	  analyzeSingleJet(edbrE,ih);        
+	  analyzeMuon(edbrE,ih);
 
-    
-    }//end loop on candidates
-    // if(debug_)cout<<"Adding "<<ih<<" eleCands"<<endl;
-    nCands += ih;
-  }//end if eejj
+	
+	ih++;
+      }//end loop on candidates
+	// if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
+	nCands += ih;
+
+      }//end if singleJetPath
+
+
+
+      if(doubleJetPath_){
+	edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > finalEDBRcand;
+	edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > finalEDBRcand_2;
+	iEvent.getByLabel(XEEColl_        , finalEDBRcand  );  // With kinfit
+	iEvent.getByLabel(XEENoKinFitColl_, finalEDBRcand_2);  // Without kinfit
+	
+	int nCandidates=finalEDBRcand->size();
+	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
+	if(debug_)cout<<"read from ELECTRON event, there are "<<nCandidates<<" X->ZZ->2L2J cands"<<endl;
+	//  if(nCandidates>0){
+	//  if(muPath_)    muEvent = true;
+	//  if(elePath_)   eleEvent = true;
+	// }
+	int ih = 0;
+	for(int iih=0;iih<nCandidates;iih++){
+	  
+	  edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE =finalEDBRcand->refAt(iih);
+	  edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE_2 =finalEDBRcand_2->refAt(iih);
+	  
+	  // if(edbrE->nJets()!=2){
+	  //  throw cms::Exception("Mismatched param") <<"Event in DoubleJet Path has "<<edbrE->nJets()
+	  //						     <<" jets"<<std::endl;  
+	  // }
+	  nXjets[ih]=edbrE->nJets();
+	  analyzeGeneric(edbrE,ih);
+	  analyzeDoubleJet(edbrE, edbrE_2,ih,goodKinFit);        
+	  analyzeMuon(edbrE,ih);
+
+	
+	ih++;
+      }//end loop on candidates
+	// if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
+	nCands += ih;
+      }//end if doubleJetPath
+  }//end if electron channel
 
 
   //EVENT WEIGHTS
