@@ -1,14 +1,14 @@
 import FWCore.ParameterSet.Config as cms
 
 
-cmgEDBRSel = cms.EDFilter(
+cmgEDBRSelMu = cms.EDFilter(
     "CmgDiMuonDiJetEDBRSelector",
-    src = cms.InputTag( "cmgEDBRWeighted" ),
+    src = cms.InputTag( "cmgEDBRMuWeighted" ),
     cut = cms.string( "!getSelection(\"cuts_overlap\")" )
     )
-cmgEDBRSelKinFit = cms.EDFilter(
+cmgEDBRSelKinFitMu = cms.EDFilter(
     "CmgDiMuonDiJetEDBRSelector",
-    src = cms.InputTag( "cmgEDBRKinFitWeighted" ),
+    src = cms.InputTag( "cmgEDBRKinFitMuWeighted" ),
     cut = cms.string( "!getSelection(\"cuts_overlap\")" )
     )
 

@@ -45,7 +45,7 @@ myHLTMuEffWeights =  cms.PSet( lumi = cms.double(1.),#dummy
 
 #### to be expanded according to the modifcations of the HLT triggers that we use
 #### (a set of efficieincies for each of them, function of etan and pt, calculated with T&P)
-HLTWeightsKinFit = cms.EDProducer("HLTWeightProducerMu",
+HLTWeightsKinFitMu = cms.EDProducer("HLTWeightProducerMu",
                                   src = cms.InputTag("cmgDiMuonDiJetKinFitEDBR") ,
                                   ranges = cms.VPSet( cms.PSet( lumi = cms.double(217.),#Run2011A1
                                                                 double1 = doubleMuLeg1Eff_Run2011A,
@@ -65,11 +65,11 @@ HLTWeightsKinFit = cms.EDProducer("HLTWeightProducerMu",
 
 
  
-HLTWeights = HLTWeightsKinFit.clone()
-HLTWeights.src = "cmgDiMuonDiJetEDBR"
+HLTWeightsMu = HLTWeightsKinFitMu.clone()
+HLTWeightsMu.src = "cmgDiMuonDiJetEDBR"
 
 
-HLTWeightsMerged =cms.EDProducer("HLTWeightProducerMuVJet",
+HLTWeightsMergedMu =cms.EDProducer("HLTWeightProducerMuVJet",
                                   src = cms.InputTag( "cmgDiMuonVJetEDBR") ,
                                   ranges = cms.VPSet(
                                                       myHLTMuEffWeights

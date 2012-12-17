@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 
-selectedEDBRCandFilter = cms.EDFilter("CandViewCountFilter",
-   src = cms.InputTag('cmgEDBRSel'),
+selectedEDBRMuCandFilter = cms.EDFilter("CandViewCountFilter",
+   src = cms.InputTag('cmgEDBRSelMu'),
    minNumber = cms.uint32(0)
  )
 
