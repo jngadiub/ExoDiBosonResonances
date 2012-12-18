@@ -109,12 +109,12 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
    MCmatch[ih] = edbr->getSelection("cuts_genMatch");
    deltaREDBR[ih] = 0.0;//deltaR(edbr->phi(),edbr->eta(),genEDBR.phi(),genEDBR.eta());
 
-   //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric "<<ih<<" "<<flush;
+   // if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric "<<ih<<" "<<flush;
    mzz[ih]=edbr->mass();
  
    ptmzz[ih]=edbr->pt();
   
-   //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric mzz="<<mzz[ih]<<"  pT(noKinFit)="<<ptmzzNoKinFit[ih] <<endl;
+   if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric mzz="<<mzz[ih]<<"  pT(noKinFit)="<<ptmzzNoKinFit[ih] <<endl;
 
    if(finalM_||sbM_||finalE_||sbE_){
      //     if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling hel angles" <<endl;
@@ -211,7 +211,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     ptmzzNoKinFit[ih]=edbr_2->pt();
     mjj[ih]=edbr->leg2().mass();
     mjjNoKinFit[ih]=edbr_2->leg2().mass();
-    //  if(debug_)cout<<"AnalyzerEDBR::analyzeDoubleJet filling jet vars  " <<ih<<endl;
+    if(debug_)cout<<"AnalyzerEDBR::analyzeDoubleJet filling jet vars  " <<ih<<endl;
     ////fill jet kine vars
     bool highptJet1=true;
     if(edbr->leg2().leg2().pt()>edbr->leg2().leg1().pt())highptJet1=false;
@@ -283,7 +283,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     //nothing to be done
     //
     //
-    if(debug_)cout<<"AnalyzerEDBR::analyzeMuon"<<endl;
+    if(debug_)cout<<"Inside AnalyzerEDBR::analyzeMuon"<<endl;
     //dummy for muons 
     eleMVAId1[ih] = -1.0;
     eleMVAId2[ih] = -1.0;
@@ -293,7 +293,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   template < typename T > void analyzeElectron(T edbr, int ih){
 
 
-    if(debug_)cout<<"AnalyzerEDBR::analyzeElectron"<<endl;
+    if(debug_)cout<<"Inside AnalyzerEDBR::analyzeElectron for cand#"<<ih<<" : "<<std::flush;
     bool highptLep1=true;
     if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
     
@@ -306,6 +306,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       eleMVAId1[ih] = edbr->leg1().leg2().mvaTrigV0(); 
       eleMVAId2[ih] = edbr->leg1().leg1().mvaTrigV0();
     }
+    if(debug_)    std::cout<<"leg1.eleMVA="<<eleMVAId1[ih]<<"  leg2.eleMVA="<<eleMVAId2[ih]<<std::endl;
   }//end analyzeElectron
 
 

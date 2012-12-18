@@ -71,8 +71,9 @@ edbrSequenceMMJJ = cms.Sequence(
 
     cmgEDBRSelMu +
     cmgEDBRSelKinFitMu +
-
-    selectedEDBRMuCandFilter
+    
+    selectedEDBRKinFitMuCandFilter
+#    selectedEDBRMuCandFilter
 )
 
 edbrSequenceMerged = cms.Sequence(

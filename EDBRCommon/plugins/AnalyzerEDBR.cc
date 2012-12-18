@@ -93,7 +93,8 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
   bool eleEvent   = elePath_; //&&(cat_=="eejj" || cat_=="eej")
   bool muEvent    = muPath_;
   bool goodKinFit = true;
-
+  bool singleJetEvent=false;
+  bool doubleJetEvent=false;
 
 
   edm::Handle<std::vector<reco::GenParticle> > genParticles;
@@ -110,6 +111,14 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
   //  if(!readQGFromUserFloat_)iEvent.getByLabel(HiggsQGMap_, qgmap);
   // }
 
+  edm::Handle<std::vector< cmg::DiPFJet > >   dijets;
+  edm::Handle<std::vector< cmg::DiObject<cmg::PFJet,cmg::PFJet> > >   dijetskinfit;
+  edm::Handle<std::vector< cmg::DiObject<cmg::PFJet,cmg::PFJet> > >  zjjs;
+  iEvent.getByLabel(  "cmgDiJet"  , dijets  ); 
+  iEvent.getByLabel(  "cmgDiJetKinFit"  , dijetskinfit  ); 
+  iEvent.getByLabel(  "ZjjCand"  , zjjs  ); 
+                 
+  cout<<"Size of Dijet Collections---> cmgDiJet: "<<dijets->size()<<"   cmgDijetKinFit: "<<dijetskinfit->size()<<"  Zjj: "<<zjjs->size()<<endl;
 
 
   if(muPath_){
@@ -148,7 +157,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
       }//end loop on candidates
 	// if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
 	nCands += ih;
-
+	singleJetEvent=true;
       }//end if singleJetPath
 
       if(doubleJetPath_){
@@ -158,7 +167,12 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	iEvent.getByLabel(XMMNoKinFitColl_, finalEDBRcand_2);  // Without kinfit
 	
 	int nCandidates=finalEDBRcand->size();
+	if(nCandidates != int(finalEDBRcand_2->size())){
+	  throw cms::Exception("Mismatched collection") <<"Error in  AnalyzerEDBR::analyze ! Mismatched EDBR collection sizes (2m2j): finalEDBRcand=> "<<finalEDBRcand->size()<<"  finalEDBRcand_NOKinFit => "<< finalEDBRcand_2->size()<<std::endl;
+
+	}
 	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
+
 	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" X->ZZ->2L2J cands"<<endl;
 	//  if(nCandidates>0){
 	//  if(muPath_)    muEvent = true;
@@ -184,6 +198,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
       }//end loop on candidates
 	// if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
 	nCands += ih;
+	doubleJetEvent=true;
       }//end if doubleJetPath
 
   }//end if mmjj
@@ -219,7 +234,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
  
 	  analyzeGeneric(edbrE, ih);
 	  analyzeSingleJet(edbrE,ih);        
-	  analyzeMuon(edbrE,ih);
+	  analyzeElectron(edbrE,ih);
 
 	
 	ih++;
@@ -239,6 +254,37 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	
 	int nCandidates=finalEDBRcand->size();
 	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
+
+
+	edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > tmpEDBRcand;
+	edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > tmpEDBRcand_NoKinFit;
+	iEvent.getByLabel("cmgDiElectronDiJetKinFitEDBREle"        , tmpEDBRcand  );  // With kinfit
+	iEvent.getByLabel("cmgDiElectronDiJetEDBREle", tmpEDBRcand_NoKinFit);  // Without kinfit
+
+	cout<<"Size of Collection cmgDiMuonDiJetKinFitEDBREle: "<<tmpEDBRcand->size()<<"  cmgDiMuonDiJetEDBREle: "<<tmpEDBRcand_NoKinFit->size()<<endl;
+	edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > tmpEDBRcand2;
+	edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > tmpEDBRcand2_NoKinFit;
+	iEvent.getByLabel("cmgEDBRKinFitWeightedEle"        , tmpEDBRcand2  );  // With kinfit
+	iEvent.getByLabel("cmgEDBRWeightedEle", tmpEDBRcand2_NoKinFit);  // Without kinfit
+
+	cout<<"Size of Collection cmgEDBRKinFitWeightedEle: "<<tmpEDBRcand2->size()<<" cmgEDBRWeightedEle : "<<tmpEDBRcand2_NoKinFit->size()<<endl;
+
+	for(int iih=0;iih<nCandidates;iih++){
+	  cout<<"Loop on ELE cand ih="<<iih<<"  Mass="<<finalEDBRcand->refAt(iih)->mass() <<" Mll="<<finalEDBRcand->refAt(iih)->leg1().mass() <<" Mjj="<<finalEDBRcand->refAt(iih)->leg2().mass() <<" Etajj="<<finalEDBRcand->refAt(iih)->leg2().eta()<<std::flush;
+	  if(finalEDBRcand->refAt(iih)->vbfptr().isAvailable())cout<<" Mass_vbf="<<finalEDBRcand->refAt(iih)->vbfptr()->mass()<<std::endl;
+	  else cout<<" Mass_vbf= n.a."<<std::endl;
+	}
+
+	for(unsigned int iih=0;iih<finalEDBRcand_2->size();iih++){
+	  cout<<"Loop on ELE cand NO-KINFIT ih="<<iih<<"  Mass="<<finalEDBRcand_2->refAt(iih)->mass() <<" Mll="<<finalEDBRcand_2->refAt(iih)->leg1().mass() <<" Mjj="<<finalEDBRcand_2->refAt(iih)->leg2().mass() <<" Etajj="<<finalEDBRcand_2->refAt(iih)->leg2().eta() <<std::flush;
+	  if(finalEDBRcand_2->refAt(iih)->vbfptr().isAvailable())cout<<" Mass_vbf="<<finalEDBRcand_2->refAt(iih)->vbfptr()->mass()<<std::endl;
+	  else cout<<" Mass_vbf= n.a."<<std::endl;
+	}
+
+
+	//	if(nCandidates != int(finalEDBRcand_2->size())){
+	//  throw cms::Exception("Mismatched collection") <<"Error in  AnalyzerEDBR::analyze ! Mismatched EDBR collection sizes: finalEDBRcand=> "<<finalEDBRcand->size()<<"  finalEDBRcand_2 => "<< finalEDBRcand_2->size()<<std::endl;
+	//	}
 	if(debug_)cout<<"read from ELECTRON event, there are "<<nCandidates<<" X->ZZ->2L2J cands"<<endl;
 	//  if(nCandidates>0){
 	//  if(muPath_)    muEvent = true;
@@ -246,10 +292,16 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	// }
 	int ih = 0;
 	for(int iih=0;iih<nCandidates;iih++){
-	  
+	  cout<<"Loop on ELE cand ih="<<iih<<std::flush;
 	  edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE =finalEDBRcand->refAt(iih);
-	  edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE_2 =finalEDBRcand_2->refAt(iih);
-	  
+
+	  ///THIS IS JUST TMP !!! TO BE REMOVED !!!!
+	  int iih2=iih;
+	  if(iih2>=int(finalEDBRcand_2->size()))iih2=int(finalEDBRcand_2->size()-1);
+	  edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE_2 =finalEDBRcand_2->refAt(iih2);
+
+	  std::cout<<" Mass="<<edbrE->mass()<<"  MassNoKinFit="<<edbrE_2->mass()<<std::endl;	  
+
 	  // if(edbrE->nJets()!=2){
 	  //  throw cms::Exception("Mismatched param") <<"Event in DoubleJet Path has "<<edbrE->nJets()
 	  //						     <<" jets"<<std::endl;  
@@ -257,7 +309,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	  nXjets[ih]=edbrE->nJets();
 	  analyzeGeneric(edbrE,ih);
 	  analyzeDoubleJet(edbrE, edbrE_2,ih,goodKinFit);        
-	  analyzeMuon(edbrE,ih);
+	  analyzeElectron(edbrE,ih);
 
 	
 	ih++;
@@ -287,6 +339,8 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
   bool passCuts=true;
   bool storeEvt=goodKinFit && (muPath_ || elePath_) && lep<2 && passCuts;
+  //  if(debug_&& singleJetEvent&&doubleJetEvent)cout<<" Run "<<run<<"  Event "<<nevent<<"\tThis muon-event has both single and double jet topology."<<endl;
+  if( singleJetEvent&&doubleJetEvent)cout<<" Run "<<run<<"  Event "<<nevent<<"\tThis muon-event has both single and double jet topology."<<endl;
   if(storeEvt){
     //  if(debug_)cout<<"Filling the tree ("<<nCands<<endl;//" cands -> pTlep1="<< ptlep1[nCands-1]<<")"<<endl;
     outTree_->Fill(); 

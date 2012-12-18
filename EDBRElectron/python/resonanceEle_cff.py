@@ -71,8 +71,9 @@ edbrSequenceEEJJ = cms.Sequence(
 
     cmgEDBRSel +
     cmgEDBRSelKinFit +    
-    
-    selectedEDBRCandFilter
+
+    selectedEDBRKinFitCandFilter
+    #selectedEDBRCandFilter
 )
 
 
