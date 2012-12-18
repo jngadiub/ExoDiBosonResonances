@@ -167,7 +167,7 @@ selectedPatJetsCA8CHSwithQjets = cms.EDProducer("QjetsAdder",
                                cutoff=cms.double(100.0),
                                jetRad= cms.double(0.8),
                                jetAlgo=cms.string("CA"),
-                               preclustering = cms.int32(50),
+                               preclustering = cms.int32(30),
                               )
 
 ca8Jets = cms.Sequence( PATCMGJetSequenceCA8CHS + PATCMGJetSequenceCA8CHSpruned + selectedPatJetsCA8CHSwithNsub + selectedPatJetsCA8CHSwithQjets )

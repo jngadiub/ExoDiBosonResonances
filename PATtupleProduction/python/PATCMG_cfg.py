@@ -127,7 +127,7 @@ process.selectedPatJetsAK7CHSwithQjets = cms.EDProducer("QjetsAdder",
 			   cutoff=cms.double(100.0),
 			   jetRad= cms.double(0.7),
 			   jetAlgo=cms.string("AK"),
-			   preclustering = cms.int32(50),
+			   preclustering = cms.int32(30),
 			  )
 if not runQJets:
     process.selectedPatJetsAK7CHSwithQjets.cutoff=100000.0
