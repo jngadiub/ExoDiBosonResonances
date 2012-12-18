@@ -62,7 +62,7 @@ process.source.fileNames = process.source.fileNames[:20]
 #process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/group/cmgtools/CMG/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PFAOD_0.root']
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(30) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(50) )
 
 print sep_line
 print process.source.fileNames
