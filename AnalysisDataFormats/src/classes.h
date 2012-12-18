@@ -28,15 +28,7 @@ namespace {
     edm::Wrapper<cmg::DiGenParticleDiGenParticle> edzgg;
     edm::Wrapper<std::vector<cmg::DiGenParticleDiGenParticle> > edzggv;
 
-    cmg::DiMuonSingleJet dz1jm_;
-    std::vector<cmg::DiMuonSingleJet> dz1jmv;
-    edm::Wrapper<cmg::DiMuonSingleJet> edz1jm;
-    edm::Wrapper<std::vector<cmg::DiMuonSingleJet> > edz1jmv;
 
-    cmg::DiElectronSingleJet dz1je_;
-    std::vector<cmg::DiElectronSingleJet> dz1jev;
-    edm::Wrapper<cmg::DiElectronSingleJet> edz1j;
-    edm::Wrapper<std::vector<cmg::DiElectronSingleJet> > edz1jev;
 
     cmg::DiMuonDiJetEDBR dzh_;
     std::vector<cmg::DiMuonDiJetEDBR> dzvh;
@@ -53,15 +45,6 @@ namespace {
     edm::Wrapper<cmg::DiGenParticleDiGenParticleEDBR> edzggh;
     edm::Wrapper<std::vector<cmg::DiGenParticleDiGenParticleEDBR> > edzggvh;
 
-    cmg::DiMuonSingleJetEDBR dz1jmh_;
-    std::vector<cmg::DiMuonSingleJetEDBR> dz1jmvh;
-    edm::Wrapper<cmg::DiMuonSingleJetEDBR> edz1jmh;
-    edm::Wrapper<std::vector<cmg::DiMuonSingleJetEDBR> > edz1jmvh;
-
-    cmg::DiElectronSingleJetEDBR dz1jeh_;
-    std::vector<cmg::DiElectronSingleJetEDBR> dz1jevh;
-    edm::Wrapper<cmg::DiElectronSingleJetEDBR> edz1jeh;
-    edm::Wrapper<std::vector<cmg::DiElectronSingleJetEDBR> > edz1jevh;
 
     cmg::VJet vjet_;
     std::vector<cmg::VJet> vjetv;

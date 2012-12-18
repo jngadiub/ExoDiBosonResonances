@@ -15,7 +15,6 @@ namespace cmg {
   public:
     EDBRCandidate(): 
       DiObject<TL1,TL2>(),
-      nj_(0),
       costhetastar_(UnSet(Double_t)),
       helphi_(UnSet(Double_t)),
       helphiZll_(UnSet(Double_t)),
@@ -30,7 +29,6 @@ namespace cmg {
     }
     EDBRCandidate(const EDBRCandidate<TL1,TL2>& other):
       DiObject<TL1,TL2>(other),
-      nj_(0),
       costhetastar_(other.costhetastar_),
       helphi_(other.helphi_),
       helphiZll_(other.helphiZll_),
@@ -45,7 +43,6 @@ namespace cmg {
     }
     EDBRCandidate(const DiObject<TL1,TL2>& other):
       DiObject<TL1,TL2>(other),
-      nj_(0),
       costhetastar_(UnSet(Double_t)),
       helphi_(UnSet(Double_t)),
       helphiZll_(UnSet(Double_t)),
@@ -60,8 +57,6 @@ namespace cmg {
    }
 
     virtual ~EDBRCandidate(){}
-
-    int nJets() const {return nj_;} //by how many jets is composed the hadronic V
 
     Double_t costhetastar() const{ return costhetastar_;}
     Double_t helphi() const{ return helphi_;}
@@ -84,8 +79,6 @@ namespace cmg {
     }
         
   private:
-
-    int nj_;
     // rest frame angles
     Double_t costhetastar_;
     Double_t helphi_;

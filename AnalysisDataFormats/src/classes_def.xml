@@ -19,16 +19,6 @@
   <class name="edm::Wrapper<cmg::DiElectronDiJet>"/>
   <class name="edm::Wrapper<std::vector<cmg::DiElectronDiJet> >"/>
 
-  <class name="cmg::DiMuonSingleJet"/>
-  <class name="std::vector<cmg::DiMuonSingleJet>"/>
-  <class name="edm::Wrapper<cmg::DiMuonSingleJet>"/>
-  <class name="edm::Wrapper<std::vector<cmg::DiMuonSingleJet> >"/>
-
-  <class name="cmg::DiElectronSingleJet"/>
-  <class name="std::vector<cmg::DiElectronSingleJet>"/>
-  <class name="edm::Wrapper<cmg::DiElectronSingleJet>"/>
-  <class name="edm::Wrapper<std::vector<cmg::DiElectronSingleJet> >"/>
-
   <class name="cmg::DiGenParticleDiGenParticle"/>
   <class name="std::vector<cmg::DiGenParticleDiGenParticle>"/>
   <class name="edm::Wrapper<cmg::DiGenParticleDiGenParticle>"/>
@@ -49,16 +39,6 @@
   <class name="std::vector<cmg::DiGenParticleDiGenParticleEDBR>"/>
   <class name="edm::Wrapper<cmg::DiGenParticleDiGenParticleEDBR>"/>
   <class name="edm::Wrapper<std::vector<cmg::DiGenParticleDiGenParticleEDBR> >"/>
-
- <class name="cmg::DiMuonSingleJetEDBR"/>
-  <class name="std::vector<cmg::DiMuonSingleJetEDBR>"/>
-  <class name="edm::Wrapper<cmg::DiMuonSingleJetEDBR>"/>
-  <class name="edm::Wrapper<std::vector<cmg::DiMuonSingleJetEDBR> >"/>
-
-  <class name="cmg::DiElectronSingleJetEDBR"/>
-  <class name="std::vector<cmg::DiElectronSingleJetEDBR>"/>
-  <class name="edm::Wrapper<cmg::DiElectronSingleJetEDBR>"/>
-  <class name="edm::Wrapper<std::vector<cmg::DiElectronSingleJetEDBR> >"/>
 
   <class name="cmg::VJet" />
   <class name="edm::Wrapper<cmg::VJet>" />
