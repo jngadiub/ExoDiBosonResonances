@@ -4,9 +4,9 @@
 #include <vector>
 #include <list>
 #include <algorithm>
+#include "fastjet/JetDefinition.hh"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
-#include "fastjet/JetDefinition.hh"
 
 using namespace std;
 
@@ -24,7 +24,9 @@ class JetDistanceCompare{
 
 class Qjets{
  private:
-  double _zcut, _dcut_fctr, _exp_min, _exp_max, _rigidity, _dcut;
+  unsigned int _seed;
+  double _zcut,  _dcut_fctr, _exp_min, _exp_max, _rigidity,  _dcut;
+  bool _rand_seed_set;
   vector <int> _merged_jets;
   list <jet_distance> _distances;
 
@@ -42,5 +44,6 @@ class Qjets{
  public:
   Qjets(double zcut, double dcut_fctr, double exp_min, double exp_max, double rigidity);
   void Cluster(fastjet::ClusterSequence & cs);
+  void SetRandSeed(unsigned int seed); /* In case you want reproducible behavior */
 };
 #endif
