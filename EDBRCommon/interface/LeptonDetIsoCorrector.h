@@ -61,7 +61,7 @@ namespace cmg{
       const edm::InputTag rho_;
       const double constantTermBarrel_;
       const double linearTermBarrel_;
-      const double linearTermEndcap_;
+      const double constantTermEndcap_;
       const double linearTermEndcap_;
       const double linearThresholdEndcap_;
       std::vector<double> etaBins_;//bins of eta used for EffArea
@@ -89,14 +89,16 @@ void cmg::LeptonDetIsoCorrector<LeptonType>::produce( edm::Event &iEvent, const 
 
     // 'it' is an iterator to a LeptonType... which is a CMG type.
     // In order to get back to the PAT quantities I need to use sourcePtr()
-    double ECALIsol = it->sourcePtr().userIso(1);
-    double HCALIsol = it->sourcePtr().userIso(2);
+
+    const pat::Electron& ele = *(*it->sourcePtr()); //Don't ask. Just don't ask.
+    double ECALIsol = ele.userIso(1);
+    double HCALIsol = ele.userIso(2);
     double sumCaloEt = ECALIsol + HCALIsol;
 
     double sumCaloEtLimit = -1;
-    double et = it->sourcePtr().et();
+    double et = ele.et();
 
-    double etaLept=fabs(it->eta());
+    double etaLept=fabs(ele.eta());
     const int nEtaBins=etaBins_.size();
     int binIndex=-1;
     //loop over eta bins for finding the right one
@@ -111,7 +113,7 @@ void cmg::LeptonDetIsoCorrector<LeptonType>::produce( edm::Event &iEvent, const 
     if(binIndex>=0)effArea=effAreaVals_.at(binIndex);   
     // Ok, now we have the effective area.
 
-    bool inBarrel = it->sourcePtr().isEE();
+    bool inBarrel = ele.isEE();
     if (inBarrel) {
       sumCaloEtLimit = 
 	constantTermBarrel_ + 

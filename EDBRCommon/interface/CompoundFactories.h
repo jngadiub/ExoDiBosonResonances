@@ -7,6 +7,7 @@
 #include "ExoDiBosonResonances/EDBRCommon/interface/EDBRCandidateFactory.h"
 #include "ExoDiBosonResonances/EDBRCommon/interface/DiObjectKinFitFactory.h"
 #include "ExoDiBosonResonances/EDBRCommon/interface/LeptonIsoCorrector.h"
+#include "ExoDiBosonResonances/EDBRCommon/interface/LeptonDetIsoCorrector.h"
 
 
 namespace cmg{
