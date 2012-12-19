@@ -1,6 +1,6 @@
-from CMGTools.Common.electron_cff import *
-from ExoDiBosonResonances.EDBRElectron.selections.heejjElectronId_cfi import *
-from ExoDiBosonResonances.EDBRElectron.selections.eKinematics_cfi import eKinematics
+#from CMGTools.Common.electron_cff import *
+from ExoDiBosonResonances.EDBRElectron.factories.cmgElectron_cfi import *
+
 
 genSelectorZDaughterE = cms.EDFilter("GenParticleSelector",
     src = cms.InputTag("genParticles"),
@@ -24,25 +24,24 @@ selectedPatElectrons  = cms.EDProducer("PATElectronCleaner",
 
 
 
-cmgElectron.cfg.inputCollection="selectedPatElectrons"
-
+#cmgElectron.cfg.inputCollection="selectedPatElectrons"
 # ele ID requirements
-cmgElectron.cuts.mvaTrigSel =mvaTrigEleId.clone() 
-cmgElectron.cuts.cutBasedVeto = cutBasedVetoEleId.clone()
-cmgElectron.cuts.cutBasedLoose = cutBasedLooseEleId.clone()
-cmgElectron.cuts.conversionVeto = cms.PSet(
-    patFlag=cms.string('sourcePtr().passConversionVeto()')    
-    )
+#cmgElectron.cuts.mvaTrigSel =mvaTrigEleId.clone() 
+#cmgElectron.cuts.cutBasedVeto = cutBasedVetoEleId.clone()
+#cmgElectron.cuts.cutBasedLoose = cutBasedLooseEleId.clone()
+#cmgElectron.cuts.conversionVeto = cms.PSet(
+#    patFlag=cms.string('sourcePtr().passConversionVeto()')    
+#    )
 
 ### Isolation requirements (also embedded in CombIsoVBTFXX and wp95c)
-cmgElectron.cuts.reliso = cms.PSet ( reliso = cms.string(" (sourcePtr.get.dr03HcalTowerSumEt + sourcePtr.get.dr03EcalRecHitSumEt + sourcePtr.get.dr03TkSumPt) / et < 0.15 ") )
+#cmgElectron.cuts.reliso = cms.PSet ( reliso = cms.string(" (sourcePtr.get.dr03HcalTowerSumEt + sourcePtr.get.dr03EcalRecHitSumEt + sourcePtr.get.dr03TkSumPt) / et < 0.15 ") )
 
 
 ### kinematic requirements
-cmgElectron.cuts.kinematics = eKinematics.clone()
+#cmgElectron.cuts.kinematics = eKinematics.clone()
 
 ### MC matching
-cmgElectron.cuts.genLepton = cms.PSet( genLepton = cms.string("sourcePtr().get().hasOverlaps('genLeptons')"))
+#cmgElectron.cuts.genLepton = cms.PSet( genLepton = cms.string("sourcePtr().get().hasOverlaps('genLeptons')"))
  
 eleSequence = cms.Sequence(genSelectorZDaughterE + selectedPatElectrons + cmgElectron)
 

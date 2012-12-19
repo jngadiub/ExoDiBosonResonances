@@ -14,7 +14,7 @@ cmgDiElectronEDBR = cms.EDFilter(
     cfg = dieleFactory.clone(),
     cuts = cms.PSet(
        zee_kinematics = zee_kinematics.clone(),
-       zee_quality = zee_quality.clone(),
+       #zee_quality = zee_quality.clone(),
        charge = cms.PSet( charge = cms.string("leg1.charge != leg2.charge") ),#XXX
        genP = cms.PSet(genP = cms.string("leg1.sourcePtr.get.hasOverlaps(\"genLeptons\") && leg2.sourcePtr.get.hasOverlaps(\"genLeptons\")"))
       ),

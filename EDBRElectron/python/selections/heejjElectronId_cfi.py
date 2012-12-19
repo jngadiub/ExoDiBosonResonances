@@ -50,4 +50,10 @@ cutBasedLooseEleId = cms.PSet(
                    eop = cms.string('abs(1.0/energy - 1.0/p)<0.05 '))
     )
 
-
+HEEPelectronBstdId2012 = cms.PSet(
+    isHEEP = cms.string('sourcePtr().userInt("HEEPId") == 0'),
+    isIsolTrk = cms.string('sourcePtr().userIso(0) < 5.0'),
+#   Calorimeter Isolation is implemented in an specialized module:
+#   (ElectronDetIsoCorrector, with label electronPresel) 
+#    isCaloTrk = cms.string('(sourcePtr().userIso(1) + sourcePtr().userIso(2)) < (a*rho + b*et + c)')
+    )
