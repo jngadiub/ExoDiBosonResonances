@@ -12,7 +12,7 @@ cmgDiMuonVJet = cms.EDFilter(
                    "DiMuonSingleJetPOProducer",
                    cfg = dimuonVjetFactory.clone(),
                    #overlap cut makes sure that Z->J is not a duplicate of Z->ll (no PAT-cleaning performed so far)
-                   cuts = cms.PSet(overlap = cms.PSet( overlap = cms.string(" deltaR(leg1.leg1.eta,leg1.leg1.phi,leg2.eta,leg2.phi) < 0.5 ||"
+                   cuts = cms.PSet(fullSel = cms.PSet( overlap = cms.string(" deltaR(leg1.leg1.eta,leg1.leg1.phi,leg2.eta,leg2.phi) < 0.5 ||"
                                                                             +"deltaR(leg1.leg2.eta,leg1.leg2.phi,leg2.eta,leg2.phi) < 0.5 "),
                                                        kinematics = cms.PSet( mass = cms.string("mass > 180")
                                                                             ),#XXXX
