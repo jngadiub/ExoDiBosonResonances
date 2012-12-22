@@ -129,6 +129,19 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
        //   else 
        // LD[ih] = (*ldmapmm)[edbr];
    }
+   else{//cand is coming from preselection path
+     hs[ih]     = edbr->costhetastar();
+     h1[ih]     = edbr->helcosthetaZl1();
+     h2[ih]     = edbr->helcosthetaZl2();
+     phi[ih]    = edbr->helphiZl1();
+     phiS1[ih]  = edbr->phistarZl1();
+
+     // if(readLDFromUserFloat_) 
+     LD[ih] = -99.0;//edbr->userFloat("LD");
+       //   else 
+       // LD[ih] = (*ldmapmm)[edbr];
+
+   }
 
    //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling mLL" <<endl;
    mll[ih]=edbr->leg1().mass();
@@ -142,16 +155,47 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
    //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling leptons" <<endl;
 
+   bool highptLep1=true;
+   if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
+   
+   if(highptLep1){
+     ptlep1[ih]=edbr->leg1().leg1().pt();
+     ptlep2[ih]=edbr->leg1().leg2().pt();
+     etalep1[ih]=edbr->leg1().leg1().eta();
+     etalep2[ih]=edbr->leg1().leg2().eta();
+     philep1[ih]=edbr->leg1().leg1().phi();
+     philep2[ih]=edbr->leg1().leg2().phi();
+     isolep1[ih]=edbr->leg1().leg1().relIso();
+     isolep2[ih]=edbr->leg1().leg2().relIso();
+   }
+   else{
+     ptlep1[ih]=edbr->leg1().leg2().pt();
+     ptlep2[ih]=edbr->leg1().leg1().pt();
+     etalep1[ih]=edbr->leg1().leg2().eta();
+     etalep2[ih]=edbr->leg1().leg1().eta();
+     philep1[ih]=edbr->leg1().leg2().phi();
+     philep2[ih]=edbr->leg1().leg1().phi();
+     isolep1[ih]=edbr->leg1().leg2().relIso();
+     isolep2[ih]=edbr->leg1().leg1().relIso();
+   }
+
+
+   deltaRleplep[ih]=deltaR(edbr->leg1().leg1().phi(),
+			   edbr->leg1().leg1().eta(),
+			   edbr->leg1().leg2().phi(),
+			   edbr->leg1().leg2().eta());
    
   
 
-  if(finalM_||sbM_||finalE_||sbE_){
-    // THESE WEIGHTS=1 FOR REAL DATA
-    PU  = edbr->userFloat("PUWeights");
-    PUA = edbr->userFloat("PUWeights2012A");
-    PUB = edbr->userFloat("PUWeights2012B");
-    HLTSF = edbr->userFloat("HLTWeight");
-  }//end if finalM_ || ....
+   //if(finalM_||sbM_||finalE_||sbE_){//with this if condition, presel will have PU weights==1
+
+   // THESE WEIGHTS=1 FOR REAL DATA
+   PU  = edbr->userFloat("PUWeights");
+   PUA = edbr->userFloat("PUWeights2012A");
+   PUB = edbr->userFloat("PUWeights2012B");
+   HLTSF = edbr->userFloat("HLTWeight");
+
+   // }//end if finalM_ || ....
 
   //  if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric finishing Cand #" <<ih<<endl;
   
@@ -165,6 +209,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   //functions specific for boosted and not-boosted topologies  
   template < typename T > void  analyzeSingleJet(T edbr,int& ih){
     //  if(debug_)cout<<"AnalyzerEDBR::analyzeSingleJet filling jet vars  " <<ih<<endl;
+
+    nXjets[ih]=1;//edbr->nJets();
     mzzNoKinFit[ih]=edbr->mass();
     mjj[ih]=edbr->leg2().prunedMass();
     mjjNoKinFit[ih]=mjj[ih];
@@ -196,6 +242,14 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     tau1[ih]=edbr->leg2().tau1();
     tau2[ih]=edbr->leg2().tau2();
 
+
+    // dummy jet vars
+    btag[ih]=-1;
+    q1fl[ih]=-99.0;
+    q2fl[ih]=-99.0;
+    qgjet1[ih]=-99.0;
+    qgjet2[ih]=-99.0;
+    qgProduct[ih]=-99.0;
   }//end analyzeSingleJet();
 
 
@@ -207,6 +261,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       goodKinFit = false;
     }
 
+    nXjets[ih]=2;//edbr->nJets();
     mzzNoKinFit[ih]=edbr_2->mass();
     ptmzzNoKinFit[ih]=edbr_2->pt();
     mjj[ih]=edbr->leg2().mass();
@@ -253,6 +308,14 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     tau1[ih]=-999.0;
     tau2[ih]=-999.0;
 
+    //#btags is dummy
+    btag[ih]=-1;
+    q1fl[ih]=-99.0;
+    q2fl[ih]=-99.0;
+    qgjet1[ih]=-99.0;
+    qgjet2[ih]=-99.0;
+    qgProduct[ih]=-99.0;
+
 
   
   //  if(finalM_||sbM_||finalE_||sbE_){
@@ -284,6 +347,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     //
     //
     if(debug_)cout<<"Inside AnalyzerEDBR::analyzeMuon"<<endl;
+
+
+
     //dummy for muons 
     eleMVAId1[ih] = -1.0;
     eleMVAId2[ih] = -1.0;

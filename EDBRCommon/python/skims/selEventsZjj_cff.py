@@ -11,5 +11,10 @@ selectedZjjCandFilter = cms.EDFilter("CandViewCountFilter",
    minNumber = cms.uint32(1)
  )
 
+selectedDiJetKinFitCandFilter = cms.EDFilter("CandViewCountFilter",
+   src = cms.InputTag('cmgDiJetKinFit'),
+   minNumber = cms.uint32(1)
+ )
+
 
 selectedZjjSequence = cms.Sequence(ZjjCand+selectedZjjCandFilter)

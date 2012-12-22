@@ -90,8 +90,8 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
   analyzeTrigger(iEvent, eventSetup);
 
-  bool eleEvent   = elePath_; //&&(cat_=="eejj" || cat_=="eej")
-  bool muEvent    = muPath_;
+  ///  bool eleEvent   = elePath_; //&&(cat_=="eejj" || cat_=="eej")
+  ///  bool muEvent    = muPath_;
   bool goodKinFit = true;
   bool singleJetEvent=false;
   bool doubleJetEvent=false;
@@ -111,16 +111,14 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
   //  if(!readQGFromUserFloat_)iEvent.getByLabel(HiggsQGMap_, qgmap);
   // }
 
-  edm::Handle<std::vector< cmg::DiPFJet > >   dijets;
-  edm::Handle<std::vector< cmg::DiObject<cmg::PFJet,cmg::PFJet> > >   dijetskinfit;
-  edm::Handle<std::vector< cmg::DiObject<cmg::PFJet,cmg::PFJet> > >  zjjs;
-  iEvent.getByLabel(  "cmgDiJet"  , dijets  ); 
-  iEvent.getByLabel(  "cmgDiJetKinFit"  , dijetskinfit  ); 
-  iEvent.getByLabel(  "ZjjCand"  , zjjs  ); 
-                 
-  cout<<"Size of Dijet Collections---> cmgDiJet: "<<dijets->size()<<"   cmgDijetKinFit: "<<dijetskinfit->size()<<"  Zjj: "<<zjjs->size()<<endl;
 
-
+  //edm::Handle<std::vector< cmg::DiPFJet > >   dijets;
+  //  edm::Handle<std::vector< cmg::DiObject<cmg::PFJet,cmg::PFJet> > >   dijetskinfit;
+  // edm::Handle<std::vector< cmg::DiObject<cmg::PFJet,cmg::PFJet> > >  zjjs;
+  //if( iEvent.getByLabel(  "cmgDiJet"  , dijets  ) && iEvent.getByLabel(  "cmgDiJetKinFit"  , dijetskinfit  ) && iEvent.getByLabel(  "ZjjCand"  , zjjs  ) ){                 
+  // cout<<"Size of Dijet Collections---> cmgDiJet: "<<dijets->size()<<"   cmgDijetKinFit: "<<dijetskinfit->size()<<"  Zjj: "<<zjjs->size()<<endl;
+  // }
+ 
   if(muPath_){
        
       lep=1; 
@@ -133,10 +131,6 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	int nCandidates=finalEDBRcand->size();
 	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
 	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" X->ZZ->2L1J cands"<<endl;
-	//  if(nCandidates>0){
-	//  if(muPath_)    muEvent = true;
-	//  if(elePath_)   eleEvent = true;
-	// }
 	int ih = 0;
 	for(int iih=0;iih<nCandidates;iih++){
 	  
@@ -146,7 +140,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	  //throw cms::Exception("Mismatched param") <<"Event in SingleJet Path has "<<edbrM->nJets()
 	  //				     <<" jets"<<std::endl;  
 	  //}
-	  nXjets[ih]=edbrM->nJets();
+
  
 	  analyzeGeneric(edbrM, ih);
 	  analyzeSingleJet(edbrM,ih);        
@@ -174,10 +168,6 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
 
 	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" X->ZZ->2L2J cands"<<endl;
-	//  if(nCandidates>0){
-	//  if(muPath_)    muEvent = true;
-	//  if(elePath_)   eleEvent = true;
-	// }
 	int ih = 0;
 	for(int iih=0;iih<nCandidates;iih++){
 	  
@@ -188,7 +178,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	  //  throw cms::Exception("Mismatched param") <<"Event in DoubleJet Path has "<<edbrM->nJets()
 	  //						     <<" jets"<<std::endl;  
 	  // }
-	  nXjets[ih]=edbrM->nJets();
+	
 	  analyzeGeneric(edbrM,ih);
 	  analyzeDoubleJet(edbrM, edbrM_2,ih,goodKinFit);        
 	  analyzeMuon(edbrM,ih);
@@ -196,7 +186,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	
 	ih++;
       }//end loop on candidates
-	// if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
+	
 	nCands += ih;
 	doubleJetEvent=true;
       }//end if doubleJetPath
@@ -217,10 +207,6 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	int nCandidates=finalEDBRcand->size();
 	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
 	if(debug_)cout<<"read from ELECTRON event, there are "<<nCandidates<<" X->ZZ->2L1J cands"<<endl;
-	//  if(nCandidates>0){
-	//  if(muPath_)    muEvent = true;
-	//  if(elePath_)   eleEvent = true;
-	// }
 	int ih = 0;
 	for(int iih=0;iih<nCandidates;iih++){
 	  
@@ -230,7 +216,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	  //  throw cms::Exception("Mismatched param") <<"Event in SingleJet Path has "<<edbrE->nJets()
 	  //						     <<" jets"<<std::endl;  
 	  // }
-	  nXjets[ih]=edbrE->nJets();
+	 
  
 	  analyzeGeneric(edbrE, ih);
 	  analyzeSingleJet(edbrE,ih);        
@@ -255,58 +241,111 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	int nCandidates=finalEDBRcand->size();
 	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
 
-
+	/***************************
 	edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > tmpEDBRcand;
 	edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > tmpEDBRcand_NoKinFit;
 	iEvent.getByLabel("cmgDiElectronDiJetKinFitEDBREle"        , tmpEDBRcand  );  // With kinfit
 	iEvent.getByLabel("cmgDiElectronDiJetEDBREle", tmpEDBRcand_NoKinFit);  // Without kinfit
 
 	cout<<"Size of Collection cmgDiMuonDiJetKinFitEDBREle: "<<tmpEDBRcand->size()<<"  cmgDiMuonDiJetEDBREle: "<<tmpEDBRcand_NoKinFit->size()<<endl;
+
+	////////////////
 	edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > tmpEDBRcand2;
 	edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > tmpEDBRcand2_NoKinFit;
 	iEvent.getByLabel("cmgEDBRKinFitWeightedEle"        , tmpEDBRcand2  );  // With kinfit
 	iEvent.getByLabel("cmgEDBRWeightedEle", tmpEDBRcand2_NoKinFit);  // Without kinfit
 
 	cout<<"Size of Collection cmgEDBRKinFitWeightedEle: "<<tmpEDBRcand2->size()<<" cmgEDBRWeightedEle : "<<tmpEDBRcand2_NoKinFit->size()<<endl;
+	cout<<"Lopp on cands in cmgEDBRKinFitWeightedEle, DeltaR between leptons (A and B) vs jets (C and D):  "<<endl;
+	for(unsigned int iih=0;iih<tmpEDBRcand2->size();iih++){
 
-	for(int iih=0;iih<nCandidates;iih++){
+	  edm::RefToBase<cmg::DiElectronDiJetEDBR> edbr =tmpEDBRcand2->refAt(iih);
+	  edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrNKF =tmpEDBRcand2_NoKinFit->refAt(iih);
+
+	  float deltaR_AC=deltaR(edbr->leg1().leg1().phi(),
+				  edbr->leg1().leg1().eta(),
+				 edbr->leg2().leg1().phi(),
+				  edbr->leg2().leg1().eta());
+	  float deltaR_AC_NKF=deltaR(edbrNKF->leg1().leg1().phi(),
+				     edbrNKF->leg1().leg1().eta(),
+				     edbrNKF->leg2().leg1().phi(),
+				     edbrNKF->leg2().leg1().eta());
+
+	  cout<<"---\nMX="<<edbr->mass() <<"  DR_AC : KinFit="<<deltaR_AC  <<"   NOKinfit="<<deltaR_AC_NKF <<endl;
+
+	  float deltaR_AD=deltaR(edbr->leg1().leg1().phi(),
+				  edbr->leg1().leg1().eta(),
+				 edbr->leg2().leg2().phi(),
+				  edbr->leg2().leg2().eta());
+	  float deltaR_AD_NKF=deltaR(edbrNKF->leg1().leg1().phi(),
+				  edbrNKF->leg1().leg1().eta(),
+				  edbrNKF->leg2().leg2().phi(),
+				  edbrNKF->leg2().leg2().eta());
+	  cout<<"MX="<<edbr->mass() <<"  DR_AD : KinFit="<< deltaR_AD <<"   NOKinfit="<< deltaR_AD_NKF<<endl;
+
+	  float deltaR_BC=deltaR(edbr->leg1().leg2().phi(),
+				  edbr->leg1().leg2().eta(),
+				 edbr->leg2().leg1().phi(),
+				  edbr->leg2().leg1().eta());
+	  float deltaR_BC_NKF=deltaR(edbrNKF->leg1().leg2().phi(),
+				  edbrNKF->leg1().leg2().eta(),
+				  edbrNKF->leg2().leg1().phi(),
+				  edbrNKF->leg2().leg1().eta());
+
+	  cout<<"MX="<<edbr->mass() <<"  DR_BC : KinFit="<< deltaR_BC <<"   NOKinfit="<<deltaR_BC_NKF <<endl;
+
+
+	  float deltaR_BD=deltaR(edbr->leg1().leg2().phi(),
+				  edbr->leg1().leg2().eta(),
+				 edbr->leg2().leg2().phi(),
+				  edbr->leg2().leg2().eta());
+	  float deltaR_BD_NKF=deltaR(edbrNKF->leg1().leg2().phi(),
+				  edbrNKF->leg1().leg2().eta(),
+				  edbrNKF->leg2().leg2().phi(),
+				  edbrNKF->leg2().leg2().eta());
+
+	  cout<<"MX="<<edbr->mass() <<"  DR_BD : KinFit="<< deltaR_BD <<"   NOKinfit="<<deltaR_BD_NKF <<endl;
+	  
+	}
+	*******************************/
+
+	////////////////////
+	if(nCandidates != int(finalEDBRcand_2->size())){
+	  throw cms::Exception("Mismatched collection") <<"Error in  AnalyzerEDBR::analyze ! Mismatched EDBR collection sizes: finalEDBRcand=> "<<finalEDBRcand->size()<<"  finalEDBRcand_NOKINFIT => "<< finalEDBRcand_2->size()<<std::endl;
+	  //  cout <<"Error in  AnalyzerEDBR::analyze ! Mismatched EDBR collection sizes: finalEDBRcand=> "<<finalEDBRcand->size()<<"  finalEDBRcand_NOKINFIT => "<< finalEDBRcand_2->size()<<std::endl;
+	}
+
+
+	if(debug_){
+	  cout<<"read from ELECTRON event, there are "<<nCandidates<<" X->ZZ->2L2J cands"<<endl;
+	
+
+	  for(int iih=0;iih<nCandidates;iih++){
 	  cout<<"Loop on ELE cand ih="<<iih<<"  Mass="<<finalEDBRcand->refAt(iih)->mass() <<" Mll="<<finalEDBRcand->refAt(iih)->leg1().mass() <<" Mjj="<<finalEDBRcand->refAt(iih)->leg2().mass() <<" Etajj="<<finalEDBRcand->refAt(iih)->leg2().eta()<<std::flush;
 	  if(finalEDBRcand->refAt(iih)->vbfptr().isAvailable())cout<<" Mass_vbf="<<finalEDBRcand->refAt(iih)->vbfptr()->mass()<<std::endl;
 	  else cout<<" Mass_vbf= n.a."<<std::endl;
 	}
 
-	for(unsigned int iih=0;iih<finalEDBRcand_2->size();iih++){
+	  for(unsigned int iih=0;iih<finalEDBRcand_2->size();iih++){
 	  cout<<"Loop on ELE cand NO-KINFIT ih="<<iih<<"  Mass="<<finalEDBRcand_2->refAt(iih)->mass() <<" Mll="<<finalEDBRcand_2->refAt(iih)->leg1().mass() <<" Mjj="<<finalEDBRcand_2->refAt(iih)->leg2().mass() <<" Etajj="<<finalEDBRcand_2->refAt(iih)->leg2().eta() <<std::flush;
 	  if(finalEDBRcand_2->refAt(iih)->vbfptr().isAvailable())cout<<" Mass_vbf="<<finalEDBRcand_2->refAt(iih)->vbfptr()->mass()<<std::endl;
 	  else cout<<" Mass_vbf= n.a."<<std::endl;
-	}
+	  }//end loop on finalEDBRcand_2
+	 
+	  
+	}//end if debug
 
-
-	//	if(nCandidates != int(finalEDBRcand_2->size())){
-	//  throw cms::Exception("Mismatched collection") <<"Error in  AnalyzerEDBR::analyze ! Mismatched EDBR collection sizes: finalEDBRcand=> "<<finalEDBRcand->size()<<"  finalEDBRcand_2 => "<< finalEDBRcand_2->size()<<std::endl;
-	//	}
-	if(debug_)cout<<"read from ELECTRON event, there are "<<nCandidates<<" X->ZZ->2L2J cands"<<endl;
-	//  if(nCandidates>0){
-	//  if(muPath_)    muEvent = true;
-	//  if(elePath_)   eleEvent = true;
-	// }
 	int ih = 0;
 	for(int iih=0;iih<nCandidates;iih++){
 	  cout<<"Loop on ELE cand ih="<<iih<<std::flush;
 	  edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE =finalEDBRcand->refAt(iih);
-
-	  ///THIS IS JUST TMP !!! TO BE REMOVED !!!!
-	  int iih2=iih;
-	  if(iih2>=int(finalEDBRcand_2->size()))iih2=int(finalEDBRcand_2->size()-1);
-	  edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE_2 =finalEDBRcand_2->refAt(iih2);
-
-	  std::cout<<" Mass="<<edbrE->mass()<<"  MassNoKinFit="<<edbrE_2->mass()<<std::endl;	  
+	  edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE_2 =finalEDBRcand_2->refAt(iih); //NO KinFit	  
 
 	  // if(edbrE->nJets()!=2){
 	  //  throw cms::Exception("Mismatched param") <<"Event in DoubleJet Path has "<<edbrE->nJets()
 	  //						     <<" jets"<<std::endl;  
 	  // }
-	  nXjets[ih]=edbrE->nJets();
+	  
 	  analyzeGeneric(edbrE,ih);
 	  analyzeDoubleJet(edbrE, edbrE_2,ih,goodKinFit);        
 	  analyzeElectron(edbrE,ih);
@@ -390,6 +429,10 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("etalep2"         ,&etalep2       ,"etalep2[nCands]/D"      );
   outTree_->Branch("etajet1"         ,&etajet1       ,"etajet1[nCands]/D"      );
   outTree_->Branch("etajet2"         ,&etajet2       ,"etajet2[nCands]/D"      );
+  outTree_->Branch("philep1"         ,&philep1       ,"philep1[nCands]/D"      );
+  outTree_->Branch("philep2"         ,&philep2       ,"philep2[nCands]/D"      );
+  outTree_->Branch("phijet1"         ,&phijet1       ,"phijet1[nCands]/D"      );
+  outTree_->Branch("phijet2"         ,&phijet2       ,"phijet2[nCands]/D"      );
   outTree_->Branch("lep"             ,&lep           ,"lep/D"                  );
   outTree_->Branch("region"          ,&reg           ,"region[nCands]/D"       );
   outTree_->Branch("mZZ"             ,&mzz           ,"mZZ[nCands]/D"          );
