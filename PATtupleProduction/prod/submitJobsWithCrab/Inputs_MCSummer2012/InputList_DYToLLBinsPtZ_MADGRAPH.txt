@@ -1,0 +1,4 @@
+/DYJetsToLL_PtZ-50To70_TuneZ2star_8TeV_ext-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM 5000000 450
+/DYJetsToLL_PtZ-70To100_TuneZ2star_8TeV_ext-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM 4000000 400
+/DYJetsToLL_PtZ-100_TuneZ2star_8TeV_ext-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM 2500000 270
+/DYJetsToLL_PtZ-180_TuneZ2star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM 400000 50
