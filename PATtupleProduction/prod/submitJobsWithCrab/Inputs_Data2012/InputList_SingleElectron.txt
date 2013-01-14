@@ -1,0 +1,6 @@
+/SingleElectron/Run2012A-13Jul2012-v1/AOD -1 450
+/SingleElectron/Run2012A-recover-06Aug2012-v1/AOD -1 180
+/SingleElectron/Run2012B-13Jul2012-v1/AOD -1 450 
+/SingleElectron/Run2012C-24Aug2012-v1/AOD -1 450
+/SingleElectron/Run2012C-PromptReco-v2/AOD -1 450
+/SingleElectron/Run2012D-PromptReco-v1/AOD -1 450
