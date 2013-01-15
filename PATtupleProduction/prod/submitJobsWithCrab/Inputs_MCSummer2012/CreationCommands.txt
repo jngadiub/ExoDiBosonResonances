@@ -2,37 +2,37 @@
 # DYToLLBinsNJet_MADGRAPH
 #------------------------------------------------------------
 
-./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_DYToLLBinsNJet_MADGRAPH -i Inputs_MCSummer2012/InputList_DYToLLBinsNJet_MADGRAPH.txt -t template_crab_grid_copyToEOS_MC.cfg -c PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
+./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_DYToLLBinsNJet_MADGRAPH -i Inputs_MCSummer2012/InputList_DYToLLBinsNJet_MADGRAPH.txt -t Inputs_MCSummer2012/template_crab_grid_copyToEOS_MC.cfg -c Inputs_MCSummer2012/PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
 
 #------------------------------------------------------------
 # DYToLLBinsPtZ_MADGRAPH
 #------------------------------------------------------------
 
-./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_DYToLLBinsPtZ_MADGRAPH -i Inputs_MCSummer2012/InputList_DYToLLBinsPtZ_MADGRAPH.txt -t template_crab_grid_copyToEOS_MC.cfg -c PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
+./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_DYToLLBinsPtZ_MADGRAPH -i Inputs_MCSummer2012/InputList_DYToLLBinsPtZ_MADGRAPH.txt -t Inputs_MCSummer2012/template_crab_grid_copyToEOS_MC.cfg -c Inputs_MCSummer2012/PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
 
 #------------------------------------------------------------
 # DiBoson_MADGRAPH
 #------------------------------------------------------------
 
-./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_DiBoson_MADGRAPH -i Inputs_MCSummer2012/InputList_DiBoson_MADGRAPH.txt -t template_crab_grid_copyToEOS_MC.cfg -c PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
+./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_DiBoson_MADGRAPH -i Inputs_MCSummer2012/InputList_DiBoson_MADGRAPH.txt -t Inputs_MCSummer2012/template_crab_grid_copyToEOS_MC.cfg -c Inputs_MCSummer2012/PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
 
 #------------------------------------------------------------
 # TTBAR_MADGRAPH
 #------------------------------------------------------------
 
-./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_TTBAR_MADGRAPH -i Inputs_MCSummer2012/InputList_TTBAR_MADGRAPH.txt -t template_crab_grid_copyToEOS_MC.cfg -c PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
+./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_TTBAR_MADGRAPH -i Inputs_MCSummer2012/InputList_TTBAR_MADGRAPH.txt -t Inputs_MCSummer2012/template_crab_grid_copyToEOS_MC.cfg -c Inputs_MCSummer2012/PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
 
 #------------------------------------------------------------
 # WToLNuBinsNJet_MADGRAPH
 #------------------------------------------------------------
 
-./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_WToLNuBinsNJet_MADGRAPH -i Inputs_MCSummer2012/InputList_WToLNuBinsNJet_MADGRAPH.txt -t template_crab_grid_copyToEOS_MC.cfg -c PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
+./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_WToLNuBinsNJet_MADGRAPH -i Inputs_MCSummer2012/InputList_WToLNuBinsNJet_MADGRAPH.txt -t Inputs_MCSummer2012/template_crab_grid_copyToEOS_MC.cfg -c Inputs_MCSummer2012/PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
 
 #------------------------------------------------------------
 # WToLNuBinsPtW_MADGRAPH
 #------------------------------------------------------------
 
-./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_WToLNuBinsPtW_MADGRAPH -i Inputs_MCSummer2012/InputList_WToLNuBinsPtW_MADGRAPH.txt -t template_crab_grid_copyToEOS_MC.cfg -c PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
+./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130113_Summer12MC_WToLNuBinsPtW_MADGRAPH -i Inputs_MCSummer2012/InputList_WToLNuBinsPtW_MADGRAPH.txt -t Inputs_MCSummer2012/template_crab_grid_copyToEOS_MC.cfg -c Inputs_MCSummer2012/PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130113
 
 
 ##----------------------------------------------------------------------------------------------------------
