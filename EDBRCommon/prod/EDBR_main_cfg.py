@@ -80,6 +80,10 @@ process.badEventFilter = cms.EDFilter("HLTHighLevel",
                                                   'noscrapingFilterPath',
                                                   'hcalLaserEventFilterPath',
                                                   'HBHENoiseFilterPath',
+                                                  'trackingFailureFilterPath',
+                                                  'CSCTightHaloFilterPath',
+                                                  'eeBadScFilterPath',
+                                                  'EcalDeadCellTriggerPrimitiveFilterPat'
     #                                              'totalKinematicsFilterPath' #only for Madgraph MC
                                                   ),
                                       eventSetupPathsKey = cms.string(''),
@@ -95,8 +99,8 @@ process.badEventFilter = cms.EDFilter("HLTHighLevel",
 ###########
 
 # provide list of HLT paths (or patterns) you want
-HLTlistMu  = cms.vstring("HLT_Mu*_Mu*")   # triggers for DoubleMuon PD   
-HLTlistEle = cms.vstring("HLT_Ele17_Calo*_Ele8_Calo*") # triggers for DoubleElectron PD
+HLTlistMu  = cms.vstring("HLT_Mu17_Mu8","HLT_Mu22_TkMu22")   # triggers for DoubleMuon PD   
+HLTlistEle = cms.vstring("HLT_DoubleEle33_*") # triggers for DoubleElectron PD
 
 ### for SingleElectron and SingleMuon PD, request single lept trigger and
 #veto the same triggers used for double ele and DoubleMu PD: in this way
