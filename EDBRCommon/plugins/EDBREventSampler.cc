@@ -3,7 +3,7 @@
 
 EDBREventSampler::EDBREventSampler(const edm::ParameterSet & iConfig){
 
-  seed_ = iConfig.getParameter< double >("RandomGenSeed");
+  seed_ = iConfig.getParameter< int >("RandomGenSeed");
   sampling_= iConfig.getParameter< double >("SamplingFactor");
 
   myrand_=new TRandom3(seed_);

@@ -138,8 +138,8 @@ process.hltHighLevelSE = cms.EDFilter("HLTHighLevel",
 process.eventFilterSequence = cms.Sequence(process.badEventFilter)
 
 
-if "DATA" in options.mcordata :
-     process.eventFilterSequence.insert(0, process.rndmEventBlinding) ##insert at the front of the list
+###if "DATA" in options.mcordata :
+###     process.eventFilterSequence.insert(0, process.rndmEventBlinding) ##insert at the front of the list
 
 if options.mcordata == "DATAELE" :
      process.eventFilterSequence +=process.hltHighLevelEle
