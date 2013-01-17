@@ -66,6 +66,12 @@ if "DATA" in options.mcordata and options.json!="" :
 # Event filter    #
 ############
 
+process.rndmEventBlinding = cms.EDFilter("EDBREventSampler",
+                                         RandomGenSeed = cms.int32(87654),
+                                         SamplingFactor = cms.double(0.2) # 1/5 events pass the filter
+                                         )
+
+
 process.badEventFilter = cms.EDFilter("HLTHighLevel",
                                      TriggerResultsTag =
                                       cms.InputTag("TriggerResults","","PAT"),
@@ -130,6 +136,11 @@ process.hltHighLevelSE = cms.EDFilter("HLTHighLevel",
 
 ### add them to event filter
 process.eventFilterSequence = cms.Sequence(process.badEventFilter)
+
+
+if "DATA" in options.mcordata :
+     process.eventFilterSequence.insert(0, process.rndmEventBlinding) ##insert at the front of the list
+
 if options.mcordata == "DATAELE" :
      process.eventFilterSequence +=process.hltHighLevelEle
 if options.mcordata == "DATASE" :
