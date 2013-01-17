@@ -1,11 +1,16 @@
 import FWCore.ParameterSet.Config as cms
 
-PUWeights = cms.EDProducer("PUWeightProducer",
-                           filenameData = cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/PUDist_Run2012AB_Truth.root"),
-                           hnameData    = cms.string("pileup"),
-                           filenameMC   = cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/PUDist_Summer12MC_Extended.root"),
-                           hnameMC      = cms.string("PUS7_Distr"))
+#PUWeights = cms.EDProducer("PUWeightProducer",
+#                           filenameData = cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/PUDist_Run2012AB_Truth.root"),
+#                           hnameData    = cms.string("pileup"),
+#                           filenameMC   = cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/PUDist_Summer12MC_Extended.root"),
+#                           hnameMC      = cms.string("PUS7_Distr"))
 
+PUWeights = cms.EDProducer("PUWeightProducer",
+                           filenameData = cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/PUDist_Run2012Full_Truth_69p3mb.root"),
+                           hnameData    = cms.string("pileup"),
+                           filenameMC   = cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/PUDist_Summer12MC_S10.root"),
+                           hnameMC      = cms.string("PUS10_Distr"))
 
 PUWeights2012A = cms.EDProducer("PUWeightProducer",
                                 filenameData = cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/PUDist_Run2012A_Truth.root"),
