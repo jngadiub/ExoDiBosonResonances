@@ -83,7 +83,7 @@ process.badEventFilter = cms.EDFilter("HLTHighLevel",
                                                   'trackingFailureFilterPath',
                                                   'CSCTightHaloFilterPath',
                                                   'eeBadScFilterPath',
-                                                  'EcalDeadCellTriggerPrimitiveFilterPat'
+                                                  'EcalDeadCellTriggerPrimitiveFilterPath'
     #                                              'totalKinematicsFilterPath' #only for Madgraph MC
                                                   ),
                                       eventSetupPathsKey = cms.string(''),
@@ -105,8 +105,8 @@ HLTlistEle = cms.vstring("HLT_DoubleEle33_*") # triggers for DoubleElectron PD
 ### for SingleElectron and SingleMuon PD, request single lept trigger and
 #veto the same triggers used for double ele and DoubleMu PD: in this way
 #remove events in both PDs
-HLTlistSE = cms.vstring("HLT_Ele80_CaloIdVT_GsfTrkIdT_v1 AND NOT HLT_Ele17_Calo*_Ele8_Calo*") # triggers fro SingleElectron PD
-HLTlistSM  = cms.vstring("HLT_Mu40_* AND NOT HLT_Mu*_Mu*")
+HLTlistSE = cms.vstring("HLT_Ele80_CaloIdVT_GsfTrkIdT_v1 AND NOT HLT_DoubleEle33*") # triggers fro SingleElectron PD
+HLTlistSM  = cms.vstring("HLT_Mu40_* AND NOT HLT_Mu17_Mu8 AND NOT HLT_Mu22_TkMu22")
 
 process.hltHighLevelEle = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
@@ -249,19 +249,19 @@ process.analysisSequenceEEJ = cms.Sequence(
 
 # build X->ZZ->mmjj
 process.load('ExoDiBosonResonances.EDBRMuon.resonanceMu_cff')
-cloneProcessingSnippet(process,process.edbrSequenceMMJJ, "Mu")
+##cloneProcessingSnippet(process,process.edbrSequenceMMJJ, "Mu")
 process.analysisSequenceMMJJ = cms.Sequence(
     process.analysisSequenceMuons +
     process.analysisSequenceJets +
-    process.edbrSequenceMMJJMu
+    process.edbrSequenceMMJJ
     )
 
 # build X->ZZ->mmj
-cloneProcessingSnippet(process,process.edbrSequenceMerged, "Mu")
+###cloneProcessingSnippet(process,process.edbrSequenceMerged, "Mu")
 process.analysisSequenceMMJ = cms.Sequence(
     process.analysisSequenceMuons +
     process.analysisSequenceMergedJets +
-    process.edbrSequenceMergedMu 
+    process.edbrSequenceMergedMMJ 
     )
 
 if ( options.lepton == "both" or options.lepton == "ele"):

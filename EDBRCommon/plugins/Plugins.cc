@@ -4,7 +4,7 @@
 #include "ExoDiBosonResonances/EDBRCommon/plugins/HLTWeightProducer.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/PTWeightAnalyzer.h" 
 //#include "ExoDiBosonResonances/EDBRCommon/plugins/LDProducer.h" 
-//#include "ExoDiBosonResonances/EDBRCommon/plugins/QGLDSelector.h" 
+#include "ExoDiBosonResonances/EDBRCommon/plugins/KineVarsAdder.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/WeightAdder.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/BestCandidateSelector.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/EDBRTagger.h" 
@@ -63,10 +63,15 @@ DEFINE_FWK_MODULE(PTWeightAnalyzer);
 //DEFINE_FWK_MODULE(DiMuonDiJetEDBRLDProducer);
 //DEFINE_FWK_MODULE(DiGenParticleDiGenParticleEDBRLDProducer);
 
-//typedef QGLDSelector<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRQGLDSelector;
-//typedef QGLDSelector<cmg::DiMuonDiJetEDBR>     DiMuonDiJetEDBRQGLDSelector;
-//DEFINE_FWK_MODULE(DiElectronDiJetEDBRQGLDSelector);
-//DEFINE_FWK_MODULE(DiMuonDiJetEDBRQGLDSelector);
+//////embed extra-kine vars in EDBR candidate as userFloats
+typedef KineVarsAdder<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRKineAdder;
+typedef KineVarsAdder<cmg::DiMuonDiJetEDBR>     DiMuonDiJetEDBRKineAdder;
+DEFINE_FWK_MODULE(DiElectronDiJetEDBRKineAdder);
+DEFINE_FWK_MODULE(DiMuonDiJetEDBRKineAdder);
+typedef KineVarsAdder<cmg::DiElectronSingleJetEDBR> DiElectronSingleJetEDBRKineAdder;
+typedef KineVarsAdder<cmg::DiMuonSingleJetEDBR>     DiMuonSingleJetEDBRKineAdder;
+DEFINE_FWK_MODULE(DiElectronSingleJetEDBRKineAdder);
+DEFINE_FWK_MODULE(DiMuonSingleJetEDBRKineAdder);
 
 //////define candidate selectors
 typedef BestCandidateSelector<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRBestCandidateSelector;
