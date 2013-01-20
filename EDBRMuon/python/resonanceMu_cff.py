@@ -8,49 +8,62 @@ from ExoDiBosonResonances.EDBRMuon.skims.cmgEDBRSel_cff import *
 from ExoDiBosonResonances.EDBRMuon.skims.selEventsEDBR_cfi import *
 from ExoDiBosonResonances.EDBRMuon.HLTWeights_cff import *
 
-cmgEDBRKinFitMuWeighted2012A = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
+cmgEDBRKinFitWeighted2012AMu = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
                                         src=cms.InputTag("HLTWeightsKinFitMu"),
                                         weight=cms.InputTag("PUWeights2012A"),
                                         )
-cmgEDBRMuWeighted2012A = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
+cmgEDBRWeighted2012AMu = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
                                       src=cms.InputTag("HLTWeightsMu"),
                                       weight=cms.InputTag("PUWeights2012A"),
                                       )
 
-cmgEDBRMergedWeighted2012A = cms.EDProducer("DiMuonVJetEDBRWeightAdder",
+cmgEDBRMergedWeighted2012AMu = cms.EDProducer("DiMuonVJetEDBRWeightAdder",
                                             src=cms.InputTag("HLTWeightsMergedMu"),
                                             weight=cms.InputTag("PUWeights2012A")                                      
                                             )
 
 ########
 
-cmgEDBRKinFitMuWeighted2012B = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
-                                            src=cms.InputTag("cmgEDBRKinFitMuWeighted2012A"),
+cmgEDBRKinFitWeighted2012BMu = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
+                                            src=cms.InputTag("cmgEDBRKinFitWeighted2012AMu"),
                                             weight=cms.InputTag("PUWeights2012B")
                                             )
 
-cmgEDBRMuWeighted2012B = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
-                                      src=cms.InputTag("cmgEDBRMuWeighted2012A"),
+cmgEDBRWeighted2012BMu = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
+                                      src=cms.InputTag("cmgEDBRWeighted2012AMu"),
                                       weight=cms.InputTag("PUWeights2012B")
                                       )
 
-cmgEDBRMergedWeighted2012B = cms.EDProducer("DiMuonVJetEDBRWeightAdder",
-                                            src=cms.InputTag("cmgEDBRMergedWeighted2012A"),
+cmgEDBRMergedWeighted2012BMu = cms.EDProducer("DiMuonVJetEDBRWeightAdder",
+                                            src=cms.InputTag("cmgEDBRMergedWeighted2012AMu"),
                                             weight=cms.InputTag("PUWeights2012B"),
                                             )
 #####
-cmgEDBRKinFitMuWeighted = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
-                                        src=cms.InputTag("cmgEDBRKinFitMuWeighted2012B"),
+cmgEDBRKinFitWeightedMu = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
+                                        src=cms.InputTag("cmgEDBRKinFitWeighted2012BMu"),
                                         weight=cms.InputTag("PUWeights"),
                                         )
-cmgEDBRMuWeighted = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
-                                  src=cms.InputTag("cmgEDBRMuWeighted2012B"),
+cmgEDBRWeightedMu = cms.EDProducer("DiMuonDiJetEDBRWeightAdder",
+                                  src=cms.InputTag("cmgEDBRWeighted2012BMu"),
                                   weight=cms.InputTag("PUWeights"),
                                   )
-cmgEDBRMergedWeighted = cms.EDProducer("DiMuonVJetEDBRWeightAdder",
-                                  src=cms.InputTag("cmgEDBRMergedWeighted2012B"),
+cmgEDBRMergedWeightedMu = cms.EDProducer("DiMuonVJetEDBRWeightAdder",
+                                  src=cms.InputTag("cmgEDBRMergedWeighted2012BMu"),
                                   weight=cms.InputTag("PUWeights"),
                                   )
+
+#### add extra-kinematic variables to EDBR candidate (only the one with kin-fit)
+cmgEDBRExtraMu = cms.EDProducer("DiMuonDiJetEDBRKineAdder",
+                                   src=cms.InputTag("cmgEDBRKinFitWeightedMu"),
+                                   noKinFitSrc=cms.InputTag("cmgEDBRWeightedMu") #leave empty if SingleJet EDBR
+                                   )
+
+cmgEDBRMergedExtraMu = cms.EDProducer("DiMuonSingleJetEDBRKineAdder",
+                                   src=cms.InputTag("cmgEDBRMergedWeightedMu"),
+                                   noKinFitSrc=cms.InputTag("") #leave empty if SingleJet EDBR
+                                   )
+
+
 
 edbrSequenceMMJJ = cms.Sequence(
     cmgDiMuonDiJet +
@@ -62,30 +75,37 @@ edbrSequenceMMJJ = cms.Sequence(
     HLTWeightsMu +
     HLTWeightsKinFitMu +
 
-    cmgEDBRKinFitMuWeighted2012A +
-    cmgEDBRMuWeighted2012A +
-    cmgEDBRKinFitMuWeighted2012B +
-    cmgEDBRMuWeighted2012B +
-    cmgEDBRKinFitMuWeighted +
-    cmgEDBRMuWeighted +
+    cmgEDBRKinFitWeighted2012AMu +
+    cmgEDBRWeighted2012AMu +
+    cmgEDBRKinFitWeighted2012BMu +
+    cmgEDBRWeighted2012BMu +
+    cmgEDBRKinFitWeightedMu +
+    cmgEDBRWeightedMu +
 
+    cmgEDBRExtraMu +
+    
     cmgEDBRSelMu +
     cmgEDBRSelKinFitMu +
     
-    selectedEDBRKinFitMuCandFilter
+    selectedEDBRKinFitCandFilterMu 
+
+
 #    selectedEDBRMuCandFilter
 )
 
-edbrSequenceMerged = cms.Sequence(
+edbrSequenceMergedMMJ = cms.Sequence(
     cmgDiMuonVJet +
     cmgDiMuonVJetEDBR +
 
     HLTWeightsMergedMu +
 
-    cmgEDBRMergedWeighted2012A +
-    cmgEDBRMergedWeighted2012B +
-    cmgEDBRMergedWeighted +
+    cmgEDBRMergedWeighted2012AMu +
+    cmgEDBRMergedWeighted2012BMu +
+    cmgEDBRMergedWeightedMu +
+    cmgEDBRMergedExtraMu+
+    cmgEDBRMergedSelMu +
 
-    cmgEDBRMergedSel +
-    selectedEDBRMergedCandFilter
+    selectedEDBRMergedCandFilterMu 
+
+
     )

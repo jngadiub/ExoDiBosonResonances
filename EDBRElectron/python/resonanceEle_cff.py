@@ -51,6 +51,17 @@ cmgEDBRMergedWeighted = cms.EDProducer("DiElectronVJetEDBRWeightAdder",
                                   src=cms.InputTag("cmgEDBRMergedWeighted2012B"),
                                   weight=cms.InputTag("PUWeights"),
                                   )
+
+#### add extra-kinematic variables to EDBR candidate (only the one with kin-fit)
+cmgEDBRExtra = cms.EDProducer("DiElectronDiJetEDBRKineAdder",
+                                   src=cms.InputTag("cmgEDBRKinFitWeighted"),
+                                   noKinFitSrc=cms.InputTag("cmgEDBRWeighted") #leave empty if SingleJet EDBR
+                                   )
+
+cmgEDBRMergedExtra = cms.EDProducer("DiElectronSingleJetEDBRKineAdder",
+                                   src=cms.InputTag("cmgEDBRMergedWeighted"),
+                                   noKinFitSrc=cms.InputTag("") #leave empty if SingleJet EDBR
+                                   )
                                                          
 edbrSequenceEEJJ = cms.Sequence(
     cmgDiElectronDiJet +
@@ -69,11 +80,14 @@ edbrSequenceEEJJ = cms.Sequence(
     cmgEDBRKinFitWeighted +
     cmgEDBRWeighted +
 
+    cmgEDBRExtra+
     cmgEDBRSel +
     cmgEDBRSelKinFit +    
 
-    selectedEDBRKinFitCandFilter
+    selectedEDBRKinFitCandFilter 
     #selectedEDBRCandFilter
+
+   
 )
 
 
@@ -86,7 +100,9 @@ edbrSequenceMerged = cms.Sequence(
     cmgEDBRMergedWeighted2012A +
     cmgEDBRMergedWeighted2012B +
     cmgEDBRMergedWeighted +
-
+    cmgEDBRMergedExtra+
     cmgEDBRMergedSel +
     selectedEDBRMergedCandFilter
+
+
     )
