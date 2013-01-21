@@ -74,10 +74,10 @@ DEFINE_FWK_MODULE(DiElectronSingleJetEDBRKineAdder);
 DEFINE_FWK_MODULE(DiMuonSingleJetEDBRKineAdder);
 
 //////define candidate selectors
-typedef BestCandidateSelector<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRBestCandidateSelector;
-typedef BestCandidateSelector<cmg::DiMuonDiJetEDBR>     DiMuonDiJetEDBRBestCandidateSelector;
-DEFINE_FWK_MODULE(DiElectronDiJetEDBRBestCandidateSelector);
-DEFINE_FWK_MODULE(DiMuonDiJetEDBRBestCandidateSelector);
+typedef BestCandidateSelector<cmg::DiElectronSingleJetEDBR, cmg::DiElectronDiJetEDBR> DiElectronNJetEDBRBestCandidateSelector;
+typedef BestCandidateSelector<cmg::DiMuonSingleJetEDBR, cmg::DiMuonDiJetEDBR>     DiMuonNJetEDBRBestCandidateSelector;
+DEFINE_FWK_MODULE(DiElectronNJetEDBRBestCandidateSelector);
+DEFINE_FWK_MODULE(DiMuonNJetEDBRBestCandidateSelector);
 
 /////define weight adders (weight because of PU, HLT...)
 typedef WeightAdder<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRWeightAdder;

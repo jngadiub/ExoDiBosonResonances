@@ -65,11 +65,15 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 
     edbrtype newCand(*edbrCand);
 
+    float nXJets=1.0;
+
     // also save the corresponding other candidate (need to read other LD, QG is the same)
     float mzzNKF=-999.0,ptNKF=-999.0,etaNKF=-999.0,phiNKF=-999.0;
     float mjjNKF=-999.0,ptjjNKF=-999.0,etajjNKF=-999.0,phijjNKF=-999.0;
 
     if(isDoubleJet_){
+      nXJets=2.0; 
+
       edm::RefToBase<edbrtype> nokinfitCand=nokinfitcandidates->refAt(i);
       mzzNKF  = nokinfitCand->mass();
       ptNKF  = nokinfitCand->pt();
@@ -81,6 +85,7 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
       phijjNKF  = nokinfitCand->leg2().phi();
     }
 
+    newCand.addUserFloat("nXJets",nXJets );
     newCand.addUserFloat("nokinfitMZZ",mzzNKF );
     newCand.addUserFloat("nokinfitPT",ptNKF);
     newCand.addUserFloat("nokinfitEta",etaNKF);
