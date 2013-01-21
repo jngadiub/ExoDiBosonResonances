@@ -82,9 +82,9 @@ edbrSequenceEEJJ = cms.Sequence(
 
     cmgEDBRExtra+
     cmgEDBRSel +
-    cmgEDBRSelKinFit +    
+    cmgEDBRSelKinFit    
 
-    selectedEDBRKinFitCandFilter 
+#    selectedEDBRKinFitCandFilter 
     #selectedEDBRCandFilter
 
    
@@ -101,8 +101,8 @@ edbrSequenceMerged = cms.Sequence(
     cmgEDBRMergedWeighted2012B +
     cmgEDBRMergedWeighted +
     cmgEDBRMergedExtra+
-    cmgEDBRMergedSel +
-    selectedEDBRMergedCandFilter
+    cmgEDBRMergedSel 
+ #   selectedEDBRMergedCandFilter
 
 
     )

@@ -264,10 +264,53 @@ process.analysisSequenceMMJ = cms.Sequence(
     process.edbrSequenceMergedMMJ 
     )
 
+#update input collections for event filters
+process.selectedEDBRKinFitCandFilterEle = process.selectedEDBRKinFitCandFilter.clone(
+                                                           src = cms.InputTag('cmgEDBRSelKinFitEle')
+                                                           )
+process.selectedEDBRMergedCandFilterEle = process.selectedEDBRMergedCandFilter.clone(
+                                                           src = cms.InputTag('cmgEDBRMergedSelEle')
+                                                           )
+
 if ( options.lepton == "both" or options.lepton == "ele"):
-     process.preselElePath = cms.Path(process.eventFilterSequence + process.analysisSequenceEEJJ )
-     process.preselEleMergedPath = cms.Path(process.eventFilterSequence + process.analysisSequenceEEJ )
+     process.preselElePath = cms.Path(process.eventFilterSequence + process.analysisSequenceEEJJ + process.selectedEDBRKinFitCandFilterEle)
+     process.preselEleMergedPath = cms.Path(process.eventFilterSequence + process.analysisSequenceEEJ+process.selectedEDBRMergedCandFilterEle )
      
 if ( options.lepton == "both" or options.lepton == "mu"):
-     process.preselMuPath = cms.Path(process.eventFilterSequence + process.analysisSequenceMMJJ )
-     process.preselMuMergedPath = cms.Path(process.eventFilterSequence + process.analysisSequenceMMJ )
+     process.preselMuPath = cms.Path(process.eventFilterSequence + process.analysisSequenceMMJJ + process.selectedEDBRKinFitCandFilterMu)
+     process.preselMuMergedPath = cms.Path(process.eventFilterSequence + process.analysisSequenceMMJ +process.selectedEDBRMergedCandFilterMu )
+
+
+
+####################################
+# Final selection and arbitration  #
+####################################
+
+# # apply VBF tag, final cuts and run BestSelector
+# # for arbitrating between different topologies
+
+# #default is electrons
+# process.load("ExoDiBosonResonances.EDBRCommon.FinalSelection_cff")
+# cloneProcessingSnippet(process,process.cmgSeq, "Ele")
+
+# #muons need filter types + inputs adjusted
+# cloneProcessingSnippet(process,process.cmgSeq, "Mu")
+
+# massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronDiJetEDBRBestCandidateSelector","DiMuonDiJetEDBRBestCandidateSelector")
+
+# massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronDiJetEDBRTagger","DiMuonDiJetEDBRTagger")
+# massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronSingleJetEDBRTagger","DiMuonSingleJetEDBRTagger")
+# massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRSelKinFitEle"),cms.InputTag("cmgEDBRSelKinFitMu"))
+# massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRMergedSelEle"),cms.InputTag("cmgEDBRMergedSelMu"))
+# ###cloneProcessingSnippet(process,process.cmg0Seqtag, "Mu")
+# ###massSearchReplaceAnyInputTag(process.cmg0SeqtagMu,cms.InputTag("BestSelectorKinFitEle"),cms.InputTag("BestSelectorKinFitMu"),verbose=False,moduleLabelOnly=True)
+
+
+# #collect adjusted sequences into paths
+# if options.lepton == "both" or options.lepton == "ele":
+#      process.cmgEDBRZZEle = cms.Path(process.badEventFilter+
+#                                     process.analysisSequenceEEJJ +
+#                                     process.analysisSequenceMergedJets + process.edbrSequenceMergedEle +
+#                                     process.cmgSeqEle )
+
+
