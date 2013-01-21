@@ -102,10 +102,10 @@ typedef EDBRTagger<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRTagger;
 typedef EDBRTagger<cmg::DiMuonDiJetEDBR>     DiMuonDiJetEDBRTagger;
 DEFINE_FWK_MODULE(DiElectronDiJetEDBRTagger);
 DEFINE_FWK_MODULE(DiMuonDiJetEDBRTagger);
-typedef EDBRTagger<cmg::DiElectronSingleJetEDBR> DiElectronVJetEDBRTagger;
-typedef EDBRTagger<cmg::DiMuonSingleJetEDBR>     DiMuonVJetEDBRTagger;
-DEFINE_FWK_MODULE(DiElectronVJetEDBRTagger);
-DEFINE_FWK_MODULE(DiMuonVJetEDBRTagger);
+typedef EDBRTagger<cmg::DiElectronSingleJetEDBR> DiElectronSingleJetEDBRTagger;
+typedef EDBRTagger<cmg::DiMuonSingleJetEDBR>     DiMuonSingleJetEDBRTagger;
+DEFINE_FWK_MODULE(DiElectronSingleJetEDBRTagger);
+DEFINE_FWK_MODULE(DiMuonSingleJetEDBRTagger);
 
 
 DEFINE_FWK_MODULE(DummyGenProducer);

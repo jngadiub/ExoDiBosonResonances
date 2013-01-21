@@ -286,31 +286,31 @@ if ( options.lepton == "both" or options.lepton == "mu"):
 # Final selection and arbitration  #
 ####################################
 
-# # apply VBF tag, final cuts and run BestSelector
-# # for arbitrating between different topologies
+# apply VBF tag, final cuts and run BestSelector
+# for arbitrating between different topologies
 
-# #default is electrons
-# process.load("ExoDiBosonResonances.EDBRCommon.FinalSelection_cff")
-# cloneProcessingSnippet(process,process.cmgSeq, "Ele")
+#default is electrons
+process.load("ExoDiBosonResonances.EDBRCommon.FinalSelection_cff")
+cloneProcessingSnippet(process,process.cmgSeq, "Ele")
 
-# #muons need filter types + inputs adjusted
-# cloneProcessingSnippet(process,process.cmgSeq, "Mu")
+#muons need filter types + inputs adjusted
+cloneProcessingSnippet(process,process.cmgSeq, "Mu")
 
-# massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronDiJetEDBRBestCandidateSelector","DiMuonDiJetEDBRBestCandidateSelector")
+massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronDiJetEDBRBestCandidateSelector","DiMuonDiJetEDBRBestCandidateSelector")
 
-# massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronDiJetEDBRTagger","DiMuonDiJetEDBRTagger")
-# massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronSingleJetEDBRTagger","DiMuonSingleJetEDBRTagger")
-# massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRSelKinFitEle"),cms.InputTag("cmgEDBRSelKinFitMu"))
-# massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRMergedSelEle"),cms.InputTag("cmgEDBRMergedSelMu"))
-# ###cloneProcessingSnippet(process,process.cmg0Seqtag, "Mu")
-# ###massSearchReplaceAnyInputTag(process.cmg0SeqtagMu,cms.InputTag("BestSelectorKinFitEle"),cms.InputTag("BestSelectorKinFitMu"),verbose=False,moduleLabelOnly=True)
+massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronDiJetEDBRTagger","DiMuonDiJetEDBRTagger")
+massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronSingleJetEDBRTagger","DiMuonSingleJetEDBRTagger")
+massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRSelKinFitEle"),cms.InputTag("cmgEDBRSelKinFitMu"))
+massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRMergedSelEle"),cms.InputTag("cmgEDBRMergedSelMu"))
+###cloneProcessingSnippet(process,process.cmg0Seqtag, "Mu")
+###massSearchReplaceAnyInputTag(process.cmg0SeqtagMu,cms.InputTag("BestSelectorKinFitEle"),cms.InputTag("BestSelectorKinFitMu"),verbose=False,moduleLabelOnly=True)
 
 
-# #collect adjusted sequences into paths
-# if options.lepton == "both" or options.lepton == "ele":
-#      process.cmgEDBRZZEle = cms.Path(process.badEventFilter+
-#                                     process.analysisSequenceEEJJ +
-#                                     process.analysisSequenceMergedJets + process.edbrSequenceMergedEle +
-#                                     process.cmgSeqEle )
+#collect adjusted sequences into paths
+if options.lepton == "both" or options.lepton == "ele":
+     process.cmgEDBRZZEle = cms.Path(process.badEventFilter+
+                                    process.analysisSequenceEEJJ +
+                                    process.analysisSequenceMergedJets + process.edbrSequenceMergedEle +
+                                    process.cmgSeqEle )
 
 
