@@ -27,7 +27,7 @@ edbrtags =  cms.PSet( vbfDoubleJet = cms.PSet( vbf = vbfString,
                                                ),
                       DoubleJet = cms.PSet( kine = kineString2Jet
                                         ),
-                      SingleJet = cms.PSet(  kine = kineString1Jet
+                      SingleJet = cms.PSet( kine = kineString1Jet
                                              )
                       )#end edbrtags
 
@@ -56,14 +56,18 @@ BestSelectorKinFit=cms.EDProducer("DiElectronNJetEDBRBestCandidateSelector",
                                   tagSelectionList =cms.vstring("tag_SingleJet","tag_DoubleJet")#highest priority to lowest priority
                                            )
 
+allSelectedEDBR = cms.EDProducer("CandViewMerger",
+       src = cms.VInputTag( "BestSelectorKinFit:singleJet", "BestSelectorKinFit:doubleJet")
+  ) 
 
 
-# FinalFilter = cms.EDFilter("CandViewCountFilter",
-#                                    src = cms.InputTag("BestSelectorKinFit","primary"),
-#                                    minNumber = cms.uint32(1)
-#                                    )
+FinalFilter = cms.EDFilter("CandViewCountFilter",
+                           src = cms.InputTag("allSelectedEDBR"),
+                           minNumber = cms.uint32(1)
+                           )
 
 
 cmgSeq = cms.Sequence( DiJetVBFTagger+SingleJetVBFTagger+
-                       BestSelectorKinFit #+ FinalFilter
+                       BestSelectorKinFit +
+                       allSelectedEDBR + FinalFilter
                        )

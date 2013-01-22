@@ -289,23 +289,27 @@ if ( options.lepton == "both" or options.lepton == "mu"):
 # apply VBF tag, final cuts and run BestSelector
 # for arbitrating between different topologies
 
-#default is electrons
 process.load("ExoDiBosonResonances.EDBRCommon.FinalSelection_cff")
+
+#default is electrons
 cloneProcessingSnippet(process,process.cmgSeq, "Ele")
 massSearchReplaceAnyInputTag(process.cmgSeqEle,cms.InputTag("SingleJetVBFTagger"),cms.InputTag("SingleJetVBFTaggerEle"))
 massSearchReplaceAnyInputTag(process.cmgSeqEle,cms.InputTag("DoubleJetVBFTagger"),cms.InputTag("DoubleJetVBFTaggerEle"))
+massSearchReplaceAnyInputTag(process.cmgSeqEle,cms.InputTag("BestSelectorKinFit:singleJet"),cms.InputTag("BestSelectorKinFitEle:singleJet"))
+massSearchReplaceAnyInputTag(process.cmgSeqEle,cms.InputTag("BestSelectorKinFit:doubleJet"),cms.InputTag("BestSelectorKinFitEle:doubleJet"))
+
 
 #muons need filter types + inputs adjusted
 cloneProcessingSnippet(process,process.cmgSeq, "Mu")
-
 massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronDiJetEDBRBestCandidateSelector","DiMuonDiJetEDBRBestCandidateSelector")
 
 massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronDiJetEDBRTagger","DiMuonDiJetEDBRTagger")
 massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronSingleJetEDBRTagger","DiMuonSingleJetEDBRTagger")
 massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronNJetEDBRBestCandidateSelector","DiMuonNJetEDBRBestCandidateSelector")
-massSearchReplaceAnyInputTag(process.cmgSeqEle,cms.InputTag("SingleJetVBFTagger"),cms.InputTag("SingleJetVBFTaggerMu"))
-massSearchReplaceAnyInputTag(process.cmgSeqEle,cms.InputTag("DoubleJetVBFTagger"),cms.InputTag("DoubleJetVBFTaggerMu"))
-
+massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("SingleJetVBFTagger"),cms.InputTag("SingleJetVBFTaggerMu"))
+massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("DoubleJetVBFTagger"),cms.InputTag("DoubleJetVBFTaggerMu"))
+massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("BestSelectorKinFit:singleJet"),cms.InputTag("BestSelectorKinFitEle:singleJet"))
+massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("BestSelectorKinFit:doubleJet"),cms.InputTag("BestSelectorKinFitEle:doubleJet"))
 
 
 ### some magic with python because we want to re-use
