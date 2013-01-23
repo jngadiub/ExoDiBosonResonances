@@ -24,7 +24,7 @@ mergedJetKinematics = cms.PSet(
     pt = cms.string('pt() > 50.0'),
     eta = cms.string('abs(eta()) < 2.4'),
     phi = cms.string('abs(phi()) < 3.2'),
-    prunedMass = cms.string('prunedMass()>50.0')
+    prunedMass = cms.string('prunedMass()>50.0&&prunedMass()<130.0')
     )
 
 mergedJetVTagging = cms.PSet(
@@ -34,9 +34,9 @@ mergedJetVTagging = cms.PSet(
     )
 
 isMergedSignal = cms.PSet(
-    prunedMass = cms.string('prunedMass()>60.0 && prunedMass()<100.0')
+    prunedMass = cms.string('prunedMass()>75.0 && prunedMass()<105.0')
     )
 
 isMergedSideband = cms.PSet(
-    prunedMass = cms.string('prunedMass()<60.0 || prunedMass()>100.0')
+    prunedMass = cms.string('prunedMass()<75.0 || prunedMass()>105.0')
     )
