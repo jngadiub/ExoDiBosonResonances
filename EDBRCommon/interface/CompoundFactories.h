@@ -29,6 +29,22 @@ namespace cmg{
   typedef DiObjectFactory< cmg::DiMuonSingleJet::type1, cmg::DiMuonSingleJet::type2 > DiMuonSingleJetFactory;
   typedef EDBRCandidateFactory< cmg::DiElectronSingleJet::type1, cmg::DiElectronSingleJet::type2 > DiElectronSingleJetEDBRFactory;
   typedef EDBRCandidateFactory< cmg::DiMuonSingleJet::type1, cmg::DiMuonSingleJet::type2 > DiMuonSingleJetEDBRFactory;
+
+
+  typedef DiObjectFactory< cmg::Wmunu::type1, cmg::Wmunu::type2 > WmunuFactory;
+  typedef DiObjectFactory< cmg::Welenu::type1, cmg::Welenu::type2 > WelenuFactory;
+  typedef EDBRCandidateFactory< cmg::Wmunu::type1, cmg::Wmunu::type2  > WmunuEDBRFactory;
+  typedef EDBRCandidateFactory< cmg::Welenu::type1, cmg::Welenu::type2 > WelenuEDBRFactory;
+
+  typedef DiObjectFactory< cmg::WelenuDiJet::type1, cmg::WelenuDiJet::type2 > WelenuDiJetFactory;
+  typedef DiObjectFactory< cmg::WmunuDiJet::type1, cmg::WmunuDiJet::type2 > WmunuDiJetFactory;
+  typedef DiObjectFactory< cmg::WelenuSingleJet::type1, cmg::WelenuSingleJet::type2 > WelenuSingleJetFactory;
+  typedef DiObjectFactory< cmg::WmunuSingleJet::type1, cmg::WmunuSingleJet::type2 > WmunuSingleJetFactory;
+
+  typedef EDBRCandidateFactory< cmg::WelenuDiJet::type1, cmg::WelenuDiJet::type2 > WelenuDiJetEDBRFactory;
+  typedef EDBRCandidateFactory< cmg::WmunuDiJet::type1, cmg::WmunuDiJet::type2 > WmunuDiJetEDBRFactory;
+  typedef EDBRCandidateFactory< cmg::WelenuSingleJet::type1, cmg::WelenuSingleJet::type2 > WelenuSingleJetEDBRFactory;
+  typedef EDBRCandidateFactory< cmg::WmunuSingleJet::type1, cmg::WmunuSingleJet::type2 > WmunuSingleJetEDBRFactory;
  
 }
 

@@ -12,7 +12,7 @@
 
 #include "AnalysisDataFormats/ExoDiBosonResonances/interface/EDBRCandidate.h"
 #include "AnalysisDataFormats/ExoDiBosonResonances/interface/VJet.h"
-
+#include "AnalysisDataFormats/ExoDiBosonResonances/interface/Neutrino.h"
 
 namespace cmg{
 
@@ -29,7 +29,16 @@ namespace cmg{
 
   typedef cmg::DiObject<cmg::DiMuon,cmg::VJet> DiMuonSingleJet;
   typedef cmg::DiObject<cmg::DiElectron,cmg::VJet> DiElectronSingleJet;
+
+  typedef cmg::DiObject<cmg::Muon,cmg::Neutrino> Wmunu;
+  typedef cmg::DiObject<cmg::Electron,cmg::Neutrino> Welenu;
  
+  typedef cmg::DiObject<cmg::Wmunu,cmg::DiPFJet> WmunuDiJet;
+  typedef cmg::DiObject<cmg::Wmunu,cmg::VJet> WmunuSingleJet;
+
+  typedef cmg::DiObject<cmg::Welenu,cmg::DiPFJet> WelenuDiJet;
+  typedef cmg::DiObject<cmg::Welenu,cmg::VJet> WelenuSingleJet;
+
 
   // // // typedef cmg::EDBRCandidate<cmg::DiMuon,cmg::DiJet> DiMuonDiJetEDBR;
   // // // typedef cmg::EDBRCandidate<cmg::DiElectron,cmg::DiJet> DiElectronDiJetEDBR;
@@ -39,6 +48,15 @@ namespace cmg{
     
   typedef cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> DiMuonSingleJetEDBR;
   typedef cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> DiElectronSingleJetEDBR;
+
+  typedef cmg::EDBRCandidate<cmg::Muon,cmg::Neutrino> WmunuEDBR;
+  typedef cmg::EDBRCandidate<cmg::Electron,cmg::Neutrino> WelenuEDBR;
+  
+  typedef cmg::EDBRCandidate<cmg::Wmunu,cmg::DiPFJet> WmunuDiJetEDBR;
+  typedef cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> WmunuSingleJetEDBR;
+
+  typedef cmg::EDBRCandidate<cmg::Welenu,cmg::DiPFJet> WelenuDiJetEDBR;
+  typedef cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> WelenuSingleJetEDBR;  	
 
 }
 

@@ -65,4 +65,75 @@
   <class name="std::vector<cmg::VJet>" />
   <class name="edm::Wrapper<std::vector<cmg::VJet> >" />
 
+  <class name="cmg::Neutrino" />
+  <class name="edm::Wrapper<cmg::Neutrino>" />
+  <class name="std::vector<cmg::Neutrino>" />
+  <class name="edm::Wrapper<std::vector<cmg::Neutrino> >" />
+
+  <class name="cmg::Wmunu"/>
+  <class name="std::vector<cmg::Wmunu>"/>
+  <class name="edm::Wrapper<cmg::Wmunu>"/>
+  <class name="edm::Wrapper<std::vector<cmg::Wmunu> >"/>
+
+  <class name="cmg::Welenu"/>
+  <class name="std::vector<cmg::Welenu>"/>
+  <class name="edm::Wrapper<cmg::Welenu>"/>
+  <class name="edm::Wrapper<std::vector<cmg::Welenu> >"/>
+
+
+
+
+  <class name="cmg::WmunuEDBR"/>
+  <class name="std::vector<cmg::WmunuEDBR>"/>
+  <class name="edm::Wrapper<cmg::WmunuEDBR>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WmunuEDBR> >"/>
+
+  <class name="cmg::WelenuEDBR"/>
+  <class name="std::vector<cmg::WelenuEDBR>"/>
+  <class name="edm::Wrapper<cmg::WelenuEDBR>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WelenuEDBR> >"/>
+
+
+  <class name="cmg::WelenuDiJet"/>
+  <class name="std::vector<cmg::WelenuDiJet>"/>
+  <class name="edm::Wrapper<cmg::WelenuDiJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WelenuDiJet> >"/>
+
+  <class name="cmg::WmunuDiJet"/>
+  <class name="std::vector<cmg::WmunuDiJet>"/>
+  <class name="edm::Wrapper<cmg::WmunuDiJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WmunuDiJet> >"/>
+
+  <class name="cmg::WelenuSingleJet"/>
+  <class name="std::vector<cmg::WelenuSingleJet>"/>
+  <class name="edm::Wrapper<cmg::WelenuSingleJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WelenuSingleJet> >"/>
+
+  <class name="cmg::WmunuSingleJet"/>
+  <class name="std::vector<cmg::WmunuSingleJet>"/>
+  <class name="edm::Wrapper<cmg::WmunuSingleJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WmunuSingleJet> >"/>
+
+
+  <class name="cmg::WelenuDiJetEDBR"/>
+  <class name="std::vector<cmg::WelenuDiJetEDBR>"/>
+  <class name="edm::Wrapper<cmg::WelenuDiJetEDBR>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WelenuDiJetEDBR> >"/>
+
+  <class name="cmg::WmunuDiJetEDBR"/>
+  <class name="std::vector<cmg::WmunuDiJetEDBR>"/>
+  <class name="edm::Wrapper<cmg::WmunuDiJetEDBR>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WmunuDiJetEDBR> >"/>
+
+  <class name="cmg::WelenuSingleJetEDBR"/>
+  <class name="std::vector<cmg::WelenuSingleJetEDBR>"/>
+  <class name="edm::Wrapper<cmg::WelenuSingleJetEDBR>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WelenuSingleJetEDBR> >"/>
+
+  <class name="cmg::WmunuSingleJetEDBR"/>
+  <class name="std::vector<cmg::WmunuSingleJetEDBR>"/>
+  <class name="edm::Wrapper<cmg::WmunuSingleJetEDBR>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WmunuSingleJetEDBR> >"/>
+
+
 </lcgdict>
