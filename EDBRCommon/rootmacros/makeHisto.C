@@ -1,132 +1,144 @@
-#include <string>
-#include <sstream>
-#include <math.h>
+#include "makeHisto.h"
 
-#include "TH1F.h"
-#include "TFile.h"
-#include "TCanvas.h"
-#include "TLegend.h"
-#include "TStyle.h"
-#include "TROOT.h"
-#include "TAxis.h"
+EDBRHistoMaker::EDBRHistoMaker(TTree* tree, 
+			       bool wantElectrons,
+			       bool wantMuons,
+			       bool wantSideband,
+			       bool wantSignal){
+  fChain = 0;
+  nVars = 77;
+  
+  // Definition of regions
+  sidebandVHMassLow_  =  50.0; // GeV
+  sidebandVHMassHigh_ =  70.0; // GeV
+  signalVHMassLow_    =  70.0; // GeV
+  signalVHMassHigh_   = 100.0; // GeV
 
-int makeHisto(){
+  // Which category do we want to analyze?
+  wantElectrons_ = wantElectrons;
+  wantMuons_ = wantMuons;
+  wantSideband_ = wantSideband;
+  wantSignal_ = wantSignal;
+  
+  Init(tree);
+  createAllHistos();
+  printAllHistos();
+}
 
-	gROOT->Reset();
+EDBRHistoMaker::~EDBRHistoMaker() {
+  if (!fChain) return;                                                                                                                                     
+  delete fChain->GetCurrentFile();
+}                  
 
-	gStyle->SetOptStat(0);
-	gStyle->SetOptTitle(0);
+Int_t EDBRHistoMaker::GetEntry(Long64_t entry) {
+  // Read contents of entry.
+  if (!fChain) return 0;
+  return fChain->GetEntry(entry);
+}
 
-	TFile *inFile = new TFile("tree_ANGELO.root");
-	TFile *outFile = new TFile("Histograms.root", "recreate");
+Long64_t EDBRHistoMaker::LoadTree(Long64_t entry) {
+  // Set the environment to read one entry
+  if (!fChain) return -5;
+  Long64_t centry = fChain->LoadTree(entry);
+  if (centry < 0) return centry;
+  if (fChain->GetTreeNumber() != fCurrent) {
+    fCurrent = fChain->GetTreeNumber();
+  }
+  return centry;
+}
 
-	TTree *t_ = (TTree*)inFile->Get("SelectedCandidates");
+//-------------------------
+// Infrastructure functions
+//-------------------------
 
-	int nVars = 77;
-//	int nVars = 7;
-	
-	const string vars[] = {"nCands", "cosThetaStar", "cosTheta1", "cosTheta2", "phi", "phiStar1", "ptlep1",
-				"ptlep2", "ptjet1", "ptjet2", "ptZll", "ptZjj", "yZll", "yZjj",
-				"phiZll", "phiZjj", "etalep1", "etalep2", "etajet1", "etajet2", "philep1",
-				"philep2", "phijet1", "phijet2", "lep", "region", "mZZ", "mZZNoKinFit",
-				"ptmzz", "ptmzzNoKinFit", "mLL", "mJJ", "mJJNoKinFit", "met", "metSign",
-				"nBTags", "deltaREDBR", "deltaRleplep", "deltaRjetjet", "qgProduct", "qgjet1", "qgjet2",
-				"betajet1", "betajet2", "puMvajet1", "puMvajet2", "nXjets", "prunedmass", "mdrop",
-				"nsubj12", "nsubj23", "tau1", "tau2", "qjet", "isolep1", "isolep2",
-				"eleMVAId1", "eleMVAId2", "LD", "q1fl", "q2fl", "MCmatch", "nVtx",
-				"nJets", "nPU", "HLTweight", "PUweight", "PUweight2012A", "PUweight2012B", "LumiWeight",
-				"GenWeight", "weight", "weight2012A", "weight2012B", "event", "run", "ls"};
+void EDBRHistoMaker::createAllHistos() {
+  char buffer[256];
 
-	// phijet1, phijet2, region and nPU have problems in the original tree
-	int nBins[] = {13, 100, 100, 100, 100, 100, 100,
-			100, 100, 100, 100, 100, 100, 100,
-			100, 100, 100, 100, 100, 100, 100,
-			100, 100, 100, 100, 100, 100, 100,
-			100, 100, 100, 100, 100, 100, 100,
-			100, 100, 100, 100, 100, 100, 100,
-			100, 100, 100, 100, 3, 100, 100,
-			100, 100, 100, 100, 100, 100, 100,
-			100, 100, 100, 4, 4, 100, 43,
-			7, 2, 100, 100, 100, 100, 100,
-			100, 100, 100, 100, 102, 3, 102};
+  for(int i = 0; i!= nVars; ++i) {
+    sprintf(buffer,"h_%s",vars[i].c_str());
+    TH1D* histogram = new TH1D(buffer,
+			       vars[i].c_str(),
+			       nBins[i],
+			       minBin[i],
+			       maxBin[i]);
+    histogram->SetDirectory(0);
+    histogram->Sumw2();
+    theHistograms[vars[i]] = histogram;
+  }
+  
+}
 
-	double minBin[] = {0.0,-1.15, -1.15, -84., -3.7, -3.7, 34.,
-			15., 0., -120., 44., 0., -2.8, -2.7,
-			-3.7, -3.7, -2.8, -2.8, -2.8, -108., -3.7,
-			-3.7, 0., 0., 0., 0., 100., 100.,
-			0., 0., 66.5, 47., 43., 0., -2.2,
-			-2.2, -1.2, 0.96, 0., -100.2, -100.2, -100.2,
-			0., -1.2, -10800., -10800., 0., -115., -1080.,
-			-1080., -1080., -1080., -1080., -1080., 0., 0.,
-			-1.15, -1.15, -100.2, -101., -101., -1.2, 0.,
-			1., 0., 0.99, 0., 0., 0., -1.15,
-			0., 0., 0., 0., 2490000., 0., 6280.};
+void EDBRHistoMaker::printAllHistos() {
+  printf("We have %i histograms\n",int(theHistograms.size()));
+}
 
-	double maxBin[] = {13.0,1.15, 1.15, 8., 3.7, 3.7, 131.,
-			81., 365., 140., 154., 370., 2.8, 2.8,
-			3.7, 3.7, 2.9, 2.9, 2.8, 12., 3.7,
-			3.7, 1., 1., 1.1, 1.0, 1180., 1160.,
-			320., 330., 113.0, 96., 137., 102., 0.,
-			0., 1.2, 3.34, 4.35, -97.8, -97.8, -97.8,
-			1.1, 1.2, 1000., 1000., 3., 110., 100.,
-			100., 100., 100., 100., 100., 1.4, 5.4,
-			1.15, 1.15, -97.8, -97., -97., 1.2, 43.,
-			8., 1., 1., 16., 140., 16., 1.2,
-			2.2, 0.02, 0.14, 0.02, 54510000., 3., 181720.};
+void EDBRHistoMaker::saveAllHistos(std::string outFileName) {
+  TFile* outFile = TFile::Open(outFileName.c_str(),"RECREATE");
 
-	TH1D* histoVars[];
-	TCanvas* canvas[];
+  for(int i = 0; i!=nVars; ++i) {
+    std::string name = vars[i];
+    const TH1D* thisHisto = this->theHistograms[name];
+    thisHisto->Write();
+  }
 
-	string histoName;
-	string drawToHisto;
-	string canvasName;
-	string XaxisName;
+  outFile->Close();
+}
 
-	for(int i = 0; i < nVars; i++){
+//------------------
+// Physics functions
+//------------------
 
-		if ( (vars[i] == "phijet1") || (vars[i] == "phijet2") || (vars[i] == "region") || (vars[i] == "nPU") )
-			continue;
+bool EDBRHistoMaker::eventPassesCut() {
+  bool passesFlavour = ((lep == 0 and wantElectrons_) or
+			(lep == 1 and wantMuons_));
 
-//		string histoName;
-		histoName = "h_" + vars[i];
-		histoVars[i] = new TH1D( histoName.c_str(), "", nBins[i], minBin[i], maxBin[i]);
+  // TODO: check the numbers here
+  bool isInSideband = (mJJ[0] > 50 and mJJ[0] < 70); 
+  bool isInSignal = (mJJ[0] > 70 and mJJ[0] < 110);
+  bool passesRegion = ((isInSideband and wantSideband_) or
+		       (isInSignal and wantSignal_));
 
-//		string drawToHisto;
-		drawToHisto = vars[i] + ">>" + histoName.c_str();
-		t_->Draw( drawToHisto.c_str() );
+  bool result = passesFlavour and passesRegion;
+  
+  return result;
+}
 
-//		drawHisto(canvas, histoVars, vars, i);
+///----------------------------------------------------------------
+/// This is the important function, the loop over all events.
+/// Here we fill the histograms according to cuts, weights,
+/// and can also filter out events on an individual basis.
+///----------------------------------------------------------------
+void EDBRHistoMaker::Loop(std::string outFileName){
+  
+  if (fChain == 0) return;
+  
+  Long64_t nentries = fChain->GetEntriesFast();
+  
+  Long64_t nbytes = 0, nb = 0;
+  for (Long64_t jentry=0; jentry<nentries;jentry++) {
+    Long64_t ientry = LoadTree(jentry);
+    if (ientry < 0) break;
+    nb = fChain->GetEntry(jentry);   nbytes += nb;
+    
+    // We calculate a weight here.
+    // TODO: check if this is really the weight we want to use!
+    double actualWeight = weight*HLTweight*PUweight*LumiWeight*GenWeight;
+    
+    // We get the histogram from the map by string and fill it.
+    // We could wrap all the fills in the this->eventPassesCut() function
+    // 
+    (theHistograms["nCands"])->Fill(nCands,actualWeight);
+    (theHistograms["ptlep1"])->Fill(ptlep1[0],actualWeight);
+    (theHistograms["ptlep2"])->Fill(ptlep2[0],actualWeight);
+    (theHistograms["ptjet1"])->Fill(ptjet1[0],actualWeight);
+    (theHistograms["ptjet2"])->Fill(ptjet2[0],actualWeight);
+    
+    (theHistograms["mLL"])->Fill(mLL[0],actualWeight);
+    (theHistograms["mJJ"])->Fill(mJJ[0],actualWeight);
+    (theHistograms["mZZ"])->Fill(mZZ[0],actualWeight);
+    (theHistograms["prunedmass"])->Fill(prunedmass[0],actualWeight);
+    (theHistograms["mdrop"])->Fill(mdrop[0],actualWeight);
+  }
 
-//		string canvasName;
-		canvasName = "canvas_" + vars[i];
-
-		canvas[i] = new TCanvas( canvasName.c_str(), canvasName.c_str(), 600, 600);
-		canvas[i]->cd();
-
-		histoVars[i]->GetYaxis()->SetTitle("# Entries");
-		histoVars[i]->GetYaxis()->SetTitleOffset(1.30);
-
-//		string XaxisName;
-		XaxisName = vars[i];
-		histoVars[i]->GetXaxis()->SetTitle( XaxisName.c_str() );
-		histoVars[i]->GetXaxis()->SetTitleOffset(1.15);
-
-		histoVars[i]->Draw();
-
-//		canvas[i]->Modified();
-//		canvas[i]->Update();
-		canvas[i]->Write();
-		canvas[i]->Close();
-
-		histoName.clear();
-		drawToHisto.clear();
-		canvasName.clear();
-		XaxisName.clear();
-	}
-
-	for (int i = 0; i < nVars; i++)
-		delete histoVars[i];
-	
-	outFile->Write();
-	return 0;
+  this->saveAllHistos(outFileName);
 }
