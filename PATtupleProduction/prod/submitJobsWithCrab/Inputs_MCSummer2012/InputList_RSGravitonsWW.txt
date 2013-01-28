@@ -1,4 +1,0 @@
-/RSGraviton_WWlvjj_kMpl02_M-600_TuneZ2star_8TeV-MG/qili-RSWW_600_02_AODSIM-c8f8ed334db8a7d6f56c62266b1dfa5b/USER -1 2
-/RSGraviton_WWlvjj_kMpl-005_M-1000_TuneZ2star_8TeV-MG/qili-RSWW_1000_005_AODSIM-c8f8ed334db8a7d6f56c62266b1dfa5b/USER -1 2
-/RSGraviton_WWlvjj_kMpl005_M-1000_TuneZ2star_8TeV-MG/qili-RSWW_1000_02_AODSIM-c8f8ed334db8a7d6f56c62266b1dfa5b/USER -1 2
-/RSGraviton_WWlvjj_kMpl02_M-1500_TuneZ2star_8TeV-MG/qili-RSWW_1500_02_AODSIM-c8f8ed334db8a7d6f56c62266b1dfa5b/USER -1 2

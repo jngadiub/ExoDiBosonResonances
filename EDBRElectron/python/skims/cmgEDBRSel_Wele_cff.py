@@ -1,22 +1,19 @@
-import FWCore.ParameterSet.Config as cms 
+import FWCore.ParameterSet.Config as cms
 
 
 cmgEDBRSel = cms.EDFilter(
     "CmgWelenuDiJetEDBRSelector",
     src = cms.InputTag( "cmgEDBRWeighted" ),
-   # cut = cms.string( "getSelection(\"cuts_fullSel_noOverlap\") && getSelection(\"cuts_fullSel_kinematics\")" )
-    cut = cms.string( "getSelection(\"cuts_preSel\")" )
-    )   
+    cut = cms.string( "!getSelection(\"cuts_fullSel_overlap\") && getSelection(\"cuts_fullSel_kinematics\")" )
+    )
 cmgEDBRSelKinFit = cms.EDFilter(
     "CmgWelenuDiJetEDBRSelector",
-    src = cms.InputTag( "cmgEDBRExtra" ),
-#    cut = cms.string( "getSelection(\"cuts_fullSel_noOverlap\") && getSelection(\"cuts_fullSel_kinematics\")" )
-   cut = cms.string( "getSelection(\"cuts_preSel\")" )   
-    )   
+    src = cms.InputTag( "cmgEDBRKinFitWeighted" ),
+    cut = cms.string( "!getSelection(\"cuts_fullSel_overlap\") && getSelection(\"cuts_fullSel_kinematics\")" )
+    )
 
 cmgEDBRMergedSel = cms.EDFilter(
     "CmgWelenuSingleJetEDBRSelector",
-    src = cms.InputTag( "cmgEDBRMergedExtra" ),
- ##   cut = cms.string( "getSelection(\"cuts_preSel_noOverlap\")") ### && getSelection(\"cuts_fullSel_kinematics\")" )
-   cut = cms.string( "getSelection(\"cuts_preSel\")" )
+    src = cms.InputTag( "cmgEDBRMergedWeighted" ),
+    cut = cms.string( "!getSelection(\"cuts_fullSel_overlap\") && getSelection(\"cuts_fullSel_kinematics\")" )
     )
