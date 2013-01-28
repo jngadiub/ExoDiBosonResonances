@@ -78,8 +78,8 @@ cmgStructuredJet = cms.EDFilter(
     mergedJetKinematics = mergedJetKinematics.clone(),
     looseJetId = looseJetId.clone(),
     mergedJetVTagging = mergedJetVTagging.clone(),
-    signalBoostedZ = isMergedSignal.clone(),
-    sidebandBoostedZ = isMergedSideband.clone(),
+    isSignal = isMergedSignal.clone(),
+    isSideband = isMergedSideband.clone(),
     genP = cms.PSet( genLepton = cms.string("sourcePtr().get().hasOverlaps('genJets')"))
  #      recoLepton = cms.PSet( recoLepton = cms.string("sourcePtr().get().hasOverlaps('recoLeptons')")),
        )

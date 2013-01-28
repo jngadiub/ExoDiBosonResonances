@@ -7,7 +7,7 @@ SAMPLE_Run2012B=() #Run2012B_DoubleElectron Run2012B_DoubleMu
 
 SAMPLE_MC1=( DYJetsPt70To100  )  # MC background
 SAMPLE_MC2=( ) #MC signal: JHUGrav300 
-OUTPATHBASE="/store/cmst3/user/bonato/cmgTuple/2012/"
+OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1"
 OUTPATHDATA=${OUTPATHBASE}/Run2012/presel/
 OUTPATHMC=${OUTPATHBASE}/Summer12/presel/
 OUTLOGPATH="$(pwd)/logs"

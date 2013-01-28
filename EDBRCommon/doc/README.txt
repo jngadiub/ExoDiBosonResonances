@@ -1,7 +1,7 @@
 
 Works in CMSSW_5_3_3_patch3 (not tested with higher releases)
 Based on CMG V5_10_0
-Most recent recommended tag for analysis code : edbr_zz_20121222 (but the HEAD might be better)
+Most recent recommended tag for analysis code : edbr_vv_20130128 (but the HEAD might be better)
 
 
 *** Installation instructions ***
@@ -24,16 +24,16 @@ cd -
 cvs co -r V00-09-03 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer
 cvs co -r V00-02-01  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/BstdZeeTools
 
-cvs co -r edbr_zz_20130115b -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
+cvs co -r edbr_vv_20130128 -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
 
 ### end part needed just for PAT-production, compile with: scram b -j7
 ###########################################
 ### if you want to run the analysis, you need also the following
 
-cvs co -r edbr_zz_20130115b -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
-cvs co -r edbr_zz_20130115b -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
-cvs co -r edbr_zz_20130115b -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
-cvs co -r edbr_zz_20130115b -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
+cvs co -r edbr_vv_20130128 -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
+cvs co -r edbr_vv_20130128 -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
+cvs co -r edbr_vv_20130128 -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
+cvs co -r edbr_vv_20130128 -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 
 rm -rf ExoDiBosonResonances/AnalysisDataFormats
 cvs co -d Francesco/KinFitter/src UserCode/pandolf/KinematicFit

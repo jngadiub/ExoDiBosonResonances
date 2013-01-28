@@ -5,7 +5,7 @@ from ExoDiBosonResonances.EDBRCommon.cmdLine import options
 ####options.parseArguments() # to be decommented only if you copy all this module in the main
 
 out = cms.OutputModule("PoolOutputModule",
-                              fileName = cms.untracked.string("test.root"),
+                              fileName = cms.untracked.string("cmgTuple.root"),
                               outputCommands = cms.untracked.vstring('drop *',
                                                                      'keep *_*_*_CMG'
                                                                      )

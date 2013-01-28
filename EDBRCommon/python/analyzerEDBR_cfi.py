@@ -3,11 +3,11 @@ import FWCore.ParameterSet.Config as cms
 AnalyzerXZZ = cms.EDAnalyzer("AnalyzerEDBR",
                              EventCategory=cms.string(""),
                              ###input collections for separated jet topology
-                             EDBREEJJColl=cms.InputTag("cmgEDBRSelKinFitEle"),
-                             EDBREEJJNoKinFitColl=cms.InputTag("cmgEDBRSelEle"),
+                             EDBREEJJColl=cms.InputTag("cmgEDBRSelKinFitEleFullE"),
+                             EDBREEJJNoKinFitColl=cms.InputTag("cmgEDBRSelEleFullE"),
                              EDBREEJJLDValueMap=cms.InputTag("dummyForNow"),
-                             EDBRMMJJColl=cms.InputTag("cmgEDBRSelKinFitMuMu"),
-                             EDBRMMJJNoKinFitColl=cms.InputTag("cmgEDBRSelMuMu"),
+                             EDBRMMJJColl=cms.InputTag("cmgEDBRSelKinFitMuFullM"),
+                             EDBRMMJJNoKinFitColl=cms.InputTag("cmgEDBRSelMuFullM"),
                              EDBRMMJJLDValueMap=cms.InputTag("dummyForNow"),
                              ###input collections for merged jet topology
                              EDBREEJColl=cms.InputTag("cmgEDBRMergedSelEle"),

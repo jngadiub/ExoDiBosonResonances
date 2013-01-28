@@ -319,6 +319,7 @@ process.analysisSequenceEEJJFullE.remove(process.selectedZjjCandFilterFullE)
 process.analysisSequenceMMJJFullM.remove(process.selectedZjjCandFilterFullM)
 process.analysisSequenceMergedJetsFullJ.remove(process.selectedVJetCandFilterFullJ)
 
+massSearchReplaceAnyInputTag(process.cmgSeqEle,cms.InputTag("cmgEDBRSelKinFitEle"),cms.InputTag("cmgEDBRSelKinFitEleFullE"))
 massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRSelKinFitEle"),cms.InputTag("cmgEDBRSelKinFitMuFullM"))
 massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRMergedSelEle"),cms.InputTag("cmgEDBRMergedSelMu"))
 

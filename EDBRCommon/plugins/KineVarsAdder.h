@@ -70,6 +70,7 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
     // also save the corresponding other candidate (need to read other LD, QG is the same)
     float mzzNKF=-999.0,ptNKF=-999.0,etaNKF=-999.0,phiNKF=-999.0;
     float mjjNKF=-999.0,ptjjNKF=-999.0,etajjNKF=-999.0,phijjNKF=-999.0;
+    float isMJJSigReg=-99.0;
 
     if(isDoubleJet_){
       nXJets=2.0; 
@@ -83,6 +84,14 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
       ptjjNKF  = nokinfitCand->leg2().pt();
       etajjNKF  = nokinfitCand->leg2().eta();
       phijjNKF  = nokinfitCand->leg2().phi();
+
+      if(nokinfitCand->leg2().getSelection("cuts_isSignal")){
+	isMJJSigReg=1.0;
+      }
+      else if(nokinfitCand->leg2().getSelection("cuts_isSideband")) isMJJSigReg=0.0;
+      else {
+	throw cms::Exception("Value out of range")<<"Error, NoKinFit Z->jj is neither signal or sideband region. MJJ-NoKinFit="<<mjjNKF<<std::endl;
+      }
     }
 
     newCand.addUserFloat("nXJets",nXJets );
