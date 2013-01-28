@@ -34,6 +34,8 @@ namespace cmg{
     typedef typename cmg::Factory<typename cmg::EDBRCandidate<T,U> >::event_ptr event_ptr;
     typedef cmg::Factory<cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> >::event_ptr EEJ_event_ptr;
     typedef cmg::Factory<cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> >::event_ptr MMJ_event_ptr;
+	typedef cmg::Factory<cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> >::event_ptr EVJ_event_ptr;
+	typedef cmg::Factory<cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> >::event_ptr MVJ_event_ptr;
     virtual event_ptr create(const edm::Event& iEvent, const edm::EventSetup& iSetup);
 
 
@@ -74,7 +76,7 @@ template< typename T, typename U > typename cmg::EDBRCandidateFactory<T,U>::even
   edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
   iEvent.getByLabel(vbftag_,vbfPairs);
 
-  
+
   typename cmg::EDBRCandidateFactory<T,U>::event_ptr result(new collection);
   for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
     // first create the  "pure" EDBR candidate without vbf tags
@@ -93,6 +95,8 @@ template< typename T, typename U > typename cmg::EDBRCandidateFactory<T,U>::even
 	  }
     }
   }
+
+
   return result;
 }
 
@@ -171,6 +175,84 @@ template<>  cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::MMJ_event_ptr cmg:
 }
 
 
+template<>  cmg::EDBRCandidateFactory<cmg::Welenu,cmg::VJet>::EVJ_event_ptr cmg::EDBRCandidateFactory<cmg::Welenu,cmg::VJet>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+
+  // std::cout<<"USING SINGLE JET cmg::EDBRCandidateFactory::create (EVJ)"<<std::endl;
+
+  typedef  std::vector< cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> > collection;
+  typedef  edm::View< cmg::DiObject<cmg::Welenu,cmg::VJet> > diOcollection;
+  
+  edm::Handle<diOcollection> diCands;
+  iEvent.getByLabel(inLabel_,diCands);
+    
+  edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
+  iEvent.getByLabel(vbftag_,vbfPairs);
+
+  
+  typename cmg::EDBRCandidateFactory<cmg::Welenu,cmg::VJet>::EVJ_event_ptr result(new collection);
+  for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
+    // first create the  "pure" EDBR candidate without vbf tags
+    cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> cmgTmp(*it);
+    cmg::EDBRCandidateFactory<cmg::Welenu,cmg::VJet>::set(cmgTmp,&cmgTmp,true);
+    cmgTmp.nj_=1;
+    result->push_back(cmgTmp);
+    // loop over vbf tagging pairs, but only add non-overlapping candidates
+    if( vbfPairs.isValid()) {
+      for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
+    cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> cmgTmpVBF(cmgTmp);
+    cmgTmpVBF.nj_=1;
+    edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
+    cmgTmpVBF.vbfptr_=tmpptr;
+    if(vbfoverlapveto_(cmgTmpVBF))
+      result->push_back(cmgTmpVBF);
+      }   
+    }   
+  }
+  return result;
+}
+
+
+template<>  cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::MVJ_event_ptr cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+
+  // std::cout<<"USING SINGLE JET cmg::EDBRCandidateFactory::create (MVJ)"<<std::endl;
+
+  typedef  std::vector< cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> > collection;
+  typedef  edm::View< cmg::DiObject<cmg::Wmunu,cmg::VJet> > diOcollection;
+  
+  edm::Handle<diOcollection> diCands;
+  iEvent.getByLabel(inLabel_,diCands);
+    
+  edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
+  iEvent.getByLabel(vbftag_,vbfPairs);
+
+  
+  typename cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::MVJ_event_ptr result(new collection);
+  for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
+    // first create the  "pure" EDBR candidate without vbf tags
+    cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> cmgTmp(*it);
+    cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::set(cmgTmp,&cmgTmp,true);
+    cmgTmp.nj_=1;
+    result->push_back(cmgTmp);
+    // loop over vbf tagging pairs, but only add non-overlapping candidates
+    if( vbfPairs.isValid()) {
+      for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
+    cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> cmgTmpVBF(cmgTmp);
+    cmgTmpVBF.nj_=1;
+    edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
+    cmgTmpVBF.vbfptr_=tmpptr;
+    if(vbfoverlapveto_(cmgTmpVBF))
+      result->push_back(cmgTmpVBF);
+      }   
+    }   
+  }
+  return result;
+}
+
+
+
+
+
+
 template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const cmg::DiObject<T,U>& in, cmg::EDBRCandidate<T,U>* const obj, bool isMergedJet) const{
   double costhetastar=-77.0;
   double helphi=-77.0;
@@ -180,6 +262,7 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
   double helcosthetaZjj=-77.0;
   double phistarZll=+33.0, phistarZjj=-33.0;
   
+
   // create boosters to various objects
   CenterOfMassBooster boostX( in );
   CenterOfMassBooster boostZll( in.leg1() );
@@ -249,7 +332,6 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
 		    (lepton_neg.p4().P()* XboostedZll->p4().P())  );
 
  
-
  
   if(!isMergedJet){
   //the sign is undefined (impossible to distinguish q from qbar)
@@ -263,16 +345,13 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
   for(size_t dau=0;dau<2;dau++){     //ZjjboostedZjj->numberOfDaughters();dau++){ //careful! there 4 daughters!
     if(ZjjboostedZjj->daughter(dau)->phi()>=0)posphiZjjdau=dau; // changed >0 to >=0 to avoid problems with non-converging kinematic fit
   }
- 
   const reco::Candidate *JetboostedX = ZjjboostedX->daughter(posphiZjjdau);
- 
   //v_3 = similar to v_2, BUT
   //now, if we want a right-handed set of unit-vectors, keeping the same direction of the z-axis
   //we must swap the direction of one of the other two vectors of the Z bosons.
   //Keeping the same direction of the z-axis
   //means measuring phiZll and phiZjj w.r.t. to the same v_1 vector (i.e. w.r.t. the same z'-Zll plane)
   v_3=   ((-1.0*ZjjboostedX->momentum()).Cross(JetboostedX->momentum().unit())).unit() ;
-
   //in other terms: we can define v_3 as above and then do the crss prod with v_1
   //or define v_3 in a way consistent with v_2 and then do the cross product with a newly defined
   //unit vector v_4 =  (v_pbeamLAB.Cross(  (ZjjboostedX->momentum()).unit()) ).unit();//versor normal to z-Zjj plane
@@ -282,7 +361,6 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
   helphiZjj=fabs( acos(v_1.Dot(v_3)) );//two-fold ambiguity when doing the acos
   //phi
   helphi    =fabs( acos(v_2.Dot(v_3)) );//two-fold ambiguity when doing the acos + pi ambiguity from sign of v_3
-
   //resolve sign ambiguities
     if(v_pbeamLAB.Dot(v_3)>0.0)helphiZjj=+1.0*helphiZjj;
     else helphiZjj=-1.0*helphiZjj;
@@ -299,7 +377,6 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
 			 daughter_posphi.p4().y()* XboostedZjj->p4().y()+
 			 daughter_posphi.p4().z()* XboostedZjj->p4().z())/
 			(daughter_posphi.p4().P()* XboostedZjj->p4().P())  );
-
   //sanity check
   if(fabs(helphi+helphiZll+helphiZjj) > 0.001){
     if( (helphi+helphiZll+helphiZjj - 2*M_PI > 0.001) && (helphi+helphiZll-helphiZjj + 2*M_PI > 0.001) ){
@@ -307,7 +384,6 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
 
     }
   }
-
   }  //end if it is NOT Merged Jet case
 
 
