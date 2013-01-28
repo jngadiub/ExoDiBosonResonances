@@ -13,13 +13,20 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 ### input cmgTuples
 process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTuple_<SAMPLE>_cff")
 
+## source = cms.Source("PoolSource",
+##                     noEventSort = cms.untracked.bool(True),
+##                     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
+##                     fileNames = cms.vstring(
+##     '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/TTBAR/test_0.root')
+##                     )
+
 #process.load("ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi.py")
 from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
 process.ANEDBR = AnalyzerXZZ.clone(
     debug=cms.bool(False),
     outFileName=cms.string("treeEDBR_<SAMPLE>.root"),
     Ngen=cms.uint32(1),
-    xsec=cms.double(1000.0) ###in pb
+    xsec=cms.double(1.0) ###in pb
     )
 
 if "<SAMPLE>"=="TTBAR" :

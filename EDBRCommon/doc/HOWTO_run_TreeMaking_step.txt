@@ -7,7 +7,7 @@ copy the contents them in plain ROOT TTrees.
 
 === GENERAL comments ===
 
-*) the example cfg is ExoDiBosonResonances/EDBRCommon/test/analyzerEDBR_zz2l2j_cfg.py
+*) the example cfg is ExoDiBosonResonances/EDBRCommon/test/analyzerEDBR_zz2l2j_tpl.py
 
 *)the analyzer itself is in ExoDiBosonResonances/EDBRCommon/plugins/AnalyzerEDBR.h
 
@@ -19,24 +19,64 @@ The size of the vectors in the branch is given by the # of candidates, hence it 
 event-by-event.
 
 
-=== RUNNING ===
+=== RUNNING STAND-ALONE ===
 
-In the cfg: 
+Take the template cfg EDBRCommon/test/analyzerEDBR_zz2l2j_tpl.py and edit it
+according to your needs: decomment the suorce module, add the list of cmgTuples
+that you want to process, replace all over the file the tag '<SAMPLE>' with
+the label of the sample that you want to process. Make sure that the number
+of generated events and the cross section is the correct one. For data,
+Ngen and xsec don't matter (we don't use them in the end) but set them both
+to one, just to make sure.
 
-1) specify the path to the cmgTuple
+Other important tips on how to steer the module:
 
-2) In the module calling the plugin AnalyzerEDBR, you must give the name
+*) In the module calling the plugin AnalyzerEDBR, you must give the name
 of the collections that you want to use. Refer to ExoDiBosonResonances/EDBRCommon/doc/Summary_Collections.pdf
 for more informations. 
 
-3) if it is a MC sample, specify the xsec and # of generated event, it will
-define the lumi reweighting factor stored in the final TTree too.
-
-4) if you want to check if some HLT trigger slots have been fired or not,
+*) if you want to check if some HLT trigger slots have been fired or not,
 add the string with the names in the parameter "triggerNames".
  
-5) make it run:  
+*) make it run:  
 
 cmsRun analyzerEDBR_zz2l2j_cfg.py 
+
+
+=== RUNNING WITH SCRIPTS ===
+
+1) prepare a list of cmgTuples and save it in a cff file in the directory
+ExoDiBosonResonances/EDBRCommon/python/datasets/
+
+The name of this cff should follow the following format:
+cmgTuple_<LABEL>_cff.py
+
+2) move to EDBRCommon/test/ 
+
+3) Open the  template EDBRCommon/test/analyzerEDBR_zz2l2j_tpl.py and make
+sure that the settings are correct (see previous paragraph of these instructions).
+In particular, if you want to process a MC sample make sure that Ngen and xsec
+are set to the right values by adding one more block in the if statement:
+
+##############
+elif "<SAMPLE>"== "<---> PUT YOUR MC SAMPLE LABEL HERE <--->" :
+    process.ANEDBR.Ngen=cms.uint32(2500000)
+    process.ANEDBR.xsec=cms.double(32.9)
+##############
+
+3) open run_AnalyzerEDBR.sh and edit the fields with the paths, 
+in particular $MYWORKAREA, $CFGAREA and $OUTDIR . The output TTrees 
+and the logs will be saved in $OUTDIR
+
+4) open submit_AnalyzerEDBR.sh and add in the array SampleName
+all the samples that you want to process. It is important that the
+labels are consistent across all the files (submit_AnalyzerEDBR.sh,
+analyzerEDBR_zz2l2j_tpl.py and the cmgTuple list in ExoDiBosonResonances/EDBRCommon/python/datasets/)
+
+5) just execute:
+./submit_AnalyzerEDBR.sh
+
+the jobs will be submitted to the LXBatch system, one for each sample.
+
 
 
