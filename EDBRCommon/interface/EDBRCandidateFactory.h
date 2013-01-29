@@ -292,7 +292,7 @@ template<>  cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::MVJ_event_ptr cmg::
   const reco::Candidate *NegLeptboostedX = ZllboostedX->daughter(negLeptInd); // XXX check for double boost
 
   if( abs(NegLeptboostedX->pdgId())!=11 && abs(NegLeptboostedX->pdgId())!=13  )
-    std::cout<<"WARNING: 1st Lepton is neither an electron nor a muon !!!  PdgId="<<NegLeptboostedX->pdgId()<<std::endl;
+    std::cout<<"WARNING from EDBRCandidateFactory : 1st Lepton is neither an electron nor a muon !!!  PdgId="<<NegLeptboostedX->pdgId()<<std::endl;
   //   cout<<"L1 4-mom before boost to X (0): "<<Zll->daughter(negLeptInd)->p4().x()<<", "<<Zll->daughter(negLeptInd)->p4().y()<<", " <<Zll->daughter(negLeptInd)->p4().z()<<", "<<Zll->daughter(negLeptInd)->p4().P()<<endl;
   //   cout<<"L1 4-mom after boost to X (1): "<<NegLeptboostedX->p4().x()<<", "<<NegLeptboostedX->p4().y()<<", " <<NegLeptboostedX->p4().z()<<", "<<NegLeptboostedX->p4().P()<<endl;
   
@@ -368,7 +368,7 @@ template<>  cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::MVJ_event_ptr cmg::
   //sanity check
   if(fabs(helphi+helphiZll+helphiZjj) > 0.001){
     if( (helphi+helphiZll+helphiZjj - 2*M_PI > 0.001) && (helphi+helphiZll-helphiZjj + 2*M_PI > 0.001) ){
-      std::cout <<">>>>> WARNING !!!! Error when calculating Helicity angles ! Sum of HelPhi different from zero ! -> HelPhi = "<<helphi<<" HelPhiZLL = "<<helphiZll<<" HelPhiZjj = "<<helphiZjj<<"  SUM = "<< helphi+helphiZll+helphiZjj <<"  Phi+PhiLL-PhiJJ = "<<helphi+helphiZll-helphiZjj <<std::endl;
+      std::cout <<">>>>> WARNING from EDBRCandidateFactory !!!! Error when calculating Helicity angles ! Sum of HelPhi different from zero ! -> HelPhi = "<<helphi<<" HelPhiZLL = "<<helphiZll<<" HelPhiZjj = "<<helphiZjj<<"  SUM = "<< helphi+helphiZll+helphiZjj <<"  Phi+PhiLL-PhiJJ = "<<helphi+helphiZll-helphiZjj <<std::endl;
 
     }
   }
