@@ -34,27 +34,14 @@ namespace cmg{
     typedef typename cmg::Factory<typename cmg::EDBRCandidate<T,U> >::event_ptr event_ptr;
     typedef cmg::Factory<cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> >::event_ptr EEJ_event_ptr;
     typedef cmg::Factory<cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> >::event_ptr MMJ_event_ptr;
-	typedef cmg::Factory<cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> >::event_ptr EVJ_event_ptr;
-	typedef cmg::Factory<cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> >::event_ptr MVJ_event_ptr;
+    typedef cmg::Factory<cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> >::event_ptr EVJ_event_ptr;
+    typedef cmg::Factory<cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> >::event_ptr MVJ_event_ptr;
     virtual event_ptr create(const edm::Event& iEvent, const edm::EventSetup& iSetup);
 
 
-    // virtual event_ptr2 create(const edm::Event& iEvent, const edm::EventSetup& iSetup);
-
-    /*
-     typedef typename cmg::Factory<typename cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> >::event_ptr event_ptr2;
-    //    template<> 
-     typename cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::event_ptr create(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
-      std::cout<<"Blah"<<std::endl;      
-      typename cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::event_ptr result(new collection);
- 
-      return result;
-    }//end create (2)
-    */
-
     ///Set angular variables etc
-    virtual void set(const cmg::DiObject<T,U>& pair, cmg::EDBRCandidate<T,U>* const obj, bool isMergedJet=false) const;
-    // virtual void set(const cmg::DiObject<cmg::DiElectron,cmg::VJet>& in, cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet>* const obj) const;  
+    virtual void set(const cmg::DiObject<T,U>& pair, cmg::EDBRCandidate<T,U>* const obj, bool isMergedJet=false, bool isW=false) const;
+   
   private:       
     const edm::InputTag inLabel_;
     const edm::InputTag vbftag_;
@@ -99,8 +86,6 @@ template< typename T, typename U > typename cmg::EDBRCandidateFactory<T,U>::even
 
   return result;
 }
-
-
 template<>  cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::EEJ_event_ptr cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
   // std::cout<<"USING SINGLE JET cmg::EDBRCandidateFactory::create (EEJ)"<<std::endl;
@@ -193,7 +178,7 @@ template<>  cmg::EDBRCandidateFactory<cmg::Welenu,cmg::VJet>::EVJ_event_ptr cmg:
   for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
     // first create the  "pure" EDBR candidate without vbf tags
     cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> cmgTmp(*it);
-    cmg::EDBRCandidateFactory<cmg::Welenu,cmg::VJet>::set(cmgTmp,&cmgTmp,true);
+    cmg::EDBRCandidateFactory<cmg::Welenu,cmg::VJet>::set(cmgTmp,&cmgTmp,true,true);
     cmgTmp.nj_=1;
     result->push_back(cmgTmp);
     // loop over vbf tagging pairs, but only add non-overlapping candidates
@@ -230,7 +215,7 @@ template<>  cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::MVJ_event_ptr cmg::
   for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
     // first create the  "pure" EDBR candidate without vbf tags
     cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> cmgTmp(*it);
-    cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::set(cmgTmp,&cmgTmp,true);
+    cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::set(cmgTmp,&cmgTmp,true,true);
     cmgTmp.nj_=1;
     result->push_back(cmgTmp);
     // loop over vbf tagging pairs, but only add non-overlapping candidates
@@ -253,7 +238,8 @@ template<>  cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::MVJ_event_ptr cmg::
 
 
 
-template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const cmg::DiObject<T,U>& in, cmg::EDBRCandidate<T,U>* const obj, bool isMergedJet) const{
+ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const cmg::DiObject<T,U>& in, cmg::EDBRCandidate<T,U>* const obj, bool isMergedJet, bool isW) const{
+
   double costhetastar=-77.0;
   double helphi=-77.0;
   double helphiZll=-77.0;
@@ -283,7 +269,7 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
   // int sign_Zll=-1;
   if(!(phistarZll>=0.0 && phistarZll<M_PI)){
     if(phistarZjj<0.0&&phistarZjj>-M_PI){//uh-oh,this should not be...
-      std::cout<<"ERROR in phi assignment !!!!!!"<<std::endl;
+      std::cout<<"ERROR from cmg::EDBRCandidateFactory<T, U>::set -> ERROR in phi assignment !!!!!!"<<std::endl;
     }
   }
   //  else{
@@ -293,6 +279,8 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
 
   costhetastar=cos(ZllboostedX->p4().theta()); //Z are distinguishable, Zll is always what Z1 is in the 4l case
   
+
+  if(!isW){
   math::XYZVector v_pbeamLAB( 0.0, 0.0, 1.0 );
   //cross prod beam x Zll
   math::XYZVector v_1 = (v_pbeamLAB.Cross(  (ZllboostedX->momentum()).unit()) ).unit();//versor normal to z-z' plane
@@ -385,7 +373,7 @@ template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const
     }
   }
   }  //end if it is NOT Merged Jet case
-
+  }//end if it is NOT a X->WW
 
     obj->costhetastar_ = costhetastar;
     obj->helphi_ = helphi;
