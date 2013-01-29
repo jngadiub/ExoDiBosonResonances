@@ -16,7 +16,8 @@
 #include "CommonTools/CandUtils/interface/CenterOfMassBooster.h"
 #include "CommonTools/CandUtils/interface/cloneDecayTree.h"
 #include <cmath>
-
+#include <string>
+#include <typeinfo>
 
 namespace cmg{
 
@@ -36,8 +37,6 @@ namespace cmg{
     typedef cmg::Factory<cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> >::event_ptr MMJ_event_ptr;
     typedef cmg::Factory<cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> >::event_ptr EVJ_event_ptr;
     typedef cmg::Factory<cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> >::event_ptr MVJ_event_ptr;
-	typedef cmg::Factory<cmg::EDBRCandidate<cmg::Welenu,cmg::DiPFJet> >::event_ptr EVJJ_event_ptr;
-	typedef cmg::Factory<cmg::EDBRCandidate<cmg::Wmunu,cmg::DiPFJet> >::event_ptr MVJJ_event_ptr;
     virtual event_ptr create(const edm::Event& iEvent, const edm::EventSetup& iSetup);
 
 
@@ -55,7 +54,7 @@ namespace cmg{
 
   
 template< typename T, typename U > typename cmg::EDBRCandidateFactory<T,U>::event_ptr cmg::EDBRCandidateFactory<T,U>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  
+  // std::cout<<"USING TEMPLATED cmg::EDBRCandidateFactory::create "<<std::endl;
   typedef  std::vector< cmg::EDBRCandidate<T,U> > collection;
   typedef  edm::View< cmg::DiObject<T,U> > diOcollection;
   
@@ -65,12 +64,25 @@ template< typename T, typename U > typename cmg::EDBRCandidateFactory<T,U>::even
   edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
   iEvent.getByLabel(vbftag_,vbfPairs);
 
+  bool isMergedJet=false;
+  bool isW = false;
+  if(diCands->size()>0){
+
+    std::string str_type= typeid(diCands->at(0)).name();
+    unsigned int foundVJet=str_type.find("VJet");
+    unsigned int foundNeu=str_type.find("Neutrino");
+    //    unsigned int foundNever=str_type.find("oppioppo");
+    //std::cout<<"TypeID in EDBRCandidateFactory is "<<str_type.c_str()<<"  foundVJet="<<foundVJet<<"  foundNever="<<foundNever<<std::endl;
+    if(foundVJet < 9999)isMergedJet=true;//c++ compilation error if I use std::string::npos
+    if(foundNeu  < 9999)isW=true;
+  }
 
   typename cmg::EDBRCandidateFactory<T,U>::event_ptr result(new collection);
   for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
     // first create the  "pure" EDBR candidate without vbf tags
     cmg::EDBRCandidate<T, U> cmgTmp(*it);
-    cmg::EDBRCandidateFactory<T, U>::set(cmgTmp,&cmgTmp);
+
+    cmg::EDBRCandidateFactory<T, U>::set(cmgTmp,&cmgTmp,isMergedJet,isW);
     cmgTmp.nj_=2;
     result->push_back(cmgTmp);
     // loop over vbf tagging pairs, but only add non-overlapping candidates
@@ -88,232 +100,13 @@ template< typename T, typename U > typename cmg::EDBRCandidateFactory<T,U>::even
 
   return result;
 }
-template<>  cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::EEJ_event_ptr cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-
-  // std::cout<<"USING SINGLE JET cmg::EDBRCandidateFactory::create (EEJ)"<<std::endl;
-
-  typedef  std::vector< cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> > collection;
-  typedef  edm::View< cmg::DiObject<cmg::DiElectron,cmg::VJet> > diOcollection;
-  
-  edm::Handle<diOcollection> diCands;
-  iEvent.getByLabel(inLabel_,diCands);
-    
-  edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
-  iEvent.getByLabel(vbftag_,vbfPairs);
-
-  
-  typename cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::EEJ_event_ptr result(new collection);
-  for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
-    // first create the  "pure" EDBR candidate without vbf tags
-    cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> cmgTmp(*it);
-    cmg::EDBRCandidateFactory<cmg::DiElectron,cmg::VJet>::set(cmgTmp,&cmgTmp,true);
-    cmgTmp.nj_=1;
-    result->push_back(cmgTmp);
-    // loop over vbf tagging pairs, but only add non-overlapping candidates
-    if( vbfPairs.isValid()) {
-      for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
-	cmg::EDBRCandidate<cmg::DiElectron,cmg::VJet> cmgTmpVBF(cmgTmp);
-	cmgTmpVBF.nj_=1;
-	edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
-	cmgTmpVBF.vbfptr_=tmpptr;
-	if(vbfoverlapveto_(cmgTmpVBF))
-	  result->push_back(cmgTmpVBF);
-	  }
-    }
-  }
-  return result;
-}
-
-
-template<>  cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::MMJ_event_ptr cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-
-  // std::cout<<"USING SINGLE JET cmg::EDBRCandidateFactory::create (MMJ)"<<std::endl;
-
-  typedef  std::vector< cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> > collection;
-  typedef  edm::View< cmg::DiObject<cmg::DiMuon,cmg::VJet> > diOcollection;
-  
-  edm::Handle<diOcollection> diCands;
-  iEvent.getByLabel(inLabel_,diCands);
-    
-  edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
-  iEvent.getByLabel(vbftag_,vbfPairs);
-
-  
-  typename cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::MMJ_event_ptr result(new collection);
-  for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
-    // first create the  "pure" EDBR candidate without vbf tags
-    cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> cmgTmp(*it);
-    cmg::EDBRCandidateFactory<cmg::DiMuon,cmg::VJet>::set(cmgTmp,&cmgTmp,true);
-    cmgTmp.nj_=1;
-    result->push_back(cmgTmp);
-    // loop over vbf tagging pairs, but only add non-overlapping candidates
-    if( vbfPairs.isValid()) {
-      for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
-	cmg::EDBRCandidate<cmg::DiMuon,cmg::VJet> cmgTmpVBF(cmgTmp);
-	cmgTmpVBF.nj_=1;
-	edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
-	cmgTmpVBF.vbfptr_=tmpptr;
-	if(vbfoverlapveto_(cmgTmpVBF))
-	  result->push_back(cmgTmpVBF);
-	  }
-    }
-  }
-  return result;
-}
-
-
-template<>  cmg::EDBRCandidateFactory<cmg::Welenu,cmg::VJet>::EVJ_event_ptr cmg::EDBRCandidateFactory<cmg::Welenu,cmg::VJet>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-
-  // std::cout<<"USING SINGLE JET cmg::EDBRCandidateFactory::create (EVJ)"<<std::endl;
-
-  typedef  std::vector< cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> > collection;
-  typedef  edm::View< cmg::DiObject<cmg::Welenu,cmg::VJet> > diOcollection;
-  
-  edm::Handle<diOcollection> diCands;
-  iEvent.getByLabel(inLabel_,diCands);
-    
-  edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
-  iEvent.getByLabel(vbftag_,vbfPairs);
-
-  
-  typename cmg::EDBRCandidateFactory<cmg::Welenu,cmg::VJet>::EVJ_event_ptr result(new collection);
-  for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
-    // first create the  "pure" EDBR candidate without vbf tags
-    cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> cmgTmp(*it);
-    cmg::EDBRCandidateFactory<cmg::Welenu,cmg::VJet>::set(cmgTmp,&cmgTmp,true,true);
-    cmgTmp.nj_=1;
-    result->push_back(cmgTmp);
-    // loop over vbf tagging pairs, but only add non-overlapping candidates
-    if( vbfPairs.isValid()) {
-      for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
-    cmg::EDBRCandidate<cmg::Welenu,cmg::VJet> cmgTmpVBF(cmgTmp);
-    cmgTmpVBF.nj_=1;
-    edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
-    cmgTmpVBF.vbfptr_=tmpptr;
-    if(vbfoverlapveto_(cmgTmpVBF))
-      result->push_back(cmgTmpVBF);
-      }   
-    }   
-  }
-  return result;
-}
-
-
-template<>  cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::MVJ_event_ptr cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-
-  // std::cout<<"USING SINGLE JET cmg::EDBRCandidateFactory::create (MVJ)"<<std::endl;
-
-  typedef  std::vector< cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> > collection;
-  typedef  edm::View< cmg::DiObject<cmg::Wmunu,cmg::VJet> > diOcollection;
-  
-  edm::Handle<diOcollection> diCands;
-  iEvent.getByLabel(inLabel_,diCands);
-    
-  edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
-  iEvent.getByLabel(vbftag_,vbfPairs);
-
-  
-  typename cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::MVJ_event_ptr result(new collection);
-  for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
-    // first create the  "pure" EDBR candidate without vbf tags
-    cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> cmgTmp(*it);
-    cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::VJet>::set(cmgTmp,&cmgTmp,true,true);
-    cmgTmp.nj_=1;
-    result->push_back(cmgTmp);
-    // loop over vbf tagging pairs, but only add non-overlapping candidates
-    if( vbfPairs.isValid()) {
-      for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
-    cmg::EDBRCandidate<cmg::Wmunu,cmg::VJet> cmgTmpVBF(cmgTmp);
-    cmgTmpVBF.nj_=1;
-    edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
-    cmgTmpVBF.vbfptr_=tmpptr;
-    if(vbfoverlapveto_(cmgTmpVBF))
-      result->push_back(cmgTmpVBF);
-      }   
-    }   
-  }
-  return result;
-}
-
-
-template<>  cmg::EDBRCandidateFactory<cmg::Welenu,cmg::DiPFJet>::EVJJ_event_ptr cmg::EDBRCandidateFactory<cmg::Welenu,cmg::DiPFJet>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  // std::cout<<"USING SINGLE JET cmg::EDBRCandidateFactory::create (EVJJ)"<<std::endl;
-
-  typedef  std::vector< cmg::EDBRCandidate<cmg::Welenu,cmg::DiPFJet> > collection;
-  typedef  edm::View< cmg::DiObject<cmg::Welenu,cmg::DiPFJet> > diOcollection;
-  
-  edm::Handle<diOcollection> diCands;
-  iEvent.getByLabel(inLabel_,diCands);
-      
-  edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
-  iEvent.getByLabel(vbftag_,vbfPairs);
-
-  
-  typename cmg::EDBRCandidateFactory<cmg::Welenu,cmg::DiPFJet>::EVJJ_event_ptr result(new collection);
-  for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
-    // first create the  "pure" EDBR candidate without vbf tags
-    cmg::EDBRCandidate<cmg::Welenu,cmg::DiPFJet> cmgTmp(*it);
-    cmg::EDBRCandidateFactory<cmg::Welenu,cmg::DiPFJet>::set(cmgTmp,&cmgTmp,false,true);
-    cmgTmp.nj_=1;
-    result->push_back(cmgTmp);
-    // loop over vbf tagging pairs, but only add non-overlapping candidates
-    if( vbfPairs.isValid()) {
-      for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
-    cmg::EDBRCandidate<cmg::Welenu,cmg::DiPFJet> cmgTmpVBF(cmgTmp);
-    cmgTmpVBF.nj_=1;
-    edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
-    cmgTmpVBF.vbfptr_=tmpptr; 
-    if(vbfoverlapveto_(cmgTmpVBF))
-      result->push_back(cmgTmpVBF);
-      }   
-    }     
-  }
-  return result;
-}
-
-
-
-template<>  cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::DiPFJet>::MVJJ_event_ptr cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::DiPFJet>::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  // std::cout<<"USING SINGLE JET cmg::EDBRCandidateFactory::create (MVJJ)"<<std::endl;
-
-  typedef  std::vector< cmg::EDBRCandidate<cmg::Wmunu,cmg::DiPFJet> > collection;
-  typedef  edm::View< cmg::DiObject<cmg::Wmunu,cmg::DiPFJet> > diOcollection;
-  
-  edm::Handle<diOcollection> diCands;
-  iEvent.getByLabel(inLabel_,diCands);
-      
-  edm::Handle<std::vector<cmg::DiPFJet> > vbfPairs;
-  iEvent.getByLabel(vbftag_,vbfPairs);
-
-  
-  typename cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::DiPFJet>::MVJJ_event_ptr result(new collection);
-  for(typename diOcollection::const_iterator it = diCands->begin(); it != diCands->end(); ++it){
-    // first create the  "pure" EDBR candidate without vbf tags
-    cmg::EDBRCandidate<cmg::Wmunu,cmg::DiPFJet> cmgTmp(*it);
-    cmg::EDBRCandidateFactory<cmg::Wmunu,cmg::DiPFJet>::set(cmgTmp,&cmgTmp,false,true);
-    cmgTmp.nj_=1;
-    result->push_back(cmgTmp);
-    // loop over vbf tagging pairs, but only add non-overlapping candidates
-    if( vbfPairs.isValid()) {
-      for(unsigned int i = 0 ; i < vbfPairs.product()->size() ; i++){
-    cmg::EDBRCandidate<cmg::Wmunu,cmg::DiPFJet> cmgTmpVBF(cmgTmp);
-    cmgTmpVBF.nj_=1;
-    edm::Ptr<cmg::DiPFJet > tmpptr(vbfPairs,i);
-    cmgTmpVBF.vbfptr_=tmpptr; 
-    if(vbfoverlapveto_(cmgTmpVBF))
-      result->push_back(cmgTmpVBF);
-      }   
-    }     
-  }
-  return result;
-}
-
-
 
 
 
 
  template<typename T, typename U> void cmg::EDBRCandidateFactory<T, U>::set(const cmg::DiObject<T,U>& in, cmg::EDBRCandidate<T,U>* const obj, bool isMergedJet, bool isW) const{
+
+   //  std::cout<<"EDBRCandidateFactory::set called with arguments "<< (isMergedJet? "true" : "false" )<< (isW? "  true" : "  false" ) <<std::endl;
 
   double costhetastar=-77.0;
   double helphi=-77.0;
