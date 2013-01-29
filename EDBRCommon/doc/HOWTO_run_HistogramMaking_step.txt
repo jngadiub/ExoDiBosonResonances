@@ -1,0 +1,48 @@
+
+Instructions for making plots from the plain ROOT TTrees
+
+=== GENERAL COMMENTS ===
+
+*) The basic idea is to present the user a class,
+EDBRHistoMaker, which analyzes a given TTree or TChain
+and produces a set of histograms which are then saved
+in a ROOT file. 
+
+*) The code is structured as a macro, divided in two files:
+ExoDiBosonResonances/EDBRCommon/rootmacros/makeHisto.h and
+ExoDiBosonResonances/EDBRCommon/rootmacros/makeHisto.C.
+
+*) makeHisto.h file has the following itens:
+   *) the structure of histograms which are created (numbers and edges of bins)
+   *) the structure of the TTree analyzed (the list of variables, TBranches, 
+   and the code to connect the TBranches)
+   *) the declaration of the functions for analysis - for instance, there's a
+   member function bool eventPassesCut(), which relies on the member variables
+    
+
+*) makeHisto.C file has the following itens
+   *) the definition of the regions (signal/sideband, electron/muon, etc.)
+   *) the definition of the functions for analysis
+   *) more importantly, the definition of the Loop() function, which runs
+   over the events on the TTree/TChain and fills the histograms
+
+=== RUNNING ===
+
+1) Start ROOT, with the file you want to analyze:
+
+$ root -l inputFile.root
+
+2) Load the macro:
+
+[] .L makeHisto.C+
+
+3) Create an object to run on the Tree:
+
+EDBRHistoMaker* h = new EDBRHistoMaker(SelectedCandidates)
+
+4) Run over the events and save the resulting histograms in a file.
+
+h->Loop("results.root")
+
+Naturally, we should update the code to create the histograms we actually want.
+What is in place now is just a working example.
