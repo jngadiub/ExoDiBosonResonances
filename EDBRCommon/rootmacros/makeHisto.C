@@ -9,10 +9,10 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
   nVars = 77;
   
   // Definition of regions
-  sidebandVHMassLow_  =  50.0; // GeV
+  sidebandVHMassLow_  =  0.0;  // GeV
   sidebandVHMassHigh_ =  70.0; // GeV
   signalVHMassLow_    =  70.0; // GeV
-  signalVHMassHigh_   = 100.0; // GeV
+  signalVHMassHigh_   = 105.0; // GeV
 
   // Which category do we want to analyze?
   wantElectrons_ = wantElectrons;
@@ -53,11 +53,13 @@ Long64_t EDBRHistoMaker::LoadTree(Long64_t entry) {
 
 void EDBRHistoMaker::createAllHistos() {
   char buffer[256];
+  char buffer2[256];
 
   for(int i = 0; i!= nVars; ++i) {
     sprintf(buffer,"h_%s",vars[i].c_str());
+    sprintf(buffer2,"%s;%s;Number of events;",vars[i].c_str(),vars[i].c_str());
     TH1D* histogram = new TH1D(buffer,
-			       vars[i].c_str(),
+			       buffer2,
 			       nBins[i],
 			       minBin[i],
 			       maxBin[i]);
@@ -122,8 +124,9 @@ void EDBRHistoMaker::Loop(std::string outFileName){
     
     // We calculate a weight here.
     // TODO: check if this is really the weight we want to use!
-    double actualWeight = weight*HLTweight*PUweight*LumiWeight*GenWeight;
-    
+    //double actualWeight = weight;//*HLTweight*PUweight*LumiWeight*GenWeight;
+    double actualWeight = PUweight*LumiWeight*GenWeight;
+
     // We get the histogram from the map by string and fill it.
     // We could wrap all the fills in the this->eventPassesCut() function
     // 
@@ -142,3 +145,46 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
   this->saveAllHistos(outFileName);
 }
+
+///-
+/// This macro is a wrapper to analyze different TChains
+/// and merge the results properly.
+///
+
+void makeHisto()
+{
+  TChain* DYjets  = new TChain("SelectedCandidates","DYjets");
+  TChain* Wjets   = new TChain("SelectedCandidates","Wjets");
+  TChain* ttbar   = new TChain("SelectedCandidates","ttbar");
+  TChain* WW      = new TChain("SelectedCandidates","WW");
+  TChain* WZ      = new TChain("SelectedCandidates","WZ");
+  TChain* ZZ      = new TChain("SelectedCandidates","ZZ");
+
+  TChain* data    = new TChain("SelectedCandidates", "data");
+
+  DYjets->Add("trees_DYjets.root");
+  Wjets->Add("trees_DYjets.root");
+  ttbar->Add("trees_DYjets.root");
+  WWjets->Add("trees_DYjets.root");
+  WZjets->Add("trees_DYjets.root");
+  ZZjets->Add("trees_DYjets.root");
+  data->Add("trees_DYjets.root");
+  
+  EDBRHistoMaker a_DYjets(DYjets,"DYjets",dataLuminosity/QCD500lumi);
+  EDBRHistoMaker a_Wjets(Wjets,"Wjets",dataLuminosity/QCD1000lumi);
+  EDBRHistoMaker a_ttbar(ttbar,"ttbar",dataLuminosity/39000.0);
+  EDBRHistoMaker a_WWjets(WWjets,"WWjets",dataLuminosity/150000.0);
+  EDBRHistoMaker a_WZjets(WZjets,"WZjets",dataLuminosity/410000.0);
+  EDBRHistoMaker a_ZZjets(ZZjets,"ZZjets",dataLuminosity/980000.0);
+  EDBRHistoMaker a_signal(signal,"signal",signalCorrection);
+  EDBRHistoMaker a_data(data,"data",1.0);
+
+  a_DYjets.Loop("histograms_DYjets.root");
+  a_Wjets.Loop("histograms_Wjets.root");
+  a_ttbar.Loop("histograms_ttbar.root");
+  a_WWjets.Loop("histograms_WWjets.root");
+  a_WZjets.Loop("histograms_WZjets.root");
+  a_ZZjets.Loop("histograms_ZZjets.root");
+  a_data.Loop("histograms_data.root");
+}
+
