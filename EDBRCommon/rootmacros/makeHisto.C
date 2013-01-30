@@ -94,9 +94,11 @@ bool EDBRHistoMaker::eventPassesCut() {
   bool passesFlavour = ((lep == 0 and wantElectrons_) or
 			(lep == 1 and wantMuons_));
 
-  // TODO: check the numbers here
-  bool isInSideband = (mJJ[0] > 50 and mJJ[0] < 70); 
-  bool isInSignal = (mJJ[0] > 70 and mJJ[0] < 110);
+  bool isInSideband = (mJJ[0] > sidebandVHMassLow_ and 
+		       mJJ[0] < sidebandVHMassHigh_); 
+  bool isInSignal = (mJJ[0] > signalVHMassLow_ and 
+		     mJJ[0] < signalVHMassHigh_);
+
   bool passesRegion = ((isInSideband and wantSideband_) or
 		       (isInSignal and wantSignal_));
 
@@ -123,13 +125,13 @@ void EDBRHistoMaker::Loop(std::string outFileName){
     nb = fChain->GetEntry(jentry);   nbytes += nb;
     
     // We calculate a weight here.
-    // TODO: check if this is really the weight we want to use!
     //double actualWeight = weight;//*HLTweight*PUweight*LumiWeight*GenWeight;
     double actualWeight = PUweight*LumiWeight*GenWeight;
 
     // We get the histogram from the map by string and fill it.
-    // We could wrap all the fills in the this->eventPassesCut() function
-    // 
+    // We could wrap all the fills in the this->eventPassesCut()
+    // to fill histograms only for the events which pass a given
+    // cut (Sideband / SignalRegion, Muon / Electron, ...) 
     (theHistograms["nCands"])->Fill(nCands,actualWeight);
     (theHistograms["ptlep1"])->Fill(ptlep1[0],actualWeight);
     (theHistograms["ptlep2"])->Fill(ptlep2[0],actualWeight);
@@ -146,39 +148,52 @@ void EDBRHistoMaker::Loop(std::string outFileName){
   this->saveAllHistos(outFileName);
 }
 
-///-
+///-----------------------------------------------------
 /// This macro is a wrapper to analyze different TChains
 /// and merge the results properly.
-///
+///-----------------------------------------------------
 
 void makeHisto()
 {
+
+  // Create the different TChains
   TChain* DYjets  = new TChain("SelectedCandidates","DYjets");
   TChain* Wjets   = new TChain("SelectedCandidates","Wjets");
   TChain* ttbar   = new TChain("SelectedCandidates","ttbar");
-  TChain* WW      = new TChain("SelectedCandidates","WW");
-  TChain* WZ      = new TChain("SelectedCandidates","WZ");
-  TChain* ZZ      = new TChain("SelectedCandidates","ZZ");
+  TChain* WWjets  = new TChain("SelectedCandidates","WWjets");
+  TChain* WZjets  = new TChain("SelectedCandidates","WZjets");
+  TChain* ZZjets  = new TChain("SelectedCandidates","ZZjets");
 
   TChain* data    = new TChain("SelectedCandidates", "data");
 
+  // Add files which contain TTrees to the TChains.
+  // The advantage here is that we could have many
+  // files containing TTrees for the same data,
+  // e.g. "trees_DYjets_1.root", "trees_DYjets_2.root",
+  // etc. We could then simply do:
+  // DYjets->Add("trees_DYjets_*.root");
   DYjets->Add("trees_DYjets.root");
-  Wjets->Add("trees_DYjets.root");
-  ttbar->Add("trees_DYjets.root");
-  WWjets->Add("trees_DYjets.root");
-  WZjets->Add("trees_DYjets.root");
-  ZZjets->Add("trees_DYjets.root");
-  data->Add("trees_DYjets.root");
+  Wjets->Add("trees_Wjets.root");
+  ttbar->Add("trees_ttbar.root");
+  WWjets->Add("trees_WWjets.root");
+  WZjets->Add("trees_WZjets.root");
+  ZZjets->Add("trees_ZZjets.root");
+  data->Add("trees_data.root");
   
-  EDBRHistoMaker a_DYjets(DYjets,"DYjets",dataLuminosity/QCD500lumi);
-  EDBRHistoMaker a_Wjets(Wjets,"Wjets",dataLuminosity/QCD1000lumi);
-  EDBRHistoMaker a_ttbar(ttbar,"ttbar",dataLuminosity/39000.0);
-  EDBRHistoMaker a_WWjets(WWjets,"WWjets",dataLuminosity/150000.0);
-  EDBRHistoMaker a_WZjets(WZjets,"WZjets",dataLuminosity/410000.0);
-  EDBRHistoMaker a_ZZjets(ZZjets,"ZZjets",dataLuminosity/980000.0);
-  EDBRHistoMaker a_signal(signal,"signal",signalCorrection);
-  EDBRHistoMaker a_data(data,"data",1.0);
+  // Create the different HistoMaker objects
+  // We're creating them with the DEFAULT settings!
+  // See makeHisto.h to see what these are.
+  EDBRHistoMaker a_DYjets(DYjets);
+  EDBRHistoMaker a_Wjets(Wjets);
+  EDBRHistoMaker a_ttbar(ttbar);
+  EDBRHistoMaker a_WWjets(WWjets);
+  EDBRHistoMaker a_WZjets(WZjets);
+  EDBRHistoMaker a_ZZjets(ZZjets);
+  EDBRHistoMaker a_data(data);
 
+  // Each HistoMaker will analyze the trees
+  // and save the results in a ROOT file
+  // with a name like this.
   a_DYjets.Loop("histograms_DYjets.root");
   a_Wjets.Loop("histograms_Wjets.root");
   a_ttbar.Loop("histograms_ttbar.root");

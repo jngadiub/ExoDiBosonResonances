@@ -1,17 +1,11 @@
-#include <string>
-#include <sstream>
 #include <map>
-#include <math.h>
+#include <string>
 
 #include "TH1D.h"
 #include "TFile.h"
-#include "TCanvas.h"
-#include "TLegend.h"
-#include "TStyle.h"
 #include "TROOT.h"
-#include "TAxis.h"
 #include "TTree.h"
-
+#include "TChain.h"
 // Sadly, CINT will not allow these large arrays
 // to be part of the class... possibly if I change
 // them to be std::vectors, eventually?
