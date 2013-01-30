@@ -10,8 +10,6 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-//#include "Alessio/RooFitUtil/src/RooFitUtils/HelicityLikelihoodDiscriminant.h"
-//#include "Francesco/KinFitter/src/DiJetKinFitter.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 #include "FWCore/Utilities/interface/Algorithms.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -110,38 +108,20 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
    deltaREDBR[ih] = 0.0;//deltaR(edbr->phi(),edbr->eta(),genEDBR.phi(),genEDBR.eta());
 
    // if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric "<<ih<<" "<<flush;
+   reg[ih]=(edbr->leg2().getSelection("cuts_isSignal")? 1.0 : 0.0 );
    mzz[ih]=edbr->mass();
- 
    ptmzz[ih]=edbr->pt();
   
-   if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric mzz="<<mzz[ih]<<"  pT(noKinFit)="<<ptmzzNoKinFit[ih] <<endl;
+   if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric mzz="<<mzz[ih]<<"  pT_mzz="<<ptmzz[ih] <<endl;
 
-   if(finalM_||sbM_||finalE_||sbE_){
-     //     if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling hel angles" <<endl;
-     hs[ih]     = edbr->costhetastar();
-     h1[ih]     = edbr->helcosthetaZl1();
-     h2[ih]     = edbr->helcosthetaZl2();
-     phi[ih]    = edbr->helphiZl1();
-     phiS1[ih]  = edbr->phistarZl1();
-
-     //     if(readLDFromUserFloat_) 
-     LD[ih] = edbr->userFloat("LD");
-       //   else 
-       // LD[ih] = (*ldmapmm)[edbr];
-   }
-   else{//cand is coming from preselection path
-     hs[ih]     = edbr->costhetastar();
-     h1[ih]     = edbr->helcosthetaZl1();
-     h2[ih]     = edbr->helcosthetaZl2();
-     phi[ih]    = edbr->helphiZl1();
-     phiS1[ih]  = edbr->phistarZl1();
-
-     // if(readLDFromUserFloat_) 
-     LD[ih] = -99.0;//edbr->userFloat("LD");
-       //   else 
-       // LD[ih] = (*ldmapmm)[edbr];
-
-   }
+   hs[ih]     = edbr->costhetastar();
+   h1[ih]     = edbr->helcosthetaZl1();
+   h2[ih]     = edbr->helcosthetaZl2();
+   phi[ih]    = edbr->helphiZl1();
+   phiS1[ih]  = edbr->phistarZl1(); 
+   LD[ih] = edbr->userFloat("LD");
+  
+ 
 
    //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling mLL" <<endl;
    mll[ih]=edbr->leg1().mass();
@@ -210,11 +190,13 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   template < typename T > void  analyzeSingleJet(T edbr,int& ih){
     //  if(debug_)cout<<"AnalyzerEDBR::analyzeSingleJet filling jet vars  " <<ih<<endl;
 
+    if(debug_)std::cout<<"nXJets="<<edbr->userFloat("nXJets")<<" (it should be ==1) "<<endl;
     nXjets[ih]=1;//edbr->nJets();
     mzzNoKinFit[ih]=edbr->mass();
     mjj[ih]=edbr->leg2().prunedMass();
     mjjNoKinFit[ih]=mjj[ih];
     ptmzzNoKinFit[ih]=edbr->pt();
+    ptjjNoKinFit[ih]=edbr->leg2().pt();
     ////fill jet kine vars: first jet vars refer to jet used for building EDBR,
     ////                    second jet vars are dummy
  
@@ -253,7 +235,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   }//end analyzeSingleJet();
 
 
-  template < typename T > void  analyzeDoubleJet(T edbr,T edbr_2,int& ih, bool & goodKinFit){
+  template < typename T > void  analyzeDoubleJet(T edbr,int& ih, bool & goodKinFit){
 
 
     if(edbr->leg2().mass()<90 ||edbr->leg2().mass()>92){
@@ -261,11 +243,15 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       goodKinFit = false;
     }
 
-    nXjets[ih]=2;//edbr->nJets();
-    mzzNoKinFit[ih]=edbr_2->mass();
-    ptmzzNoKinFit[ih]=edbr_2->pt();
+    if(debug_)std::cout<<"nXJets="<<edbr->userFloat("nXJets")<<" (it should be ==2) "<<endl;
+    nXjets[ih]=int(edbr->userFloat("nXJets"));//edbr->nJets();
+    mzzNoKinFit[ih]=edbr->userFloat("nokinfitMZZ");
+    ptmzzNoKinFit[ih]=edbr->userFloat("nokinfitPTZZ");
     mjj[ih]=edbr->leg2().mass();
-    mjjNoKinFit[ih]=edbr_2->leg2().mass();
+    mjjNoKinFit[ih]=edbr->userFloat("nokinfitMJJ");
+    ptjjNoKinFit[ih]=edbr->userFloat("nokinfitPTJJ");
+    etajjNoKinFit[ih]=edbr->userFloat("nokinfitEtaJJ");
+    phijjNoKinFit[ih]=edbr->userFloat("nokinfitPhiJJ");
     if(debug_)cout<<"AnalyzerEDBR::analyzeDoubleJet filling jet vars  " <<ih<<endl;
     ////fill jet kine vars
     bool highptJet1=true;
@@ -340,6 +326,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
   }//end analyzeDoubleJet();
 
+
+  //////////////////////////////////////
+  /////////////////////////////////////
   //functions specific for lepton flavors
   // void analyzeMuon(edm::RefToBase<cmg::DiMuonDiJetEDBR > edbr, int ih);
   template < typename T > void  analyzeMuon(T edbr, int ih){
@@ -382,8 +371,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
    // DATA MEMBERS
 
 
-  edm::InputTag XEEColl_,XEENoKinFitColl_,XEELDMap_,XEEJColl_,XEEJLDMap_;//XEENoKinFitLDMap_;
-  edm::InputTag XMMColl_,XMMNoKinFitColl_,XMMLDMap_,XMMJColl_,XMMJLDMap_;//XMMNoKinFitLDMap_;
+  edm::InputTag XEEColl_,XEELDMap_,XEEJColl_,XEEJLDMap_;
+  edm::InputTag XMMColl_,XMMLDMap_,XMMJColl_,XMMJLDMap_;
     edm::InputTag  XQGMap_;
 
   const static int nMaxCand = 30;
@@ -408,10 +397,11 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
   int nCands;
   double hs[nMaxCand], h1[nMaxCand], h2[nMaxCand], phi[nMaxCand], phiS1[nMaxCand], LD[nMaxCand]; // Helicity angles, and LD.
-  double mzz[nMaxCand], mzzNoKinFit[nMaxCand], mll[nMaxCand], mjj[nMaxCand], mjjNoKinFit[nMaxCand];           // masses
-  double ptmzz[nMaxCand], ptmzzNoKinFit[nMaxCand];
+  double mzz[nMaxCand], mll[nMaxCand], mjj[nMaxCand]; // masses
+  double ptmzz[nMaxCand];
   double ptlep1[nMaxCand], ptlep2[nMaxCand], etalep1[nMaxCand], etalep2[nMaxCand], philep1[nMaxCand], philep2[nMaxCand];  // lepton kinematics
   double ptjet1[nMaxCand], ptjet2[nMaxCand], etajet1[nMaxCand], etajet2[nMaxCand], phijet1[nMaxCand], phijet2[nMaxCand];  // jet kinematicse
+  double  ptmzzNoKinFit[nMaxCand],  mzzNoKinFit[nMaxCand], mjjNoKinFit[nMaxCand],ptjjNoKinFit[nMaxCand],etajjNoKinFit[nMaxCand],phijjNoKinFit[nMaxCand];
   double deltaREDBR[nMaxCand];
   double ptZll[nMaxCand], ptZjj[nMaxCand], yZll[nMaxCand], yZjj[nMaxCand], deltaRleplep[nMaxCand], deltaRjetjet[nMaxCand];
   double phiZll[nMaxCand];//={init};
