@@ -43,6 +43,9 @@ rm -f Francesco/KinFitter/src/T*
 rm -f Francesco/KinFitter/src/LeptonNeutrinoKinFitter.*
 
 #remove spurious semi-colons in Francesco/KinFitter/src/GlobalFitter.cc
+# at the end of these two functions
+# void MissingEnergy1::SetSumEt(float SumEt){
+# void MissingEnergy1::SetNeutrino(TLorentzVector Neutrino){
 
 #In AnalysisDataFormats/CMGTools/interface/DiObject.h add
 #template <typename T, typename U> class DiObjectKinFitFactory; near the top and
