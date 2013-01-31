@@ -13,6 +13,7 @@ public:
   {
     produces<std::vector<type1> >("singleJet"); //
     produces<std::vector<type2> >("doubleJet"); //
+	VMass_  =  iConfig.getParameter<double>("VMass");
 
     useBestZMass_=true;
   }
@@ -24,6 +25,7 @@ public:
 private:
   edm::InputTag srcSingleJet_ ;
   edm::InputTag srcDoubleJet_ ;
+  double VMass_;
 
   std::vector<std::string> priorityList_;
   bool useBestZMass_;
@@ -45,7 +47,7 @@ template <class type1, class type2>
   
   unsigned int bestindex=9999;
   float bestDiff =99999999;
-  const float nomZmass=91.1876;
+  const float nomZmass=VMass_;
   bool found = false;
 
   std::vector<int>   bestByCategory; 

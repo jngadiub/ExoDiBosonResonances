@@ -88,13 +88,15 @@ SingleJetVBFTagger =  cms.EDProducer("WelenuSingleJetEDBRTagger",
 BestCandSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
                                   srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
                                   srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
-                                  tagSelectionList =cms.vstring("tag_SingleJet","tag_DoubleJet")#highest priority to lowest priority
+                                  tagSelectionList =cms.vstring("tag_SingleJet","tag_DoubleJet"),#highest priority to lowest priority
+                                  VMass            =cms.double(80.4)
                                            )
 
 BestSidebandSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
                                     srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
                                     srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
-                                    tagSelectionList =cms.vstring("tag_SingleJetSB","tag_DoubleJetSB")#highest priority to lowest priority
+                                    tagSelectionList =cms.vstring("tag_SingleJetSB","tag_DoubleJetSB"),#highest priority to lowest priority
+                                    VMass            =cms.double(80.4)
                                     )
 
 allSelectedEDBR = cms.EDProducer("CandViewMerger",
