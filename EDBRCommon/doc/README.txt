@@ -7,6 +7,8 @@ Most recent recommended tag for analysis code : edbr_vv_20130129 (but the HEAD m
 *** Installation instructions ***
 
 Follow these: https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsReleasesExperimental#Mike_Cris_533_V5_10_0
+# Remove the H2TauTau pachage since it is not useful and we want to keep the sandbox < 100 MB
+rm -rf CMGTools/H2TauTau
 scram b -j 4
 
 cvs up -r 1.7 CMGTools/Common/python/PAT/jetSubstructure_cff.py
