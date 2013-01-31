@@ -7,7 +7,7 @@ Wmunu_kinematics = cms.PSet(
 
 Wmunu_quality = cms.PSet(
     isGB=cms.string('leg1().getSelection(\"cuts_HPTGBmuon\")'),
-    isIsolated=cms.string('leg1.sourcePtr.trackIso)/leg1.pt) < 0.1')
+    isIsolated=cms.string('leg1.sourcePtr.trackIso/leg1.pt < 0.1')
     )
 Wmunu_validation  = cms.PSet(
     ptmatch = cms.string('(leg1().pt()-leg2().getleppt())/leg1().pt()<0.01&&(leg1().pt()-leg2().getleppt())/leg1().pt()>-0.01'),
