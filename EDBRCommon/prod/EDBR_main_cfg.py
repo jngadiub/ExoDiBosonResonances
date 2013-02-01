@@ -18,7 +18,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #from Configuration.PyReleaseValidation.autoCond import autoCond
 #process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
@@ -99,7 +99,7 @@ process.badEventFilter = cms.EDFilter("HLTHighLevel",
 ###########
 
 # provide list of HLT paths (or patterns) you want
-HLTlistMu  = cms.vstring("HLT_Mu17_Mu8","HLT_Mu22_TkMu22")   # triggers for DoubleMuon PD   
+HLTlistMu  = cms.vstring("HLT_Mu17_Mu8*","HLT_Mu22_TkMu22*")   # triggers for DoubleMuon PD   
 HLTlistEle = cms.vstring("HLT_DoubleEle33_*") # triggers for DoubleElectron PD
 
 ### for SingleElectron and SingleMuon PD, request single lept trigger and
@@ -141,10 +141,16 @@ process.hltHighLevelSE = cms.EDFilter("HLTHighLevel",
 ### add them to event filter
 process.eventFilterSequence = cms.Sequence(process.badEventFilter)
 
-
+####################
+# Hacks for DATA   #
+####################
 if "DATA" in options.mcordata :
      process.eventFilterSequence.insert(0, process.rndmEventBlinding) ##insert at the front of the list
+     process.genParticles = cms.EDProducer("DummyGenProducer")
+     process.eventFilterSequence.insert(1, process.genParticles)
 
+
+#### add HLT filters to path (only for data)
 if options.mcordata == "DATAELE" :
      process.eventFilterSequence +=process.hltHighLevelEle
 if options.mcordata == "DATASE" :
@@ -153,6 +159,9 @@ if options.mcordata == "DATAMU" :
      process.eventFilterSequence +=process.hltHighLevelMu
 if options.mcordata == "DATASM" :
      process.eventFilterSequence +=process.hltHighLevelSM
+
+
+
 
 ###################################################################
 # Ele Sequence: select electrons and build di-electrons from them #
@@ -171,6 +180,7 @@ process.analysisSequenceElectrons = cms.Sequence(
     process.selectedZSequence
     )
 
+     
 ##############
 # PU weights #
 ##############
@@ -199,6 +209,8 @@ process.analysisSequenceMuons = cms.Sequence(
     )
 if not ( options.lepton == "both" or options.lepton == "ele"): #only muon
      process.muonSequence.insert(0,process.PUseq)
+
+
 
 ###################################################################
 # Jet Sequence: select jets and build di-jets from them           #
@@ -328,13 +340,13 @@ massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRMergedSelEle"
 
 #collect adjusted sequences into paths
 if options.lepton == "both" or options.lepton == "ele":
-     process.cmgEDBRZZEle = cms.Path(process.badEventFilter+
+     process.cmgEDBRZZEle = cms.Path(process.eventFilterSequence+
                                     process.analysisSequenceEEJJFullE +
                                     process.analysisSequenceMergedJetsFullJ + process.edbrSequenceMergedEle +
                                     process.cmgSeqEle )
 
 if options.lepton == "both" or options.lepton == "mu":
-     process.cmgEDBRZZMu = cms.Path(process.badEventFilter+
+     process.cmgEDBRZZMu = cms.Path(process.eventFilterSequence+
                                     process.analysisSequenceMMJJFullM +
                                     process.analysisSequenceMergedJetsFullJ + process.edbrSequenceMergedMMJ +
                                     process.cmgSeqMu )
