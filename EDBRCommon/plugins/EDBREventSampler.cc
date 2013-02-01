@@ -17,3 +17,8 @@ bool  EDBREventSampler::filter(edm::Event& iEvent, const edm::EventSetup& iSetup
   return true;
 
 }
+
+
+
+#include "FWCore/Framework/interface/MakerMacros.h"
+DEFINE_FWK_MODULE(EDBREventSampler);

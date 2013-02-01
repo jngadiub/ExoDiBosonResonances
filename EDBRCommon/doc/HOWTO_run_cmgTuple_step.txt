@@ -116,3 +116,11 @@ and then copy the content of list_PATtuples_tmp.txt into the list in ExoDiBosonR
 4) run it with
   -$> cd ExoDiBosonResonances/EDBRCommon/prod/
   -$> ./run_cmgTuple_prod.sh
+
+5) you can check if some parallel job had problems ending with an exception 
+running the script 
+
+-$> ./check_cmgTupleJob.sh MC  ### use DATA for looping over data samples
+
+If some job is listed of having being failed, look for more informations
+in the corresponding log file
