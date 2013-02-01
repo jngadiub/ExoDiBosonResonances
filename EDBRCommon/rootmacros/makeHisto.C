@@ -90,19 +90,49 @@ void EDBRHistoMaker::saveAllHistos(std::string outFileName) {
 // Physics functions
 //------------------
 
-bool EDBRHistoMaker::eventPassesCut() {
-  bool passesFlavour = ((lep == 0 and wantElectrons_) or
+bool EDBRHistoMaker::eventPassesFlavorCut(){
+ bool passesFlavour = ((lep == 0 and wantElectrons_) or
 			(lep == 1 and wantMuons_));
 
-  bool isInSideband = (mJJ[0] > sidebandVHMassLow_ and 
+ return passesFlavour;
+}
+
+bool EDBRHistoMaker::eventInSidebandRegion(){
+
+ bool isInSideband = (mJJ[0] > sidebandVHMassLow_ and 
 		       mJJ[0] < sidebandVHMassHigh_); 
-  bool isInSignal = (mJJ[0] > signalVHMassLow_ and 
+
+ return  isInSideband;
+}
+
+bool EDBRHistoMaker::eventInSignalRegion(){
+ bool isInSignal = (mJJ[0] > signalVHMassLow_ and 
 		     mJJ[0] < signalVHMassHigh_);
 
-  bool passesRegion = ((isInSideband and wantSideband_) or
+ return  isInSignal;
+}
+
+bool EDBRHistoMaker::eventPassesRegionCut(){
+   bool isInSideband = eventInSidebandRegion();
+   bool isInSignal =eventInSignalRegion();
+   bool passesRegion = ((isInSideband and wantSideband_) or
 		       (isInSignal and wantSignal_));
 
-  bool result = passesFlavour and passesRegion;
+ return passesRegion;
+}
+
+bool  EDBRHistoMaker::eventPassesNXJetCut(){
+  bool passesNXJ = (nXjets == wantNXJets_);
+  return  passesNXJ;
+
+  }
+
+bool EDBRHistoMaker::eventPassesCut() {
+
+  bool passesFlavour = eventPassesFlavorCut();
+  bool passesRegion  = eventPassesRegionCut();
+  bool passesNXJet   = eventPassesNXJetCut();
+  bool result = passesFlavour && passesRegion && passesNXJet;
   
   return result;
 }
@@ -132,17 +162,36 @@ void EDBRHistoMaker::Loop(std::string outFileName){
     // We could wrap all the fills in the this->eventPassesCut()
     // to fill histograms only for the events which pass a given
     // cut (Sideband / SignalRegion, Muon / Electron, ...) 
-    (theHistograms["nCands"])->Fill(nCands,actualWeight);
-    (theHistograms["ptlep1"])->Fill(ptlep1[0],actualWeight);
-    (theHistograms["ptlep2"])->Fill(ptlep2[0],actualWeight);
-    (theHistograms["ptjet1"])->Fill(ptjet1[0],actualWeight);
-    (theHistograms["ptjet2"])->Fill(ptjet2[0],actualWeight);
-    
-    (theHistograms["mLL"])->Fill(mLL[0],actualWeight);
-    (theHistograms["mJJ"])->Fill(mJJ[0],actualWeight);
-    (theHistograms["mZZ"])->Fill(mZZ[0],actualWeight);
-    (theHistograms["prunedmass"])->Fill(prunedmass[0],actualWeight);
-    (theHistograms["mdrop"])->Fill(mdrop[0],actualWeight);
+    if(eventPassesCut()){
+      (theHistograms["nCands"])->Fill(nCands,actualWeight);
+
+      for(int ivec=0;ivec<nCands;ivec++){
+	(theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);
+	(theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);
+	(theHistograms["ptjet1"])->Fill(ptjet1[ivec],actualWeight);
+	(theHistograms["ptjet2"])->Fill(ptjet2[ivec],actualWeight);
+	
+	(theHistograms["mLL"])->Fill(mLL[ivec],actualWeight);
+	(theHistograms["mJJ"])->Fill(mJJ[ivec],actualWeight);
+	(theHistograms["mZZ"])->Fill(mZZ[ivec],actualWeight);
+	(theHistograms["prunedmass"])->Fill(prunedmass[ivec],actualWeight);
+	(theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);
+	(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);
+	(theHistograms["nsubj12"])->Fill(nsubj12[ivec],actualWeight);
+	(theHistograms["nVtx"])->Fill(nVtx[ivec],actualWeight);
+	(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);
+	(theHistograms["isolep1"])->Fill(isolep1[ivec],actualWeight);
+	(theHistograms["isolep2"])->Fill(isolep2[ivec],actualWeight);
+	(theHistograms["met"])->Fill(met[ivec],actualWeight);
+	(theHistograms["metSign"])->Fill(metSign[ivec],actualWeight);
+	(theHistograms["etalep1"])->Fill(etalep1[ivec],actualWeight);
+	(theHistograms["etalep2"])->Fill(etalep2[ivec],actualWeight);
+	(theHistograms["etajet1"])->Fill(etajet1[ivec],actualWeight);
+	(theHistograms["etajet2"])->Fill(etajet2[ivec],actualWeight);
+	//	(theHistograms[""])->Fill([ivec],actualWeight);
+
+      }
+    }//end if eventPassesCut
   }
 
   this->saveAllHistos(outFileName);

@@ -2,49 +2,62 @@
 #include "TFile.h"
 #include "TCanvas.h"
 #include "THStack.h"
+#include <assert.h>
+#include <vector>
+#include <string>
+#include <sys/stat.h>
 
 class EDBRHistoPlotter {
 public:
-  TFile* fileData_;
-  TFile* fileWjets_;
-  TFile* fileDYjets_;
-  TFile* filettbar_;
-  TFile* fileWWjets_;
-  TFile* fileWZjets_;
-  TFile* fileZZjets_;
-
-  double dataIntegral_;
-  double WjetsIntegral_;
-  double DYjetsIntegral_;
-  double ttbarIntegral_;
-  double WWjetsIntegral_;
-  double WZjetsIntegral_;
-  double ZZjetsIntegral_;
-
-  double targetLumi_;
-
-  int EDBRColors[6];
   
-  bool scaleToData_;
-  
-  EDBRHistoPlotter(char* nameFileData,
-		   char* nameFileWjets,
-		   char* nameFileDYjets,
-		   char* nameFilettbar,
-		   char* nameFileWWjets,
-		   char* nameFileWZjets,
-		   char* nameFileZZjets,
+  EDBRHistoPlotter(std::string nameInDir="./",
+		   std::vector<std::string> nameFileData,
+		   std::vector<std::string> nameFileMC,
 		   double targetLumi,
 		   bool scaleToData
 		   ) 
   {
-    fileData_ = TFile::Open(nameFileData);
-    fileWjets_ = TFile::Open(nameFileWjets);
-    fileDYjets_ = TFile::Open(nameFileDYjets);
-    filettbar_ = TFile::Open(nameFilettbar);
-    fileWWjets_ = TFile::Open(nameFileWWjets);
-    fileWZjets_ = TFile::Open(nameFileWZjets);
-    fileZZjets_ = TFile::Open(nameFileZZjets);
+
+    init(nameInDir,nameFileData,nameFileMC,,targetLumi,scaleToData);
+
+    setOutDir("./");
+    
+  }
+
+
+  virtual void ~EDBRHistoPlotter(){
+
+    delete fileData_;
+    delete  fileWjets_;
+    delete  fileDYjets_;
+    delete  filettbar_;
+    delete  fileWWjets_;
+    delete  fileWZjets_;
+    delete  fileZZjets_;
+
+
+
+  }//end destructor
+
+  /// Functions
+
+  void init(std::string nameInDir="./",
+	    std::vector<std::string> nameFileData,
+	    std::vector<std::string> nameFileMC,
+	    double targetLumi,
+	    bool scaleToData
+	    ){   
+    inDir_=nameInDir;
+    nDATASamples_=int(nameFileData.size());
+    for(int i=0;i<nDATASamples_;i++){
+      fdata[i] = TFile::Open((inDir_+nameFileData[i]));
+    }
+
+    nMCSamples_=int(nameFileMC.size());
+    for(int i=0;i<nMCSamples_;i++){
+      fmc[i] = TFile::Open((inDir_+nameFileMC[i]));
+    }
+
     targetLumi_ = targetLumi;
     scaleToData_ = scaleToData;
 
@@ -57,89 +70,104 @@ public:
     EDBRColors[5] = kGreen-3;  
   }
 
-  /// Functions
   void makeStackPlots(std::string histoName);
+  //  void setInDir(std::string inDirNew){inDir_=inDirNew;}//not really needed, passed through init()
+  void setOutDir(std::string outDirNew){
+    outDir_=outDirNew;
+    mkdir(outDir_.c_str());
+    assert( (mkdir((outDir_+"/pdf/").c_str()) !=0) );//if output dir exists already, do not overwrite and stop
+    assert( (mkdir((outDir_+"/root/").c_str()) !=0) );
+    assert( (mkdir((outDir_+"/png/").c_str()) !=0) );
+  }
+
+  int getFillColor(int index){
+    if(index<6)return EDBRColors[index];
+    return kWhite;
+  }
+
+
+private:
+  std::string inDir_,outDir_;
+
+  TFile* fmc[99],fdata[99];
+  int nMCSamples_,nDATASamples_;
+
+  double dataIntegral_;
+
+
+  double targetLumi_;
+
+  int EDBRColors[6];
+  
+  bool scaleToData_;
+
+
 };
 
 void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 
-  TCanvas* cv = new TCanvas("cv","cv",600,600);
+  TCanvas* cv = new TCanvas(("cv_"+histoName).c_str(),("cv_"+histoName).c_str(),600,600);
 
-  TH1D* h_DYjets = (TH1D*)fileData_->Get(histoName.c_str())->Clone(); 
-  TH1D* h_Wjets =  (TH1D*)fileWjets_->Get(histoName.c_str())->Clone(); 
-  TH1D* h_ttbar =  (TH1D*)fileData_->Get(histoName.c_str())->Clone(); 
-  TH1D* h_WWjets = (TH1D*)fileData_->Get(histoName.c_str())->Clone(); 
-  TH1D* h_WZjets = (TH1D*)fileData_->Get(histoName.c_str())->Clone(); 
-  TH1D* h_ZZjets = (TH1D*)fileData_->Get(histoName.c_str())->Clone(); 
 
-  TH1D* h_data =  (TH1D*)fileData_->Get(histoName.c_str())->Clone();
-  
-  dataIntegral_ = h_data->Integral();
-  DYjetsIntegral_ = h_DYjets->Integral();
-  WjetsIntegral_ = h_Wjets->Integral();
-  ttbarIntegral_ = h_ttbar->Integral();
-  WWjetsIntegral_ = h_WWjets->Integral();
-  WZjetsIntegral_ = h_WZjets->Integral();
-  ZZjetsIntegral_ = h_ZZjets->Integral();
+  const int nMC=nMCSamples_;
+  TH1D *h_mc[nMC];
+  TH1D *h_sum=NULL;
+  for(int is=0;is<nMC;is++){
+    //the EDBRHistoMaker prepares MC histos normalized all to the same lumi of 1 /fb
+    if(is==0)h_mcsum= (TH1D*)fmc[is]->Get(histoName.c_str())->Clone() ;
+    else{
+      h_mc[is]= (TH1D*)fmc[is]->Get(histoName.c_str())->Clone()
+      h_sum->Add(h_mc[is] );
+      h_mc[is]->SetFillColor(getFillColor(is));
+    }
+  }//end loop on MC samples
 
-  TH1D* h_sum = (TH1D*)h_DYjets->Clone("h_sum");
-  h_sum->Reset();
-  h_sum->Add(h_DYjets);
-  h_sum->Add(h_Wjets);
-  h_sum->Add(h_ttbar);
-  h_sum->Add(h_WWjets);
-  h_sum->Add(h_WZjets);
-  h_sum->Add(h_ZZjets);
-  
-  h_DYjets->SetFillColor(EDBRColors[0]);
-  h_Wjets->SetFillColor(EDBRColors[1]);
-  h_ttbar->SetFillColor(EDBRColors[2]);
-  h_WWjets->SetFillColor(EDBRColors[3]);
-  h_WZjets->SetFillColor(EDBRColors[4]);
-  h_ZZjets->SetFillColor(EDBRColors[5]);
+  dataIntegral_ =1.0;
+  const int nDATA=nDATASamples_;
+  TH1D *h_data; 
+  for(int is=0;is<nDATA;is++){
+    if(is==0)h_data= (TH1D*)fdata[is]->Get(histoName.c_str())->Clone() ;
+    else h_data->Add( (TH1D*)fdata[is]->Get(histoName.c_str())->Clone() );
+  }
 
-  h_data->SetMarkerSize(0.7);
-  h_data->SetMarkerStyle(21);
-  
+  if(nDATA>0){
+    h_data->SetMarkerSize(0.7);
+    h_data->SetMarkerStyle(21);  
+    dataIntegral_ = h_data->Integral();
+  }
+
   if(scaleToData_) {    
     double totalBackgroundIntegral = h_sum->Integral();
-    h_DYjets->Scale(dataIntegral_/totalBackgroundIntegral);
-    h_Wjets->Scale(dataIntegral_/totalBackgroundIntegral);
-    h_ttbar->Scale(dataIntegral_/totalBackgroundIntegral);
-    h_WWjets->Scale(dataIntegral_/totalBackgroundIntegral);
-    h_WZjets->Scale(dataIntegral_/totalBackgroundIntegral);
-    h_ZZjets->Scale(dataIntegral_/totalBackgroundIntegral);
-    h_sum->Scale(dataIntegral_/totalBackgroundIntegral);
+    for(int is=0;is<nMC;is++){
+      h_mc[is]->Scale(dataIntegral_/totalBackgroundIntegral);
+    }
   }
   else {
-    h_DYjets->Scale(targetLumi_);
-    h_Wjets->Scale(targetLumi_);
-    h_ttbar->Scale(targetLumi_);
-    h_WWjets->Scale(targetLumi_);
-    h_WZjets->Scale(targetLumi_);
-    h_ZZjets->Scale(targetLumi_);
-    h_sum->Scale(targetLumi_);
+    for(int is=0;is<nMC;is++){
+      h_mc[is]->Scale(targetLumi_);
+    }
+  }
+
+
+  //make a THStack of the background
+  THStack *hsbkgd=new THStack("allBkgd",plname.c_str());
+  for(int i=0;i<nMC;i++){
+    hsbkgd->Add(h_mc[i]);
   }
   
-  THStack* hs = new THStack("hs","");
-  hs->Add(h_DYjets);
-  hs->Add(h_Wjets);
-  hs->Add(h_ttbar);
-  hs->Add(h_WWjets);
-  hs->Add(h_WZjets);
-  hs->Add(h_ZZjets);
-  
-  hs->Draw("HIST");
-  h_data->Draw("SAME E1");
+  hsbkgd->Draw("HIST");
+  if(nDATA>0) h_data->Draw("SAME E1");
   
   cv->Draw();
 
   // Save the file as a PDF
-  char buffer[256];
-  sprintf(buffer,"%s.pdf",histoName.c_str());
-  cv->SaveAs(buffer);
+  cv->SaveAs( (outDir_+"/pdf/can_"+histoName+".pdf").c_str()  );
+  cv->SaveAs( (outDir_+"/png/can_"+histoName+".png").c_str()  );
+  cv->SaveAs( (outDir_+"/root/can_"+histoName+".root").c_str()  );
 
-  hs->Delete();
-  h_sum->Delete();
-  cv->Delete();
+  delete hsbkgd;
+  delete h_sum; delete h_data;
+  for(int is=0;is<nMC;is++) delete h_mc[is];
+ 
+  delete cv;
 }

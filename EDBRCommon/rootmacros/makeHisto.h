@@ -75,7 +75,8 @@ public:
 		 bool wantElectrons=true,
 		 bool wantMuons=true,
 		 bool wantSideband=true, 
-		 bool wantSignal=false);
+		 bool wantSignal=false,
+		 int wantNXJets=1);
   virtual ~EDBRHistoMaker();
   
   /// This is the tree structure. This comes directly from MakeClass
@@ -251,6 +252,18 @@ public:
   void createAllHistos();
   void printAllHistos();
   void saveAllHistos(std::string outFileName);
+
+  void setWantElectrons(bool doele=false){wantElectrons_=doele;}
+  void setWantMuons(bool domu=false){wantMuons_=domu;}
+  void setWantSideband(bool dosb=false){wantSideband_=dosb;}
+  void setWantSignal(bool dosig=false){wantSignal_=dosig;}
+  void setWantNXJets(int nxj=1){wantNXJets_=nxj;}
+
+  bool eventPassesFlavorCut();
+  bool eventInSidebandRegion();
+  bool eventInSignalRegion();
+  bool eventPassesRegionCut();
+  bool eventPassesNXJetCut();  
   bool eventPassesCut();
 
   // Our added variables
@@ -259,6 +272,7 @@ public:
   bool wantMuons_;
   bool wantSideband_;
   bool wantSignal_;
+  int wantNXJets_;
   double sidebandVHMassLow_;
   double sidebandVHMassHigh_;
   double signalVHMassLow_;
