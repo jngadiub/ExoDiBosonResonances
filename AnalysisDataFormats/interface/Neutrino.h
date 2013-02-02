@@ -50,6 +50,10 @@ namespace cmg {
 			double getlepeta() const{return lep_eta;}
 			double getlepphi() const{return lep_phi;}
 
+			//some function just to sync with lepton, so we dont need to change tree code
+			double relIso()   const{return 0;}
+			double mvaTrigV0()const{return 0;}
+
 			friend class NeutrinoFactory;
 
 		private:
