@@ -80,6 +80,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   bool debug_, isMC_,  treatVBFAsMultiple_;            // flags
   std::string cat_;
   std::string outFileName_;
+  std::string VType_;
+  std::string cmgEDBRMu_, cmgEDBREle_;
   unsigned int Ngen_;
   double xsec_;
 

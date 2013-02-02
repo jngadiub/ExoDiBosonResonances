@@ -21,9 +21,18 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
     XMMJColl_        = ps.getParameter<edm::InputTag>("EDBRMMJColl");
     XMMJLDMap_       = ps.getParameter<edm::InputTag>("EDBRMMJLDValueMap");
     XQGMap_          = ps.getParameter<edm::InputTag>("EDBRQGValueMap");
+	VType_           = ps.getParameter<std::string>("VType");
     //XEENoKinFitLDMap_=ps.getParameter<edm::InputTag>("EDBREENoKinFitLDValueMap");
     //XMMNoKinFitLDMap_=ps.getParameter<edm::InputTag>("EDBRMMNoKinFitLDValueMap");
     
+  	if(VType_=="Z"){
+		cmgEDBRMu_="cmgEDBRZZMu";
+		cmgEDBREle_="cmgEDBRZZEle";
+	}
+    if(VType_=="W"){
+        cmgEDBRMu_="cmgEDBRWWMu";
+        cmgEDBREle_="cmgEDBRWWEle";
+    } 
    
     if(XEELDMap_.label()=="" ||XMMLDMap_.label()=="" ) readLDFromUserFloat_=true;
     else readLDFromUserFloat_=false;
@@ -54,12 +63,21 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 
 void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
-  if(debug_) cout<<"\n\nAnalyzing event"<<endl;
 
+  typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
+  typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
+  typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
+  typedef  cmg::DiMuonDiJetEDBR     cmgMuDiJetEDBR  ;
+
+/*
+  typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
+  typedef  cmg::WmunuSingleJetEDBR     cmgMuSingleJetEDBR  ; 
+  typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
+  typedef  cmg::WmunuDiJetEDBR     cmgMuDiJetEDBR  ;
+*/
+  if(debug_) cout<<"\n\nAnalyzing event"<<endl;
   initDataMembers();
 
-
- 
   nevent = iEvent.eventAuxiliary().event();
   run    = iEvent.eventAuxiliary().run();
   ls     = iEvent.eventAuxiliary().luminosityBlock();
@@ -122,7 +140,8 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
       lep=1; 
 
       if(singleJetPath_){
-	edm::Handle<edm::View< cmg::DiMuonSingleJetEDBR > > finalEDBRcand;
+		  
+	edm::Handle<edm::View< cmgMuSingleJetEDBR > > finalEDBRcand;
 	iEvent.getByLabel(XMMJColl_        , finalEDBRcand  );  // With kinfit
 
 	
@@ -132,7 +151,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	int ih = 0;
 	for(int iih=0;iih<nCandidates;iih++){
 	  
-	  edm::RefToBase<cmg::DiMuonSingleJetEDBR> edbrM =finalEDBRcand->refAt(iih);
+	  edm::RefToBase<cmgMuSingleJetEDBR> edbrM =finalEDBRcand->refAt(iih);
 	  
 	  //	  if(edbrM->nJets()!=1){
 	  //throw cms::Exception("Mismatched param") <<"Event in SingleJet Path has "<<edbrM->nJets()
@@ -153,7 +172,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
       }//end if singleJetPath
 
       if(doubleJetPath_){
-	edm::Handle<edm::View< cmg::DiMuonDiJetEDBR > > finalEDBRcand;
+	edm::Handle<edm::View< cmgMuDiJetEDBR > > finalEDBRcand;
 	iEvent.getByLabel(XMMColl_        , finalEDBRcand  );  // With kinfit
 
 	
@@ -165,7 +184,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	int ih = 0;
 	for(int iih=0;iih<nCandidates;iih++){
 	  
-	  edm::RefToBase<cmg::DiMuonDiJetEDBR> edbrM =finalEDBRcand->refAt(iih);
+	  edm::RefToBase<cmgMuDiJetEDBR> edbrM =finalEDBRcand->refAt(iih);
 
 	  
 	  //  if(edbrM->nJets()!=2){
@@ -194,7 +213,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
       lep=0; 
 
    if(singleJetPath_){
-	edm::Handle<edm::View< cmg::DiElectronSingleJetEDBR > > finalEDBRcand;
+	edm::Handle<edm::View< cmgEleSingleJetEDBR > > finalEDBRcand;
 	iEvent.getByLabel(XEEJColl_        , finalEDBRcand  );  // With kinfit
 
 	
@@ -204,7 +223,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	int ih = 0;
 	for(int iih=0;iih<nCandidates;iih++){
 	  
-	  edm::RefToBase<cmg::DiElectronSingleJetEDBR> edbrE =finalEDBRcand->refAt(iih);
+	  edm::RefToBase< cmgEleSingleJetEDBR > edbrE =finalEDBRcand->refAt(iih);
 	  
 	  //  if(edbrE->nJets()!=1){
 	  //  throw cms::Exception("Mismatched param") <<"Event in SingleJet Path has "<<edbrE->nJets()
@@ -227,7 +246,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
 
       if(doubleJetPath_){
-	edm::Handle<edm::View< cmg::DiElectronDiJetEDBR > > finalEDBRcand;
+	edm::Handle<edm::View< cmgEleDiJetEDBR > > finalEDBRcand;
 	iEvent.getByLabel(XEEColl_        , finalEDBRcand  );  // With kinfit
 	
 	int nCandidates=finalEDBRcand->size();
@@ -250,7 +269,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	int ih = 0;
 	for(int iih=0;iih<nCandidates;iih++){
 	  cout<<"Loop on ELE cand ih="<<iih<<std::flush;
-	  edm::RefToBase<cmg::DiElectronDiJetEDBR> edbrE =finalEDBRcand->refAt(iih);
+	  edm::RefToBase<cmgEleDiJetEDBR> edbrE =finalEDBRcand->refAt(iih);
 	 
 
 	  // if(edbrE->nJets()!=2){
@@ -303,8 +322,6 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
  if(debug_)cout<<"Finished AnalyzerEDBR::analyze for Run "<<run<<"  Event "<<nevent<<endl;
 }//
 //end AnalyzerEDBR::analyze
-
-
 
 
 
@@ -448,10 +465,10 @@ void AnalyzerEDBR::analyzeTrigger(edm::Event const& iEvent, edm::EventSetup cons
   //path (for example electron specific quantitites for cands passing the eejj path)
 
   preselM_=iEvent.triggerResultsByName("CMG").accept("preselMuPath");
-  finalM_= iEvent.triggerResultsByName("CMG").accept("cmgEDBRZZMu");
+  finalM_= iEvent.triggerResultsByName("CMG").accept(cmgEDBRMu_);
   sbM_=false;//iEvent.triggerResultsByName("CMG").triggerIndex("cmgXZZMMSideband")!=iEvent.triggerResultsByName("CMG").size() &&     iEvent.triggerResultsByName("CMG").accept("cmgXZZMMSideband");
   preselE_=iEvent.triggerResultsByName("CMG").accept("preselElePath");
-  finalE_= iEvent.triggerResultsByName("CMG").accept("cmgEDBRZZEle");
+  finalE_= iEvent.triggerResultsByName("CMG").accept(cmgEDBREle_);
   sbE_=false;//iEvent.triggerResultsByName("CMG").triggerIndex("cmgXZZEESideband")!=iEvent.triggerResultsByName("CMG").size() &&  iEvent.triggerResultsByName("CMG").accept("cmgXZZEESideband");
 
   preselM1J_=iEvent.triggerResultsByName("CMG").accept("preselMuMergedPath");
