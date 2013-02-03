@@ -260,11 +260,11 @@ public:
   void setWantNXJets(int nxj=1){wantNXJets_=nxj;}
 
   bool eventPassesFlavorCut();
-  bool eventInSidebandRegion();
-  bool eventInSignalRegion();
-  bool eventPassesRegionCut();
-  bool eventPassesNXJetCut();  
-  bool eventPassesCut();
+  bool eventInSidebandRegion(int i);
+  bool eventInSignalRegion(int i);
+  bool eventPassesRegionCut(int i);
+  bool eventPassesNXJetCut(int i);  
+  bool eventPassesCut(int i);
 
   // Our added variables
   int nVars;

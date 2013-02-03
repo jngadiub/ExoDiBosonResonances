@@ -4,7 +4,8 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 			       bool wantElectrons,
 			       bool wantMuons,
 			       bool wantSideband,
-			       bool wantSignal){
+			       bool wantSignal,
+			       int wantNXJets){
   fChain = 0;
   nVars = 77;
   
@@ -19,7 +20,8 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
   wantMuons_ = wantMuons;
   wantSideband_ = wantSideband;
   wantSignal_ = wantSignal;
-  
+  wantNXJets_ = wantNXJets;
+
   Init(tree);
   createAllHistos();
   printAllHistos();
@@ -75,6 +77,7 @@ void EDBRHistoMaker::printAllHistos() {
 }
 
 void EDBRHistoMaker::saveAllHistos(std::string outFileName) {
+
   TFile* outFile = TFile::Open(outFileName.c_str(),"RECREATE");
 
   for(int i = 0; i!=nVars; ++i) {
@@ -91,49 +94,49 @@ void EDBRHistoMaker::saveAllHistos(std::string outFileName) {
 //------------------
 
 bool EDBRHistoMaker::eventPassesFlavorCut(){
- bool passesFlavour = ((lep == 0 and wantElectrons_) or
+  bool passesFlavour = ((lep == 0 and wantElectrons_) or
 			(lep == 1 and wantMuons_));
-
+  
  return passesFlavour;
 }
 
-bool EDBRHistoMaker::eventInSidebandRegion(){
+bool EDBRHistoMaker::eventInSidebandRegion(int i){
 
- bool isInSideband = (mJJ[0] > sidebandVHMassLow_ and 
-		       mJJ[0] < sidebandVHMassHigh_); 
-
- return  isInSideband;
+ bool isInSideband = (mJJ[i] > sidebandVHMassLow_ and 
+		      mJJ[i] < sidebandVHMassHigh_); 
+ 
+ return isInSideband;
 }
 
-bool EDBRHistoMaker::eventInSignalRegion(){
- bool isInSignal = (mJJ[0] > signalVHMassLow_ and 
-		     mJJ[0] < signalVHMassHigh_);
+bool EDBRHistoMaker::eventInSignalRegion(int i){
+ bool isInSignal = (mJJ[i] > signalVHMassLow_ and 
+		     mJJ[i] < signalVHMassHigh_);
 
- return  isInSignal;
+ return isInSignal;
 }
 
-bool EDBRHistoMaker::eventPassesRegionCut(){
-   bool isInSideband = eventInSidebandRegion();
-   bool isInSignal =eventInSignalRegion();
+bool EDBRHistoMaker::eventPassesRegionCut(int i){
+   bool isInSideband = eventInSidebandRegion(i);
+   bool isInSignal =eventInSignalRegion(i);
    bool passesRegion = ((isInSideband and wantSideband_) or
 		       (isInSignal and wantSignal_));
 
  return passesRegion;
 }
 
-bool  EDBRHistoMaker::eventPassesNXJetCut(){
-  bool passesNXJ = (nXjets == wantNXJets_);
-  return  passesNXJ;
+bool  EDBRHistoMaker::eventPassesNXJetCut(int i){
+  bool passesNXJ = (nXjets[i] == wantNXJets_);
+  return passesNXJ;
+  
+}
 
-  }
-
-bool EDBRHistoMaker::eventPassesCut() {
+bool EDBRHistoMaker::eventPassesCut(int i) {
 
   bool passesFlavour = eventPassesFlavorCut();
-  bool passesRegion  = eventPassesRegionCut();
-  bool passesNXJet   = eventPassesNXJetCut();
+  bool passesRegion  = eventPassesRegionCut(i);
+  bool passesNXJet   = eventPassesNXJetCut(i);
   bool result = passesFlavour && passesRegion && passesNXJet;
-  
+
   return result;
 }
 
@@ -153,24 +156,30 @@ void EDBRHistoMaker::Loop(std::string outFileName){
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
-    
+    if(jentry%10000==0)
+      printf("Entry number %i...\n",(int)jentry);
+
     // We calculate a weight here.
     //double actualWeight = weight;//*HLTweight*PUweight*LumiWeight*GenWeight;
     double actualWeight = PUweight*LumiWeight*GenWeight;
 
+    //printf("Actual weight is %g\n",actualWeight);
     // We get the histogram from the map by string and fill it.
     // We could wrap all the fills in the this->eventPassesCut()
     // to fill histograms only for the events which pass a given
-    // cut (Sideband / SignalRegion, Muon / Electron, ...) 
-    if(eventPassesCut()){
-      (theHistograms["nCands"])->Fill(nCands,actualWeight);
+    // cut (Sideband / SignalRegion, Muon / Electron, 
+    // Single / Double jet ...) 
 
-      for(int ivec=0;ivec<nCands;ivec++){
+    (theHistograms["nCands"])->Fill(nCands,actualWeight);
+
+    for(int ivec=0;ivec<nCands;ivec++){
+      
+      if(eventPassesCut(ivec)){
+	//printf("Event passed\n");
 	(theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);
 	(theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);
 	(theHistograms["ptjet1"])->Fill(ptjet1[ivec],actualWeight);
 	(theHistograms["ptjet2"])->Fill(ptjet2[ivec],actualWeight);
-	
 	(theHistograms["mLL"])->Fill(mLL[ivec],actualWeight);
 	(theHistograms["mJJ"])->Fill(mJJ[ivec],actualWeight);
 	(theHistograms["mZZ"])->Fill(mZZ[ivec],actualWeight);
@@ -178,77 +187,21 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 	(theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);
 	(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);
 	(theHistograms["nsubj12"])->Fill(nsubj12[ivec],actualWeight);
-	(theHistograms["nVtx"])->Fill(nVtx[ivec],actualWeight);
+	(theHistograms["nVtx"])->Fill(nVtx,actualWeight);
 	(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);
 	(theHistograms["isolep1"])->Fill(isolep1[ivec],actualWeight);
 	(theHistograms["isolep2"])->Fill(isolep2[ivec],actualWeight);
-	(theHistograms["met"])->Fill(met[ivec],actualWeight);
-	(theHistograms["metSign"])->Fill(metSign[ivec],actualWeight);
+	(theHistograms["met"])->Fill(met,actualWeight);
+	(theHistograms["metSign"])->Fill(metSign,actualWeight);
 	(theHistograms["etalep1"])->Fill(etalep1[ivec],actualWeight);
 	(theHistograms["etalep2"])->Fill(etalep2[ivec],actualWeight);
 	(theHistograms["etajet1"])->Fill(etajet1[ivec],actualWeight);
 	(theHistograms["etajet2"])->Fill(etajet2[ivec],actualWeight);
 	//	(theHistograms[""])->Fill([ivec],actualWeight);
-
-      }
-    }//end if eventPassesCut
-  }
-
+	
+      }//end if eventPassesCut
+    }//end loop over nCands
+  }//end loop over entries
+  
   this->saveAllHistos(outFileName);
 }
-
-///-----------------------------------------------------
-/// This macro is a wrapper to analyze different TChains
-/// and merge the results properly.
-///-----------------------------------------------------
-
-void makeHisto()
-{
-
-  // Create the different TChains
-  TChain* DYjets  = new TChain("SelectedCandidates","DYjets");
-  TChain* Wjets   = new TChain("SelectedCandidates","Wjets");
-  TChain* ttbar   = new TChain("SelectedCandidates","ttbar");
-  TChain* WWjets  = new TChain("SelectedCandidates","WWjets");
-  TChain* WZjets  = new TChain("SelectedCandidates","WZjets");
-  TChain* ZZjets  = new TChain("SelectedCandidates","ZZjets");
-
-  TChain* data    = new TChain("SelectedCandidates", "data");
-
-  // Add files which contain TTrees to the TChains.
-  // The advantage here is that we could have many
-  // files containing TTrees for the same data,
-  // e.g. "trees_DYjets_1.root", "trees_DYjets_2.root",
-  // etc. We could then simply do:
-  // DYjets->Add("trees_DYjets_*.root");
-  DYjets->Add("trees_DYjets.root");
-  Wjets->Add("trees_Wjets.root");
-  ttbar->Add("trees_ttbar.root");
-  WWjets->Add("trees_WWjets.root");
-  WZjets->Add("trees_WZjets.root");
-  ZZjets->Add("trees_ZZjets.root");
-  data->Add("trees_data.root");
-  
-  // Create the different HistoMaker objects
-  // We're creating them with the DEFAULT settings!
-  // See makeHisto.h to see what these are.
-  EDBRHistoMaker a_DYjets(DYjets);
-  EDBRHistoMaker a_Wjets(Wjets);
-  EDBRHistoMaker a_ttbar(ttbar);
-  EDBRHistoMaker a_WWjets(WWjets);
-  EDBRHistoMaker a_WZjets(WZjets);
-  EDBRHistoMaker a_ZZjets(ZZjets);
-  EDBRHistoMaker a_data(data);
-
-  // Each HistoMaker will analyze the trees
-  // and save the results in a ROOT file
-  // with a name like this.
-  a_DYjets.Loop("histograms_DYjets.root");
-  a_Wjets.Loop("histograms_Wjets.root");
-  a_ttbar.Loop("histograms_ttbar.root");
-  a_WWjets.Loop("histograms_WWjets.root");
-  a_WZjets.Loop("histograms_WZjets.root");
-  a_ZZjets.Loop("histograms_ZZjets.root");
-  a_data.Loop("histograms_data.root");
-}
-
