@@ -21,19 +21,23 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
     XMMJColl_        = ps.getParameter<edm::InputTag>("EDBRMMJColl");
     XMMJLDMap_       = ps.getParameter<edm::InputTag>("EDBRMMJLDValueMap");
     XQGMap_          = ps.getParameter<edm::InputTag>("EDBRQGValueMap");
-	VType_           = ps.getParameter<std::string>("VType");
+    VType_           = ps.getParameter<std::string>("VType");
     //XEENoKinFitLDMap_=ps.getParameter<edm::InputTag>("EDBREENoKinFitLDValueMap");
     //XMMNoKinFitLDMap_=ps.getParameter<edm::InputTag>("EDBRMMNoKinFitLDValueMap");
     
-  	if(VType_=="Z"){
-		cmgEDBRMu_="cmgEDBRZZMu";
-		cmgEDBREle_="cmgEDBRZZEle";
-	}
-    if(VType_=="W"){
-        cmgEDBRMu_="cmgEDBRWWMu";
-        cmgEDBREle_="cmgEDBRWWEle";
+    if(VType_=="Z"){
+      cmgEDBRMu_="cmgEDBRZZMu";
+      cmgEDBREle_="cmgEDBRZZEle";
+    }
+    else if(VType_=="W"){
+      cmgEDBRMu_="cmgEDBRWWMu";
+      cmgEDBREle_="cmgEDBRWWEle";
     } 
-   
+    else{
+      throw cms::Exception("Wrong parameter")<<"Unrecognized VType paramter: "<<VType_.c_str()<<" . Allowed options are : W ; Z ."<<std::endl;
+
+    }
+
     if(XEELDMap_.label()=="" ||XMMLDMap_.label()=="" ) readLDFromUserFloat_=true;
     else readLDFromUserFloat_=false;
     
@@ -63,7 +67,7 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 
 void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
-
+//comment these for X->WW analysis
   typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
   typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
   typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;

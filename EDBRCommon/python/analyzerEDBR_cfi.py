@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 AnalyzerXZZ = cms.EDAnalyzer("AnalyzerEDBR",
                              EventCategory=cms.string(""),
-							 VType=cms.string("Z"),
+                             VType=cms.string("Z"),
                              ###input collections for separated jet topology
                              EDBREEJJColl=cms.InputTag("cmgEDBRSelKinFitEleFullE"),
                              EDBREEJJNoKinFitColl=cms.InputTag("cmgEDBRSelEleFullE"),

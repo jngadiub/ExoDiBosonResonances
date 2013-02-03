@@ -64,16 +64,31 @@ elif "<SAMPLE>"== "<---> PUT YOUR MC SAMPLE LABEL HERE <--->" :
     process.ANEDBR.xsec=cms.double(32.9)
 ##############
 
-3) open run_AnalyzerEDBR.sh and edit the fields with the paths, 
+4) The default is for the ZZ analysis. For the WW some hand corrections
+are needed.
+    i) add in the module process.ANEDBR inside EDBRCommon/test/analyzerEDBR_zz2l2j_tpl.py
+       the parameter VType=cms.string("W")
+   ii) go in EDBRCommon/plugins/AnalyzerEDBR.cc and comment the block of lines
+
+//comment these for X->WW analysis
+	   typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
+	   typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
+	   typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
+	   typedef  cmg::DiMuonDiJetEDBR     cmgMuDiJetEDBR  ;
+
+and de-comment the typedefs immediately below.
+
+
+5) open run_AnalyzerEDBR.sh and edit the fields with the paths, 
 in particular $MYWORKAREA, $CFGAREA and $OUTDIR . The output TTrees 
 and the logs will be saved in $OUTDIR
 
-4) open submit_AnalyzerEDBR.sh and add in the array SampleName
+6) open submit_AnalyzerEDBR.sh and add in the array SampleName
 all the samples that you want to process. It is important that the
 labels are consistent across all the files (submit_AnalyzerEDBR.sh,
 analyzerEDBR_zz2l2j_tpl.py and the cmgTuple list in ExoDiBosonResonances/EDBRCommon/python/datasets/)
 
-5) just execute:
+7) just execute:
 ./submit_AnalyzerEDBR.sh
 
 the jobs will be submitted to the LXBatch system, one for each sample.

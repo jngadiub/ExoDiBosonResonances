@@ -99,14 +99,14 @@ process.badEventFilter = cms.EDFilter("HLTHighLevel",
 ###########
 
 # provide list of HLT paths (or patterns) you want
-HLTlistMu  = cms.vstring("HLT_Mu17_Mu8","HLT_Mu22_TkMu22")   # triggers for DoubleMuon PD   
+HLTlistMu  = cms.vstring("HLT_Mu17_Mu8*","HLT_Mu22_TkMu22*")   # triggers for DoubleMuon PD   
 HLTlistEle = cms.vstring("HLT_DoubleEle33_*") # triggers for DoubleElectron PD
 
 ### for SingleElectron and SingleMuon PD, request single lept trigger and
 #veto the same triggers used for double ele and DoubleMu PD: in this way
 #remove events in both PDs
 HLTlistSE = cms.vstring("HLT_Ele80_CaloIdVT_GsfTrkIdT_v1 AND NOT HLT_DoubleEle33*") # triggers fro SingleElectron PD
-HLTlistSM  = cms.vstring("HLT_Mu40_* AND NOT HLT_Mu17_Mu8 AND NOT HLT_Mu22_TkMu22")
+HLTlistSM  = cms.vstring("HLT_Mu40_* AND NOT HLT_Mu17_Mu8* AND NOT HLT_Mu22_TkMu22*")
 
 process.hltHighLevelEle = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
@@ -141,9 +141,15 @@ process.hltHighLevelSE = cms.EDFilter("HLTHighLevel",
 ### add them to event filter
 process.eventFilterSequence = cms.Sequence(process.badEventFilter)
 
+####################
+# Hacks for DATA   #
+####################
+if "DATA" in options.mcordata :
+     process.eventFilterSequence.insert(0, process.rndmEventBlinding) ##insert at the front of the list
+     process.genParticles = cms.EDProducer("DummyGenProducer")
+     process.eventFilterSequence.insert(1, process.genParticles)
 
-###if "DATA" in options.mcordata :
-###     process.eventFilterSequence.insert(0, process.rndmEventBlinding) ##insert at the front of the list
+
 
 if options.mcordata == "DATAELE" :
      process.eventFilterSequence +=process.hltHighLevelEle
@@ -351,13 +357,13 @@ massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRMergedSelEle"
 
 #collect adjusted sequences into paths
 if options.lepton == "both" or options.lepton == "ele":
-     process.cmgEDBRWWEle = cms.Path(process.badEventFilter+
+     process.cmgEDBRWWEle = cms.Path(process.eventFilterSequence+
                                     process.analysisSequenceEVJJFullE +
                                     process.analysisSequenceMergedJetsFullJ + process.edbrSequenceMergedEVJEle +
                                     process.cmgSeqEle )
 
 if options.lepton == "both" or options.lepton == "mu":
-     process.cmgEDBRWWMu = cms.Path(process.badEventFilter+
+     process.cmgEDBRWWMu = cms.Path(process.eventFilterSequence+
                                     process.analysisSequenceMVJJFullM +
                                     process.analysisSequenceMergedJetsFullJ + process.edbrSequenceMergedMVJ +
                                     process.cmgSeqMu )

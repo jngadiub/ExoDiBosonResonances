@@ -123,4 +123,5 @@ running the script
 -$> ./check_cmgTupleJob.sh MC  ### use DATA for looping over data samples
 
 If some job is listed of having being failed, look for more informations
-in the corresponding log file
+in the corresponding log file. The script simply parses the log file and
+greps for the workd 'exception' . 
