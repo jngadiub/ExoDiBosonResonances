@@ -41,6 +41,24 @@ elif "<SAMPLE>"=="DYJetsPt70To100" :
 elif "<SAMPLE>"=="DYJetsPt100" :
     process.ANEDBR.Ngen=cms.uint32(2500000)
     process.ANEDBR.xsec=cms.double(32.9)
+elif "<SAMPLE>"=="DoubleMu_Run2012A_13Jul2012" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+elif "<SAMPLE>"=="DoubleMu_Run2012A_recover" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+elif "<SAMPLE>"=="DoubleMu_Run2012B_13Jul2012" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+elif "<SAMPLE>"=="DoubleMu_Run2012C_24Aug2012" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+elif "<SAMPLE>"=="DoubleMu_Run2012C_PRv1" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+elif "<SAMPLE>"=="DoubleMu_Run2012D_PRv1" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
 else :
     print 'ERROR !!! Sample named <SAMPLE> was not recognized !'
 
