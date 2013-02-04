@@ -100,24 +100,50 @@ bool EDBRHistoMaker::eventPassesFlavorCut(){
  return passesFlavour;
 }
 
+// These functions have to aware if we're in the one jet / 
+// two jet case.
 bool EDBRHistoMaker::eventInSidebandRegion(int i){
 
- bool isInSideband = (mJJ[i] > sidebandVHMassLow_ and 
-		      mJJ[i] < sidebandVHMassHigh_); 
- 
- return isInSideband;
+  bool isInSideband = false;
+
+  if(nXjets[i] == 2) {
+    isInSideband = (mJJNoKinFit[i] > sidebandVHMassLow_ and 
+		    mJJNoKinFit[i] < sidebandVHMassHigh_); 
+  }
+  else if 
+    (nXjets[i] == 1) {
+    isInSideband = (prunedMass[i] > sidebandVHMassLow_ and 
+		    prunedMass[i] < sidebandVHMassHigh_); 
+  }
+  else
+    printf("nXjets is different from 1 or 2... something is REALLY wrong.\n");
+
+  return isInSideband;
 }
 
 bool EDBRHistoMaker::eventInSignalRegion(int i){
- bool isInSignal = (mJJ[i] > signalVHMassLow_ and 
-		     mJJ[i] < signalVHMassHigh_);
 
- return isInSignal;
+  bool isInSignal = false;
+
+  if(nXjets[i] == 2) {
+    isInSignal = (mJJNoKinFit[i] > signalVHMassLow_ and 
+		    mJJNoKinFit[i] < signalVHMassHigh_); 
+  }
+  else if 
+    (nXjets[i] == 1) {
+    isInSignal = (prunedMass[i] > signalVHMassLow_ and 
+		    prunedMass[i] < signalVHMassHigh_); 
+  }
+  else
+    printf("nXjets is different from 1 or 2...\n"
+	   "Something is REALLY wrong.\n");
+
+  return isInSignal;
 }
 
 bool EDBRHistoMaker::eventPassesRegionCut(int i){
    bool isInSideband = eventInSidebandRegion(i);
-   bool isInSignal =eventInSignalRegion(i);
+   bool isInSignal   = eventInSignalRegion(i);
    bool passesRegion = ((isInSideband and wantSideband_) or
 		       (isInSignal and wantSignal_));
 
@@ -125,6 +151,8 @@ bool EDBRHistoMaker::eventPassesRegionCut(int i){
 }
 
 bool  EDBRHistoMaker::eventPassesNXJetCut(int i){
+  if(wantNXJets_==-1)
+    return true;
   bool passesNXJ = (nXjets[i] == wantNXJets_);
   return passesNXJ;
   
@@ -188,6 +216,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 	(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);
 	(theHistograms["nsubj12"])->Fill(nsubj12[ivec],actualWeight);
 	(theHistograms["nVtx"])->Fill(nVtx,actualWeight);
+	(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);
 	(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);
 	(theHistograms["isolep1"])->Fill(isolep1[ivec],actualWeight);
 	(theHistograms["isolep2"])->Fill(isolep2[ivec],actualWeight);

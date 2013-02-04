@@ -2,10 +2,14 @@
 #include "TFile.h"
 #include "TCanvas.h"
 #include "THStack.h"
-#include <TSystem.h>
+#include "TLegend.h"
+#include "TSystem.h"
+
 #include <assert.h>
 #include <vector>
 #include <string>
+
+#include "CMSLabels.h"
 
 class EDBRHistoPlotter {
 public:
@@ -145,6 +149,10 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     // isn't it picobarn???
     tempHisto = ((TH1D*)fmc.at(is)->Get(histoName.c_str())->Clone());
     tempHisto->SetDirectory(0);
+    std::string tmp1 = "h_nVtx";
+    std::string tmp2 = histoName.c_str();
+   if(tmp1==tmp2)
+     printf("This number of vertices histogram has %i entries\n",(int)tempHisto->GetEntries());
     h_mc.push_back(tempHisto);
     h_mc[is]->SetFillColor(getFillColor(is));
     
@@ -195,9 +203,11 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   }
 
   //make a THStack of the background
-  //for the titles get them from the first MC histo, it is good enough
+  //for the titles get them from the first MC histo, it is good enough.
+  //or no title, if you prefer.
   sprintf(buffer,"%s;%s;%s;",
-	  h_mc[0]->GetTitle(),
+	  "", 
+	  //h_mc[0]->GetTitle(),
 	  h_mc[0]->GetXaxis()->GetTitle(),
 	  h_mc[0]->GetYaxis()->GetTitle()
 	  );
@@ -206,12 +216,38 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   for(int i=0;i<nMC;i++){
     hsbkgd->Add(h_mc[i]);
   }
-  
+
   hsbkgd->Draw("HIST");
   if(nDATA>0) hSumDATA->Draw("SAME E1");
+
+  // Let's make such that the histogram has some white space on top.
+  // This needs a bit of magic...
+  double maxMC = hSumMC->GetMaximum();
+  double maxData = hSumDATA->GetMaximum();
+  double histoMax = (maxMC > maxData? maxMC : maxData);
+  double newHistoMax = histoMax*1.1;
+  hsbkgd->GetHistogram()->GetYaxis()->SetRangeUser(0,newHistoMax);
+  hsbkgd->SetMaximum(newHistoMax);
+
+  // For the legend, we have to tokenize the name "histos_XXX.root"
+  // to get the XXX... yuck.
+  TLegend* leg = new TLegend(0.7,0.7,0.9,0.9);
+  if(nDATA > 0) leg->AddEntry(hSumDATA,"Data","p");
+  for(int i=0;i<nMC;i++){
+    TString s1 = fmc[i]->GetName();
+    TString s2 = "_.";
+    TObjArray* tokens = s1.Tokenize(s2);
+    leg->AddEntry(h_mc[i],((TObjString*)(tokens->At(1)))->String().Data(),"f");
+  }
+  leg->SetFillColor(kWhite);
   
   cv->Draw();
-
+  leg->Draw();
+  
+  // Nice labels
+  TLatex* l = makeCMSPreliminaryTop(8);
+  l->Draw();
+  
   // Save the file as a PDF
   sprintf(buffer,"%s/pdf/can_%s.pdf",outDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
@@ -220,6 +256,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   sprintf(buffer,"%s/root/can_%s.root",outDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
 
+  delete leg;
   delete hsbkgd;
   delete hSumMC; 
   delete hSumDATA;
