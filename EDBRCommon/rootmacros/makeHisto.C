@@ -106,17 +106,7 @@ bool EDBRHistoMaker::eventInSidebandRegion(int i){
 
   bool isInSideband = false;
 
-  if(nXjets[i] == 2) {
-    isInSideband = (mJJNoKinFit[i] > sidebandVHMassLow_ and 
-		    mJJNoKinFit[i] < sidebandVHMassHigh_); 
-  }
-  else if 
-    (nXjets[i] == 1) {
-    isInSideband = (prunedMass[i] > sidebandVHMassLow_ and 
-		    prunedMass[i] < sidebandVHMassHigh_); 
-  }
-  else
-    printf("nXjets is different from 1 or 2... something is REALLY wrong.\n");
+  isInSideband = (region[i] == 0);
 
   return isInSideband;
 }
@@ -125,18 +115,7 @@ bool EDBRHistoMaker::eventInSignalRegion(int i){
 
   bool isInSignal = false;
 
-  if(nXjets[i] == 2) {
-    isInSignal = (mJJNoKinFit[i] > signalVHMassLow_ and 
-		    mJJNoKinFit[i] < signalVHMassHigh_); 
-  }
-  else if 
-    (nXjets[i] == 1) {
-    isInSignal = (prunedMass[i] > signalVHMassLow_ and 
-		    prunedMass[i] < signalVHMassHigh_); 
-  }
-  else
-    printf("nXjets is different from 1 or 2...\n"
-	   "Something is REALLY wrong.\n");
+  isInSignal = (region[i] == 1);
 
   return isInSignal;
 }
