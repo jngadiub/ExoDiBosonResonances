@@ -4,6 +4,7 @@
 #include <TF1.h>
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 template<class edbrtype>
 class KineVarsAdder : public edm::EDProducer {
@@ -72,6 +73,30 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
     float mjjNKF=-999.0,ptjjNKF=-999.0,etajjNKF=-999.0,phijjNKF=-999.0;
     float isMJJSigReg=-99.0;
 
+
+    /// Let's get the isolations
+    float iso1=-99.0;;
+    float iso2=-99.0;
+
+    if((newCand.leg1().leg1().sourcePtr()) && 
+       (newCand.leg1().leg2().sourcePtr())  ){
+    
+      //*(*it->sourcePtr());
+      iso1 = (*(newCand.leg1().leg1().sourcePtr()))->trackIso() / newCand.leg1().leg1().pt();   
+      iso2 = (*(newCand.leg1().leg2().sourcePtr()))->trackIso() / newCand.leg1().leg2().pt();   
+      
+      /// Let's correct!
+      double l1eta = newCand.leg1().leg1().eta();
+      double l1phi = newCand.leg1().leg1().phi();
+      double l2eta = newCand.leg1().leg2().eta();
+      double l2phi = newCand.leg1().leg2().phi();
+      double theDR = deltaR(l1eta,l1phi,l2eta,l2phi);
+      if(theDR < 0.3) {
+	iso1 = (iso1 - newCand.leg1().leg2().pt()/newCand.leg1().leg1().pt());
+	iso2 = (iso2 - newCand.leg1().leg1().pt()/newCand.leg1().leg2().pt());
+      }
+    }//end if srcPtr is not null
+    
     if(isDoubleJet_){
       nXJets=2.0; 
 
@@ -94,6 +119,8 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
       }
     }
 
+    newCand.addUserFloat("isolep1mod",iso1 );
+    newCand.addUserFloat("isolep2mod",iso2 );
     newCand.addUserFloat("nXJets",nXJets );
     newCand.addUserFloat("nokinfitMZZ",mzzNKF );
     newCand.addUserFloat("nokinfitPT",ptNKF);

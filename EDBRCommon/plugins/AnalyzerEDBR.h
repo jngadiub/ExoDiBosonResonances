@@ -251,6 +251,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     ptmzzNoKinFit[ih]=edbr->userFloat("nokinfitPTZZ");
     mjj[ih]=edbr->leg2().mass();
     mjjNoKinFit[ih]=edbr->userFloat("nokinfitMJJ");
+    isolep1mod[ih]=edbr->userFloat("isolep1mod");
+    isolep2mod[ih]=edbr->userFloat("isolep2mod");
     ptjjNoKinFit[ih]=edbr->userFloat("nokinfitPTJJ");
     etajjNoKinFit[ih]=edbr->userFloat("nokinfitEtaJJ");
     phijjNoKinFit[ih]=edbr->userFloat("nokinfitPhiJJ");
@@ -413,6 +415,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double qgjet1[nMaxCand], qgjet2[nMaxCand], qgProduct[nMaxCand];    // QG likelihoods
   double betajet1[nMaxCand],betajet2[nMaxCand],puMvajet1[nMaxCand],puMvajet2[nMaxCand];//jet ID 
   double isolep1[nMaxCand], isolep2[nMaxCand], eleMVAId1[nMaxCand], eleMVAId2[nMaxCand];//lepton ID 
+  double isolep1mod[nMaxCand], isolep2mod[nMaxCand];
   double HLTSF,PU,PUA,PUB,lumiw,genw,w,wA,wB;          // weight
   double MCmatch[nMaxCand];            // mc matching flag
  

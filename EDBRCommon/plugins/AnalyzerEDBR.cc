@@ -398,6 +398,8 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("qjet"       ,&qjet    ,"qjet[nCands]/D"    ); 
   outTree_->Branch("isolep1"         ,&isolep1       ,"isolep1[nCands]/D"      ); 
   outTree_->Branch("isolep2"         ,&isolep2       ,"isolep2[nCands]/D"      ); 
+  outTree_->Branch("isolep1mod"         ,&isolep1mod       ,"isolep1mod[nCands]/D"      ); 
+  outTree_->Branch("isolep2mod"         ,&isolep2mod       ,"isolep2mod[nCands]/D"      ); 
   outTree_->Branch("eleMVAId1"       ,&eleMVAId1     ,"eleMVAId1[nCands]/D"    );
   outTree_->Branch("eleMVAId2"       ,&eleMVAId2     ,"eleMVAId2[nCands]/D"    );
   outTree_->Branch("LD"              ,&LD            ,"LD[nCands]/D"           );
