@@ -1,5 +1,5 @@
 #include "makeHisto.h"
-
+#include <Riostream.h>
 EDBRHistoMaker::EDBRHistoMaker(TTree* tree, 
 			       bool wantElectrons,
 			       bool wantMuons,
@@ -73,7 +73,7 @@ void EDBRHistoMaker::createAllHistos() {
 }
 
 void EDBRHistoMaker::printAllHistos() {
-  printf("We have %i histograms\n",int(theHistograms.size()));
+  printf("We have %i histograms \n",int(theHistograms.size()));
 }
 
 void EDBRHistoMaker::saveAllHistos(std::string outFileName) {
@@ -163,9 +163,14 @@ void EDBRHistoMaker::Loop(std::string outFileName){
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
-    if(jentry%10000==0)
-      printf("Entry number %i...\n",(int)jentry);
-
+    if(jentry==0){
+      //      printf("Entry number %i...\n",(int)jentry);
+      float genLumi=1.0/LumiWeight;
+      if(genLumi==1.0)genLumi=-1.0;
+      if(genLumi!=-1.0) std::cout<<"Lumi of this sample: "<<genLumi <<"  /pb"<<std::endl;
+      else std::cout<<"Lumi of this sample: xxx  /pb (dummy for data)"<<std::endl;
+      
+    }
     // We calculate a weight here.
     //double actualWeight = weight;//*HLTweight*PUweight*LumiWeight*GenWeight;
     double actualWeight = PUweight*LumiWeight*GenWeight;
@@ -210,6 +215,6 @@ void EDBRHistoMaker::Loop(std::string outFileName){
       }//end if eventPassesCut
     }//end loop over nCands
   }//end loop over entries
-  
+  std::cout<<"From makeHisto: the histo with #vtx has "<<(theHistograms["nVtx"])->GetEntries()<<" entries"<<std::endl;
   this->saveAllHistos(outFileName);
 }

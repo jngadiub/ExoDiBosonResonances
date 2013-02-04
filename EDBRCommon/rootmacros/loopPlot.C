@@ -10,6 +10,8 @@
 
 #include "CMSTDRStyle.h"
 
+gErrorIgnoreLevel=kWarning;//suppresses all info messages
+
 void loopPlot(){
 
   setTDRStyle();
@@ -22,11 +24,10 @@ void loopPlot(){
     return;
   }
   
-  /// Path to whenever the files with the trees are. 
-  //std::string pathToTrees="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/";
-  std::string pathToTrees = "/afs/cern.ch/user/t/tomei/EXOVV_2012/analyzer_trees/productionv1/";
-  /// Path to whenever you want to put the histograms (figures) in.
-  std::string outputDir = "./test_outPlots";
+  /// Path to wherever the files with the trees are. 
+  std::string pathToTrees="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/";
+  /// Path to wherever you want to put the histograms (figures) in.
+  std::string outputDir = pathToTrees+"./test_outPlots";
 
   /// Setup names of data files for trees.
   const int nDATA=5;//set to zero if you don't want to plot
@@ -41,8 +42,8 @@ void loopPlot(){
   }
 
   /// Setup names of MC files for trees.
-  const int nMC=4;//set to zero if you don't want to plot
-  std::string mcLabels[nMC]={"TTBAR","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100"};//examples for now
+  const int nMC=6;//set to zero if you don't want to plot
+  std::string mcLabels[nMC]={"TTBAR","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100"};//examples for now
   std::vector<std::string> fMC;
   for(int ii=0;ii<nMC;ii++){
     fMC.push_back(pathToTrees+"treeEDBR_"+mcLabels[ii]+".root");
@@ -51,8 +52,9 @@ void loopPlot(){
   /// Setup names of files for histograms (data and MC)
   std::vector<std::string> fHistosData;
   std::vector<std::string> fHistosMC;
+ 
 
-  /// Luminosity value
+  /// Luminosity value in pb^-1
   double lumiValue = 13086.0*0.2;
   
   printf("All strings set\n");
@@ -77,13 +79,13 @@ void loopPlot(){
   for(int i=0;i<nDATA;i++){
     TFile *fileData = TFile::Open(fData.at(i).c_str());
     TTree *treeData = (TTree*)fileData->Get("SelectedCandidates");
-    sprintf(buffer,"\nRunning over %s\n\n",dataLabels[i].c_str());
+    std::cout<<"\n-------\nRunning over "<<dataLabels[i].c_str()<<std::endl;
     EDBRHistoMaker* maker = new EDBRHistoMaker(treeData, 
-					       false, 
-					       true, 
-					       true, 
-					       true, 
-					       2);
+					       false, //wantElectrons
+					       true, //wantMuons
+					       true, //wantSideband
+					       true, //wantSignal
+					       2);//wantNXJets
     sprintf(buffer,"histos_%s.root",dataLabels[i].c_str());
     maker->Loop(buffer);
     std::string oneString(buffer);
@@ -98,7 +100,7 @@ void loopPlot(){
   for(int i=0;i<nMC;i++){
     TFile *fileMC = TFile::Open(fMC.at(i).c_str());
     TTree *treeMC = (TTree*)fileMC->Get("SelectedCandidates");
-    sprintf(buffer,"\nRunning over %s\n\n",mcLabels[i].c_str());
+    std::cout<<"\n-------\nRunning over "<<mcLabels[i].c_str()<<std::endl;
     EDBRHistoMaker* maker = new EDBRHistoMaker(treeMC, 
 					       false, 
 					       true, 
@@ -134,6 +136,7 @@ void loopPlot(){
     // produced, then loop over all the histograms inheriting 
     // from TH1 contained in the file.
     sprintf(buffer,"histos_%s.root",mcLabels[0].c_str());
+    std::cout<<"Opening "<<buffer<<std::endl;
     TFile* oneFile = TFile::Open(buffer);
     TIter next(oneFile->GetListOfKeys());
     TKey *key;
@@ -143,7 +146,7 @@ void loopPlot(){
       if (!cl->InheritsFrom("TH1")) continue;
       TH1 *hTMP = (TH1*)key->ReadObj();
       std::string hName=hTMP->GetName();
-      printf("Histogram found: %s\n",hName.c_str());
+      //   printf("Histogram found: %s\n",hName.c_str());
       listOfHistos.push_back(hName);
     }//end while loop
   }//end if fmc size >0
@@ -152,10 +155,25 @@ void loopPlot(){
 						 fHistosData,
 						 fHistosMC,
 						 lumiValue,
-						 true);
+						 false);//bool scaleToData
   
-  printf("Set output dir\n");
+  std::cout<<"Set output dir"<<std::endl;
   plotter->setOutDir(outputDir);
+
+  //colors are assigned in the same order of mcLabels
+  ////// {"TTBAR","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100"};
+  std::vector<int> fColorsMC;
+  fColorsMC.push_back(kOrange-9);
+  fColorsMC.push_back(kGray+2);
+  fColorsMC.push_back(kBlue-9);
+  fColorsMC.push_back(kGreen-3);
+  fColorsMC.push_back(kGreen);
+  fColorsMC.push_back(kGreen+3);
+  fColorsMC.push_back(kMagenta-9);
+  fColorsMC.push_back(kMagenta-6);
+  fColorsMC.push_back(kRed-7);
+
+  plotter->setFillColor(fColorsMC);
 
   int numOfHistos = listOfHistos.size();
   for(int i = 0; i != numOfHistos; ++i) 

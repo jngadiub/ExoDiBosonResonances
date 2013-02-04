@@ -8,7 +8,8 @@
 #include <assert.h>
 #include <vector>
 #include <string>
-
+#include <sstream>
+#include <Riostream.h>
 #include "CMSLabels.h"
 
 class EDBRHistoPlotter {
@@ -61,12 +62,13 @@ public:
     scaleToData_ = scaleToData;
 
     /// Long live C++!!!
-    EDBRColors[0] = kOrange-9;
-    EDBRColors[1] = kRed-7;
-    EDBRColors[2] = kGray+2;
-    EDBRColors[3] = kBlue-9;
-    EDBRColors[4] = kMagenta-9;
-    EDBRColors[5] = kGreen-3;  
+    EDBRColors.resize(20,kWhite);
+    EDBRColors.at(0)= kOrange-9;
+    EDBRColors.at(1)= kRed-7;
+    EDBRColors.at(2)=kGray+2;
+    EDBRColors.at(3)=kBlue-9;
+    EDBRColors.at(4)= kMagenta-9;
+    EDBRColors.at(5)= kGreen-3;  
   }
 
   ///make histogram stacks. See below.
@@ -97,6 +99,15 @@ public:
     return kWhite;
   }
 
+  void setFillColor(std::vector<int> colorList){
+    int ind=0;
+    while (ind<20 && ind < colorList.size()){//max n color hard-coded down there
+      EDBRColors.at(ind)=colorList.at(ind);
+      ind++;
+    }
+  }
+
+
   /// Members
 
 private:
@@ -112,7 +123,7 @@ private:
 
   double targetLumi_;
 
-  int EDBRColors[6];
+  std::vector<int> EDBRColors;
   
   bool scaleToData_;
 };
@@ -142,17 +153,18 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 
   // Loop over files, clone histograms and add them to the vectors.
   const int nMC=nMCSamples_;
-
+  double nnn=((TH1D*)fmc.at(nMC-1)->Get("h_nVtx"))->GetEntries();
   for(int is=0;is<nMC;is++){
     tempFile = fmc.at(is);
-    //the EDBRHistoMaker prepares MC histos normalized all to the same lumi of 1 /fb
-    // isn't it picobarn???
-    tempHisto = ((TH1D*)fmc.at(is)->Get(histoName.c_str())->Clone());
+    stringstream ss1;
+    ss1<<is;
+    string strNewName=histoName+"_"+ss1.str();
+    tempHisto = (TH1D*)fmc.at(is)->Get(histoName.c_str())->Clone(strNewName.c_str());
     tempHisto->SetDirectory(0);
+    //  tempHisto->SetName();
     std::string tmp1 = "h_nVtx";
     std::string tmp2 = histoName.c_str();
-   if(tmp1==tmp2)
-     printf("This number of vertices histogram has %i entries\n",(int)tempHisto->GetEntries());
+    if(tmp1==tmp2) std::cout<<fmc[is]->GetName()<<" : the histogram with the # of vertices has "<<(int)tempHisto->GetEntries() <<" entries  ; "<<tempHisto->GetName()<<std::endl;
     h_mc.push_back(tempHisto);
     h_mc[is]->SetFillColor(getFillColor(is));
     
@@ -214,6 +226,8 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 
   THStack *hsbkgd=new THStack("allBkgd",buffer);
   for(int i=0;i<nMC;i++){
+    string tmpstr1=h_mc[i]->GetName();
+    if(tmpstr1=="h_nVtx")std::cout<<"Adding to THStack "<<tmpstr1.c_str()<<"  integral is "<<h_mc[i]->Integral()<<"  Nentries="<<h_mc[i]->GetEntries()<<std::endl;
     hsbkgd->Add(h_mc[i]);
   }
 
