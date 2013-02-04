@@ -1,9 +1,10 @@
 #! /bin/bash
 
-SampleName=(TTBAR DYJetsPt70To100 DYJetsPt50To70 DYJetsPt100) #
+SampleName=(TTBAR DYJetsPt70To100 DYJetsPt50To70 DYJetsPt100 WZ ZZ DoubleMu_Run2012A_13Jul2012 DoubleMu_Run2012A_recover DoubleMu_Run2012B_13Jul2012 DoubleMu_Run2012C_24Aug2012  DoubleMu_Run2012D_PRv1 ) #
 #SampleName=(   )
 
-#SampleName=(data1Ele data1Mu data2Mu   data2Ele ) 
+#SampleName=(TTBAR DYJetsPt70To100 DYJetsPt50To70 DYJetsPt100 WZ ZZ)
+#SampleName=(DoubleMu_Run2012A_13Jul2012 DoubleMu_Run2012A_recover DoubleMu_Run2012B_13Jul2012 DoubleMu_Run2012C_24Aug2012  DoubleMu_Run2012D_PRv1) 
 
 
 

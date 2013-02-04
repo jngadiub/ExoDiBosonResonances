@@ -3,7 +3,7 @@ from PhysicsTools.PatAlgos.tools.helpers import *
 process = cms.Process("EDBR")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.GlobalTag.globaltag = cms.string("START53_V7A::All")
@@ -41,6 +41,15 @@ elif "<SAMPLE>"=="DYJetsPt70To100" :
 elif "<SAMPLE>"=="DYJetsPt100" :
     process.ANEDBR.Ngen=cms.uint32(2500000)
     process.ANEDBR.xsec=cms.double(32.9)
+elif "<SAMPLE>"=="WW" :
+    process.ANEDBR.Ngen=cms.uint32(3870000)
+    process.ANEDBR.xsec=cms.double(57.1097)
+elif "<SAMPLE>"=="WZ" :
+    process.ANEDBR.Ngen=cms.uint32(1910000)
+    process.ANEDBR.xsec=cms.double(22.88)
+elif "<SAMPLE>"=="ZZ" :
+    process.ANEDBR.Ngen=cms.uint32(485716)
+    process.ANEDBR.xsec=cms.double(5.196)
 elif "<SAMPLE>"=="DoubleMu_Run2012A_13Jul2012" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
