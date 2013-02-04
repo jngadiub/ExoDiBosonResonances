@@ -272,7 +272,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
 	int ih = 0;
 	for(int iih=0;iih<nCandidates;iih++){
-	  cout<<"Loop on ELE cand ih="<<iih<<std::flush;
+	  //  cout<<"Loop on ELE cand ih="<<iih<<std::flush;
 	  edm::RefToBase<cmgEleDiJetEDBR> edbrE =finalEDBRcand->refAt(iih);
 	 
 
