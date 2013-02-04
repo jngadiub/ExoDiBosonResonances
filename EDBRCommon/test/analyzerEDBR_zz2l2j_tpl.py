@@ -4,7 +4,7 @@ process = cms.Process("EDBR")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
-process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.GlobalTag.globaltag = cms.string("START53_V7A::All")
 process.load("Configuration.StandardSequences.MagneticField_cff")
