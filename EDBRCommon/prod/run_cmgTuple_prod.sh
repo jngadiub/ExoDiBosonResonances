@@ -1,13 +1,13 @@
 #! /bin/bash
 
 
-SAMPLE_Run2012MU=( DoubleMu_Run2012A_13Jul2012 DoubleMu_Run2012A_recover DoubleMu_Run2012B_13Jul2012 DoubleMu_Run2012C_24Aug2012 DoubleMu_Run2012D_PRv1) 
-SAMPLE_Run2012ELE=( DoublePhotonHighPt_Run2012B_13Jul2012  DoublePhotonHighPt_Run2012C_24Aug2012 DoublePhotonHighPt_Run2012C_PRv2 DoublePhotonHighPt_Run2012D_PRv1 Photon_Run2012A_13Jul2012 Photon_Run2012A_recover)
+SAMPLE_Run2012MU=( DoubleMu_Run2012A_13Jul2012 DoubleMu_Run2012A_recover DoubleMu_Run2012B_13Jul2012 DoubleMu_Run2012C_24Aug2012 DoubleMu_Run2012C_PRv2 DoubleMu_Run2012D_PRv1) 
+#SAMPLE_Run2012ELE=( DoublePhotonHighPt_Run2012B_13Jul2012  DoublePhotonHighPt_Run2012C_24Aug2012 DoublePhotonHighPt_Run2012C_PRv2 DoublePhotonHighPt_Run2012D_PRv1 Photon_Run2012A_13Jul2012 Photon_Run2012A_recover)
 
+SAMPLE_MC1=( DYJetsPt50To70 DYJetsPt70To100 TTBAR DYJetsPt50To70 DYJetsPt70To100 DYJetsPt100 WW WZ ZZ) # MC Background
+#SAMPLE_MC2=( ) #MC signal: JHUGrav300 
+OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/tomeiTEST"
 
-SAMPLE_MC1=( DYJetsPt50To70 DYJetsPt70To100 DYJetsPt100 TTBAR WZ ZZ)  # MC background
-SAMPLE_MC2=( ) #MC signal: JHUGrav300 
-OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1"
 OUTPATHDATA=${OUTPATHBASE}/Run2012/presel/
 OUTPATHMC=${OUTPATHBASE}/Summer12/presel/
 OUTLOGPATH="$(pwd)/logs"
@@ -27,7 +27,7 @@ for sample in "${SAMPLE_MC1[@]}"
 
   LOGDIR=logs/Summer12/
   OUTDIR=${OUTPATHMC}/${sample}
-  NFILES=10
+  NFILES=20
 #  cmsMkdir  $OUTDIR
   QUEUE="8nh"
 
