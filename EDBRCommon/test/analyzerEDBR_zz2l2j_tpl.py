@@ -20,7 +20,8 @@ process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTuple_<SAMPLE>_cff")
 ##     '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/TTBAR/test_0.root')
 ##                     )
 
-#process.load("ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi.py")
+
+
 from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
 process.ANEDBR = AnalyzerXZZ.clone(
     debug=cms.bool(False),
@@ -29,6 +30,22 @@ process.ANEDBR = AnalyzerXZZ.clone(
     xsec=cms.double(1.0) ###in pb
     )
 
+
+
+### if false, use the default collections
+### in ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi
+### (i.e. all the cands passing pre-selection cuts)
+processFullSel=True 
+
+if processFullSel :
+    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
+    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
+    process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
+    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
+
+
+
+##### set Ngen and xsect values ofr MC samples
 if "<SAMPLE>"=="TTBAR" :
     process.ANEDBR.Ngen=cms.uint32(6540800)
     process.ANEDBR.xsec=cms.double(225.197)
@@ -73,4 +90,17 @@ else :
 
 print '---> Ngen=',process.ANEDBR.Ngen,'  Xsect=',process.ANEDBR.xsec
 
-process.p=cms.Path(process.ANEDBR)
+
+
+process.filterFinalSelPath = cms.EDFilter("HLTHighLevel",
+                                       TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
+                                       HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
+                                       eventSetupPathsKey = cms.string(''),
+                                       andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
+                                       throw = cms.bool(True)    # throw exception on unknown path names
+                                       )
+
+if processFullSel :
+    process.p=cms.Path(process.filterFinalSelPath+process.ANEDBR)
+else :
+    process.p=cms.Path(process.ANEDBR)

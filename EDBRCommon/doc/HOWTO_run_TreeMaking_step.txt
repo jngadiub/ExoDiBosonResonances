@@ -25,7 +25,10 @@ Take the template cfg EDBRCommon/test/analyzerEDBR_zz2l2j_tpl.py and edit it
 according to your needs: decomment the suorce module, add the list of cmgTuples
 that you want to process, replace all over the file the tag '<SAMPLE>' with
 the label of the sample that you want to process. Make sure that the number
-of generated events and the cross section is the correct one. For data,
+of generated events and the cross section is the correct one. Set the boolean 
+'processFullSel' to true if you want to make the trees with the collecitons
+passing the final selections (otherwise it uses the default collections passing the
+preselection cuts). For data,
 Ngen and xsec don't matter (we don't use them in the end) but set them both
 to one, just to make sure.
 
@@ -64,7 +67,13 @@ elif "<SAMPLE>"== "<---> PUT YOUR MC SAMPLE LABEL HERE <--->" :
     process.ANEDBR.xsec=cms.double(32.9)
 ##############
 
-4) The default is for the ZZ analysis. For the WW some hand corrections
+4) default is to fill the TTrees with the variables from the collections
+passing just the pre-selection cuts. If you want to fill with the 
+collection of X->VV passing the full selection, in analyzerEDBR_zz2l2j_tpl.py
+set to True the variable called 'processFullSel'. Change the name
+of the collection if you want the events in the signal or the sidebands.
+
+5) The default is for the ZZ analysis. For the WW some hand corrections
 are needed.
     i) add in the module process.ANEDBR inside EDBRCommon/test/analyzerEDBR_zz2l2j_tpl.py
        the parameter VType=cms.string("W")
@@ -79,16 +88,16 @@ are needed.
 and de-comment the typedefs immediately below.
 
 
-5) open run_AnalyzerEDBR.sh and edit the fields with the paths, 
+6) open run_AnalyzerEDBR.sh and edit the fields with the paths, 
 in particular $MYWORKAREA, $CFGAREA and $OUTDIR . The output TTrees 
 and the logs will be saved in $OUTDIR
 
-6) open submit_AnalyzerEDBR.sh and add in the array SampleName
+7) open submit_AnalyzerEDBR.sh and add in the array SampleName
 all the samples that you want to process. It is important that the
 labels are consistent across all the files (submit_AnalyzerEDBR.sh,
 analyzerEDBR_zz2l2j_tpl.py and the cmgTuple list in ExoDiBosonResonances/EDBRCommon/python/datasets/)
 
-7) just execute:
+8) just execute:
 ./submit_AnalyzerEDBR.sh
 
 the jobs will be submitted to the LXBatch system, one for each sample.
