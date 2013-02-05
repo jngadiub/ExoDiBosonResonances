@@ -35,7 +35,7 @@ process.ANEDBR = AnalyzerXZZ.clone(
 ### if false, use the default collections
 ### in ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi
 ### (i.e. all the cands passing pre-selection cuts)
-processFullSel=True 
+processFullSel=False 
 
 if processFullSel :
     process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
@@ -52,12 +52,15 @@ if "<SAMPLE>"=="TTBAR" :
 elif "<SAMPLE>"=="DYJetsPt50To70" :
     process.ANEDBR.Ngen=cms.uint32(4823000)
     process.ANEDBR.xsec=cms.double(89.0)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "<SAMPLE>"=="DYJetsPt70To100" :
     process.ANEDBR.Ngen=cms.uint32(4000000)
     process.ANEDBR.xsec=cms.double(53.0)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "<SAMPLE>"=="DYJetsPt100" :
     process.ANEDBR.Ngen=cms.uint32(2500000)
     process.ANEDBR.xsec=cms.double(32.9)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "<SAMPLE>"=="WW" :
     process.ANEDBR.Ngen=cms.uint32(3870000)
     process.ANEDBR.xsec=cms.double(57.1097)
@@ -70,21 +73,27 @@ elif "<SAMPLE>"=="ZZ" :
 elif "<SAMPLE>"=="DoubleMu_Run2012A_13Jul2012" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
 elif "<SAMPLE>"=="DoubleMu_Run2012A_recover" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
 elif "<SAMPLE>"=="DoubleMu_Run2012B_13Jul2012" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
 elif "<SAMPLE>"=="DoubleMu_Run2012C_24Aug2012" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
 elif "<SAMPLE>"=="DoubleMu_Run2012C_PRv1" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
 elif "<SAMPLE>"=="DoubleMu_Run2012D_PRv1" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
 else :
     print 'ERROR !!! Sample named <SAMPLE> was not recognized !'
 

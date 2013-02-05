@@ -22,16 +22,19 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
     XMMJLDMap_       = ps.getParameter<edm::InputTag>("EDBRMMJLDValueMap");
     XQGMap_          = ps.getParameter<edm::InputTag>("EDBRQGValueMap");
     VType_           = ps.getParameter<std::string>("VType");
+    fillGen_         = ps.getParameter<unsigned int>("FillGenLevelCode");
     //XEENoKinFitLDMap_=ps.getParameter<edm::InputTag>("EDBREENoKinFitLDValueMap");
     //XMMNoKinFitLDMap_=ps.getParameter<edm::InputTag>("EDBRMMNoKinFitLDValueMap");
     
     if(VType_=="Z"){
       cmgEDBRMu_="cmgEDBRZZMu";
       cmgEDBREle_="cmgEDBRZZEle";
+      VpdgId_=23;
     }
     else if(VType_=="W"){
       cmgEDBRMu_="cmgEDBRWWMu";
       cmgEDBREle_="cmgEDBRWWEle";
+      VpdgId_=24;
     } 
     else{
       throw cms::Exception("Wrong parameter")<<"Unrecognized VType paramter: "<<VType_.c_str()<<" . Allowed options are : W ; Z ."<<std::endl;
@@ -116,15 +119,8 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
   bool singleJetEvent=false;
   bool doubleJetEvent=false;
 
+  if(isMC_) analyzeGenLevel(iEvent, eventSetup);
 
-  edm::Handle<std::vector<reco::GenParticle> > genParticles;
-  iEvent.getByLabel(std::string("genParticles"), genParticles);
-  reco::GenParticle genEDBR;
-
-  for(std::vector<reco::GenParticle>::const_iterator genParticle=genParticles->begin(); genParticle!=genParticles->end(); ++genParticle){
-    if(genParticle->pdgId()==25||genParticle->pdgId()==39) genEDBR=(*genParticle);
-      // if(debug_) cout<<"particle "<<genParticle->pdgId()<<" status "<<genParticle->status()<<endl;
-  }
 
   // edm::Handle<edm::ValueMap<float> > qgmap;
   // if(anyPath_){
@@ -425,6 +421,20 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("event"           ,&nevent        ,"event/i"                );
   outTree_->Branch("run"             ,&run           ,"run/i"                  );
   outTree_->Branch("ls"              ,&ls            ,"ls/i"                   );
+  outTree_->Branch("massGenX"        ,&massGenX      ,"massGenX/d"             );
+  outTree_->Branch("ptGenX"          ,&ptGenX        ,"ptGenX/d"               );
+  outTree_->Branch("yGenX"           ,&yGenX         ,"yGenX/d"                );
+  outTree_->Branch("phiGenX"         ,&phiGenX       ,"phiGenX/d"              );
+  outTree_->Branch("pdgIdGenX"       ,&pdgIdGenX     ,"pdgIdGenX/I"            );
+  outTree_->Branch("massGenVll"      ,&massGenZll    ,"massGenVll/d"           );
+  outTree_->Branch("ptGenVll"        ,&ptGenZll      ,"ptGenVll/d"             );
+  outTree_->Branch("yGenVll"         ,&yGenZll       ,"yGenVll/d"              );
+  outTree_->Branch("phiGenVll"       ,&phiGenZll     ,"phiGenVll/d"            );
+  outTree_->Branch("massGenVqq"      ,&massGenZqq    ,"massGenVqq/d"           );
+  outTree_->Branch("ptGenVqq"        ,&ptGenZqq      ,"ptGenVqq/d"             );
+  outTree_->Branch("yGenVqq"         ,&yGenZqq       ,"yGenVqq/d"              );
+  outTree_->Branch("phiGenVqq"       ,&phiGenZqq     ,"phiGenVqq/d"            );
+
 
   if(triggerNames_.size()>0){
   if(debug_)cout<<"Adding branches with trigger names"<<endl;
@@ -452,6 +462,18 @@ void AnalyzerEDBR::initDataMembers(){
   wB    =   1.0;
   HLTSF =   1.0;
   nCands=0;
+
+  massGenX=-999.0; ptGenX=-999.0;  yGenX=-999.0; phiGenX=-999.0; 
+  pdgIdGenX=-999;
+  massGenZll=-999.0; ptGenZll=-999.0; yGenZll=-999.0; phiGenZll=-999.0;
+  massGenZqq=-999.0; ptGenZqq=-999.0; yGenZqq=-999.0; phiGenZqq=-999.0;
+  ptGenq1=-999.0; etaGenq1=-999.0;  phiGenq1=-999.0; 
+  ptGenq2=-999.0; etaGenq2=-999.0;  phiGenq2 =-999.0; 
+  flavGenq1=-999; flavGenq2=-999;
+  ptGenl1=-999.0; etaGenl1=-999.0;  phiGenl1=-999.0; 
+  ptGenl2=-999.0; etaGenl2=-999.0;  phiGenl2 =-999.0; 
+  flavGenl1=-999; flavGenl2=-999;
+
 }//end AnalyzeEDBR::initDataMembers()
 
 void AnalyzerEDBR::analyzeTrigger(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
@@ -499,36 +521,78 @@ void AnalyzerEDBR::analyzeTrigger(edm::Event const& iEvent, edm::EventSetup cons
 
 }//end  AnalyzeEDBR::analyzeTrigger()
 
-/*********************
-void AnalyzerEDBR::analyzeMuon(edm::RefToBase<cmg::DiMuonDiJetEDBR > edbr, int ih){
-  //nothing to be done
-  //
-  //
-  if(debug_)cout<<"AnalyzerEDBR::analyzeMuon"<<endl;
-  //dummy for muons 
-  eleMVAId1[ih] = -1.0;
-  eleMVAId2[ih] = -1.0;
-}
 
-//void AnalyzerEDBR::analyzeElectron(edm::RefToBase<cmg::DiElectronDiJetEDBR > edbr, int ih){
-void AnalyzerEDBR::analyzeElectron(T edbr, int ih){
+void AnalyzerEDBR::analyzeGenLevel(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
-  if(debug_)cout<<"AnalyzerEDBR::analyzeElectron"<<endl;
-  bool highptLep1=true;
-  if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
+  //choose what to do according to user input
+  bool searchX= (fillGen_>=4);  /// || fillGen_==3 || fillGen_==4);
+  bool searchZll= (fillGen_==1 || fillGen_==3 || fillGen_==6 ||fillGen_==7 );
+  bool searchZqq= (fillGen_==2 || fillGen_==3 || fillGen_==5 ||fillGen_==7);
+
+  //collection of gen particles
+  edm::Handle<edm::View< reco::GenParticle > > genPColl;
+  iEvent.getByLabel( "genParticles"       , genPColl  );
+
+  bool foundX=false, foundZll=false,foundZqq=false;
+  //  bool foundq1=false,foundq2=false,foundl1=false,foundl2=false;
+
+  unsigned int i = 0;
+  for( i=0;i<genPColl->size();i++){
+ 
+    if( (foundX==searchX) && (foundZll==searchZll) && (foundZqq==searchZqq) )break ; //no need to continue looping
+    edm::RefToBase< reco::GenParticle > genP =genPColl->refAt(i);
+
+    int pdgId=genP->pdgId();
+    int status = genP->status();
+    int ndau=genP->numberOfDaughters();
+    int pdgId_1=9999;
+    if(ndau>0)pdgId_1=genP->daughter(0)->pdgId();
+    int pdgId_2=9999;
+    if(ndau>1)pdgId_2=genP->daughter(1)->pdgId();
+
   
+    if(ndau>1  && abs(pdgId_1)==VpdgId_&& abs(pdgId_2)==VpdgId_ &&status==3){//found the X->ZZ
+      foundX=true;
+      massGenX=genP->mass();
+      ptGenX=genP->pt();
+      yGenX=genP->rapidity();
+      phiGenX=genP->phi();
+      pdgIdGenX=pdgId;
+    }
 
-  if(highptLep1){
-    eleMVAId1[ih] = edbr->leg1().leg1().mvaTrigV0(); 
-    eleMVAId2[ih] = edbr->leg1().leg2().mvaTrigV0();
-  } 
-  else{
-    eleMVAId1[ih] = edbr->leg1().leg2().mvaTrigV0(); 
-    eleMVAId2[ih] = edbr->leg1().leg1().mvaTrigV0();
-  }
-}
-*************************/
+    if(abs(pdgId)==VpdgId_ &&ndau>1 && abs(pdgId_2)<9 &&status==3){//found the V->qq
+      foundZqq=true;
+      massGenZqq=genP->mass();
+      ptGenZqq=genP->pt();
+      yGenZqq=genP->rapidity();
+      phiGenZqq=genP->phi();
+    }
 
+    if(abs(pdgId)==VpdgId_ &&ndau>1 && status==3){//found the V->ll
+     
+      if  (abs(pdgId_2)>=11&&abs(pdgId_2)<=14) { 
+	foundZll=true;   
+	massGenZll=genP->mass();
+	ptGenZll=genP->pt();
+	yGenZll=genP->rapidity();
+	phiGenZll=genP->phi();
+      }
+      else if(abs(pdgId_2)==15 || abs(pdgId_2)==16){// Z->tautau or W->taunu
+		foundZll=true;  
+      }
+    }
+
+    
+   
+  }//end loop on genParticles
+
+
+  if( searchX && (!foundX) ) std::cout<<"WARNING from AnalyzerEDBR::analyzeGenLevel!!! Loop on genLevel particles ended without having found X->VV "<<std::endl;
+  if( searchZqq && (!foundZqq) ) std::cout<<"WARNING from AnalyzerEDBR::analyzeGenLevel!!! Loop on genLevel particles ended without having found V->qq "<<std::endl;
+  if( searchZll && (!foundZll) ) std::cout<<"WARNING from AnalyzerEDBR::analyzeGenLevel!!! Loop on genLevel particles ended without having found V->leplep "<<std::endl;
+
+
+}//end AnalyzerEDBR::analyzeGenLevel
 
 double AnalyzerEDBR::deltaR(reco::LeafCandidate p1,reco::LeafCandidate p2){
   double deltaEta = fabs(p1.eta()-p2.eta());

@@ -84,11 +84,14 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   std::string cmgEDBRMu_, cmgEDBREle_;
   unsigned int Ngen_;
   double xsec_;
+  int VpdgId_; 
+  unsigned int fillGen_;
 
   void init();
   void initTree();
   void initDataMembers();
   void analyzeTrigger(edm::Event const& iEvent, edm::EventSetup const& eventSetup);
+  void analyzeGenLevel(edm::Event const& iEvent, edm::EventSetup const& eventSetup);
   // void analyzeGeneric(edbr,int ih, bool goodKinFit);
   double deltaR(reco::LeafCandidate p1,reco::LeafCandidate p2);
   double deltaR(double phi1,double eta1,double phi2,double eta2);
@@ -422,6 +425,12 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double qjet[nMaxCand],tau1[nMaxCand],tau2[nMaxCand],nsubj12[nMaxCand],nsubj23[nMaxCand];
   double mdrop[nMaxCand],prunedmass[nMaxCand];
 
+  double massGenX, ptGenX,yGenX, phiGenX;
+  double massGenZll, ptGenZll,yGenZll, phiGenZll;
+  double massGenZqq, ptGenZqq,yGenZqq, phiGenZqq;
+  double ptGenq1,etaGenq1, phiGenq1,ptGenq2,etaGenq2, phiGenq2 ;
+  double ptGenl1,etaGenl1, phiGenl1,ptGenl2,etaGenl2, phiGenl2 ;
+  int pdgIdGenX,flavGenq1,flavGenq2,flavGenl1,flavGenl2;
 
 
   unsigned int nevent,run,ls, njets, nvtx,npu;
