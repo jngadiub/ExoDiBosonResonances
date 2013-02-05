@@ -5,10 +5,8 @@ AnalyzerXZZ = cms.EDAnalyzer("AnalyzerEDBR",
                              VType=cms.string("Z"),
                              ###input collections for separated jet topology
                              EDBREEJJColl=cms.InputTag("cmgEDBRSelKinFitEleFullE"),
-                             EDBREEJJNoKinFitColl=cms.InputTag("cmgEDBRSelEleFullE"),
                              EDBREEJJLDValueMap=cms.InputTag("dummyForNow"),
                              EDBRMMJJColl=cms.InputTag("cmgEDBRSelKinFitMuFullM"),
-                             EDBRMMJJNoKinFitColl=cms.InputTag("cmgEDBRSelMuFullM"),
                              EDBRMMJJLDValueMap=cms.InputTag("dummyForNow"),
                              ###input collections for merged jet topology
                              EDBREEJColl=cms.InputTag("cmgEDBRMergedSelEle"),
