@@ -43,21 +43,41 @@ public:
     
     inDir_=nameInDir;
     char buffer[256];
+    TFile* aFile=NULL;
 
     nDATASamples_=int(nameFileData.size());
     for(int i=0;i<nDATASamples_;i++){
       sprintf(buffer,"%s%s",inDir_.c_str(),(nameFileData[i]).c_str());
       printf("Opening file: %s\n",buffer);
-      fdata.push_back(TFile::Open(buffer));
+      aFile = TFile::Open(buffer);
+      printf("This file is at pointer %i\n",aFile);
+      fdata.push_back(aFile);
+      
     }
 
     nMCSamples_=int(nameFileMC.size());
+    printf("nMCSamples is %i\n",nMCSamples_);
+    fmc.reserve(8);
     for(int i=0;i<nMCSamples_;i++){
      sprintf(buffer,"%s%s",inDir_.c_str(),(nameFileMC[i]).c_str());
      printf("Opening file: %s\n",buffer);
-     fmc.push_back(TFile::Open(buffer));
-    }
+     aFile = TFile::Open(buffer);
+     aFile->Print();
+     printf("This file is at pointer %i\n",aFile);
+     fmc.push_back(aFile);
 
+     
+     //TH1D* FUCKINGHISTO = (TH1D*)fmc.at(i)->Get("h_ptZll");
+     //printf("Got histo %s\n",FUCKINGHISTO->GetName());
+     //printf("It has entries %i\n",(int)FUCKINGHISTO->GetEntries());
+     //printf("It has Mean %g\n",FUCKINGHISTO->GetMean());
+     //printf("It has RMS %g\n",FUCKINGHISTO->GetRMS());
+    }
+    
+    /// UGLY HACK
+    TFile* nullFile = NULL;
+    fmc.push_back(nullFile);
+    
     targetLumi_ = targetLumi;
     scaleToData_ = scaleToData;
 
@@ -95,12 +115,12 @@ public:
 
   ///get reasonable colors for stacks.
   int getFillColor(int index){
-    if(index<6)return EDBRColors[index];
+    if(index<7)return EDBRColors[index];
     return kWhite;
   }
 
   void setFillColor(std::vector<int> colorList){
-    int ind=0;
+    unsigned int ind=0;
     while (ind<20 && ind < colorList.size()){//max n color hard-coded down there
       EDBRColors.at(ind)=colorList.at(ind);
       ind++;
@@ -154,24 +174,44 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   // Loop over files, clone histograms and add them to the vectors.
   const int nMC=nMCSamples_;
   double nnn=((TH1D*)fmc.at(nMC-1)->Get("h_nVtx"))->GetEntries();
+
   for(int is=0;is<nMC;is++){
+    
     tempFile = fmc.at(is);
+
     stringstream ss1;
     ss1<<is;
     string strNewName=histoName+"_"+ss1.str();
-    tempHisto = (TH1D*)fmc.at(is)->Get(histoName.c_str())->Clone(strNewName.c_str());
+    tempHisto = (TH1D*)fmc.at(is)->Get(histoName.c_str())->Clone();//strNewName.c_str());
     tempHisto->SetDirectory(0);
-    //  tempHisto->SetName();
+    
     std::string tmp1 = "h_nVtx";
     std::string tmp2 = histoName.c_str();
-    if(tmp1==tmp2) std::cout<<fmc[is]->GetName()<<" : the histogram with the # of vertices has "<<(int)tempHisto->GetEntries() <<" entries  ; "<<tempHisto->GetName()<<std::endl;
+    std::string tmp3 = "h_ptZll";
+
+    if(tmp2 == tmp3) {
+      printf("Trying to get histogram %s\n",histoName.c_str());
+      printf("Histogram coming from file %s\n",tempFile->GetName());
+      printf("tempFile at pointer %i\n",tempFile);
+      printf("Got histo %s\n",tempHisto->GetName());
+      printf("It has entries %i\n",(int)tempHisto->GetEntries());
+      printf("It has Mean %g\n",tempHisto->GetMean());
+      printf("It has RMS %g\n",tempHisto->GetRMS());
+      printf("************************************************\n");
+    }
+
+    if(tmp1==tmp2) 
+      std::cout<<fmc[is]->GetName()<<" : the histogram with the # of vertices has "
+	       <<(int)tempHisto->GetEntries() <<" entries  ; "<<tempHisto->GetName()<<std::endl;
+
     h_mc.push_back(tempHisto);
     h_mc[is]->SetFillColor(getFillColor(is));
     
-    if(is==0)
-      hSumMC = ((TH1D*)fmc[is]->Get(histoName.c_str())->Clone());
+    if(is==0) {
+      hSumMC = ((TH1D*)fmc[is]->Get(histoName.c_str())->Clone("RegularClone"));
+    }
     else {
-      hSumMC->Add(h_mc[is] );
+      hSumMC->Add((TH1D*)h_mc[is]->Clone("HatefulClone"));
     }
     
   }//end loop on MC samples
@@ -185,8 +225,9 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     tempHisto->SetDirectory(0);
     h_data.push_back(tempHisto);
     
-    if(is==0)
+    if(is==0) {
       hSumDATA = ((TH1D*)fdata[is]->Get(histoName.c_str())->Clone());
+    }
     else {
       hSumDATA->Add(h_data[is] );
     }
@@ -227,7 +268,10 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   THStack *hsbkgd=new THStack("allBkgd",buffer);
   for(int i=0;i<nMC;i++){
     string tmpstr1=h_mc[i]->GetName();
-    if(tmpstr1=="h_nVtx")std::cout<<"Adding to THStack "<<tmpstr1.c_str()<<"  integral is "<<h_mc[i]->Integral()<<"  Nentries="<<h_mc[i]->GetEntries()<<std::endl;
+    if(tmpstr1=="h_ptZll")
+      std::cout<<"Adding to THStack "<<tmpstr1.c_str()<<"  integral is "
+	       <<h_mc[i]->Integral()<<"  Nentries="
+	       <<h_mc[i]->GetEntries()<<std::endl;
     hsbkgd->Add(h_mc[i]);
   }
 

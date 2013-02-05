@@ -192,6 +192,10 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 	(theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);
 	(theHistograms["ptjet1"])->Fill(ptjet1[ivec],actualWeight);
 	(theHistograms["ptjet2"])->Fill(ptjet2[ivec],actualWeight);
+	(theHistograms["ptZll"])->Fill(ptZll[ivec],actualWeight);
+	(theHistograms["ptZjj"])->Fill(ptZjj[ivec],actualWeight);
+	(theHistograms["yZll"])->Fill(yZll[ivec],actualWeight);
+	(theHistograms["yZjj"])->Fill(yZjj[ivec],actualWeight);
 	(theHistograms["mLL"])->Fill(mLL[ivec],actualWeight);
 	(theHistograms["mJJ"])->Fill(mJJ[ivec],actualWeight);
 	(theHistograms["mZZ"])->Fill(mZZ[ivec],actualWeight);
@@ -202,8 +206,9 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 	(theHistograms["nVtx"])->Fill(nVtx,actualWeight);
 	(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);
 	(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);
-	(theHistograms["isolep1"])->Fill(isolep1[ivec],actualWeight);
-	(theHistograms["isolep2"])->Fill(isolep2[ivec],actualWeight);
+	(theHistograms["isolep1"])->Fill(isolep1mod[ivec],actualWeight);
+	(theHistograms["isolep2"])->Fill(isolep2mod[ivec],actualWeight);
+	(theHistograms["nJets"])->Fill(nJets,actualWeight);
 	(theHistograms["met"])->Fill(met,actualWeight);
 	(theHistograms["metSign"])->Fill(metSign,actualWeight);
 	(theHistograms["etalep1"])->Fill(etalep1[ivec],actualWeight);

@@ -25,16 +25,19 @@ void loopPlot(){
   }
   
   /// Path to wherever the files with the trees are. 
-  std::string pathToTrees="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/";
+  //std::string pathToTrees="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/";
+  std::string pathToTrees="/afs/cern.ch/user/t/tomei/EXOVV_2012/analyzer_trees/productionTEST/";
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = pathToTrees+"./test_outPlots";
+  //std::string outputDir = pathToTrees+"./test_outPlots";
+  std::string outputDir = "./test_outPlots";
 
   /// Setup names of data files for trees.
-  const int nDATA=5;//set to zero if you don't want to plot
+  const int nDATA=6;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"DoubleMu_Run2012A_13Jul2012",
 				 "DoubleMu_Run2012A_recover",
 				 "DoubleMu_Run2012B_13Jul2012",
 				 "DoubleMu_Run2012C_24Aug2012",
+				 "DoubleMu_Run2012C_PRv2",
 				 "DoubleMu_Run2012D_PRv1"};
   std::vector<std::string> fData;
   for(int ii=0;ii<nDATA;ii++){
@@ -42,8 +45,18 @@ void loopPlot(){
   }
 
   /// Setup names of MC files for trees.
-  const int nMC=6;//set to zero if you don't want to plot
-  std::string mcLabels[nMC]={"TTBAR","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100"};//examples for now
+  const int nMC=7;//set to zero if you don't want to plot
+  std::string mcLabels[nMC]={"TTBAR",
+			     "WW",
+			     "WZ",
+			     "ZZ",
+			     "DYJetsPt50To70",
+			     "DYJetsPt70To100",
+			     "DYJetsPt100",
+			     "ZZ",
+			     "WZ",
+			     "WW"};
+
   std::vector<std::string> fMC;
   for(int ii=0;ii<nMC;ii++){
     fMC.push_back(pathToTrees+"treeEDBR_"+mcLabels[ii]+".root");
@@ -55,7 +68,7 @@ void loopPlot(){
  
 
   /// Luminosity value in pb^-1
-  double lumiValue = 13086.0*0.2;
+  double lumiValue = 19600.0*0.2;
   
   printf("All strings set\n");
 
@@ -149,22 +162,24 @@ void loopPlot(){
       //   printf("Histogram found: %s\n",hName.c_str());
       listOfHistos.push_back(hName);
     }//end while loop
+    oneFile->Close();
   }//end if fmc size >0
 
   EDBRHistoPlotter *plotter=new EDBRHistoPlotter("./",
 						 fHistosData,
 						 fHistosMC,
 						 lumiValue,
-						 false);//bool scaleToData
+						 true);//bool scaleToData
   
   std::cout<<"Set output dir"<<std::endl;
   plotter->setOutDir(outputDir);
 
   //colors are assigned in the same order of mcLabels
-  ////// {"TTBAR","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100"};
+  ////// {"TTBAR","WW","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100"};
   std::vector<int> fColorsMC;
   fColorsMC.push_back(kOrange-9);
   fColorsMC.push_back(kGray+2);
+  fColorsMC.push_back(kGray);
   fColorsMC.push_back(kBlue-9);
   fColorsMC.push_back(kGreen-3);
   fColorsMC.push_back(kGreen);
