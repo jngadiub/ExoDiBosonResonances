@@ -47,14 +47,14 @@ namespace cmg {
 			void setleppt(double lep_pt_){lep_pt=lep_pt_;}
 			void setlepeta(double lep_eta_){lep_eta=lep_eta_;}
 			void setlepphi(double lep_phi_){lep_phi=lep_phi_;}
-			const int getnlep(){return nlep;}
+			int getnlep() const{return nlep;}
 			double getleppt() const{return lep_pt;}
 			double getlepeta() const{return lep_eta;}
 			double getlepphi() const{return lep_phi;}
 			// Dummy implementation.
 			pat::PATPtr const* sourcePtr() const{return &dummyPtr_;}
 
-			//some function just to sync with lepton, so we dont need to change tree code
+			//some functions just to sync with lepton, so we dont need to change the tree code
 			double relIso()   const{return 0;}
 			double mvaTrigV0()const{return 0;}
 
