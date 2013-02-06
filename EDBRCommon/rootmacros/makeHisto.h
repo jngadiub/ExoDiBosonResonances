@@ -24,42 +24,42 @@ const std::string vars[77] =
    "GenWeight", "weight", "weight2012A", "weight2012B", "event", "run", "ls"};
 
 const int nBins[77] = 
-  {13, 100, 100, 100, 100, 100, 40,
-   40, 40, 40, 60, 60, 100, 100,
-   100, 100, 25, 25, 25, 25, 100,
+  {13, 100, 100, 100, 100, 100, 100,
+   100, 100, 100, 92, 100, 28, 28,
+   100, 100, 26, 26, 26, 26, 100,
+   100, 100, 100, 100, 100, 80, 50,
+   35, 35, 50, 50, 50, 20, 20,
    100, 100, 100, 100, 100, 100, 100,
-   35, 35, 50, 50, 40, 20, 20,
-   100, 100, 100, 100, 100, 100, 100,
-   100, 100, 100, 100, 3, 100, 100,
-   100, 100, 100, 100, 100, 100, 100,
+   100, 100, 100, 100, 3, 40, 100,
+   40, 100, 100, 100, 100, 100, 100,
    100, 100, 100, 4, 4, 100, 43,
-   7, 2, 100, 100, 100, 100, 100,
+   10, 2, 100, 100, 100, 100, 100,
    100, 100, 100, 100, 102, 3, 102};
 
 const double minBin[77] = 
   {0.5,   -1.15,  -1.15,  -1.15,  -3.7,   -3.7,    0.0,
-   0.0,    0.0,    0.0,    0.0,    0.0,   -2.8,   -2.8,
-  -3.7,   -3.7,   -2.5,   -2.5,   -2.5,   -2.5,   -3.7,
+   0.0,    0.0,    0.0,    80.0,    0.0,   -2.8,   -2.8,
+  -3.7,   -3.7,   -2.6,   -2.6,   -2.6,   -2.6,   -3.7,
   -3.7,   -3.7,   -3.7,    0.0,    0.0,    0.0,    0.0,
-   0.0,    0.0,   40.0,   40.0,    0.0,    0.0,    0.0,
+   0.0,    0.0,   40.0,   40.0,    40.0,    0.0,    0.0,
    -2.2, -1.2, 0.96, 0., -100.2, -100.2, -100.2,
-   0., -1.2, -10800., -10800., 0., -115., -1080.,
-   -1080., -1080., -1080., -1080., -1080., 0., 0.,
+   0., -1.2, -10800., -10800., 0., 0., -1080.,
+   0., -1080., -1080., -1080., -1080., 0., 0.,
    -1.15, -1.15, -100.2, -101., -101., -1.2, -0.5,
    0.5, 0., 0.99, 0., 0., 0., -1.15,
    0., 0., 0., 0., 2490000., 0., 6280.};
 
 const double maxBin[77] = 
-  {13.5,   1.15,  1.15,  1.15,  3.7,    3.7,   200.0,
-   200.0,  200.0, 200.0, 600.0, 600.0,  2.8,   2.8,
-   3.7,    3.7,   2.5,   2.5,   2.5,    2.5,   3.7,
-   3.7,    3.7,   3.7,   1.,    1.,     1000,  1000,
-   350.0,  350.0, 120.0, 120.0, 200.0,  100.0, 10.0,
+  {13.5,   1.15,  1.15,  1.15,  3.7,    3.7,   500.0,
+   500.0,  500.0, 500.0, 1000.0, 1000.0,  2.8,   2.8,
+   3.7,    3.7,   2.6,   2.6,   2.6,    2.6,   3.7,
+   3.7,    3.7,   3.7,   1.,    1.,     1600,  1000,
+   350.0,  350.0, 140.0, 140.0, 140.0,  100.0, 10.0,
    0., 1.2, 3.34, 4.35, -97.8, -97.8, -97.8,
-   1.1, 1.2, 1000., 1000., 3., 110., 100.,
-   100., 100., 100., 100., 100., 0.20, 0.20,
+   1.1, 1.2, 1000., 1000., 3., 200., 100.,
+   1., 100., 100., 100., 100., 0.20, 0.20,
    1.15, 1.15, -97.8, -97., -97., 1.2, 42.5,
-   7.5, 1., 1., 16., 140., 16., 1.2,
+   10.5, 1., 1., 16., 140., 16., 1.2,
    2.2, 0.02, 0.14, 0.02, 54510000., 3., 181720.};
 
 /// EDBRHistoMaker is the class that analyzes the flat
@@ -86,69 +86,69 @@ public :
 
    // Declaration of leaf types
    Int_t           nCands;
-   Double_t        cosThetaStar[35];   //[nCands]
-   Double_t        cosTheta1[35];   //[nCands]
-   Double_t        cosTheta2[35];   //[nCands]
-   Double_t        phi[35];   //[nCands]
-   Double_t        phiStar1[35];   //[nCands]
-   Double_t        ptlep1[35];   //[nCands]
-   Double_t        ptlep2[35];   //[nCands]
-   Double_t        ptjet1[35];   //[nCands]
-   Double_t        ptjet2[35];   //[nCands]
-   Double_t        ptZll[35];   //[nCands]
-   Double_t        ptZjj[35];   //[nCands]
-   Double_t        yZll[35];   //[nCands]
-   Double_t        yZjj[35];   //[nCands]
-   Double_t        phiZll[35];   //[nCands]
-   Double_t        phiZjj[35];   //[nCands]
-   Double_t        etalep1[35];   //[nCands]
-   Double_t        etalep2[35];   //[nCands]
-   Double_t        etajet1[35];   //[nCands]
-   Double_t        etajet2[35];   //[nCands]
-   Double_t        philep1[35];   //[nCands]
-   Double_t        philep2[35];   //[nCands]
-   Double_t        phijet1[35];   //[nCands]
-   Double_t        phijet2[35];   //[nCands]
+   Double_t        cosThetaStar[99];   //[nCands]
+   Double_t        cosTheta1[99];   //[nCands]
+   Double_t        cosTheta2[99];   //[nCands]
+   Double_t        phi[99];   //[nCands]
+   Double_t        phiStar1[99];   //[nCands]
+   Double_t        ptlep1[99];   //[nCands]
+   Double_t        ptlep2[99];   //[nCands]
+   Double_t        ptjet1[99];   //[nCands]
+   Double_t        ptjet2[99];   //[nCands]
+   Double_t        ptZll[99];   //[nCands]
+   Double_t        ptZjj[99];   //[nCands]
+   Double_t        yZll[99];   //[nCands]
+   Double_t        yZjj[99];   //[nCands]
+   Double_t        phiZll[99];   //[nCands]
+   Double_t        phiZjj[99];   //[nCands]
+   Double_t        etalep1[99];   //[nCands]
+   Double_t        etalep2[99];   //[nCands]
+   Double_t        etajet1[99];   //[nCands]
+   Double_t        etajet2[99];   //[nCands]
+   Double_t        philep1[99];   //[nCands]
+   Double_t        philep2[99];   //[nCands]
+   Double_t        phijet1[99];   //[nCands]
+   Double_t        phijet2[99];   //[nCands]
    Double_t        lep;
-   Double_t        region[35];   //[nCands]
-   Double_t        mZZ[35];   //[nCands]
-   Double_t        mZZNoKinFit[35];   //[nCands]
-   Double_t        ptmzz[35];   //[nCands]
-   Double_t        ptmzzNoKinFit[35];   //[nCands]
-   Double_t        mLL[35];   //[nCands]
-   Double_t        mJJ[35];   //[nCands]
-   Double_t        mJJNoKinFit[35];   //[nCands]
+   Double_t        region[99];   //[nCands]
+   Double_t        mZZ[99];   //[nCands]
+   Double_t        mZZNoKinFit[99];   //[nCands]
+   Double_t        ptmzz[99];   //[nCands]
+   Double_t        ptmzzNoKinFit[99];   //[nCands]
+   Double_t        mLL[99];   //[nCands]
+   Double_t        mJJ[99];   //[nCands]
+   Double_t        mJJNoKinFit[99];   //[nCands]
    Double_t        met;
    Double_t        metSign;
-   Double_t        nBTags[35];   //[nCands]
-   Double_t        deltaREDBR[35];   //[nCands]
-   Double_t        deltaRleplep[35];   //[nCands]
-   Double_t        deltaRjetjet[35];   //[nCands]
-   Double_t        qgProduct[35];   //[nCands]
-   Double_t        qgjet1[35];   //[nCands]
-   Double_t        qgjet2[35];   //[nCands]
-   Double_t        betajet1[35];   //[nCands]
-   Double_t        betajet2[35];   //[nCands]
-   Double_t        puMvajet1[35];   //[nCands]
-   Double_t        puMvajet2[35];   //[nCands]
-   Int_t           nXjets[35];   //[nCands]
-   Double_t        prunedmass[35];   //[nCands]
-   Double_t        mdrop[35];   //[nCands]
-   Double_t        nsubj12[35];   //[nCands]
-   Double_t        nsubj23[35];   //[nCands]
-   Double_t        tau1[35];   //[nCands]
-   Double_t        tau2[35];   //[nCands]
-   Double_t        qjet[35];   //[nCands]
-   Double_t        isolep1[35];   //[nCands]
-   Double_t        isolep2[35];   //[nCands]
-   Double_t        isolep1mod[35];   //[nCands]
-   Double_t        isolep2mod[35];   //[nCands]
-   Double_t        eleMVAId1[35];   //[nCands]
-   Double_t        eleMVAId2[35];   //[nCands]
-   Double_t        LD[35];   //[nCands]
-   Int_t           q1fl[35];   //[nCands]
-   Int_t           q2fl[35];   //[nCands]
-   Double_t        MCmatch[35];   //[nCands]
+   Double_t        nBTags[99];   //[nCands]
+   Double_t        deltaREDBR[99];   //[nCands]
+   Double_t        deltaRleplep[99];   //[nCands]
+   Double_t        deltaRjetjet[99];   //[nCands]
+   Double_t        qgProduct[99];   //[nCands]
+   Double_t        qgjet1[99];   //[nCands]
+   Double_t        qgjet2[99];   //[nCands]
+   Double_t        betajet1[99];   //[nCands]
+   Double_t        betajet2[99];   //[nCands]
+   Double_t        puMvajet1[99];   //[nCands]
+   Double_t        puMvajet2[99];   //[nCands]
+   Int_t           nXjets[99];   //[nCands]
+   Double_t        prunedmass[99];   //[nCands]
+   Double_t        mdrop[99];   //[nCands]
+   Double_t        nsubj12[99];   //[nCands]
+   Double_t        nsubj23[99];   //[nCands]
+   Double_t        tau1[99];   //[nCands]
+   Double_t        tau2[99];   //[nCands]
+   Double_t        qjet[99];   //[nCands]
+   Double_t        isolep1[99];   //[nCands]
+   Double_t        isolep2[99];   //[nCands]
+   Double_t        isolep1mod[99];   //[nCands]
+   Double_t        isolep2mod[99];   //[nCands]
+   Double_t        eleMVAId1[99];   //[nCands]
+   Double_t        eleMVAId2[99];   //[nCands]
+   Double_t        LD[99];   //[nCands]
+   Int_t           q1fl[99];   //[nCands]
+   Int_t           q2fl[99];   //[nCands]
+   Double_t        MCmatch[99];   //[nCands]
    UInt_t          nVtx;
    UInt_t          nJets;
    UInt_t          nPU;
@@ -264,11 +264,12 @@ public :
   void setWantNXJets(int nxj=1){wantNXJets_=nxj;}
 
   bool eventPassesFlavorCut();
+  bool eventPassesLeptonicZPtCut(int i, double ptZll_threshold);
   bool eventInSidebandRegion(int i);
   bool eventInSignalRegion(int i);
   bool eventPassesRegionCut(int i);
   bool eventPassesNXJetCut(int i);  
-  bool eventPassesCut(int i);
+  bool eventPassesCut(int i, double ptZll_threshold);
 
   // Our added variables
   int nVars;

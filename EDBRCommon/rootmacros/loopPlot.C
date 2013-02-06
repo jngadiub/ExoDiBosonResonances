@@ -29,7 +29,7 @@ void loopPlot(){
   std::string pathToTrees="/afs/cern.ch/user/t/tomei/EXOVV_2012/analyzer_trees/productionTEST/";
   /// Path to wherever you want to put the histograms (figures) in.
   //std::string outputDir = pathToTrees+"./test_outPlots";
-  std::string outputDir = "./test_outPlots";
+  std::string outputDir = "./singleJetMuons";
 
   /// Setup names of data files for trees.
   const int nDATA=6;//set to zero if you don't want to plot
@@ -52,10 +52,7 @@ void loopPlot(){
 			     "ZZ",
 			     "DYJetsPt50To70",
 			     "DYJetsPt70To100",
-			     "DYJetsPt100",
-			     "ZZ",
-			     "WZ",
-			     "WW"};
+			     "DYJetsPt100"};
 
   std::vector<std::string> fMC;
   for(int ii=0;ii<nMC;ii++){
@@ -98,7 +95,7 @@ void loopPlot(){
 					       true, //wantMuons
 					       true, //wantSideband
 					       true, //wantSignal
-					       2);//wantNXJets
+					       1);//wantNXJets
     sprintf(buffer,"histos_%s.root",dataLabels[i].c_str());
     maker->Loop(buffer);
     std::string oneString(buffer);
@@ -119,7 +116,7 @@ void loopPlot(){
 					       true, 
 					       true, 
 					       true, 
-					       2);
+					       1);
     sprintf(buffer,"histos_%s.root",mcLabels[i].c_str());
     maker->Loop(buffer);
     std::string oneString(buffer);
@@ -170,23 +167,22 @@ void loopPlot(){
 						 fHistosMC,
 						 lumiValue,
 						 true);//bool scaleToData
-  
   std::cout<<"Set output dir"<<std::endl;
   plotter->setOutDir(outputDir);
 
   //colors are assigned in the same order of mcLabels
   ////// {"TTBAR","WW","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100"};
   std::vector<int> fColorsMC;
-  fColorsMC.push_back(kOrange-9);
-  fColorsMC.push_back(kGray+2);
-  fColorsMC.push_back(kGray);
-  fColorsMC.push_back(kBlue-9);
   fColorsMC.push_back(kGreen-3);
-  fColorsMC.push_back(kGreen);
-  fColorsMC.push_back(kGreen+3);
   fColorsMC.push_back(kMagenta-9);
   fColorsMC.push_back(kMagenta-6);
-  fColorsMC.push_back(kRed-7);
+  fColorsMC.push_back(kMagenta-3);
+  fColorsMC.push_back(kBlue-3);
+  fColorsMC.push_back(kBlue-6);
+  fColorsMC.push_back(kBlue-9);
+  fColorsMC.push_back(kGreen+3);
+  fColorsMC.push_back(kGreen);
+  fColorsMC.push_back(kGreen-3);
 
   plotter->setFillColor(fColorsMC);
 

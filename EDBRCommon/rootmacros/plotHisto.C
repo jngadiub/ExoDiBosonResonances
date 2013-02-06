@@ -50,7 +50,7 @@ public:
       sprintf(buffer,"%s%s",inDir_.c_str(),(nameFileData[i]).c_str());
       printf("Opening file: %s\n",buffer);
       aFile = TFile::Open(buffer);
-      printf("This file is at pointer %i\n",aFile);
+      printf("This file is at pointer 0x%x\n",aFile);
       fdata.push_back(aFile);
       
     }
@@ -63,15 +63,8 @@ public:
      printf("Opening file: %s\n",buffer);
      aFile = TFile::Open(buffer);
      aFile->Print();
-     printf("This file is at pointer %i\n",aFile);
+     printf("This file is at pointer %x\n",aFile);
      fmc.push_back(aFile);
-
-     
-     //TH1D* FUCKINGHISTO = (TH1D*)fmc.at(i)->Get("h_ptZll");
-     //printf("Got histo %s\n",FUCKINGHISTO->GetName());
-     //printf("It has entries %i\n",(int)FUCKINGHISTO->GetEntries());
-     //printf("It has Mean %g\n",FUCKINGHISTO->GetMean());
-     //printf("It has RMS %g\n",FUCKINGHISTO->GetRMS());
     }
     
     /// UGLY HACK
@@ -85,8 +78,8 @@ public:
     EDBRColors.resize(20,kWhite);
     EDBRColors.at(0)= kOrange-9;
     EDBRColors.at(1)= kRed-7;
-    EDBRColors.at(2)=kGray+2;
-    EDBRColors.at(3)=kBlue-9;
+    EDBRColors.at(2)= kGray+2;
+    EDBRColors.at(3)= kBlue-9;
     EDBRColors.at(4)= kMagenta-9;
     EDBRColors.at(5)= kGreen-3;  
   }
@@ -140,6 +133,7 @@ private:
   int nDATASamples_;
 
   double dataIntegral_;
+  double totalBackgroundIntegral_;
 
   double targetLumi_;
 
@@ -189,7 +183,8 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     std::string tmp2 = histoName.c_str();
     std::string tmp3 = "h_ptZll";
 
-    if(tmp2 == tmp3) {
+    //if(tmp2 == tmp3) {
+    if(false) {  
       printf("Trying to get histogram %s\n",histoName.c_str());
       printf("Histogram coming from file %s\n",tempFile->GetName());
       printf("tempFile at pointer %i\n",tempFile);
@@ -231,7 +226,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     else {
       hSumDATA->Add(h_data[is] );
     }
-
+    
   }
   //end loop on data samples
 
@@ -241,12 +236,12 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     hSumDATA->SetMarkerStyle(21);  
     dataIntegral_ = hSumDATA->Integral();
   }
-
+  
   /// Scale to data or to lumi?
-  if(scaleToData_) {    
-    double totalBackgroundIntegral = hSumMC->Integral();
+  if(scaleToData_) {
     for(int is=0;is<nMC;is++){
-      h_mc[is]->Scale(dataIntegral_/totalBackgroundIntegral);
+      totalBackgroundIntegral_ = hSumMC->Integral();
+      h_mc[is]->Scale(dataIntegral_/totalBackgroundIntegral_);
     }
   }
   else {
@@ -254,7 +249,15 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
       h_mc[is]->Scale(targetLumi_);
     }
   }
-
+  
+  if(histoName == "h_nVtx") {
+    double thisIntegral=0;
+    for(int is=0;is<nMC;is++){      
+      thisIntegral += h_mc[is]->Integral();
+    }         
+    printf("Scaling factor is %g\n",dataIntegral_/thisIntegral);
+  }
+  
   //make a THStack of the background
   //for the titles get them from the first MC histo, it is good enough.
   //or no title, if you prefer.
@@ -266,11 +269,13 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	  );
 
   THStack *hsbkgd=new THStack("allBkgd",buffer);
+
+  // Now for the real draw.
   for(int i=0;i<nMC;i++){
     string tmpstr1=h_mc[i]->GetName();
-    if(tmpstr1=="h_ptZll")
+    if(tmpstr1=="h_nVtx")
       std::cout<<"Adding to THStack "<<tmpstr1.c_str()<<"  integral is "
-	       <<h_mc[i]->Integral()<<"  Nentries="
+	       <<h_mc[i]->Integral()<<"  Nentries ="
 	       <<h_mc[i]->GetEntries()<<std::endl;
     hsbkgd->Add(h_mc[i]);
   }
@@ -279,14 +284,16 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   if(nDATA>0) hSumDATA->Draw("SAME E1");
 
   // Let's make such that the histogram has some white space on top.
+  // Also, we want it to start at 0.02. This is tricky because
+  // of the way THStack works...
   // This needs a bit of magic...
   double maxMC = hSumMC->GetMaximum();
   double maxData = hSumDATA->GetMaximum();
   double histoMax = (maxMC > maxData? maxMC : maxData);
   double newHistoMax = histoMax*1.1;
-  hsbkgd->GetHistogram()->GetYaxis()->SetRangeUser(0,newHistoMax);
+  hsbkgd->GetHistogram()->GetYaxis()->SetRangeUser(0.02,newHistoMax);
   hsbkgd->SetMaximum(newHistoMax);
-
+  
   // For the legend, we have to tokenize the name "histos_XXX.root"
   // to get the XXX... yuck.
   TLegend* leg = new TLegend(0.7,0.7,0.9,0.9);
@@ -306,12 +313,28 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   TLatex* l = makeCMSPreliminaryTop(8);
   l->Draw();
   
-  // Save the file as a PDF
+  // Save the picture
+  cv->SetLogy(false);
   sprintf(buffer,"%s/pdf/can_%s.pdf",outDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
   sprintf(buffer,"%s/png/can_%s.png",outDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
   sprintf(buffer,"%s/root/can_%s.root",outDir_.c_str(),histoName.c_str());
+  cv->SaveAs(buffer);
+
+  // And logscale, more space on top
+  cv->Draw();
+  hsbkgd->SetMinimum(0.1);
+  hsbkgd->SetMaximum(15.0*newHistoMax);
+  cv->Draw();
+  cv->SetLogy(true);
+  cv->Draw();
+  cv->Draw();
+  sprintf(buffer,"%s/pdf/can_%s_log.pdf",outDir_.c_str(),histoName.c_str());
+  cv->SaveAs(buffer);
+  sprintf(buffer,"%s/png/can_%s_log.png",outDir_.c_str(),histoName.c_str());
+  cv->SaveAs(buffer);
+  sprintf(buffer,"%s/root/can_%s_log.root",outDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
 
   delete leg;
@@ -321,4 +344,5 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   for(int is=0;is<nMC;is++) delete h_mc[is];
  
   delete cv;
+
 }

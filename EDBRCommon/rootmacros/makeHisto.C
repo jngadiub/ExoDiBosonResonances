@@ -28,7 +28,7 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 }
 
 EDBRHistoMaker::~EDBRHistoMaker() {
-  if (!fChain) return;                                                                                                                                     
+  if (!fChain) return;
   delete fChain->GetCurrentFile();
 }                  
 
@@ -100,6 +100,15 @@ bool EDBRHistoMaker::eventPassesFlavorCut(){
  return passesFlavour;
 }
 
+bool EDBRHistoMaker::eventPassesLeptonicZPtCut(int i, double ptZll_threshold){
+  
+  bool passesLeptonicZPt = false;
+  
+  passesLeptonicZPt = (ptZll[i] > ptZll_threshold);
+
+  return passesLeptonicZPt;
+}
+
 // These functions have to aware if we're in the one jet / 
 // two jet case.
 bool EDBRHistoMaker::eventInSidebandRegion(int i){
@@ -137,12 +146,17 @@ bool  EDBRHistoMaker::eventPassesNXJetCut(int i){
   
 }
 
-bool EDBRHistoMaker::eventPassesCut(int i) {
+bool EDBRHistoMaker::eventPassesCut(int i, double ptZll_threshold) {
 
   bool passesFlavour = eventPassesFlavorCut();
   bool passesRegion  = eventPassesRegionCut(i);
   bool passesNXJet   = eventPassesNXJetCut(i);
-  bool result = passesFlavour && passesRegion && passesNXJet;
+  bool passesLeptonicZPt = eventPassesLeptonicZPtCut(i, ptZll_threshold);
+  bool result = 
+    passesFlavour and
+    passesRegion and
+    passesNXJet and 
+    passesLeptonicZPt;
 
   return result;
 }
@@ -186,7 +200,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
     for(int ivec=0;ivec<nCands;ivec++){
       
-      if(eventPassesCut(ivec)){
+      if(eventPassesCut(ivec, 80)){
 	//printf("Event passed\n");
 	(theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);
 	(theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);
@@ -200,9 +214,10 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 	(theHistograms["mJJ"])->Fill(mJJ[ivec],actualWeight);
 	(theHistograms["mZZ"])->Fill(mZZ[ivec],actualWeight);
 	(theHistograms["prunedmass"])->Fill(prunedmass[ivec],actualWeight);
+	(theHistograms["nsubj12"])->Fill(nsubj12[ivec],actualWeight);
 	(theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);
 	(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);
-	(theHistograms["nsubj12"])->Fill(nsubj12[ivec],actualWeight);
+	(theHistograms["nsubj12"])->Fill(1.0/nsubj12[ivec],actualWeight);
 	(theHistograms["nVtx"])->Fill(nVtx,actualWeight);
 	(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);
 	(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);
