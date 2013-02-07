@@ -5,7 +5,7 @@ SAMPLE_Run2012MU=( SingleMu_Run2012A_13Jul2012  SingleMu_Run2012A_recover Single
 SAMPLE_Run2012ELE=( )
 
 
-SAMPLE_MC1=( TTBAR WW WZ ZZ WJetsPt50To70 WJetsPt70To100 WJetsPt100  )  # MC background
+SAMPLE_MC1=( TTBAR WW WZ ZZ WJetsPt50To70 WJetsPt70To100 WJetsPt100 DYJetsPt50To70 DYJetsPt70To100  DYJetsPt100 )  # MC background
 SAMPLE_MC2=( ) #MC signal: JHUGrav300 
 OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1"
 OUTPATHDATA=${OUTPATHBASE}/Run2012/presel/
