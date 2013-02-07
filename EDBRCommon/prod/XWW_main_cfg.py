@@ -37,8 +37,8 @@ fullname  = "ExoDiBosonResonances.EDBRCommon.datasets." + options.infile
 print 'Importing dataset from '
 print fullname
 process.load(fullname)
-process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:11250208"))
-process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:58698863"))
+##skip events with problem related kinematic fit                    DYJetsToLL_PtZ-50To70              TTBar                    WJetsPt70To100
+process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:58698863"),cms.EventRange("1:11250208"),cms.EventRange("1:15386873"))
 ####for synch studies
 #process.source.eventsToProcess = cms.untracked.VEventRange(cms.EventRange("166699:715236831"),cms.EventRange("173389:180639524"))
 #process.source.eventsToProcess  = cms.untracked.VEventRange(cms.EventRange("1:231104"))
