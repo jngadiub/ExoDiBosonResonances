@@ -10,7 +10,7 @@
 
 #include "CMSTDRStyle.h"
 
-gErrorIgnoreLevel=kWarning;//suppresses all info messages
+gErrorIgnoreLevel=kFatal;//suppresses all info messages
 
 void loopPlot(){
 
@@ -66,7 +66,9 @@ void loopPlot(){
 
   /// Luminosity value in pb^-1
   double lumiValue = 19600.0*0.2;
-  
+  /// k-factor for LO to NNLO
+  double kFactor = 1.2;
+
   printf("All strings set\n");
 
   /// ----------------------------------------------------------------
@@ -95,7 +97,7 @@ void loopPlot(){
 					       true, //wantMuons
 					       true, //wantSideband
 					       true, //wantSignal
-					       1);//wantNXJets
+					       2);//wantNXJets
     sprintf(buffer,"histos_%s.root",dataLabels[i].c_str());
     maker->Loop(buffer);
     std::string oneString(buffer);
@@ -116,7 +118,7 @@ void loopPlot(){
 					       true, 
 					       true, 
 					       true, 
-					       1);
+					       2);
     sprintf(buffer,"histos_%s.root",mcLabels[i].c_str());
     maker->Loop(buffer);
     std::string oneString(buffer);
@@ -166,7 +168,8 @@ void loopPlot(){
 						 fHistosData,
 						 fHistosMC,
 						 lumiValue,
-						 true);//bool scaleToData
+						 kFactor,
+						 false);//bool scaleToData
   std::cout<<"Set output dir"<<std::endl;
   plotter->setOutDir(outputDir);
 
