@@ -32,6 +32,11 @@ c) compile and execute. From the command line:
 -$> make fitSidebands
 -$> ./fitSidebands
 
+Ignore error messages like 
+Error in <TTree::Fill>: Failed filling branch:SelectedCandidatesV2.region, nbytes=-1, entry=19940
+ This error is symptomatic of a Tree created as a memory-resident Tree
+
+
 d) the code loops over the nXjet categories ( ==> 1-Jet and 2-Jet topologies)
 and for each of them saves in the output directory:
     - mZZ_alpha_*J_ALL_Madgraph.eps : plot with the mZZ 
@@ -49,6 +54,16 @@ and for each of them saves in the output directory:
       and not smoothened), the TF1 with the
       fit, a roofit workspace with more studies in it (see the code
       for more details), all the pseudo-alphas generated.
+
+
+
+------------------------------------
+2: apply the alpha ratio to the data in the sideband region + fit to
+extrapolated background
+
+------------------------------------
+3: create datacards for statistical analysis 
+
 
 
 

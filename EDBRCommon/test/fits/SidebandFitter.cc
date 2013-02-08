@@ -212,6 +212,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
 
  //fill a RooDataHist from the TH1D; the errors will be the proper ones
   double minMZZ=bins1[0];
+rangecut_=binpointer[nb];
   //  RooRealVar *mZZ = new RooRealVar("mZZ", "m_{ZZ}", mZZmin_, mZZmax_, "GeV");
   RooRealVar mZZ("mZZ","mZZ",minMZZ, bins1[nBins1-1]);//range to be synchronized with array of histo
   mZZ.setRange("fitRange",minMZZ,rangecut_);
@@ -230,19 +231,19 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
     RooRealVar *nXjets=new RooRealVar("nXjets","nXjets",0,2);
     RooRealVar *mJJ=new RooRealVar("mJJ","mJJ",50.0,150.0);
     RooRealVar *lep=new RooRealVar("lep","lep",0.0,1.0);
+    RooRealVar *region=new RooRealVar("region","region",0.0,1.0);
     RooRealVar *weight=new RooRealVar("weight","weight",0.0,10.0);
     stringstream strmcut;
     strmcut<<minMZZ;
     stringstream ssnxj;
     ssnxj<<nxjCategory;
-    string cutSB="nXjets=="+ssnxj.str()+" &&( (mJJ>60.0 && mJJ <75.0) || (mJJ>105&&mJJ<130.0)) &&mZZ>"+strmcut.str();
-    string cutSIG="nXjets=="+ssnxj.str()+" && mJJ>75.0 && mJJ <105.0 &&mZZ>"+ strmcut.str();
+    string cutSB="nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>"+strmcut.str();
+    string cutSIG="nXjets=="+ssnxj.str()+" && region==1.0 &&mZZ>"+ strmcut.str();
     
-    //the tree used for EXO-12-021 and EXO-12-022 are filled with vectors. Roofit doesn't like it.
-    //
+   
     
-    RooDataSet *mcSigDSet=new RooDataSet("dsMCSig","dMCSig",(TTree*)treeMC,RooArgSet(mZZ,*nXjets,*mJJ,*lep,*weight),cutSIG.c_str(),"weight");
-    RooDataSet *mcSBDSet=new RooDataSet("dsMCSB","dMCSB",(TTree*)treeMC,RooArgSet(mZZ,*nXjets,*mJJ,*lep,*weight),cutSB.c_str(),"weight");
+    RooDataSet *mcSigDSet=new RooDataSet("dsMCSig","dMCSig",(TTree*)treeMC,RooArgSet(mZZ,*nXjets,*mJJ,*lep,*region,*weight),cutSIG.c_str(),"weight");
+    RooDataSet *mcSBDSet=new RooDataSet("dsMCSB","dMCSB",(TTree*)treeMC,RooArgSet(mZZ,*nXjets,*mJJ,*lep,*region,*weight),cutSB.c_str(),"weight");
     // ------------------------ fit with a single exponential ------------------------------
     RooRealVar *slope_SIG = new RooRealVar("slopeSIG","exponential slope (SIGNAL)",-0.1,-5.0,0.0);
     RooExponential *bkgd_fit_SIG = new RooExponential("background_SIG","background_SIG",mZZ,*slope_SIG);
@@ -263,14 +264,14 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
 
     RooPlot *xf=mZZ.frame();
     
-    double minyscale = nxjCategory==2? 0.006 : 0.06;
-    double maxyscale = 30000.0;
+    double minyscale = nxjCategory==2? 0.000006 : 0.000006;
+    double maxyscale = 0.15;
     mcSigDSet->plotOn(xf,Binning(RooBinning(nBins1-1,bins1)),MarkerStyle(21),MarkerColor(kBlue));
     bkgd_fit_SIG->plotOn(xf, Normalization(mcSigDSet->sumEntries(),RooAbsPdf::NumEvent), LineColor(kOrange),Range("fitRange"));//,RooAbsPdf::NumEvent
     // mcSigDSet->plotOn(xf,Binning(RooBinning(nBins-1,bins1)),MarkerStyle(21),MarkerColor(kBlue));
     c2a->cd();
     xf->SetMinimum(0.0);
-    xf->SetMaximum((nxjCategory==2?100.0:500.0) );
+    xf->SetMaximum((nxjCategory==2?0.15:  0.15) );
     xf->Draw();
 
     c2->cd(1);
@@ -286,9 +287,10 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
     bkgd_fit_SB->plotOn(xf2, Normalization(mcSBDSet->sumEntries(),RooAbsPdf::NumEvent), LineColor(kGreen));//,RooAbsPdf::NumEvent
     // mcSBDSet->plotOn(xf2,Binning(RooBinning(nBins-1,bins1)),MarkerStyle(21),MarkerColor(kRed));
     c2b->cd();
-    xf->SetMinimum(0.0);
-    xf->SetMaximum((nxjCategory==2?100.:500.0) );
-    xf->Draw();
+    xf2->SetMinimum(0.0);
+    xf2->SetMaximum((nxjCategory==2?0.2:0.1) );
+    xf2->Draw();
+
 
     xf2->SetMinimum(minyscale);
     xf2->SetMaximum(maxyscale);

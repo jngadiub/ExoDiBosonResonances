@@ -82,7 +82,7 @@ void doAlpha(TTree *chMC, std::string wType){
     outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"J_"+leptStr+".root";
     sf->setOutFile(outFileName);
     sf->setCanvasLabel("_Madgraph");
-    RooWorkspace* alpha_nxj = sf->getAlphaFit( inxj, leptStr, treeMC_nxj ,false);
+    RooWorkspace* alpha_nxj = sf->getAlphaFit( inxj, leptStr, treeMC_nxj ,true);
 
    
 
