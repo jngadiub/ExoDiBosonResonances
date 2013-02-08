@@ -30,11 +30,13 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
       cmgEDBRMu_="cmgEDBRZZMu";
       cmgEDBREle_="cmgEDBRZZEle";
       VpdgId_=23;
+	  VMass_= 91.1876;
     }
     else if(VType_=="W"){
       cmgEDBRMu_="cmgEDBRWWMu";
       cmgEDBREle_="cmgEDBRWWEle";
       VpdgId_=24;
+	  VMass_= 80.4;
     } 
     else{
       throw cms::Exception("Wrong parameter")<<"Unrecognized VType paramter: "<<VType_.c_str()<<" . Allowed options are : W ; Z ."<<std::endl;
@@ -70,12 +72,13 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 
 void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
-//comment these for X->WW analysis
+//use these for X->ZZ analysis
+
   typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
   typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
   typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
   typedef  cmg::DiMuonDiJetEDBR     cmgMuDiJetEDBR  ;
-
+//use these for X->WW analysis
 /*
   typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
   typedef  cmg::WmunuSingleJetEDBR     cmgMuSingleJetEDBR  ; 
