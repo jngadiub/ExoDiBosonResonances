@@ -4,6 +4,8 @@ source /afs/cern.ch/project/eos/installation/cms/etc/setup.sh
 export PATH="$PATH:/afs/cern.ch/project/eos/installation/0.2.5/bin/"
 
 INPUT=$1
+echo mkdir $INPUT/duplicates
+eos.select mkdir -p $INPUT/duplicates
 
 echo "deleted files" > deletedfiles.txt
 
@@ -30,8 +32,12 @@ do
 		echo $dufilepfn
 		if test $success -eq 1
 			then
-			echo cmsRm $dufilelfn
-			cmsRm $dufilelfn            ###################action####################
+			#echo cmsRm $dufilelfn
+			#cmsRm $dufilelfn            ###################action####################
+			echo cmsStage $dufilelfn ${folder}duplicates
+			echo cmsRm $dufilelfn	
+			cmsStage $dufilelfn ${folder}duplicates
+			cmsRm $dufilelfn
 			continue
 		fi
 		out=$( python testrootfile.py  $dufilepfn )
@@ -47,8 +53,12 @@ do
 		    if test $nline -eq 4 && test $tmp -eq 0
 		        then
 		        echo Bad file!
+				#echo cmsRm $dufilelfn
+				#cmsRm $dufilelfn             #####################action#################
+				echo cmsStage $dufilelfn ${folder}duplicates
 				echo cmsRm $dufilelfn
-				cmsRm $dufilelfn             #####################action#################
+				cmsStage $dufilelfn ${folder}duplicates
+            	cmsRm $dufilelfn
 		    fi  
 		    let "nline=$nline+1"
 		done
