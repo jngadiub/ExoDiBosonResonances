@@ -15,11 +15,12 @@
 
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1);
 void doAlpha(TTree *chMC, std::string wType);
-
+const std::string myOutDir="FitSidebandsMJJ_TEST1";
+const string inDir="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/thiago20130206/";
 int main( int argc, char* argv[] ) {
 
   std::string weighting = "weight";
-  string inDir="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/thiago20130206/";
+
   
   TChain* chainMC = new TChain("SelectedCandidates");
   std::string bgTreeName;
@@ -44,6 +45,7 @@ int main( int argc, char* argv[] ) {
   TTree *tTmp=(TTree*)ftree->Get(tmpTreeName.c_str());
   doAlpha(tTmp,weighting);
 
+  delete tTmp;
   return 0;
 
 }//end main
@@ -58,7 +60,7 @@ void doAlpha(TTree *chMC, std::string wType){
   for( unsigned inxj=1; inxj<=2; ++inxj ) {
     
     SidebandFitter *sf = new SidebandFitter( wType);
-    std::string myOutDir="FitSidebandsMJJ_TEST1";
+
     sf->setOutDir(myOutDir);
  
     int nxjCut=inxj;

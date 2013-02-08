@@ -61,9 +61,15 @@ and for each of them saves in the output directory:
 2: apply the alpha ratio to the data in the sideband region + fit to
 extrapolated background
 
-------------------------------------
-3: create datacards for statistical analysis 
+make fitBackground
+./fitBackground
 
+------------------------------------
+3: make plots of extrapolated background superimposed to data in signal region
+
+
+------------------------------------
+4: create datacards for statistical analysis 
 
 
 
