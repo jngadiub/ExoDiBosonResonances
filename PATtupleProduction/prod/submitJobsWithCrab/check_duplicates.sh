@@ -31,7 +31,7 @@ do
 		if test $success -eq 1
 			then
 			echo cmsRm $dufilelfn
-			#cmsRm $dufilelfn            ###################action####################
+			cmsRm $dufilelfn            ###################action####################
 			continue
 		fi
 		out=$( python testrootfile.py  $dufilepfn )
@@ -48,7 +48,7 @@ do
 		        then
 		        echo Bad file!
 				echo cmsRm $dufilelfn
-				#cmsRm $dufilelfn             #####################action#################
+				cmsRm $dufilelfn             #####################action#################
 		    fi  
 		    let "nline=$nline+1"
 		done
