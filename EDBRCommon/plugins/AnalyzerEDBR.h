@@ -85,6 +85,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   unsigned int Ngen_;
   double xsec_;
   int VpdgId_; 
+  double VMass_;
   unsigned int fillGen_;
 
   void init();
@@ -243,7 +244,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   template < typename T > void  analyzeDoubleJet(T edbr,int& ih, bool & goodKinFit){
 
 
-    if(edbr->leg2().mass()<90 ||edbr->leg2().mass()>92){
+    if(edbr->leg2().mass()<VMass_-1 ||edbr->leg2().mass()>VMass_+1){
       cout<<"WARNING from AnalyzeEDBR::analyzeDoubleJet : KIN FIT badly converged!! M_jj="<<edbr->leg2()<<endl;
       goodKinFit = false;
     }
