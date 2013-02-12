@@ -10,12 +10,8 @@ import FWCore.ParameterSet.Config as cms
 ## Add VBF tag to two collections (single- and double-jet)
 vbfString = cms.string("vbfptr.isAvailable")
 #nXJets was added as userfloat by KineVarsAdder
-kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 1.0")
-kineString2Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 2.0")
-#sigreg1Jet=cms.string("leg2.getSelection(\"cuts_signalBoostedZ\")")
-#sbreg1Jet=cms.string("leg2.getSelection(\"cuts_sidebandBoostedZ\")")
-#sigreg2Jet=cms.string("userFloat(\"isMJJSigReg\") ==1.0")
-#sbreg2Jet=cms.string("userFloat(\"isMJJSigReg\") ==0.0")
+kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && userFloat(\"nXJets\") == 1.0") # && leg2.pt()>80.0
+kineString2Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && userFloat(\"nXJets\") == 2.0") # && leg2.pt()>80.0
 sigreg=cms.string("leg2.getSelection(\"cuts_isSignal\")")
 sbreg=cms.string("leg2.getSelection(\"cuts_isSideband\")")
 
