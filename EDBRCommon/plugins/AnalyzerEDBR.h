@@ -176,12 +176,36 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
    //if(finalM_||sbM_||finalE_||sbE_){//with this if condition, presel will have PU weights==1
 
    // THESE WEIGHTS=1 FOR REAL DATA
-   PU  = edbr->userFloat("PUWeights");
-   PUA = edbr->userFloat("PUWeights2012A");
-   PUB = edbr->userFloat("PUWeights2012B");
    HLTSF = edbr->userFloat("HLTWeight");
-
-   // }//end if finalM_ || ....
+   if(edbr->hasUserFloat("PUWeights")){
+     //if(preselM_ || preselM1J_ ||preselE_ ||preselE1J_ ){
+     //   std::cout<<"Event passes presel path"<<std::endl;
+     PU  = edbr->userFloat("PUWeights");
+     PUA = edbr->userFloat("PUWeights2012A");
+     PUB = edbr->userFloat("PUWeights2012B");
+   }
+   else if(edbr->hasUserFloat("PUWeightsFullE")){
+     //else if( finalE_ || sbE_|| finalE1J_ || sbE1J_){   
+     if(!elePath_)std::cout<<"Warning from AnalyzerEDBR::analyzeGeneric Run "<<run<<" Event "<<nevent<<" : EDBR cand  has userfloat PUWeightsFullE but elePath_==false . This could be an indication of something not properly right."<<std::endl;
+     
+     PU  = edbr->userFloat("PUWeightsFullE");
+     PUA = edbr->userFloat("PUWeights2012AFullE");
+     PUB = edbr->userFloat("PUWeights2012BFullE");
+   }
+   else if(edbr->hasUserFloat("PUWeightsFullM")){
+     //else if( finalM_ || sbM_|| finalM1J_ || sbM1J_){
+     
+     if(!muPath_)std::cout<<"Warning from AnalyzerEDBR::analyzeGeneric Run "<<run<<" Event "<<nevent<<" : EDBR cand  has userfloat PUWeightsFullM but muPath_==false . This could be an indication of something not properly right."<<std::endl;
+     PU  = edbr->userFloat("PUWeightsFullM");
+     PUA = edbr->userFloat("PUWeights2012AFullM");
+     PUB = edbr->userFloat("PUWeights2012BFullM");
+   }
+   else{
+     PU  = -99.0;
+     PUA = -99.0;
+     PUB = -99.0;
+   }
+   
 
   //  if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric finishing Cand #" <<ih<<endl;
   
