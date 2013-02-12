@@ -146,7 +146,7 @@ process.eventFilterSequence = cms.Sequence(process.badEventFilter)
 # Hacks for DATA   #
 ####################
 if "DATA" in options.mcordata :
-     process.eventFilterSequence.insert(0, process.rndmEventBlinding) ##insert at the front of the list
+###     process.eventFilterSequence.insert(0, process.rndmEventBlinding) ##insert at the front of the list
      process.genParticles = cms.EDProducer("DummyGenProducer")
      process.eventFilterSequence.insert(1, process.genParticles)
 
