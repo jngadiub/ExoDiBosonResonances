@@ -22,7 +22,7 @@ echo
 CFGAREA=${MYWORKAREA}/ExoDiBosonResonances/EDBRCommon/test/tmp_cfg/
 mkdir -p $CFGAREA
 
-OUTDIR=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/fullSB/
+OUTDIR=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/preselCA8/
 mkdir -p $OUTDIR/logs
 
 # ok, now do the job:

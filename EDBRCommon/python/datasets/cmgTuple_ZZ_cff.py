@@ -1,19 +1,11 @@
 import FWCore.ParameterSet.Config as cms
-
-cmgFiles = cms.untracked.vstring()
-source = cms.Source("PoolSource",
-                                                noEventSort = cms.untracked.bool(True),
-                                                duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-                                                fileNames = cmgFiles
-                                                )
-
-cmgFiles.extend([
-      '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/ZZ/cmgTuple_0.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/ZZ/cmgTuple_1.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/ZZ/cmgTuple_2.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/ZZ/cmgTuple_3.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/ZZ/cmgTuple_4.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/ZZ/cmgTuple_5.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/ZZ/cmgTuple_6.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/ZZ/cmgTuple_7.root'
-    ])
+maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+readFiles = cms.untracked.vstring()
+secFiles = cms.untracked.vstring()
+source = cms.Source ('PoolSource',fileNames = readFiles, secondaryFileNames = secFiles)
+readFiles.extend([
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//ZZ/cmgTuple_0.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//ZZ/cmgTuple_1.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//ZZ/cmgTuple_2.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//ZZ/cmgTuple_3.root',
+]);

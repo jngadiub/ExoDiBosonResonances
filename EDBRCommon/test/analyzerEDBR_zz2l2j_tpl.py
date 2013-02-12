@@ -13,10 +13,10 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 ### input cmgTuples
 process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTuple_<SAMPLE>_cff")
 
-## source = cms.Source("PoolSource",
+## process.source = cms.Source("PoolSource",
 ##                     noEventSort = cms.untracked.bool(True),
 ##                     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-##                     fileNames = cms.vstring(
+##                     fileNames = cms.untracked.vstring(
 ##     '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/TTBAR/test_0.root')
 ##                     )
 
@@ -70,30 +70,62 @@ elif "<SAMPLE>"=="WZ" :
 elif "<SAMPLE>"=="ZZ" :
     process.ANEDBR.Ngen=cms.uint32(485716)
     process.ANEDBR.xsec=cms.double(5.196)
-elif "<SAMPLE>"=="DoubleMu_Run2012A_13Jul2012" :
+    process.ANEDBR.FillGenLevelCode=cms.uint32(3)
+### MC signal
+elif "<SAMPLE>"=="BulkG_ZZ_lljj_c1p0_M600" :
+    process.ANEDBR.Ngen=cms.uint32(41965)
+    process.ANEDBR.xsec=cms.double(652000.0)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"=="BulkG_ZZ_lljj_c1p0_M1500" :
+    process.ANEDBR.Ngen=cms.uint32(40938)
+    process.ANEDBR.xsec=cms.double(17700.0)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"=="BulkG_ZZ_lljj_c0p2_M1000" :
+    process.ANEDBR.Ngen=cms.uint32(40964)
+    process.ANEDBR.xsec=cms.double(86200.0)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"=="RSG_ZZ_lljj_c0p05_M1000" :
+    process.ANEDBR.Ngen=cms.uint32(38022)
+    process.ANEDBR.xsec=cms.double(3122.0)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"=="RSG_ZZ_lljj_c0p2_M1000" :
+    process.ANEDBR.Ngen=cms.uint32(37410)
+    process.ANEDBR.xsec=cms.double(48240.0)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"=="RSG_ZZ_lljj_c0p2_M1500" :
+    process.ANEDBR.Ngen=cms.uint32(24996)
+    process.ANEDBR.xsec=cms.double(3877.0)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"=="RSG_WW_lvjj_c0p2_M1000" :
+    process.ANEDBR.Ngen=cms.uint32(34541)
+    process.ANEDBR.xsec=cms.double(402400.0)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+### Data Ele
+elif "<SAMPLE>"=="Photon_Run2012A_13Jul2012" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoubleMu_Run2012A_recover" :
+elif "<SAMPLE>"=="Photon_Run2012A_recover" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoubleMu_Run2012B_13Jul2012" :
+elif "<SAMPLE>"=="DoublePhotonHighPt_Run2012B_13Jul2012" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoubleMu_Run2012C_24Aug2012" :
+elif "<SAMPLE>"=="DoublePhotonHighPt_Run2012C_24Aug2012" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoubleMu_Run2012C_PRv1" :
+elif "<SAMPLE>"=="DoublePhotonHighPt_Run2012C_PRv2" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoubleMu_Run2012D_PRv1" :
+elif "<SAMPLE>"=="DoublePhotonHighPt_Run2012D_PRv1" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
+    
 else :
     print 'ERROR !!! Sample named <SAMPLE> was not recognized !'
 

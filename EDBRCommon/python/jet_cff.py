@@ -4,7 +4,7 @@ import FWCore.ParameterSet.Config as cms
 # if there are not at least two jets of moderate pt, give up and move on
 highPtJets = cms.EDFilter(
     "CandPtrSelector",  #not possible with PATJetSelector, broken refs to PF cands
-    src=cms.InputTag("selectedPatJets"), #customPFJetsNoPUSub
+    src=cms.InputTag("selectedPatJetsCA8CHSwithQjets"), #customPFJetsNoPUSub
     cut=cms.string("pt>15.0")
     )
 
@@ -33,11 +33,11 @@ genSelectorZQDaughter = cms.EDFilter("GenParticleSelector",
 from  CMGTools.External.pujetidsequence_cff import puJetId, puJetMva
 from CMGTools.External.pujetidproducer_cfi import  stdalgos_4x, stdalgos_5x, stdalgos, cutbased, chsalgos_4x, chsalgos_5x, chsalgos
 ## puJetIdCustom = puJetId.clone( jets = 'selectedPatJets')
-##puJetIdCustom = puJetId.clone( jets = 'selectedPatJetsAK7CHSwithQjets')
+##puJetIdCustom = puJetId.clone( jets = 'selectedPatJetsCA8CHSwithQjets')
 puJetMvaCustom= puJetMva.clone(
-    jetids = cms.InputTag("puJetIdAK7CHS"),
+    jetids = cms.InputTag("puJetIdCA8CHS"),
 #    jetids = cms.InputTag("puJetIdCustom"),
-    jets ='selectedPatJetsAK7CHSwithQjets',
+    jets ='selectedPatJetsCA8CHSwithQjets',
     algos =  chsalgos
     )
 ###puJetIdSequence = cms.Sequence(puJetIdCustom*puJetMvaCustom)
@@ -49,8 +49,8 @@ puJetIdSequence = cms.Sequence(puJetMvaCustom)
 # must make cmgJet as first  PFJetFactory needs the  puMVA VM
 # and they are done with the PAT-jets in PAT-tuples.
 from ExoDiBosonResonances.EDBRCommon.factories.cmgJet_cfi import cmgJet as cmgJetRaw
-cmgJetRaw.cfg.inputCollection=cms.InputTag('selectedPatJetsAK7CHSwithQjets')#"selectedPatJets")
-cmgJetRaw.cfg.puVariables=cms.InputTag("puJetIdAK7CHS")
+cmgJetRaw.cfg.inputCollection=cms.InputTag('selectedPatJetsCA8CHSwithQjets')#"selectedPatJets")
+cmgJetRaw.cfg.puVariables=cms.InputTag("puJetIdCA8CHS")
 #cmgJet = cmgJetRaw.clone()
 
 
@@ -81,9 +81,9 @@ cmgJet = cms.EDProducer("cmgPFJetCleaner",
 
 
 from ExoDiBosonResonances.EDBRCommon.factories.cmgJet_cfi import cmgStructuredJet as cmgJetStructuredRaw
-cmgJetStructuredRaw.cfg.inputCollection=cms.InputTag('selectedPatJetsAK7CHSwithQjets')
-cmgJetStructuredRaw.cfg.prunedJetCollection=cms.InputTag('selectedPatJetsAK7CHSpruned')
-cmgJetStructuredRaw.cfg.puVariables=cms.InputTag("puJetIdAK7CHS")
+cmgJetStructuredRaw.cfg.inputCollection=cms.InputTag('selectedPatJetsCA8CHSwithQjets')
+cmgJetStructuredRaw.cfg.prunedJetCollection=cms.InputTag('selectedPatJetsCA8CHSpruned')
+cmgJetStructuredRaw.cfg.puVariables=cms.InputTag("puJetIdCA8CHS")
 cmgJetStructured = cms.EDProducer("cmgVJetCleaner",
                           src = cms.InputTag("cmgJetStructuredRaw"),
                           preselection = cms.string(''),
@@ -103,7 +103,7 @@ cmgJetStructured = cms.EDProducer("cmgVJetCleaner",
 #################################
 
 customJets  = cms.EDProducer("PATJetCleaner",
-                             src = cms.InputTag("selectedPatJets"),
+                             src = cms.InputTag("selectedPatJetsCA8CHSwithQjets"),
                                         preselection = cms.string(''),
                                         checkOverlaps = cms.PSet( genLeptons = cms.PSet( src = cms.InputTag("genSelectorZDaughter"),
                                                                                          algorithm = cms.string("byDeltaR"),

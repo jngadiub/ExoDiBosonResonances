@@ -1,55 +1,29 @@
 import FWCore.ParameterSet.Config as cms
-
-cmgFiles = cms.untracked.vstring()
-source = cms.Source("PoolSource",
-                                                noEventSort = cms.untracked.bool(True),
-                                                duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-                                                fileNames = cmgFiles
-                                                )
-
-cmgFiles.extend([
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_0.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_1.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_10.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_11.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_12.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_13.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_14.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_15.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_16.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_17.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_18.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_19.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_2.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_20.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_21.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_22.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_23.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_24.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_25.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_26.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_27.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_28.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_29.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_3.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_30.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_31.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_32.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_33.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_34.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_35.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_36.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_37.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_38.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_39.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_4.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_40.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_41.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_42.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_5.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_6.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_7.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_8.root',
-       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/DYJetsPt50To70/cmgTuple_9.root'
-
-    ])
+maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+readFiles = cms.untracked.vstring()
+secFiles = cms.untracked.vstring()
+source = cms.Source ('PoolSource',fileNames = readFiles, secondaryFileNames = secFiles)
+readFiles.extend([
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_0.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_1.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_10.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_11.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_12.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_13.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_14.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_15.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_16.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_17.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_18.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_19.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_2.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_20.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_21.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_3.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_4.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_5.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_6.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_7.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_8.root',
+'/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/preselCA8//DYJetsPt50To70/cmgTuple_9.root',
+]);
