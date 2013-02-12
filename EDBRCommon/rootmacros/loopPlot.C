@@ -29,16 +29,24 @@ void loopPlot(){
   std::string pathToTrees="/afs/cern.ch/user/t/tomei/EXOVV_2012/analyzer_trees/productionTEST/";
   /// Path to wherever you want to put the histograms (figures) in.
   //std::string outputDir = pathToTrees+"./test_outPlots";
-  std::string outputDir = "./singleJetMuons";
+  std::string outputDir = "./doubleJetElectrons";
 
   /// Setup names of data files for trees.
   const int nDATA=6;//set to zero if you don't want to plot
-  std::string dataLabels[nDATA]={"DoubleMu_Run2012A_13Jul2012",
+  /*std::string dataLabels[nDATA]={"DoubleMu_Run2012A_13Jul2012",
 				 "DoubleMu_Run2012A_recover",
-				 "DoubleMu_Run2012B_13Jul2012",
+  				 "DoubleMu_Run2012B_13Jul2012",
 				 "DoubleMu_Run2012C_24Aug2012",
-				 "DoubleMu_Run2012C_PRv2",
-				 "DoubleMu_Run2012D_PRv1"};
+  				 "DoubleMu_Run2012C_PRv2",
+  				 "DoubleMu_Run2012D_PRv1"};
+  */
+  std::string dataLabels[nDATA]={"Photon_Run2012A_13Jul2012",
+  				 "Photon_Run2012A_recover",
+  				 "DoublePhotonHighPt_Run2012B_13Jul2012",
+				 "DoublePhotonHighPt_Run2012C_24Aug2012",
+				 "DoublePhotonHighPt_Run2012C_PRv2",
+				 "DoublePhotonHighPt_Run2012D_PRv1"};
+  
   std::vector<std::string> fData;
   for(int ii=0;ii<nDATA;ii++){
     fData.push_back(pathToTrees+"treeEDBR_"+dataLabels[ii]+".root");
@@ -93,12 +101,13 @@ void loopPlot(){
     TTree *treeData = (TTree*)fileData->Get("SelectedCandidates");
     std::cout<<"\n-------\nRunning over "<<dataLabels[i].c_str()<<std::endl;
     EDBRHistoMaker* maker = new EDBRHistoMaker(treeData, 
-					       false, //wantElectrons
-					       true, //wantMuons
+					       true, //wantElectrons
+					       false, //wantMuons
 					       true, //wantSideband
 					       true, //wantSignal
 					       2);//wantNXJets
     sprintf(buffer,"histos_%s.root",dataLabels[i].c_str());
+    maker->setUnitaryWeights(true);
     maker->Loop(buffer);
     std::string oneString(buffer);
     fHistosData.push_back(buffer);
@@ -114,12 +123,13 @@ void loopPlot(){
     TTree *treeMC = (TTree*)fileMC->Get("SelectedCandidates");
     std::cout<<"\n-------\nRunning over "<<mcLabels[i].c_str()<<std::endl;
     EDBRHistoMaker* maker = new EDBRHistoMaker(treeMC, 
-					       false, 
 					       true, 
+					       false, 
 					       true, 
 					       true, 
 					       2);
     sprintf(buffer,"histos_%s.root",mcLabels[i].c_str());
+    maker->setUnitaryWeights(false);
     maker->Loop(buffer);
     std::string oneString(buffer);
     fHistosMC.push_back(buffer);
@@ -169,9 +179,10 @@ void loopPlot(){
 						 fHistosMC,
 						 lumiValue,
 						 kFactor,
-						 false);//bool scaleToData
+						 true);//bool scaleToData
   std::cout<<"Set output dir"<<std::endl;
   plotter->setOutDir(outputDir);
+  plotter->setDebug(true);
 
   //colors are assigned in the same order of mcLabels
   ////// {"TTBAR","WW","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100"};

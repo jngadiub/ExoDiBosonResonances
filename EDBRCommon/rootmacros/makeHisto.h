@@ -34,7 +34,7 @@ const int nBins[77] =
    40, 100, 100, 100, 100, 100, 100,
    100, 100, 100, 4, 4, 100, 43,
    10, 2, 100, 100, 100, 100, 100,
-   100, 100, 100, 100, 102, 3, 102};
+   100, 100, 100, 100, 100, 100, 100};
 
 const double minBin[77] = 
   {0.5,   -1.15,  -1.15,  -1.15,  -3.7,   -3.7,    0.0,
@@ -42,12 +42,12 @@ const double minBin[77] =
   -3.7,   -3.7,   -2.6,   -2.6,   -2.6,   -2.6,   -3.7,
   -3.7,   -3.7,   -3.7,    0.0,    0.0,    0.0,    0.0,
    0.0,    0.0,   70.0,   40.0,    40.0,    0.0,    0.0,
-   -2.2, -1.2, 0.96, 0., -100.2, -100.2, -100.2,
-   0., -1.2, -10800., -10800., 0., 0., -1080.,
+  -2.2,   -1.2, 0, 0., -100.2, -100.2, -100.2,
+   0., -1.2,  -10800., -10800., 0., 0., -1080.,
    0., -1080., -1080., -1080., -1080., 0., 0.,
-   -1.15, -1.15, -100.2, -101., -101., -1.2, -0.5,
-   0.5, 0., 0.99, 0., 0., 0., -1.15,
-   0., 0., 0., 0., 2490000., 0., 6280.};
+   -1.15, -1.15,-100.2, -101., -101., -1.2, -0.5,
+   0.5,    0.,     0.99,   0.,     0.,     0.,     0.,
+   0.,     0.,     0.,     0.,     0., 190000, 0};
 
 const double maxBin[77] = 
   {13.5,   1.15,  1.15,  1.15,  3.7,    3.7,   500.0,
@@ -59,8 +59,8 @@ const double maxBin[77] =
    1.1, 1.2, 1000., 1000., 3., 200., 100.,
    1., 100., 100., 100., 100., 0.20, 0.20,
    1.15, 1.15, -97.8, -97., -97., 1.2, 42.5,
-   10.5, 1., 1., 16., 140., 16., 1.2,
-   2.2, 0.02, 0.14, 0.02, 54510000., 3., 181720.};
+   10.5, 1., 10., 10., 10., 10., 0.1,
+   10, 10, 10, 10, 1.0E9, 210000, 10000};
 
 /// EDBRHistoMaker is the class that analyzes the flat
 /// TTree that comes out from the NTuple dumper module.
@@ -262,6 +262,7 @@ public :
   void setWantSideband(bool dosb=false){wantSideband_=dosb;}
   void setWantSignal(bool dosig=false){wantSignal_=dosig;}
   void setWantNXJets(int nxj=1){wantNXJets_=nxj;}
+  void setUnitaryWeights(bool setuniw=false){setUnitaryWeights_=setuniw;}
 
   bool eventPassesFlavorCut();
   bool eventPassesLeptonicZPtCut(int i, double ptZll_threshold);
@@ -277,6 +278,7 @@ public :
   bool wantMuons_;
   bool wantSideband_;
   bool wantSignal_;
+  bool setUnitaryWeights_;
   int wantNXJets_;
   double sidebandVHMassLow_;
   double sidebandVHMassHigh_;

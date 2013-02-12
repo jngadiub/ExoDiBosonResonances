@@ -188,7 +188,10 @@ void EDBRHistoMaker::Loop(std::string outFileName){
     // We calculate a weight here.
     //double actualWeight = weight;//*HLTweight*PUweight*LumiWeight*GenWeight;
     double actualWeight = PUweight*LumiWeight*GenWeight;
-
+    if(setUnitaryWeights_) {
+      if(jentry==0)printf("Unitary weights set!\n");
+      actualWeight=1.0;
+    }
     //printf("Actual weight is %g\n",actualWeight);
     // We get the histogram from the map by string and fill it.
     // We could wrap all the fills in the this->eventPassesCut()
@@ -198,6 +201,10 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
     (theHistograms["nCands"])->Fill(nCands,actualWeight);
 
+    (theHistograms["PUweight"])->Fill(PUweight);
+    (theHistograms["LumiWeight"])->Fill(LumiWeight);
+    (theHistograms["GenWeight"])->Fill(GenWeight);
+    
     for(int ivec=0;ivec<nCands;ivec++){
       
       if(eventPassesCut(ivec, 80)){

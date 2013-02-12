@@ -31,6 +31,8 @@ public:
     EDBRColors.resize(20,kWhite);
     labels.resize(0);
     makeLabels();
+    printf("Target lumi is %g pb-1\n",targetLumi);
+    printf("k factor is %g\n",kFactor);
   }//end constructor
   
   virtual ~EDBRHistoPlotter(){
@@ -183,14 +185,21 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   
   for(size_t i=0; i!= fileNamesMC.size(); ++i) {
     filesMC.push_back(TFile::Open((nameInDir_+
-				     fileNamesMC.at(i)).c_str()));
+				   fileNamesMC.at(i)).c_str()));
   }
   
   for(size_t i=0; i!= filesMC.size(); ++i) {
     TH1D* histo = (TH1D*)(filesMC.at(i)->Get(histoName.c_str())->Clone(labels.at(i).c_str()));
     histo->SetDirectory(0);
     histo->SetFillColor(getFillColor(i));
+
+    /// This is important. If the user has given a k-factor, it means
+    /// they INCONDITIONALLY want to multiply all MC histograms by
+    /// this number. So we just do it here.
+    /// Although, it shold be a different kFactor for EACH bacground.
+    /// TODO: implement different kFactors for each MC.
     histo->Scale(kFactor_);
+    
     if(debug_) {
       histo->Print();
     }
@@ -200,6 +209,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   
   if(debug_) {
     printf("sumBkgAtTargetLumi = %g\n",sumBkgAtTargetLumi);
+    printf("sumDataIntegral = %g\n",sumDataIntegral);
     printf("Scale factor = %g\n",sumDataIntegral/sumBkgAtTargetLumi);
   }
   
@@ -210,13 +220,22 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   }
 
   /// Do we normalize to data or to lumi?
+  /// NOTICE THAT THIS DEPENDS ON THE HISTOGRAMS HAVING BEING
+  /// CORRECTLY FILLED WITH PUweight*LumiWeight*GenWeight
   for(size_t is=0; is!=histosMC.size(); is++){
-    if(scaleToData_) 
-      histosMC.at(is)->Scale(sumDataIntegral/sumBkgAtTargetLumi);
-    else 
+    if(debug_)
+      printf("This histogram has integral %g\n",histosMC.at(is)->Integral());
+    if(scaleToData_) {
+      histosMC.at(is)->Scale(targetLumi_*
+			     sumDataIntegral/sumBkgAtTargetLumi);
+    }
+    else { 
       histosMC.at(is)->Scale(targetLumi_);
+    }
+    if(debug_)
+      printf("After scaling this histogram has integral %g\n",histosMC.at(is)->Integral());
   }
-
+  
   THStack* hs = new THStack("hs","");
 
   // Make a histogram just for the sum
@@ -224,6 +243,12 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     sumMC->Add(histosMC.at(i));
     hs->Add(histosMC.at(i));
   }
+
+  if(debug_) {
+    printf("After scaling, sum of backgrounds = %g\n",sumMC->Integral());
+    printf("Sum of data is still %g\n",sumDATA->Integral());
+  }
+
   
   sumMC->SetFillStyle(0);
   sumMC->SetLineColor(kBlack);
