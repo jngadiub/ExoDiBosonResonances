@@ -84,7 +84,7 @@ for sample in "${SAMPLE_Run2012ELE[@]}"
 
 #for data
 #  echo $JSONFILE
-   ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py $NFILES XWW_main_cfg.py   -o ${LOGDIR}/${sample}_xww -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=data12_${sample}_cff lepton=both selection=presel mcordata=DATAELE json=${JSONFILE}"
+   ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py $NFILES XWW_main_cfg.py   -o ${LOGDIR}/${sample}_xww -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=data12_${sample}_cff lepton=both selection=presel mcordata=DATASE json=${JSONFILE}"
 
    let sub_ind=$sub_ind +1
 done
@@ -125,7 +125,7 @@ for sample in "${SAMPLE_Run2012MU[@]}"
 
 #for data
 ###  echo $JSONFILE
-  ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py $NFILES XWW_main_cfg.py  -o ${LOGDIR}/${sample}_xww -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=data12_${sample}_cff lepton=both selection=presel mcordata=DATAMU json=${JSONFILE}"  ##json=${JSONFILE}
+  ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py $NFILES XWW_main_cfg.py  -o ${LOGDIR}/${sample}_xww -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=data12_${sample}_cff lepton=both selection=presel mcordata=DATASM json=${JSONFILE}"  ##json=${JSONFILE}
 
    let sub_ind=$sub_ind +1
 
