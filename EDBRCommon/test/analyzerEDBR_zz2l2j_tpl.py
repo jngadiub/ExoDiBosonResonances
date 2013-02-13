@@ -26,6 +26,7 @@ from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
 process.ANEDBR = AnalyzerXZZ.clone(
     debug=cms.bool(False),
     outFileName=cms.string("treeEDBR_<SAMPLE>.root"),
+	VType=cms.string("Z"),
     Ngen=cms.uint32(1),
     xsec=cms.double(1.0) ###in pb
     )
