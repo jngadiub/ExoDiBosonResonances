@@ -149,9 +149,9 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
 	
 	int nCandidates=finalEDBRcand->size();
-	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
+	if ( nCandidates+nCands > nMaxCand ) nCandidates = nMaxCand - nCands;
 	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" X->ZZ->2L1J cands"<<endl;
-	int ih = 0;
+	int ih = nCands;
 	for(int iih=0;iih<nCandidates;iih++){
 	  
 	  edm::RefToBase<cmgMuSingleJetEDBR> edbrM =finalEDBRcand->refAt(iih);
@@ -161,7 +161,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	  //				     <<" jets"<<std::endl;  
 	  //}
 
- 
+	  
 	  analyzeGeneric(edbrM, ih);
 	  analyzeSingleJet(edbrM,ih);        
 	  analyzeMuon(edbrM,ih);
@@ -170,7 +170,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	ih++;
       }//end loop on candidates
 	// if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
-	nCands += ih;
+	nCands = ih;
 	singleJetEvent=true;
       }//end if singleJetPath
 
@@ -181,10 +181,10 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	
 	int nCandidates=finalEDBRcand->size();
 
-	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
+	if (nCandidates+nCands> nMaxCand) nCandidates = nMaxCand-nCands;
 
 	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" X->ZZ->2L2J cands"<<endl;
-	int ih = 0;
+	int ih = nCands;
 	for(int iih=0;iih<nCandidates;iih++){
 	  
 	  edm::RefToBase<cmgMuDiJetEDBR> edbrM =finalEDBRcand->refAt(iih);
@@ -203,7 +203,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	ih++;
       }//end loop on candidates
 	
-	nCands += ih;
+	nCands = ih;
 	doubleJetEvent=true;
       }//end if doubleJetPath
 
@@ -221,9 +221,9 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
 	
 	int nCandidates=finalEDBRcand->size();
-	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
+	if (nCandidates+nCands > nMaxCand) nCandidates = nMaxCand-nCands;
 	if(debug_)cout<<"read from ELECTRON event, there are "<<nCandidates<<" X->ZZ->2L1J cands"<<endl;
-	int ih = 0;
+	int ih = nCands;
 	for(int iih=0;iih<nCandidates;iih++){
 	  
 	  edm::RefToBase< cmgEleSingleJetEDBR > edbrE =finalEDBRcand->refAt(iih);
@@ -242,7 +242,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	ih++;
       }//end loop on candidates
 	// if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
-	nCands += ih;
+	nCands = ih;
 
       }//end if singleJetPath
 
@@ -253,8 +253,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	iEvent.getByLabel(XEEColl_        , finalEDBRcand  );  // With kinfit
 	
 	int nCandidates=finalEDBRcand->size();
-	if (nCandidates > nMaxCand) nCandidates = nMaxCand;
-
+	if (nCandidates+nCands > nMaxCand) nCandidates = nMaxCand-nCands;
 
 	if(debug_){
 	  cout<<"read from ELECTRON event, there are "<<nCandidates<<" X->ZZ->2L2J cands"<<endl;
@@ -269,7 +268,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	  
 	}//end if debug
 
-	int ih = 0;
+	int ih = nCands;
 	for(int iih=0;iih<nCandidates;iih++){
 	  //  cout<<"Loop on ELE cand ih="<<iih<<std::flush;
 	  edm::RefToBase<cmgEleDiJetEDBR> edbrE =finalEDBRcand->refAt(iih);
@@ -288,7 +287,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	ih++;
       }//end loop on candidates
 	// if(debug_)cout<<"Adding "<<ih<<" muCands"<<endl;
-	nCands += ih;
+	nCands = ih;
       }//end if doubleJetPath
   }//end if electron channel
 
@@ -466,6 +465,30 @@ void AnalyzerEDBR::initDataMembers(){
   HLTSF =   1.0;
   nCands=0;
 
+  met=0; metSign=0;            // MET and its significance
+  //reset arrays
+  for(int i =0 ; i < nMaxCand ; i++){
+    
+    hs[i]=-99.; h1[i]=-99.; h2[i]=-99.; phi[i]=-99.; phiS1[i]=-99.; LD[i]=-99.; 
+    mzz[i]=-99.; mzzNoKinFit[i]=-99.; mll[i]=-99.; mjj[i]=-99.; mjjNoKinFit[i]=-99.;           
+    ptmzz[i]=-99.; ptmzzNoKinFit[i]=-99.;
+    ptlep1[i]=-99.; ptlep2[i]=-99.; etalep1[i]=-99.; etalep2[i]=-99.; philep1[i]=-99.; philep2[i]=-99.;  
+    ptjet1[i]=-99.; ptjet2[i]=-99.; etajet1[i]=-99.; etajet2[i]=-99.; phijet1[i]=-99.; phijet2[i]=-99.;  
+    deltaREDBR[i]=-99.;
+    ptZll[i]=-99.; ptZjj[i]=-99.; yZll[i]=-99.; yZjj[i]=-99.; deltaRleplep[i]=-99.; deltaRjetjet[i]=-99.;
+    phiZll[i]=-99.;
+    phiZjj[i]=-99.;
+    btag[i]=-99.; lep=-99.; reg[i]=-99.;  
+    qgjet1[i]=-99.; qgjet2[i]=-99.; qgProduct[i]=-99.;   
+    betajet1[i]=-99.;betajet2[i]=-99.;puMvajet1[i]=-99.;puMvajet2[i]=-99.;
+    isolep1[i]=-99.; isolep2[i]=-99.; eleMVAId1[i]=-99.; eleMVAId2[i]=-99.;
+    MCmatch[i]=-99.;           
+    qjet[i]=-99.;tau1[i]=-99.;tau2[i]=-99.;nsubj12[i]=-99.;nsubj23[i]=-99.;
+    mdrop[i]=-99.;prunedmass[i]=-99.;
+    
+  }
+
+
   massGenX=-999.0; ptGenX=-999.0;  yGenX=-999.0; phiGenX=-999.0; 
   pdgIdGenX=-999;
   massGenZll=-999.0; ptGenZll=-999.0; yGenZll=-999.0; phiGenZll=-999.0;
@@ -476,6 +499,7 @@ void AnalyzerEDBR::initDataMembers(){
   ptGenl1=-999.0; etaGenl1=-999.0;  phiGenl1=-999.0; 
   ptGenl2=-999.0; etaGenl2=-999.0;  phiGenl2 =-999.0; 
   flavGenl1=-999; flavGenl2=-999;
+
 
 }//end AnalyzeEDBR::initDataMembers()
 

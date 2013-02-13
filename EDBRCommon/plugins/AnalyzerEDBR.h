@@ -236,6 +236,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       ptjet2[ih]=-99.0;
       etajet1[ih]=edbr->leg2().eta();
       etajet2[ih]=-99.0;
+      phijet1[ih]=edbr->leg2().phi();
+      phijet2[ih]=-99.0;
+      
       
       betajet1[ih] = edbr->leg2().beta(); 
       betajet2[ih] = -1.0;
@@ -293,6 +296,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       ptjet2[ih]=edbr->leg2().leg2().pt();
       etajet1[ih]=edbr->leg2().leg1().eta();
       etajet2[ih]=edbr->leg2().leg2().eta();
+      phijet1[ih]=edbr->leg2().leg1().phi();
+      phijet2[ih]=edbr->leg2().leg2().phi();
       
       betajet1[ih] = edbr->leg2().leg1().beta(); 
       betajet2[ih] = edbr->leg2().leg2().beta(); 
@@ -304,6 +309,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       ptjet1[ih]=edbr->leg2().leg2().pt();
       etajet2[ih]=edbr->leg2().leg1().eta();
       etajet1[ih]=edbr->leg2().leg2().eta();
+      phijet2[ih]=edbr->leg2().leg1().phi();
+      phijet1[ih]=edbr->leg2().leg2().phi();
 
       betajet2[ih] = edbr->leg2().leg1().beta(); 
       betajet1[ih] = edbr->leg2().leg2().beta(); 
