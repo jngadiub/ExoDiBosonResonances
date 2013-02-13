@@ -47,69 +47,69 @@ if processFullSel :
 
 
 ##### set Ngen and xsect values ofr MC samples
-if "<SAMPLE>"~="TTBAR" :
+if "TTBAR" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(6540800)
     process.ANEDBR.xsec=cms.double(225.197)
-elif "<SAMPLE>"~="DYJetsPt50To70" :
+elif "DYJetsPt50To70" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(4823000)
     process.ANEDBR.xsec=cms.double(89.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
-elif "<SAMPLE>"~="DYJetsPt70To100" :
+elif "DYJetsPt70To100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(4000000)
     process.ANEDBR.xsec=cms.double(53.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
-elif "<SAMPLE>"~="DYJetsPt100" :
+elif "DYJetsPt100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(2500000)
     process.ANEDBR.xsec=cms.double(32.9)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
-elif "<SAMPLE>"~="WW" :
+elif "WW" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(3870000)
     process.ANEDBR.xsec=cms.double(57.1097)
-elif "<SAMPLE>"~="WZ" :
+elif "WZ" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(1910000)
     process.ANEDBR.xsec=cms.double(22.88)
-elif "<SAMPLE>"~="ZZ" :
+elif "ZZ" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(485716)
     process.ANEDBR.xsec=cms.double(5.196)
     process.ANEDBR.FillGenLevelCode=cms.uint32(3)
-elif "<SAMPLE>"~="WJetsPt50To70" :
+elif "WJetsPt50To70" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(24950166)
     process.ANEDBR.xsec=cms.double(811.2)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
-elif "<SAMPLE>"~="WJetsPt70To100" :
+elif "WJetsPt70To100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(20916010)
     process.ANEDBR.xsec=cms.double(428.9)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
-elif "<SAMPLE>"~="WJetsPt100" :
+elif "WJetsPt100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(12106534)
     process.ANEDBR.xsec=cms.double(228.9)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 ### MC signal
-elif "<SAMPLE>"~="BulkG_ZZ_lljj_c1p0_M600" :
+elif "BulkG_ZZ_lljj_c1p0_M600" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(41965)
     process.ANEDBR.xsec=cms.double(652000.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"~="BulkG_ZZ_lljj_c1p0_M1500" :
+elif "BulkG_ZZ_lljj_c1p0_M1500" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40938)
     process.ANEDBR.xsec=cms.double(17700.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"~="BulkG_ZZ_lljj_c0p2_M1000" :
+elif "BulkG_ZZ_lljj_c0p2_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40964)
     process.ANEDBR.xsec=cms.double(86200.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"~="RSG_ZZ_lljj_c0p05_M1000" :
+elif "RSG_ZZ_lljj_c0p05_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(38022)
     process.ANEDBR.xsec=cms.double(3122.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"~="RSG_ZZ_lljj_c0p2_M1000" :
+elif "RSG_ZZ_lljj_c0p2_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(37410)
     process.ANEDBR.xsec=cms.double(48240.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"~="RSG_ZZ_lljj_c0p2_M1500" :
+elif "RSG_ZZ_lljj_c0p2_M1500" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(24996)
     process.ANEDBR.xsec=cms.double(3877.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"~="RSG_WW_lvjj_c0p2_M1000" :
+elif "RSG_WW_lvjj_c0p2_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(34541)
     process.ANEDBR.xsec=cms.double(402400.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
