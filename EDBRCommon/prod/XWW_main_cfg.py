@@ -37,7 +37,7 @@ fullname  = "ExoDiBosonResonances.EDBRCommon.datasets." + options.infile
 print 'Importing dataset from '
 print fullname
 process.load(fullname)
-##skip events with problem related kinematic fit                    DYJetsToLL_PtZ-50To70              TTBar                    WJetsPt70To100
+##skip events with problem related to kinematic fit                    DYJetsToLL_PtZ-50To70              TTBar                    WJetsPt70To100
 process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:58698863"),cms.EventRange("1:11250208"),cms.EventRange("1:15386873"))
 ####for synch studies
 #process.source.eventsToProcess = cms.untracked.VEventRange(cms.EventRange("166699:715236831"),cms.EventRange("173389:180639524"))
@@ -168,6 +168,9 @@ if options.mcordata == "DATASM" :
 ###################################################################
     
 process.load('ExoDiBosonResonances.EDBRElectron.electron_cff')
+#update with w id 24
+process.genSelectorZDaughterE.cut=cms.string(' (abs(pdgId)==11 )&& abs(mother.pdgId)==24 ')
+
 process.load('ExoDiBosonResonances.EDBRElectron.skims.selEventsElectron_cfi')
 
 process.load('ExoDiBosonResonances.EDBRCommon.factories.cmgNeutrino_cff')
@@ -203,6 +206,9 @@ process.eleSequence.insert(0,process.PUseq)
 ###################################################################
 
 process.load('ExoDiBosonResonances.EDBRMuon.muon_cff')
+#update with w id 24
+process.genSelectorZDaughterMu.cut=cms.string(' (abs(pdgId)==13 )&& abs(mother.pdgId)==24 ')
+
 process.load('ExoDiBosonResonances.EDBRMuon.skims.selEventsMuon_cfi')
 
 process.load('ExoDiBosonResonances.EDBRCommon.skims.selEventsMuNeutrino_cfi')
@@ -228,6 +234,11 @@ if not ( options.lepton == "both" or options.lepton == "ele"): #only muon
 ###################################################################
  
 process.load('ExoDiBosonResonances.EDBRCommon.jet_cff')
+#update with w id 24
+process.genSelectorZQQ.cut=cms.string(' abs(pdgId)==24 &&numberOfDaughters> 0 && abs(daughter(0).pdgId)<9 && status==3')
+process.genSelectorZDaughter.cut=cms.string(' (abs(pdgId)==11 || abs(pdgId)==13)&& abs(mother.pdgId)==24 ')
+process.genSelectorZQDaughter.cut=cms.string(' (abs(pdgId) < 9 )&& abs(mother.pdgId)==24 ')
+
 process.load('ExoDiBosonResonances.EDBRCommon.factories.cmgDiJet_cfi')
 process.load('ExoDiBosonResonances.EDBRCommon.factories.cmgDiJetKinFit_W_cfi')
 process.load('ExoDiBosonResonances.EDBRCommon.skims.selEventsPFJet_cff')
