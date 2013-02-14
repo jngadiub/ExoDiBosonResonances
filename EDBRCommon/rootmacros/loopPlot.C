@@ -3,31 +3,28 @@
 #include <string>
 
 #include "TROOT.h"
+#include "TError.h"
 #include "TFile.h"
 #include "TCollection.h"
-//#include "EDBRHistoMaker.h"
-//#include "EDBRHistoPlotter.h"
+#include "TKey.h"
+#include "EDBRHistoMaker.h"
+#include "EDBRHistoPlotter.h"
 
 #include "CMSTDRStyle.h"
 
-gErrorIgnoreLevel=kFatal;//suppresses all info messages
-
 void loopPlot(){
 
-  gROOT->ProcessLine(".L makeHisto.C+");
-  gROOT->ProcessLine(".L plotHisto.C+");
-  
-  setTDRStyle();
- 
+  gErrorIgnoreLevel=kFatal;//suppresses all info messages
+  setTDRStyle();//TDR style
+   
   /// Boolean flags to steer the histogram making
-  bool wantElectrons = true; // Will make histograms for electrons
-  bool wantMuons     = false; // Will make histograms for muons
+  bool wantElectrons = false; // Will make histograms for electrons
+  bool wantMuons     = true; // Will make histograms for muons
   bool wantSideband  = true; // Will make histograms for sideband region
   bool wantSignal    = false; // Will make histograms for signal region
-  int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
-  int flavour = 0; 
-  if(wantElectrons) flavour=11;
-  if(wantMuons) flavour=13;
+  int  wantNXJets    = 2; // Will make histograms for 1 or 2 jet topology
+  int  flavour = 0; 
+  if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
   
   /// Luminosity value in pb^-1
   double lumiValue = 19477.6;
@@ -35,14 +32,13 @@ void loopPlot(){
   double kFactor = 1.2;
   /// Should we scale the histograms to data?
   bool scaleToData = true;
+  /// Should we REDO histograms?
+  bool redoHistograms = true;
   
   /// Path to wherever the files with the trees are. 
-  //std::string pathToTrees="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/";
-  //std::string pathToTrees="/afs/cern.ch/user/t/tomei/EXOVV_2012/analyzer_trees/productionTEST/";
-  std::string pathToTrees="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/preselCA8/";
+  std::string pathToTrees="/afs/cern.ch/user/t/tomei/EXOVV_2012/analyzer_trees/productionv1/preselCA8/";
   /// Path to wherever you want to put the histograms (figures) in.
-  //std::string outputDir = pathToTrees+"./test_outPlots";
-  std::string outputDir = "./singleJetElectrons";
+  std::string outputDir = "./doubleJetMuons";
 
   /// Setup names of data files for trees.
   const int nDATA=6;//set to zero if you don't want to plot
@@ -104,44 +100,53 @@ void loopPlot(){
 
   //loop over data files and make histograms individually for each of them
   for(int i=0;i<nDATA;i++){
-    TFile *fileData = TFile::Open(fData.at(i).c_str());
-    TTree *treeData = (TTree*)fileData->Get("SelectedCandidates");
+
     std::cout<<"\n-------\nRunning over "<<dataLabels[i].c_str()<<std::endl;
-    EDBRHistoMaker* maker = new EDBRHistoMaker(treeData, 
-					       wantElectrons,
-					       wantMuons,
-					       wantSideband,
-					       wantSignal,
-					       wantNXJets);
+    std::cout<<"The file is " <<fData.at(i)<<std::endl;
     sprintf(buffer,"histos_%s.root",dataLabels[i].c_str());
-    maker->setUnitaryWeights(true);
-    maker->Loop(buffer);
-    std::string oneString(buffer);
     fHistosData.push_back(buffer);
-    //delete maker; // This class is badly written and deleting it isn't safe!
-    fileData->Close();
+    
+    if(redoHistograms) {
+      TFile *fileData = TFile::Open(fData.at(i).c_str());
+      TTree *treeData = (TTree*)fileData->Get("SelectedCandidates");
+      EDBRHistoMaker* maker = new EDBRHistoMaker(treeData, 
+						 wantElectrons,
+						 wantMuons,
+						 wantSideband,
+						 wantSignal,
+						 wantNXJets);
+      maker->setUnitaryWeights(true);
+      maker->Loop(buffer);
+      //delete maker; // This class is badly written and deleting it isn't safe!
+      fileData->Close();
+    }
+    
   }//end loop on data files
 
   printf("Loop over data done\n");
 
   //loop over MC files and make histograms individually for each of them
   for(int i=0;i<nMC;i++){
-    TFile *fileMC = TFile::Open(fMC.at(i).c_str());
-    TTree *treeMC = (TTree*)fileMC->Get("SelectedCandidates");
     std::cout<<"\n-------\nRunning over "<<mcLabels[i].c_str()<<std::endl;
-    EDBRHistoMaker* maker = new EDBRHistoMaker(treeMC, 
-					       wantElectrons, 
-					       wantMuons, 
-					       wantSideband, 
-					       wantSignal, 
-					       wantNXJets);
+    std::cout<<"The file is " <<fMC.at(i)<<std::endl;    
     sprintf(buffer,"histos_%s.root",mcLabels[i].c_str());
-    maker->setUnitaryWeights(false);
-    maker->Loop(buffer);
-    std::string oneString(buffer);
     fHistosMC.push_back(buffer);
-    //delete maker; // This class is badly written and deleting it isn't safe!
-    fileMC->Close();
+    
+    if(redoHistograms){
+      TFile *fileMC = TFile::Open(fMC.at(i).c_str());
+      TTree *treeMC = (TTree*)fileMC->Get("SelectedCandidates");
+      EDBRHistoMaker* maker = new EDBRHistoMaker(treeMC, 
+						 wantElectrons, 
+						 wantMuons, 
+						 wantSideband, 
+						 wantSignal, 
+						 wantNXJets);
+      maker->setUnitaryWeights(false);
+      maker->Loop(buffer);
+      //delete maker; // This class is badly written and deleting it isn't safe!
+      fileMC->Close();
+    }
+    
   }//end loop on data files
 
   printf("Loop over MC done\n");
@@ -191,7 +196,7 @@ void loopPlot(){
 						 scaleToData);
   std::cout<<"Set output dir"<<std::endl;
   plotter->setOutDir(outputDir);
-  plotter->setDebug(true);
+  plotter->setDebug(false);
 
   //colors are assigned in the same order of mcLabels
   ////// {"TTBAR","WW","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100"};

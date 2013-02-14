@@ -36,7 +36,7 @@ TLatex* makeCMSFinalURC(int energy = 7, double x = 0.67, double y = 0.85) {
   return tex;
 }
 
-TLatex* makeCMSFinalTop(int energy = 7, double x = 0.15, double y = 0.935) {
+TLatex* makeCMSFinalTop(int energy = 7, double x = 0.15, double y = 0.94) {
   char buffer[256];
   sprintf(buffer,"CMS        #sqrt{s} = %i TeV",energy);
   TLatex* tex = new TLatex(x,y,buffer);
@@ -46,7 +46,7 @@ TLatex* makeCMSFinalTop(int energy = 7, double x = 0.15, double y = 0.935) {
   return tex;
 }
 
-TLatex* makeCMSPreliminaryTop(int energy = 7, double x = 0.15, double y = 0.935) {
+TLatex* makeCMSPreliminaryTop(int energy = 7, double x = 0.15, double y = 0.94) {
   char buffer[256];
   sprintf(buffer,"CMS Preliminary  #sqrt{s} = %i TeV",energy);
   TLatex* tex = new TLatex(x,y,buffer);
@@ -68,7 +68,7 @@ TLatex* makeCMSLumi(double lumi = 5.0, double x = 0.666, double y = 0.72) {
   return tex;
 }
 
-TLatex* makeChannelLabel(int nJets, int flavour, double x = 0.75, double y = 0.935) {
+TLatex* makeChannelLabel(int nJets, int flavour, double x = 0.75, double y = 0.94) {
   char buffer[256];
   if(flavour == 11)
     sprintf(buffer,"%ij2e channel",nJets);
