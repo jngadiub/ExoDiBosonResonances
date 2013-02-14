@@ -10,7 +10,7 @@
 // to be part of the class... possibly if I change
 // them to be std::vectors, eventually?
 
-const std::string vars[77] = 
+const std::string vars[78] = 
 {"nCands", "cosThetaStar", "cosTheta1", "cosTheta2", "phi", "phiStar1", "ptlep1",
 	"ptlep2", "ptjet1", "ptjet2", "ptZll", "ptZjj", "yZll", "yZjj",
 	"phiZll", "phiZjj", "etalep1", "etalep2", "etajet1", "etajet2", "philep1",
@@ -21,9 +21,9 @@ const std::string vars[77] =
 	"nsubj12", "nsubj23", "tau1", "tau2", "qjet", "isolep1", "isolep2",
 	"eleMVAId1", "eleMVAId2", "LD", "q1fl", "q2fl", "MCmatch", "nVtx",
 	"nJets", "nPU", "HLTweight", "PUweight", "PUweight2012A", "PUweight2012B", "LumiWeight",
-	"GenWeight", "weight", "weight2012A", "weight2012B", "event", "run", "ls"};
+	"GenWeight", "weight", "weight2012A", "weight2012B", "event", "run", "ls", "nVL"};
 
-const int nBins[77] = 
+const int nBins[78] = 
 {13, 100, 100, 100, 100, 100, 100,
 	100, 100, 100, 92, 100, 28, 28,
 	100, 100, 26, 26, 26, 26, 100,
@@ -34,9 +34,9 @@ const int nBins[77] =
 	40, 100, 100, 100, 100, 100, 100,
 	100, 100, 100, 4, 4, 100, 43,
 	10, 2, 100, 100, 100, 100, 100,
-	100, 100, 100, 100, 100, 100, 100};
+	100, 100, 100, 100, 100, 100, 100, 10};
 
-const double minBin[77] = 
+const double minBin[78] = 
 {0.5,   -1.15,  -1.15,  -1.15,  -3.7,   -3.7,    0.0,
 	0.0,    0.0,    0.0,    80.0,    0.0,   -2.8,   -2.8,
 	-3.7,   -3.7,   -2.6,   -2.6,   -2.6,   -2.6,   -3.7,
@@ -47,9 +47,9 @@ const double minBin[77] =
 	0., -1080., -1080., -1080., -1080., 0., 0.,
 	-1.15, -1.15,-100.2, -101., -101., -1.2, -0.5,
 	0.5,    0.,     0.99,   0.,     0.,     0.,     0.,
-	0.,     0.,     0.,     0.,     0., 190000, 0};
+	0.,     0.,     0.,     0.,     0., 190000, 0, 0.};
 
-const double maxBin[77] = 
+const double maxBin[78] = 
 {13.5,   1.15,  1.15,  1.15,  3.7,    3.7,   500.0,
 	500.0,  500.0, 500.0, 1000.0, 1000.0,  2.8,   2.8,
 	3.7,    3.7,   2.6,   2.6,   2.6,    2.6,   3.7,
@@ -60,7 +60,7 @@ const double maxBin[77] =
 	1., 100., 100., 100., 100., 0.20, 0.20,
 	1.15, 1.15, -97.8, -97., -97., 1.2, 42.5,
 	10.5, 1., 10., 10., 10., 10., 0.1,
-	10, 10, 10, 10, 1.0E9, 210000, 10000};
+	10, 10, 10, 10, 1.0E9, 210000, 10000, 10.0};
 
 /// EDBRHistoMaker is the class that analyzes the flat
 /// TTree that comes out from the NTuple dumper module.

@@ -7,7 +7,7 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 		bool wantSignal,
 		int wantNXJets){
 	fChain = 0;
-	nVars = 77;
+	nVars = 78;
 
 	// Definition of regions
 	sidebandVHMassLow_  =  0.0;  // GeV
@@ -70,9 +70,6 @@ void EDBRHistoMaker::createAllHistos() {
 		theHistograms[vars[i]] = histogram;
 	}
 
-	TH1D* histogram = new TH1D ("nVl","nVl",10,0,10);
-	theHistograms["wnum"] = histogram;
-
 }
 
 void EDBRHistoMaker::printAllHistos() {
@@ -88,7 +85,6 @@ void EDBRHistoMaker::saveAllHistos(std::string outFileName) {
 		const TH1D* thisHisto = this->theHistograms[name];
 		thisHisto->Write();
 	}
-	theHistograms["wnum"]->Write();
 	outFile->Close();
 }
 
@@ -210,7 +206,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
         }
 		int wnum = ptZ.size(); 
 
-		(theHistograms["wnum"])->Fill(wnum,actualWeight);
+		(theHistograms["nVL"])->Fill(wnum,actualWeight);
 		(theHistograms["nCands"])->Fill(nCands,actualWeight);
 
 		(theHistograms["PUweight"])->Fill(PUweight);
