@@ -16,8 +16,8 @@ cmgWmunuEDBR = cms.EDFilter(
     cuts = cms.PSet(
        Wmunu_kinematics = Wmunu_kinematics.clone(),
        Wmunu_quality = Wmunu_quality.clone(),
-	   Wmunu_validation =  Wmunu_validation.clone(),
-       genP = cms.PSet(genP = cms.string("leg1.sourcePtr.get.hasOverlaps(\"genLeptons\")")
+       Wmunu_validation =  Wmunu_validation.clone(),
+       genP = cms.PSet(genP = cms.string("leg1.sourcePtr.get.hasOverlaps(\"genLeptonsW\")")
        ) 
     )
 )

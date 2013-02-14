@@ -13,10 +13,12 @@ diMuonVJetEDBRFactory = cms.PSet(
 )
 
 #from CMGTools.Common.selections.zmumu_cfi import zmumu
+from ExoDiBosonResonances.EDBRCommon.selections.vjetmcmatch_cfi import * 
 cmgDiMuonVJetEDBR = cms.EDFilter(
     "DiMuonSingleJetEDBRPOProducer",
     cfg = diMuonVJetEDBRFactory.clone(),
-    cuts = cms.PSet( genMatch = cms.PSet(genMatch = cms.string("leg1.getSelection(\"cuts_genP\") && leg2.getSelection(\"cuts_genP\")"))
+    cuts = cms.PSet( genMatch = genMatchVQQ,
+                     genMatchZ = genMatchVV
                      )
     
     )
