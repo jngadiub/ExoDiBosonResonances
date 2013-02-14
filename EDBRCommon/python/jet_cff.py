@@ -20,7 +20,7 @@ genSelectorZQQ = cms.EDFilter("GenParticleSelector", # matches Z and W with hadr
 
 genSelectorZDaughter = cms.EDFilter("GenParticleSelector",# matches leptons from Z and W
     src = cms.InputTag("genParticles"),
-    cut = cms.string(' (abs(pdgId)==11 || abs(pdgId)==13)&& abs(mother.pdgId)==23 ')
+    cut = cms.string(' (abs(pdgId)==11 || abs(pdgId)==13)&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24) ')
 )
 genSelectorZQDaughter = cms.EDFilter("GenParticleSelector",# matches quarks from Z and W
     src = cms.InputTag("genParticles"),
