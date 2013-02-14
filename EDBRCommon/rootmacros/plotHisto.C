@@ -19,6 +19,8 @@ public:
 		   std::vector<std::string> nameFileMC, 
 		   double targetLumi,
 		   double kFactor,
+		   int wantNXJets,
+		   int flavour,
 		   bool scaleToData)
   {
     nameInDir_    = nameInDir;
@@ -26,6 +28,8 @@ public:
     fileNamesDATA = nameFileDATA;
     kFactor_      = kFactor;
     targetLumi_   = targetLumi;
+    wantNXJets_   = wantNXJets;
+    flavour_      = flavour;
     scaleToData_  = scaleToData;
     debug_        = false;
     EDBRColors.resize(20,kWhite);
@@ -53,6 +57,8 @@ public:
   double dataIntegral_;
   double targetLumi_;
   double kFactor_;
+  int    wantNXJets_;
+  int    flavour_;
   bool   scaleToData_;
   bool   debug_;
 
@@ -280,9 +286,13 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   leg->Draw();
 
   // Nice labels
-  TLatex* l = makeCMSPreliminaryTop(8);
+  TLatex* l = makeCMSPreliminaryTop(8,0.10,0.935);
   l->Draw();
-  
+  l = makeCMSLumi(19.6,0.5,0.935);
+  l->Draw();
+  l = makeChannelLabel(wantNXJets_,flavour_);
+  l->Draw();
+
   // Save the picture
   char buffer[256];
   cv->SetLogy(false);
@@ -303,37 +313,4 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   if(debug_) {
     printf("***********************\n");
   }
-}
-
-void newPlotHisto() {
-  std::vector<std::string> fileNamesMC;
-  fileNamesMC.push_back("./histos_TTBAR.root");
-  fileNamesMC.push_back("./histos_WW.root");
-  fileNamesMC.push_back("./histos_WZ.root");
-  fileNamesMC.push_back("./histos_ZZ.root");
-  fileNamesMC.push_back("./histos_DYJetsPt50To70.root");
-  fileNamesMC.push_back("./histos_DYJetsPt70To100.root");
-  fileNamesMC.push_back("./histos_DYJetsPt100.root");
-
-  std::vector<std::string> fileNamesDATA;
-  fileNamesDATA.push_back("./histos_DoubleMu_Run2012A_13Jul2012.root");
-  fileNamesDATA.push_back("./histos_DoubleMu_Run2012A_recover.root");
-  fileNamesDATA.push_back("./histos_DoubleMu_Run2012B_13Jul2012.root");
-  fileNamesDATA.push_back("./histos_DoubleMu_Run2012C_24Aug2012.root");
-  fileNamesDATA.push_back("./histos_DoubleMu_Run2012C_PRv2.root");
-  fileNamesDATA.push_back("./histos_DoubleMu_Run2012D_PRv1.root");
-
-  EDBRHistoPlotter x("./", fileNamesDATA, fileNamesMC, 19600*0.2, 1.2, false);
-  std::vector<int> fColorsMC;
-  fColorsMC.push_back(kGreen-3);
-  fColorsMC.push_back(kMagenta-9);
-  fColorsMC.push_back(kMagenta-6);
-  fColorsMC.push_back(kMagenta-3);
-  fColorsMC.push_back(kBlue-3);
-  fColorsMC.push_back(kBlue-6);
-  fColorsMC.push_back(kBlue-9);
-  x.setFillColor(fColorsMC);
-
-  x.setOutDir("test_outPlots");
-  x.makeStackPlots("h_ptZll");
 }

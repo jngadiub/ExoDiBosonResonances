@@ -52,6 +52,7 @@ TLatex* makeCMSPreliminaryTop(int energy = 7, double x = 0.15, double y = 0.935)
   TLatex* tex = new TLatex(x,y,buffer);
   tex->SetNDC();
   tex->SetTextFont(42);
+  tex->SetTextSize(0.030);
   tex->Draw();
   return tex;
 }
@@ -62,7 +63,21 @@ TLatex* makeCMSLumi(double lumi = 5.0, double x = 0.666, double y = 0.72) {
   TLatex* tex = new TLatex(x,y,buffer);
   tex->SetNDC();
   tex->SetTextFont(42);
-  tex->SetTextSize(0.035);
+  tex->SetTextSize(0.030);
+  tex->Draw();
+  return tex;
+}
+
+TLatex* makeChannelLabel(int nJets, int flavour, double x = 0.75, double y = 0.935) {
+  char buffer[256];
+  if(flavour == 11)
+    sprintf(buffer,"%ij2e channel",nJets);
+  if(flavour == 13)
+    sprintf(buffer,"%ij2#mu channel",nJets);
+  TLatex* tex = new TLatex(x,y,buffer);
+  tex->SetNDC();
+  tex->SetTextFont(42);
+  tex->SetTextSize(0.030);
   tex->Draw();
   return tex;
 }
