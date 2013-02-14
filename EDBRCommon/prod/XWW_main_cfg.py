@@ -169,7 +169,7 @@ if options.mcordata == "DATASM" :
     
 process.load('ExoDiBosonResonances.EDBRElectron.electron_cff')
 #update with w id 24
-process.genSelectorZDaughterE.cut=cms.string(' (abs(pdgId)==11 )&& abs(mother.pdgId)==24 ')
+#process.genSelectorZDaughterE.cut=cms.string(' (abs(pdgId)==11 )&& abs(mother.pdgId)==24 ')
 
 process.load('ExoDiBosonResonances.EDBRElectron.skims.selEventsElectron_cfi')
 
@@ -207,7 +207,7 @@ process.eleSequence.insert(0,process.PUseq)
 
 process.load('ExoDiBosonResonances.EDBRMuon.muon_cff')
 #update with w id 24
-process.genSelectorZDaughterMu.cut=cms.string(' (abs(pdgId)==13 )&& abs(mother.pdgId)==24 ')
+#process.genSelectorZDaughterMu.cut=cms.string(' (abs(pdgId)==13 )&& abs(mother.pdgId)==24 ')
 
 process.load('ExoDiBosonResonances.EDBRMuon.skims.selEventsMuon_cfi')
 
@@ -235,9 +235,9 @@ if not ( options.lepton == "both" or options.lepton == "ele"): #only muon
  
 process.load('ExoDiBosonResonances.EDBRCommon.jet_cff')
 #update with w id 24
-process.genSelectorZQQ.cut=cms.string(' abs(pdgId)==24 &&numberOfDaughters> 0 && abs(daughter(0).pdgId)<9 && status==3')
-process.genSelectorZDaughter.cut=cms.string(' (abs(pdgId)==11 || abs(pdgId)==13)&& abs(mother.pdgId)==24 ')
-process.genSelectorZQDaughter.cut=cms.string(' (abs(pdgId) < 9 )&& abs(mother.pdgId)==24 ')
+#process.genSelectorZQQ.cut=cms.string(' abs(pdgId)==24 &&numberOfDaughters> 0 && abs(daughter(0).pdgId)<9 && status==3')
+#process.genSelectorZDaughter.cut=cms.string(' (abs(pdgId)==11 || abs(pdgId)==13)&& abs(mother.pdgId)==24 ')
+#process.genSelectorZQDaughter.cut=cms.string(' (abs(pdgId) < 9 )&& abs(mother.pdgId)==24 ')
 
 process.load('ExoDiBosonResonances.EDBRCommon.factories.cmgDiJet_cfi')
 process.load('ExoDiBosonResonances.EDBRCommon.factories.cmgDiJetKinFit_W_cfi')
