@@ -6,11 +6,23 @@ genSelectorZDaughterE = cms.EDFilter("GenParticleSelector",
     src = cms.InputTag("genParticles"),
     cut = cms.string(' (abs(pdgId)==11 )&& abs(mother.pdgId)==23 ')
 )
+genSelectorWDaughterE = cms.EDFilter("GenParticleSelector",
+    src = cms.InputTag("genParticles"),
+    cut = cms.string(' (abs(pdgId)==11 )&& abs(mother.pdgId)==24 ')
+)
 
 selectedPatElectrons  = cms.EDProducer("PATElectronCleaner",
                                         src = cms.InputTag("patElectronsWithTrigger"), #selectedPatElectronsAK5
                                         preselection = cms.string(''),
                                         checkOverlaps = cms.PSet( genLeptons = cms.PSet( src = cms.InputTag("genSelectorZDaughterE"),
+                                                                                         algorithm = cms.string("byDeltaR"),
+                                                                                         preselection        = cms.string(""),  # don't preselect the muons
+                                                                                         deltaR              = cms.double(0.3),
+                                                                                         checkRecoComponents = cms.bool(False), # don't check if they share some AOD object ref
+                                                                                         pairCut             = cms.string(""),
+                                                                                         requireNoOverlaps = cms.bool(False), # overlaps don't cause the electron to be discared
+                                                                                         ),
+                                                                  genLeptonsW = cms.PSet( src = cms.InputTag("genSelectorWDaughterE"),
                                                                                          algorithm = cms.string("byDeltaR"),
                                                                                          preselection        = cms.string(""),  # don't preselect the muons
                                                                                          deltaR              = cms.double(0.3),
@@ -43,5 +55,5 @@ selectedPatElectrons  = cms.EDProducer("PATElectronCleaner",
 ### MC matching
 #cmgElectron.cuts.genLepton = cms.PSet( genLepton = cms.string("sourcePtr().get().hasOverlaps('genLeptons')"))
  
-eleSequence = cms.Sequence(genSelectorZDaughterE + selectedPatElectrons + cmgElectron)
+eleSequence = cms.Sequence(genSelectorZDaughterE + genSelectorWDaughterE  + selectedPatElectrons + cmgElectron)
 
