@@ -458,15 +458,15 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("weight"          ,&w             ,"weight/D"               );  // Product of PU and lumi weights
   outTree_->Branch("weight2012A"     ,&wA            ,"weight2012A/D"          );
   outTree_->Branch("weight2012B"     ,&wB            ,"weight2012B/D"          );
-  outTree_->Branch("VBFTag"       ,&VBFTag     ,"VBFTag[nCands]/I"    ); 
-  outTree_->Branch("VBFmJJ"       ,&VBFmJJ     ,"VBFmJJ[nCands]/I"    ); 
-  outTree_->Branch("VBFdeltaEta"       ,&VBFdeltaEta     ,"VBFdeltaEta[nCands]/I"    ); 
-  outTree_->Branch("VBFptjet1"       ,&VBFptjet1     ,"VBFptjet1[nCands]/I"    ); 
-  outTree_->Branch("VBFptjet2"       ,&VBFptjet2     ,"VBFptjet2[nCands]/I"    ); 
-  outTree_->Branch("VBFetajet1"       ,&VBFetajet1     ,"VBFetajet1[nCands]/I"    ); 
-  outTree_->Branch("VBFetajet2"       ,&VBFetajet2     ,"VBFetajet2[nCands]/I"    ); 
-  outTree_->Branch("VBFphijet1"       ,&VBFphijet1     ,"VBFphijet1[nCands]/I"    ); 
-  outTree_->Branch("VBFphijet2"       ,&VBFphijet2     ,"VBFphijet2[nCands]/I"    ); 
+  outTree_->Branch("VBFTag"          ,&VBFTag     ,"VBFTag[nCands]/I"    ); 
+  outTree_->Branch("VBFmJJ"          ,&VBFmJJ     ,"VBFmJJ[nCands]/D"    ); 
+  outTree_->Branch("VBFdeltaEta"     ,&VBFdeltaEta     ,"VBFdeltaEta[nCands]/D"    ); 
+  outTree_->Branch("VBFptjet1"       ,&VBFptjet1     ,"VBFptjet1[nCands]/D"    ); 
+  outTree_->Branch("VBFptjet2"       ,&VBFptjet2     ,"VBFptjet2[nCands]/D"    ); 
+  outTree_->Branch("VBFetajet1"       ,&VBFetajet1     ,"VBFetajet1[nCands]/D"    ); 
+  outTree_->Branch("VBFetajet2"       ,&VBFetajet2     ,"VBFetajet2[nCands]/D"    ); 
+  outTree_->Branch("VBFphijet1"       ,&VBFphijet1     ,"VBFphijet1[nCands]/D"    ); 
+  outTree_->Branch("VBFphijet2"       ,&VBFphijet2     ,"VBFphijet2[nCands]/D"    ); 
   outTree_->Branch("massGenX"        ,&massGenX      ,"massGenX/d"             );
   outTree_->Branch("ptGenX"          ,&ptGenX        ,"ptGenX/d"               );
   outTree_->Branch("yGenX"           ,&yGenX         ,"yGenX/d"                );

@@ -10,7 +10,7 @@
 // to be part of the class... possibly if I change
 // them to be std::vectors, eventually?
 
-const std::string vars[78] = 
+const std::string vars[81] = 
   {"nCands", "cosThetaStar", "cosTheta1", "cosTheta2", "phi", "phiStar1", "ptlep1",
    "ptlep2", "ptjet1", "ptjet2", "ptZll", "ptZjj", "yZll", "yZjj",
    "phiZll", "phiZjj", "etalep1", "etalep2", "etajet1", "etajet2", "philep1",
@@ -22,9 +22,9 @@ const std::string vars[78] =
    "eleMVAId1", "eleMVAId2", "LD", "q1fl", "q2fl", "MCmatch", "nVtx",
    "nJets", "nPU", "HLTweight", "PUweight", "PUweight2012A", "PUweight2012B", "LumiWeight",
    "GenWeight", "weight", "weight2012A", "weight2012B", "event", "run", "ls",
-   "nVL"};
+   "nVL","VBFTag","VBFmJJ","VBFdeltaEta"};
 
-const int nBins[78] = 
+const int nBins[81] = 
   {13, 100, 100, 100, 100, 100, 100,
    100, 100, 100, 92, 100, 28, 28,
    100, 100, 26, 26, 26, 26, 100,
@@ -36,9 +36,9 @@ const int nBins[78] =
    100, 100, 100, 4, 4, 100, 43,
    10, 2, 100, 100, 100, 100, 100,
    100, 100, 100, 100, 100, 100, 100,
-   10};
+   10,2,100,100};
 
-const double minBin[78] = 
+const double minBin[81] = 
   {0.5,   -1.15,  -1.15,  -1.15,  -3.7,   -3.7,    0.0,
    0.0,    0.0,    0.0,    80.0,    0.0,   -2.8,   -2.8,
   -3.7,   -3.7,   -2.6,   -2.6,   -2.6,   -2.6,   -3.7,
@@ -50,9 +50,9 @@ const double minBin[78] =
    -1.15, -1.15,-100.2, -101., -101., -1.2, -0.5,
    0.5,    0.,     0.99,   0.,     0.,     0.,     0.,
    0.,     0.,     0.,     0.,     0., 190000, 0,
-   0.};
+   0.,0.0,0.0,0.0};
 
-const double maxBin[78] = 
+const double maxBin[81] = 
   {13.5,   1.15,  1.15, 1.15,   3.7,     3.7,   500.0,
    500.0, 500.0, 500.0, 1000.0, 1000.0,  2.8,   2.8,
    3.7,   3.7,   2.6,   2.6,    2.6,     2.6,   3.7,
@@ -64,7 +64,7 @@ const double maxBin[78] =
    1.15, 1.15, -97.8, -97., -97., 1.2, 42.5,
    10.5, 1., 10., 10., 10., 10., 0.1,
    10, 10, 10, 10, 1.0E9, 210000, 10000,
-   10};
+   10,2.0,1000.0,10.0};
 
 /// EDBRHistoMaker is the class that analyzes the flat
 /// TTree that comes out from the NTuple dumper module.
@@ -153,6 +153,9 @@ class EDBRHistoMaker {
 		Int_t           q1fl[99];   //[nCands]
 		Int_t           q2fl[99];   //[nCands]
 		Double_t        MCmatch[99];   //[nCands]
+		Int_t           VBFTag[99];   //[nCands]
+		Double_t        VBFmJJ[99];   //[nCands]
+		Double_t        VBFdeltaEta[99];   //[nCands]
 		UInt_t          nVtx;
 		UInt_t          nJets;
 		UInt_t          nPU;
@@ -231,6 +234,9 @@ class EDBRHistoMaker {
 		TBranch        *b_eleMVAId1;   //!
 		TBranch        *b_eleMVAId2;   //!
 		TBranch        *b_LD;   //!
+		TBranch        *b_VBFTag;   //!
+		TBranch        *b_VBFmJJ;   //!
+		TBranch        *b_VBFdeltaEta;   //!
 		TBranch        *b_q1fl;   //!
 		TBranch        *b_q2fl;   //!
 		TBranch        *b_MCmatch;   //!
@@ -275,6 +281,7 @@ class EDBRHistoMaker {
 		bool eventPassesRegionCut(int i);
 		bool eventPassesNXJetCut(int i);  
 		bool eventPassesCut(int i, double ptZll_threshold);
+		bool eventPassesVBFCut(int i);
 
 		int check ( double pt, vector<double> * ptZ  )
 		{
@@ -385,6 +392,9 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("MCmatch", MCmatch, &b_MCmatch);
 	fChain->SetBranchAddress("nVtx", &nVtx, &b_nVtx);
 	fChain->SetBranchAddress("nJets", &nJets, &b_nJets);
+	fChain->SetBranchAddress("VBFTag", &VBFTag, &b_VBFTag);
+	fChain->SetBranchAddress("VBFmJJ", &VBFmJJ, &b_VBFmJJ);
+	fChain->SetBranchAddress("VBFdeltaEta", &VBFdeltaEta, &b_VBFdeltaEta);
 	fChain->SetBranchAddress("nPU", &nPU, &b_nPU);
 	fChain->SetBranchAddress("HLTweight", &HLTweight, &b_HLTweight);
 	fChain->SetBranchAddress("PUweight", &PUweight, &b_PUweight);
@@ -545,12 +555,24 @@ bool EDBRHistoMaker::eventPassesRegionCut(int i){
 
 	}
 
+bool EDBRHistoMaker::eventPassesVBFCut(int i){
+
+	bool vbfFlag = false;
+
+	vbfFlag = (VBFTag[i] == 0);
+
+	return vbfFlag;
+}
+
+
+
 bool EDBRHistoMaker::eventPassesCut(int i, double ptZll_threshold) {
 
 	bool passesFlavour = eventPassesFlavorCut();
 	bool passesRegion  = eventPassesRegionCut(i);
 	bool passesNXJet   = eventPassesNXJetCut(i);
 	bool passesLeptonicZPt = eventPassesLeptonicZPtCut(i, ptZll_threshold);
+	bool passesVBF     = eventPassesVBFCut(i);
 	bool result = 
 		passesFlavour and
 		passesRegion and
@@ -629,10 +651,9 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["mJJ"])->Fill(mJJ[ivec],actualWeight);
 				(theHistograms["mZZ"])->Fill(mZZ[ivec],actualWeight);
 				(theHistograms["prunedmass"])->Fill(prunedmass[ivec],actualWeight);
-				(theHistograms["nsubj12"])->Fill(nsubj12[ivec],actualWeight);
 				(theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);
 				(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);
-				(theHistograms["nsubj12"])->Fill(1.0/nsubj12[ivec],actualWeight);
+				(theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);
 				(theHistograms["nVtx"])->Fill(nVtx,actualWeight);
 				(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);
 				(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);
@@ -648,7 +669,10 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["deltaREDBR"])->Fill(deltaREDBR[ivec],actualWeight);
 				(theHistograms["deltaRleplep"])->Fill(deltaRleplep[ivec],actualWeight);
 				(theHistograms["deltaRjetjet"])->Fill(deltaRjetjet[ivec],actualWeight);
-				//	(theHistograms[""])->Fill([ivec],actualWeight);
+				(theHistograms["VBFTag"])->Fill(VBFTag[ivec],actualWeight);
+				(theHistograms["VBFmJJ"])->Fill(VBFmJJ[ivec],actualWeight);
+				(theHistograms["VBFdeltaEta"])->Fill(VBFdeltaEta[ivec],actualWeight);
+				// (theHistograms[""])->Fill([ivec],actualWeight);
 
 			}//end if eventPassesCut
 		}//end loop over nCands

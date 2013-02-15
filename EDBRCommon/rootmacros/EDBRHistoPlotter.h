@@ -146,7 +146,8 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   cleanupMC();
   cleanupDATA();
   
-  printf("Making histo %s\n",histoName.c_str());
+  //printf("Making histo %s\n",histoName.c_str());
+  std::cout<<"\rMaking histo "<<histoName.c_str() << std::endl;
 
   TCanvas* cv = new TCanvas(("cv_"+histoName).c_str(),("cv_"+histoName).c_str(),600,600);
 
