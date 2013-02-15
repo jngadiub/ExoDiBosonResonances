@@ -66,10 +66,10 @@ selectedElectronCandFilter = cms.EDFilter("CandViewCountFilter",
 
 selectedElectronLooseCandFilter = cms.EDFilter("CandViewCountFilter",
    src = cms.InputTag('electronPreselLoose'),
-   minNumber = cms.uint32(1),
-   maxNumber = cms.uint32(1)
+   minNumber = cms.uint32(0)
+#   maxNumber = cms.uint32(1)
  )
 
-selectedElectronSequence = cms.Sequence(electronPreselNoIso+electronPresel+selectedElectronCandFilter)
-selectedElectronLooseSequence = cms.Sequence(electronPreselNoIsoLoose+electronPreselLoose+selectedElectronLooseCandFilter)
+selectedElectronSequence = cms.Sequence(electronPreselNoIso+electronPresel+selectedElectronCandFilter  
+                             + electronPreselNoIsoLoose+electronPreselLoose+selectedElectronLooseCandFilter)
 

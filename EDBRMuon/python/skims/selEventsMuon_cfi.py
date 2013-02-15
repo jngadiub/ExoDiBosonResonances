@@ -31,10 +31,10 @@ selectedMuonCandFilter = cms.EDFilter("CandViewCountFilter",
 
 selectedMuonLooseCandFilter = cms.EDFilter("CandViewCountFilter",
    src = cms.InputTag('muonPreselLoose'),
-   minNumber = cms.uint32(1),
-   maxNumber = cms.uint32(1)
+   minNumber = cms.uint32(0)
+#   maxNumber = cms.uint32(1)
  )
 
-selectedMuonSequence = cms.Sequence(muonPreselNoIso+selectedMuonCandFilter)
-selectedMuonLooseSequence = cms.Sequence(muonPreselLoose+selectedMuonLooseCandFilter)
+selectedMuonSequence = cms.Sequence(muonPreselNoIso + selectedMuonCandFilter 
+                                       +  muonPreselLoose + selectedMuonLooseCandFilter   )
 
