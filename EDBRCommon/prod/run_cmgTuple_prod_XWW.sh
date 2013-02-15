@@ -6,8 +6,8 @@ SAMPLE_Run2012ELE=( )
 
 
 SAMPLE_MC1=( TTBAR WW WZ ZZ WJetsPt50To70 WJetsPt70To100 WJetsPt100 DYJetsPt50To70 DYJetsPt70To100  DYJetsPt100   )  # MC background
-SAMPLE_MC2=( BulkG_WW_lvjj_c1p0_M1000    RSG_WW_lvjj_c0p2_M1000    ) #MC signal: JHUGrav300 
-OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0214/"
+SAMPLE_MC2=( BulkG_WW_lvjj_c1p0_M1000  BulkG_WW_lvjj_c1p0_M600 BulkG_WW_lvjj_c1p0_M1500   RSG_WW_lvjj_c0p2_M1000  RSG_WW_lvjj_c0p2_M600 RSG_WW_lvjj_c0p2_M1500   ) #MC signal: JHUGrav300 
+OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0215/"
 OUTPATHDATA=${OUTPATHBASE}/Run2012/preselCA8/
 OUTPATHMC=${OUTPATHBASE}/Summer12/preselCA8/
 OUTLOGPATH="$(pwd)/logs"
