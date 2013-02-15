@@ -85,6 +85,7 @@ elif "WJetsPt100" in "<SAMPLE>" :
     process.ANEDBR.xsec=cms.double(228.9)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 ### MC signal
+#zz
 elif "BulkG_ZZ_lljj_c1p0_M600" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(41965)
     process.ANEDBR.xsec=cms.double(652000.0)
@@ -109,10 +110,32 @@ elif "RSG_ZZ_lljj_c0p2_M1500" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(24996)
     process.ANEDBR.xsec=cms.double(3877.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+#ww
+elif "RSG_WW_lvjj_c0p2_M600" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(31785)
+    process.ANEDBR.xsec=cms.double(6780000.0)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "RSG_WW_lvjj_c0p2_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(34541)
     process.ANEDBR.xsec=cms.double(402400.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "RSG_WW_lvjj_c0p2_M1500" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(23879)
+    process.ANEDBR.xsec=cms.double(31890)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c1p0_M600" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(40371)
+    process.ANEDBR.xsec=cms.double(1300000)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c1p0_M1000" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(40761)
+    process.ANEDBR.xsec=cms.double(172000)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c1p0_M1500" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(41136)
+    process.ANEDBR.xsec=cms.double(35400)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+
 ### Data Ele
 #zz
 elif "<SAMPLE>"=="Photon_Run2012A_13Jul2012" :
