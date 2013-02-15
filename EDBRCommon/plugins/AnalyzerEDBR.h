@@ -526,6 +526,10 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   bool readLDFromUserFloat_,  readQGFromUserFloat_;
   HLTConfigProvider hltConfig;
 
+  //flag of the number of loose muons/electrons in one event
+  int nLooseMu;
+  int nLooseEle;
+
 };//end class AnalyzerEDBR 
 
 
