@@ -8,6 +8,7 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
     cout<<"pippo1"<<endl;
     isMC_       = ps.getParameter<bool>("isMC");
     treatVBFAsMultiple_    = ps.getParameter<bool>("treatVBFAsMultiple");
+    saveVBFCands_   = ps.getParameter<bool>("saveVBFTaggedCands");
     Ngen_     = ps.getParameter<unsigned int>("Ngen");
     xsec_     = ps.getParameter<double>("xsec"); // in fb
     cout<<"pippo2"<<endl;
@@ -148,24 +149,32 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	iEvent.getByLabel(XMMJColl_        , finalEDBRcand  );  // With kinfit
 
 	
-	int nCandidates=finalEDBRcand->size();
-	if ( nCandidates+nCands > nMaxCand ) nCandidates = nMaxCand - nCands;
-	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" X->ZZ->2L1J cands"<<endl;
+	int nCollCandidates=finalEDBRcand->size();
+	if ( nCollCandidates+nCands > nMaxCand ) nCollCandidates = nMaxCand - nCands;
+	if(debug_)cout<<"read from MUON event, there are "<<nCollCandidates<<" X->ZZ->2L1J cands"<<endl;
 	int ih = nCands;
-	for(int iih=0;iih<nCandidates;iih++){
+	bool vbfFound=false;
+	for(int icand=0;icand<nCollCandidates;icand++){
 	  
-	  edm::RefToBase<cmgMuSingleJetEDBR> edbrM =finalEDBRcand->refAt(iih);
+	  edm::RefToBase<cmgMuSingleJetEDBR> edbrM =finalEDBRcand->refAt(icand);
 	  
 	  //	  if(edbrM->nJets()!=1){
 	  //throw cms::Exception("Mismatched param") <<"Event in SingleJet Path has "<<edbrM->nJets()
 	  //				     <<" jets"<<std::endl;  
 	  //}
-
 	  
+	  bool keepThisVBFCand=true;
+	  int vbfTest=checkVBFTag(edbrM,ih,vbfFound,keepThisVBFCand);
+	  if(vbfTest>0)vbfFound=true;	  
+	  if(vbfTest>0 && !saveVBFCands_)continue; //skip all vbf-tagged cands	 	 
+	  if(vbfTest>0 &&!keepThisVBFCand) continue; 
+
+	  VBFTag[ih] = vbfTest;
+
 	  analyzeGeneric(edbrM, ih);
 	  analyzeSingleJet(edbrM,ih);        
 	  analyzeMuon(edbrM,ih);
-
+	  analyzeVBF(edbrM,ih, vbfTest);
 	
 	ih++;
       }//end loop on candidates
@@ -179,15 +188,16 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	iEvent.getByLabel(XMMColl_        , finalEDBRcand  );  // With kinfit
 
 	
-	int nCandidates=finalEDBRcand->size();
+	int nCollCandidates=finalEDBRcand->size();
 
-	if (nCandidates+nCands> nMaxCand) nCandidates = nMaxCand-nCands;
+	if (nCollCandidates+nCands> nMaxCand) nCollCandidates = nMaxCand-nCands;
 
-	if(debug_)cout<<"read from MUON event, there are "<<nCandidates<<" X->ZZ->2L2J cands"<<endl;
+	if(debug_)cout<<"read from MUON event, there are "<<nCollCandidates<<" X->ZZ->2L2J cands"<<endl;
 	int ih = nCands;
-	for(int iih=0;iih<nCandidates;iih++){
+	bool vbfFound=false;
+	for(int icand=0;icand<nCollCandidates;icand++){
 	  
-	  edm::RefToBase<cmgMuDiJetEDBR> edbrM =finalEDBRcand->refAt(iih);
+	  edm::RefToBase<cmgMuDiJetEDBR> edbrM =finalEDBRcand->refAt(icand);
 
 	  
 	  //  if(edbrM->nJets()!=2){
@@ -195,10 +205,18 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	  //						     <<" jets"<<std::endl;  
 	  // }
 	
+	  bool keepThisVBFCand=true;
+	  int vbfTest=checkVBFTag(edbrM,ih,vbfFound,keepThisVBFCand);
+	  if(vbfTest>0)vbfFound=true;	  
+	  if(vbfTest>0 && !saveVBFCands_)continue; //skip all vbf-tagged cands	 	 
+	  if(vbfTest>0 &&!keepThisVBFCand) continue; 
+
+	  VBFTag[ih] = vbfTest;
+
 	  analyzeGeneric(edbrM,ih);
 	  analyzeDoubleJet(edbrM,ih,goodKinFit);        
 	  analyzeMuon(edbrM,ih);
-
+	  analyzeVBF(edbrM,ih, vbfTest);
 	
 	ih++;
       }//end loop on candidates
@@ -220,24 +238,32 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	iEvent.getByLabel(XEEJColl_        , finalEDBRcand  );  // With kinfit
 
 	
-	int nCandidates=finalEDBRcand->size();
-	if (nCandidates+nCands > nMaxCand) nCandidates = nMaxCand-nCands;
-	if(debug_)cout<<"read from ELECTRON event, there are "<<nCandidates<<" X->ZZ->2L1J cands"<<endl;
+	int nCollCandidates=finalEDBRcand->size();
+	if (nCollCandidates+nCands > nMaxCand) nCollCandidates = nMaxCand-nCands;
+	if(debug_)cout<<"read from ELECTRON event, there are "<<nCollCandidates<<" X->ZZ->2L1J cands"<<endl;
 	int ih = nCands;
-	for(int iih=0;iih<nCandidates;iih++){
+	bool vbfFound=false;
+	for(int icand=0;icand<nCollCandidates;icand++){
 	  
-	  edm::RefToBase< cmgEleSingleJetEDBR > edbrE =finalEDBRcand->refAt(iih);
+	  edm::RefToBase< cmgEleSingleJetEDBR > edbrE =finalEDBRcand->refAt(icand);
 	  
 	  //  if(edbrE->nJets()!=1){
 	  //  throw cms::Exception("Mismatched param") <<"Event in SingleJet Path has "<<edbrE->nJets()
 	  //						     <<" jets"<<std::endl;  
 	  // }
 	 
- 
+	  bool keepThisVBFCand=true;
+	  int vbfTest=checkVBFTag(edbrE,ih,vbfFound,keepThisVBFCand);
+	  if(vbfTest>0)vbfFound=true;	  
+	  if(vbfTest>0 && !saveVBFCands_)continue; //skip all vbf-tagged cands	 	 
+	  if(vbfTest>0 &&!keepThisVBFCand) continue; 
+
+	  VBFTag[ih] = vbfTest;
+
 	  analyzeGeneric(edbrE, ih);
 	  analyzeSingleJet(edbrE,ih);        
 	  analyzeElectron(edbrE,ih);
-
+	  analyzeVBF(edbrE,ih, vbfTest);
 	
 	ih++;
       }//end loop on candidates
@@ -252,16 +278,16 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	edm::Handle<edm::View< cmgEleDiJetEDBR > > finalEDBRcand;
 	iEvent.getByLabel(XEEColl_        , finalEDBRcand  );  // With kinfit
 	
-	int nCandidates=finalEDBRcand->size();
-	if (nCandidates+nCands > nMaxCand) nCandidates = nMaxCand-nCands;
+	int nCollCandidates=finalEDBRcand->size();
+	if (nCollCandidates+nCands > nMaxCand) nCollCandidates = nMaxCand-nCands;
 
 	if(debug_){
-	  cout<<"read from ELECTRON event, there are "<<nCandidates<<" X->ZZ->2L2J cands"<<endl;
+	  cout<<"read from ELECTRON event, there are "<<nCollCandidates<<" X->ZZ->2L2J cands"<<endl;
 	
 
-	  for(int iih=0;iih<nCandidates;iih++){
-	  cout<<"Loop on ELE cand ih="<<iih<<"  Mass="<<finalEDBRcand->refAt(iih)->mass() <<" Mll="<<finalEDBRcand->refAt(iih)->leg1().mass() <<" Mjj="<<finalEDBRcand->refAt(iih)->leg2().mass() <<" Etajj="<<finalEDBRcand->refAt(iih)->leg2().eta()<<std::flush;
-	  if(finalEDBRcand->refAt(iih)->vbfptr().isAvailable())cout<<" Mass_vbf="<<finalEDBRcand->refAt(iih)->vbfptr()->mass()<<std::endl;
+	  for(int icand=0;icand<nCollCandidates;icand++){
+	  cout<<"Loop on ELE cand ih="<<icand<<"  Mass="<<finalEDBRcand->refAt(icand)->mass() <<" Mll="<<finalEDBRcand->refAt(icand)->leg1().mass() <<" Mjj="<<finalEDBRcand->refAt(icand)->leg2().mass() <<" Etajj="<<finalEDBRcand->refAt(icand)->leg2().eta()<<std::flush;
+	  if(finalEDBRcand->refAt(icand)->vbfptr().isAvailable())cout<<" Mass_vbf="<<finalEDBRcand->refAt(icand)->vbfptr()->mass()<<std::endl;
 	  else cout<<" Mass_vbf= n.a."<<std::endl;
 	}
 	 
@@ -269,9 +295,10 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	}//end if debug
 
 	int ih = nCands;
-	for(int iih=0;iih<nCandidates;iih++){
-	  //  cout<<"Loop on ELE cand ih="<<iih<<std::flush;
-	  edm::RefToBase<cmgEleDiJetEDBR> edbrE =finalEDBRcand->refAt(iih);
+	bool vbfFound=false;
+	for(int icand=0;icand<nCollCandidates;icand++){
+	  //  cout<<"Loop on ELE cand ih="<<icand<<std::flush;
+	  edm::RefToBase<cmgEleDiJetEDBR> edbrE =finalEDBRcand->refAt(icand);
 	 
 
 	  // if(edbrE->nJets()!=2){
@@ -279,10 +306,18 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	  //						     <<" jets"<<std::endl;  
 	  // }
 	  
+	  bool keepThisVBFCand=true;
+	  int vbfTest=checkVBFTag(edbrE,ih,vbfFound,keepThisVBFCand);
+	  if(vbfTest>0)vbfFound=true;	  
+	  if(vbfTest>0 && !saveVBFCands_)continue; //skip all vbf-tagged cands	 	 
+	  if(vbfTest>0 &&!keepThisVBFCand) continue; 
+
+	  VBFTag[ih] = vbfTest;
+
 	  analyzeGeneric(edbrE,ih);
 	  analyzeDoubleJet(edbrE, ih,goodKinFit);        
 	  analyzeElectron(edbrE,ih);
-
+	  analyzeVBF(edbrE,ih, vbfTest);
 	
 	ih++;
       }//end loop on candidates
@@ -312,7 +347,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
   bool passCuts=true;
   bool storeEvt=goodKinFit && (muPath_ || elePath_) && lep<2 && passCuts;
   //  if(debug_&& singleJetEvent&&doubleJetEvent)cout<<" Run "<<run<<"  Event "<<nevent<<"\tThis muon-event has both single and double jet topology."<<endl;
-  if( singleJetEvent&&doubleJetEvent)cout<<" Run "<<run<<"  Event "<<nevent<<"\tThis muon-event has both single and double jet topology."<<endl;
+  if( singleJetEvent&&doubleJetEvent &&debug_)cout<<" Run "<<run<<"  Event "<<nevent<<"\tThis muon-event has both single and double jet topology."<<endl;
   if(storeEvt){
     //  if(debug_)cout<<"Filling the tree ("<<nCands<<endl;//" cands -> pTlep1="<< ptlep1[nCands-1]<<")"<<endl;
     outTree_->Fill(); 
@@ -341,6 +376,9 @@ void AnalyzerEDBR::initTree(){
   if(debug_)cout<<"creating the output TTree"<<endl;
   outTree_ = new TTree("SelectedCandidates","angles etc.");
   outTree_->Branch("nCands"          ,&nCands        ,"nCands/I"               );
+  outTree_->Branch("event"           ,&nevent        ,"event/i"                );
+  outTree_->Branch("run"             ,&run           ,"run/i"                  );
+  outTree_->Branch("ls"              ,&ls            ,"ls/i"                   );
   outTree_->Branch("cosThetaStar"    ,&hs            ,"cosThetaStar[nCands]/D" );
   outTree_->Branch("cosTheta1"       ,&h1            ,"cosTheta1[nCands]/D"    );
   outTree_->Branch("cosTheta2"       ,&h2            ,"cosTheta2[nCands]/D"    );
@@ -366,6 +404,7 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("phijet2"         ,&phijet2       ,"phijet2[nCands]/D"      );
   outTree_->Branch("lep"             ,&lep           ,"lep/D"                  );
   outTree_->Branch("region"          ,&reg           ,"region[nCands]/D"       );
+  outTree_->Branch("nXjets"          ,&nXjets        ,"nXjets[nCands]/I"    ); 
   outTree_->Branch("mZZ"             ,&mzz           ,"mZZ[nCands]/D"          );
   outTree_->Branch("mZZNoKinFit"     ,&mzzNoKinFit   ,"mZZNoKinFit[nCands]/D"  );
   outTree_->Branch("ptmzz"           ,&ptmzz         ,"ptmzz[nCands]/D"        );
@@ -386,7 +425,6 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("betajet2"        ,&betajet2      ,"betajet2[nCands]/D"     ); 
   outTree_->Branch("puMvajet1"       ,&puMvajet1     ,"puMvajet1[nCands]/D"    ); 
   outTree_->Branch("puMvajet2"       ,&puMvajet2     ,"puMvajet2[nCands]/D"    ); 
-  outTree_->Branch("nXjets"       ,&nXjets     ,"nXjets[nCands]/I"    ); 
   outTree_->Branch("prunedmass"       ,&prunedmass    ,"prunedmass[nCands]/D"    ); 
   outTree_->Branch("mdrop"       ,&mdrop     ,"mdrop[nCands]/D"    ); 
   outTree_->Branch("nsubj12"       ,&nsubj12    ,"nsubj12[nCands]/D"    ); 
@@ -420,9 +458,15 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("weight"          ,&w             ,"weight/D"               );  // Product of PU and lumi weights
   outTree_->Branch("weight2012A"     ,&wA            ,"weight2012A/D"          );
   outTree_->Branch("weight2012B"     ,&wB            ,"weight2012B/D"          );
-  outTree_->Branch("event"           ,&nevent        ,"event/i"                );
-  outTree_->Branch("run"             ,&run           ,"run/i"                  );
-  outTree_->Branch("ls"              ,&ls            ,"ls/i"                   );
+  outTree_->Branch("VBFTag"       ,&VBFTag     ,"VBFTag[nCands]/I"    ); 
+  outTree_->Branch("VBFmJJ"       ,&VBFmJJ     ,"VBFmJJ[nCands]/I"    ); 
+  outTree_->Branch("VBFdeltaEta"       ,&VBFdeltaEta     ,"VBFdeltaEta[nCands]/I"    ); 
+  outTree_->Branch("VBFptjet1"       ,&VBFptjet1     ,"VBFptjet1[nCands]/I"    ); 
+  outTree_->Branch("VBFptjet2"       ,&VBFptjet2     ,"VBFptjet2[nCands]/I"    ); 
+  outTree_->Branch("VBFetajet1"       ,&VBFetajet1     ,"VBFetajet1[nCands]/I"    ); 
+  outTree_->Branch("VBFetajet2"       ,&VBFetajet2     ,"VBFetajet2[nCands]/I"    ); 
+  outTree_->Branch("VBFphijet1"       ,&VBFphijet1     ,"VBFphijet1[nCands]/I"    ); 
+  outTree_->Branch("VBFphijet2"       ,&VBFphijet2     ,"VBFphijet2[nCands]/I"    ); 
   outTree_->Branch("massGenX"        ,&massGenX      ,"massGenX/d"             );
   outTree_->Branch("ptGenX"          ,&ptGenX        ,"ptGenX/d"               );
   outTree_->Branch("yGenX"           ,&yGenX         ,"yGenX/d"                );
@@ -485,7 +529,9 @@ void AnalyzerEDBR::initDataMembers(){
     MCmatch[i]=-99.;           
     qjet[i]=-99.;tau1[i]=-99.;tau2[i]=-99.;nsubj12[i]=-99.;nsubj23[i]=-99.;
     mdrop[i]=-99.;prunedmass[i]=-99.;
-    
+    VBFTag[i]=-999;
+    VBFmJJ[i]=-999.0; VBFdeltaEta[i]=-999.0; VBFptjet1[i]=-999.0; VBFptjet2[i]=-999.0; VBFetajet1[i]=-999.0; VBFetajet2[i]=-999.0; VBFphijet1[i]=-999.0; VBFphijet2[i]=-999.0;
+
   }
 
 

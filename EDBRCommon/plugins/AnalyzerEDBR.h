@@ -77,7 +77,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
 
  private:
-  bool debug_, isMC_,  treatVBFAsMultiple_;            // flags
+  bool debug_, isMC_,  treatVBFAsMultiple_,saveVBFCands_;            // flags
   std::string cat_;
   std::string outFileName_;
   std::string VType_;
@@ -102,6 +102,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
    //////////////////////////////////////
    /////////////////////////////////////
 
+
   template < typename T > void analyzeGeneric(T edbr,int& ih){
 
  
@@ -112,6 +113,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
    MCmatch[ih] = edbr->getSelection("cuts_genMatch");
    deltaREDBR[ih] = 0.0;//deltaR(edbr->phi(),edbr->eta(),genEDBR.phi(),genEDBR.eta());
+
+
+
 
    // if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric "<<ih<<" "<<flush;
    reg[ih]=(edbr->leg2().getSelection("cuts_isSignal")? 1.0 : 0.0 );
@@ -404,7 +408,53 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   }//end analyzeElectron
 
 
+  template < typename T > int checkVBFTag(T edbr,int ih,bool vbfFound, bool& keepThisVBFCand){
+  
+    int vbfFlag=0;//not a VBF-tagged candidate by default
+    if(edbr->vbfptr().isAvailable() )vbfFlag = 1;
+    //if(edbr->getSelection("tag_vbfDoubleJet_vbf") || edbr->getSelection("tag_vbfSingleJet_vbf")  )vbfFlag = 1;
+         
+    if(!treatVBFAsMultiple_){//save only 1st VBF, skip all other vbf combinations associated to the same cand
+      if(ih>0){//don't even bother if this is the very first candidate
+	if(vbfFlag>0 && vbfFound  ){//this cand is vbf tagged and we have already found another vbf-tagged
+	  
+	  for(int tmpInd1=0;tmpInd1<ih;tmpInd1++){
+	    if(VBFTag[tmpInd1]>0){
+	      double mdiffTmp=edbr->mass()-mzz[tmpInd1];
+	      if(mdiffTmp<0.01)keepThisVBFCand=false;
+	    }
+	  }//end loop on previous candidates
+	}
+      }//end if ih>0
+    }//end if !treatVBFAsMultiple_
+    
+ 
+    return vbfFlag;
+  }//end checkVBFTag
 
+  template < typename T > void analyzeVBF(T edbr,int ih,int vbfFlag){
+
+    VBFmJJ[ih]=-777.0;
+    VBFdeltaEta[ih]=-777.0;
+    VBFptjet1[ih]=-777.0;
+    VBFptjet2[ih]=-777.0;
+    VBFetajet1[ih]=-777.0;
+    VBFetajet2[ih]=-777.0;
+    VBFphijet1[ih]=-777.0;
+    VBFphijet2[ih]=-777.0;
+
+    if(vbfFlag>0){
+      VBFmJJ[ih]=edbr->vbfptr()->mass();
+      VBFptjet1[ih]=edbr->vbfptr()->leg1().pt();
+      VBFptjet2[ih]=edbr->vbfptr()->leg2().pt();
+      VBFetajet1[ih]=edbr->vbfptr()->leg1().eta();
+      VBFetajet2[ih]=edbr->vbfptr()->leg2().eta();
+      VBFphijet1[ih]=edbr->vbfptr()->leg1().phi();
+      VBFphijet2[ih]=edbr->vbfptr()->leg2().phi();
+      VBFdeltaEta[ih]=fabs(VBFetajet1[ih]-VBFetajet2[ih]);
+    }
+
+  }//end analyzeVBF
 
    //////////////////////////////////////
    // DATA MEMBERS
@@ -416,7 +466,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
   const static int nMaxCand = 30;
   const static int nMaxTrig = 20;
-  int nCands_;
+  //  int nCands_;
 
   const static int metSignMax = 10;
 
@@ -457,12 +507,16 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double qjet[nMaxCand],tau1[nMaxCand],tau2[nMaxCand],nsubj12[nMaxCand],nsubj23[nMaxCand];
   double mdrop[nMaxCand],prunedmass[nMaxCand];
 
+  int VBFTag[nMaxCand];
+  double VBFmJJ[nMaxCand],VBFdeltaEta[nMaxCand],VBFptjet1[nMaxCand],VBFptjet2[nMaxCand],VBFetajet1[nMaxCand],VBFetajet2[nMaxCand],VBFphijet1[nMaxCand],VBFphijet2[nMaxCand];
+
   double massGenX, ptGenX,yGenX, phiGenX;
   double massGenZll, ptGenZll,yGenZll, phiGenZll;
   double massGenZqq, ptGenZqq,yGenZqq, phiGenZqq;
   double ptGenq1,etaGenq1, phiGenq1,ptGenq2,etaGenq2, phiGenq2 ;
   double ptGenl1,etaGenl1, phiGenl1,ptGenl2,etaGenl2, phiGenl2 ;
   int pdgIdGenX,flavGenq1,flavGenq2,flavGenl1,flavGenl2;
+
 
 
   unsigned int nevent,run,ls, njets, nvtx,npu;
