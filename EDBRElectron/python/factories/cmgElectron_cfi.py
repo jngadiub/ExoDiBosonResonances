@@ -19,7 +19,8 @@ cmgElectron = cms.EDFilter("ElectronPOProducer",
     cuts = cms.PSet(
                kinematics = eKinematics.clone(),
                isoelectron = cms.PSet ( reliso = cms.string('((sourcePtr().get().trackIso() + sourcePtr().get().caloIso())/sourcePtr().get().pt())< 0.15')), #AB: PF iso by defualt, to be corrected by eff area
-               HEEPID = HEEPelectronBstdId2012.clone()
+               HEEPID = HEEPelectronBstdId2012.clone(),
+			   HEEPIDloose = HEEPelectronBstdId2012Loose.clone()
                #trigger = muontrigger.clone()
                )
 )

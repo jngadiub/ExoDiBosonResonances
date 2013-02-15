@@ -22,7 +22,8 @@ cmgMuon = cms.EDFilter("MuonPOProducer",
                isomuon = cms.PSet ( reliso = cms.string('((sourcePtr().get().trackIso() + sourcePtr().get().caloIso())/sourcePtr().get().pt())< 0.15')), #AB: PF iso by defualt, to be corrected by eff area
                vbtfmuon = vbtfmuon.clone(),
                HPTTKmuon = HPTmuonTKId2012.clone(),
-               HPTGBmuon = HPTmuonGlobalId2012.clone()
+               HPTGBmuon = HPTmuonGlobalId2012.clone(),
+			   HPTmuonLoose = HPTmuonLooseId.clone()
 #               trigger = muontrigger.clone()
        )    
 )
