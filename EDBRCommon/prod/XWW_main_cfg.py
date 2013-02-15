@@ -326,8 +326,8 @@ if ( options.lepton == "both" or options.lepton == "mu"):
 ###################################
 # Number of lepton test           #
 ###################################
-process.leptonNumElePath = cms.Path(process.eleSequence + process.selectedElectronLooseSequence)
-process.leptonNumMuPath = cms.Path(process.muonSequence + process.selectedMuonLooseSequence)
+#process.leptonNumElePath = cms.Path(process.eleSequence + process.selectedElectronLooseSequence)
+#process.leptonNumMuPath = cms.Path(process.muonSequence + process.selectedMuonLooseSequence)
 
 ####################################
 # Final selection and arbitration  #
