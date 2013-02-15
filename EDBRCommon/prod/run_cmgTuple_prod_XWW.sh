@@ -5,11 +5,11 @@ SAMPLE_Run2012MU=( SingleMu_Run2012A_13Jul2012  SingleMu_Run2012A_recover Single
 SAMPLE_Run2012ELE=( )
 
 
-SAMPLE_MC1=( TTBAR WW WZ ZZ WJetsPt50To70 WJetsPt70To100 WJetsPt100 DYJetsPt50To70 DYJetsPt70To100  DYJetsPt100 )  # MC background
-SAMPLE_MC2=( ) #MC signal: JHUGrav300 
-OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1"
-OUTPATHDATA=${OUTPATHBASE}/Run2012/presel/
-OUTPATHMC=${OUTPATHBASE}/Summer12/presel/
+SAMPLE_MC1=( TTBAR WW WZ ZZ WJetsPt50To70 WJetsPt70To100 WJetsPt100 DYJetsPt50To70 DYJetsPt70To100  DYJetsPt100   )  # MC background
+SAMPLE_MC2=( BulkG_WW_lvjj_c1p0_M1000    RSG_WW_lvjj_c0p2_M1000    ) #MC signal: JHUGrav300 
+OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0214/"
+OUTPATHDATA=${OUTPATHBASE}/Run2012/preselCA8/
+OUTPATHMC=${OUTPATHBASE}/Summer12/preselCA8/
 OUTLOGPATH="$(pwd)/logs"
 
 cmsMkdir $OUTPATHMC
@@ -48,7 +48,7 @@ for sample in "${SAMPLE_MC2[@]}"
 
 
 #for MC
-   ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py 2  XWW_main_cfg.py  -o ${LOGDIR}/${sample}_xww -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=summer11_${sample}_cff lepton=both selection=full mcordata=MC"
+   ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py 2  XWW_main_cfg.py  -o ${LOGDIR}/${sample}_xww -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=summer11_${sample}_cff lepton=both selection=presel mcordata=MC"
    let sub_ind=$sub_ind +1
 done
 
