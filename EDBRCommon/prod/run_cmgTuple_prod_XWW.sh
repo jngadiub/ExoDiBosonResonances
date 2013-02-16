@@ -48,7 +48,7 @@ for sample in "${SAMPLE_MC2[@]}"
 
 
 #for MC
-   ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py 2  XWW_main_cfg.py  -o ${LOGDIR}/${sample}_xww -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=summer11_${sample}_cff lepton=both selection=presel mcordata=MC"
+   ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py 2  XWW_main_cfg.py  -o ${LOGDIR}/${sample}_xww -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=summer12_${sample}_cff lepton=both selection=presel mcordata=MC"
    let sub_ind=$sub_ind +1
 done
 
