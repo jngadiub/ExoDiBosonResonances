@@ -74,12 +74,12 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
 	//use these for X->ZZ analysis
-
+	
 	typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
 	typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
 	typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
 	typedef  cmg::DiMuonDiJetEDBR     cmgMuDiJetEDBR  ;
-
+	
 	//use these for X->WW analysis
 	/*
 	typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
@@ -510,6 +510,8 @@ void AnalyzerEDBR::initDataMembers(){
 	wB    =   1.0;
 	HLTSF =   1.0;
 	nCands=0;
+	nLooseEle=-1;
+	nLooseMu=-1;
 
 	met=0; metSign=0;            // MET and its significance
 	//reset arrays
