@@ -395,6 +395,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     if(debug_)cout<<"Inside AnalyzerEDBR::analyzeElectron for cand#"<<ih<<" : "<<std::flush;
     bool highptLep1=true;
     if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
+	if(VType_=="W")highptLep1=true;//for ww case, we don't compare pt of lepton and neutrino
     
     
     if(highptLep1){
