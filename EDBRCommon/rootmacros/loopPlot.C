@@ -18,8 +18,8 @@ void loopPlot(){
   setTDRStyle();//TDR style
    
   /// Boolean flags to steer the histogram making
-  bool wantElectrons = false; // Will make histograms for electrons
-  bool wantMuons     = true; // Will make histograms for muons
+  bool wantElectrons = true; // Will make histograms for electrons
+  bool wantMuons     = false; // Will make histograms for muons
   bool wantSideband  = true; // Will make histograms for sideband region
   bool wantSignal    = false; // Will make histograms for signal region
   int  wantNXJets    = 2; // Will make histograms for 1 or 2 jet topology
@@ -36,9 +36,9 @@ void loopPlot(){
   bool redoHistograms = true;
   
   /// Path to wherever the files with the trees are. 
-  std::string pathToTrees="/afs/cern.ch/user/t/tomei/EXOVV_2012/analyzer_trees/productionv1/preselCA8/";
+  std::string pathToTrees="/afs/cern.ch/user/t/tomei/EXOVV_2012/analyzer_trees/productionv1_round2/fullselCA8/";
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./doubleJetMuons";
+  std::string outputDir = "./doubleJetElectrons_fullsel";
 
   /// Setup names of data files for trees.
   const int nDATA=6;//set to zero if you don't want to plot

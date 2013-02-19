@@ -6,11 +6,12 @@
 #include "TROOT.h"
 #include "TTree.h"
 #include "TChain.h"
+
 // Sadly, CINT will not allow these large arrays
 // to be part of the class... possibly if I change
 // them to be std::vectors, eventually?
 
-const std::string vars[81] = 
+const std::string vars[83] = 
   {"nCands", "cosThetaStar", "cosTheta1", "cosTheta2", "phi", "phiStar1", "ptlep1",
    "ptlep2", "ptjet1", "ptjet2", "ptZll", "ptZjj", "yZll", "yZjj",
    "phiZll", "phiZjj", "etalep1", "etalep2", "etajet1", "etajet2", "philep1",
@@ -18,53 +19,53 @@ const std::string vars[81] =
    "ptmzz", "ptmzzNoKinFit", "mLL", "mJJ", "mJJNoKinFit", "met", "metSign",
    "nBTags", "deltaREDBR", "deltaRleplep", "deltaRjetjet", "qgProduct", "qgjet1", "qgjet2",
    "betajet1", "betajet2", "puMvajet1", "puMvajet2", "nXjets", "prunedmass", "mdrop",
-   "nsubj12", "nsubj23", "tau1", "tau2", "qjet", "isolep1", "isolep2",
-   "eleMVAId1", "eleMVAId2", "LD", "q1fl", "q2fl", "MCmatch", "nVtx",
+   "nsubj21", "nsubj23", "tau1", "tau2", "qjet", "isomu1mod", "isomu2mod",
+   "isoele1calo", "isoele2calo", "isoele1trk", "isoele2trk", "LD", "q1fl", "q2fl", "MCmatch", "nVtx",
    "nJets", "nPU", "HLTweight", "PUweight", "PUweight2012A", "PUweight2012B", "LumiWeight",
    "GenWeight", "weight", "weight2012A", "weight2012B", "event", "run", "ls",
    "nVL","VBFTag","VBFmJJ","VBFdeltaEta"};
 
-const int nBins[81] = 
-  {13, 100, 100, 100, 100, 100, 100,
-   100, 100, 100, 92, 100, 28, 28,
-   100, 100, 26, 26, 26, 26, 100,
-   100, 100, 100, 100, 100, 50, 50,
-   35, 35, 50, 80, 75, 20, 20,
+const int nBins[83] = 
+  {13,  100, 100, 100, 100, 100, 100,
+   100, 100, 100, 92,  100, 28,  28,
+   100, 100, 26,  26,  26,  26,  100,
+   100, 100, 100, 100, 100, 50,  50,
+   35,  35,  50,  80,  75,  20,  20,
    100, 100, 100, 100, 100, 100, 100,
-   100, 100, 100, 100, 3, 22, 100,
-   40, 100, 100, 100, 100, 100, 100,
-   100, 100, 100, 4, 4, 100, 43,
-   10, 2, 100, 100, 100, 100, 100,
+   100, 100, 100, 100, 3,   22,  100,
+   40,  100, 100, 100, 100, 100, 100,
+   100, 100, 100, 100, 100, 4,   4,   100, 43,
+   10,  2,   100, 100, 100, 100, 100,
    100, 100, 100, 100, 100, 100, 100,
-   10,2,100,100};
+   10,  2,   100, 100};
 
-const double minBin[81] = 
+const double minBin[83] = 
   {0.5,   -1.15,  -1.15,  -1.15,  -3.7,   -3.7,    0.0,
-   0.0,    0.0,    0.0,    80.0,    0.0,   -2.8,   -2.8,
+   0.0,    0.0,    0.0,    80.0,   0.0,   -2.8,   -2.8,
   -3.7,   -3.7,   -2.6,   -2.6,   -2.6,   -2.6,   -3.7,
   -3.7,   -3.7,   -3.7,    0.0,    0.0,    0.0,    0.0,
-   0.0,    0.0,   70.0,   40.0,    40.0,    0.0,    0.0,
+   0.0,    0.0,    70.0,   40.0,   40.0,   0.0,    0.0,
   -2.2,    0.0,    0.0,    0.0,   -100.2, -100.2, -100.2,
-   0., -1.2,  -10800., -10800., 0., 50., -1080.,
-   0., -1080., -1080., -1080., -1080., 0., 0.,
-   -1.15, -1.15,-100.2, -101., -101., -1.2, -0.5,
+   0.,    -1.2,   -1080., -1080.,  0.,     50.,   -1080.,
+   0.,    -1080., -1080., -1080., -1080.,  0.,     0.,
+   0.0,    0.0,    0.0,    0.0,   -101.,  -101.,  -101., -1.2, -0.5,
    0.5,    0.,     0.99,   0.,     0.,     0.,     0.,
-   0.,     0.,     0.,     0.,     0., 190000, 0,
-   0.,0.0,0.0,0.0};
+   0.,     0.,     0.,     0.,     0.,     190000, 0,
+   0.,     0.,     0.,     0.};
 
-const double maxBin[81] = 
+const double maxBin[83] = 
   {13.5,   1.15,  1.15, 1.15,   3.7,     3.7,   500.0,
    500.0, 500.0, 500.0, 1000.0, 1000.0,  2.8,   2.8,
    3.7,   3.7,   2.6,   2.6,    2.6,     2.6,   3.7,
    3.7,   3.7,   3.7,   1.0,    1.0,     2000,  2000,
    350.0, 350.0, 110.0, 140.0,  190.0,   100.0, 10.0,
    0.,    4.0,   4.0,   4.0,    -97.8,   -97.8, -97.8 ,
-   1.1, 1.2, 1000., 1000., 3., 105., 100.,
-   1., 100., 100., 100., 100., 0.20, 0.20,
-   1.15, 1.15, -97.8, -97., -97., 1.2, 42.5,
-   10.5, 1., 10., 10., 10., 10., 0.1,
-   10, 10, 10, 10, 1.0E9, 210000, 10000,
-   10,2.0,1000.0,10.0};
+   1.1,   1.2,   1000., 1000.,  3.,      105.,  100.,
+   1.,    100.,  100.,  100.,   100.,    0.20,  0.20,
+   1.0,   1.0,   10.0,  10.0,   -97.,    -97.,  -97., 1.2, 42.5,
+   10.5,  1.0,   10.0,  10.0,   10.,      10.,  0.1,
+   10,    10,    10,    10,     1.0E9,   210000,10000,
+   10,    2.0,   1000., 10.0};
 
 /// EDBRHistoMaker is the class that analyzes the flat
 /// TTree that comes out from the NTuple dumper module.
@@ -90,6 +91,9 @@ class EDBRHistoMaker {
 
 		// Declaration of leaf types
 		Int_t           nCands;
+		UInt_t          event;
+		UInt_t          run;
+		UInt_t          ls;
 		Double_t        cosThetaStar[99];   //[nCands]
 		Double_t        cosTheta1[99];   //[nCands]
 		Double_t        cosTheta2[99];   //[nCands]
@@ -115,6 +119,7 @@ class EDBRHistoMaker {
 		Double_t        phijet2[99];   //[nCands]
 		Double_t        lep;
 		Double_t        region[99];   //[nCands]
+		Int_t           nXjets[99];   //[nCands]
 		Double_t        mZZ[99];   //[nCands]
 		Double_t        mZZNoKinFit[99];   //[nCands]
 		Double_t        ptmzz[99];   //[nCands]
@@ -135,7 +140,6 @@ class EDBRHistoMaker {
 		Double_t        betajet2[99];   //[nCands]
 		Double_t        puMvajet1[99];   //[nCands]
 		Double_t        puMvajet2[99];   //[nCands]
-		Int_t           nXjets[99];   //[nCands]
 		Double_t        prunedmass[99];   //[nCands]
 		Double_t        mdrop[99];   //[nCands]
 		Double_t        nsubj12[99];   //[nCands]
@@ -145,17 +149,18 @@ class EDBRHistoMaker {
 		Double_t        qjet[99];   //[nCands]
 		Double_t        isolep1[99];   //[nCands]
 		Double_t        isolep2[99];   //[nCands]
-		Double_t        isolep1mod[99];   //[nCands]
-		Double_t        isolep2mod[99];   //[nCands]
+		Double_t        isomu1mod[99];   //[nCands]
+		Double_t        isomu2mod[99];   //[nCands]
+		Double_t        isoele1trk[99];   //[nCands]
+		Double_t        isoele2trk[99];   //[nCands]
+		Double_t        isoele1calo[99];   //[nCands]
+		Double_t        isoele2calo[99];   //[nCands]
 		Double_t        eleMVAId1[99];   //[nCands]
 		Double_t        eleMVAId2[99];   //[nCands]
 		Double_t        LD[99];   //[nCands]
 		Int_t           q1fl[99];   //[nCands]
 		Int_t           q2fl[99];   //[nCands]
 		Double_t        MCmatch[99];   //[nCands]
-		Int_t           VBFTag[99];   //[nCands]
-		Double_t        VBFmJJ[99];   //[nCands]
-		Double_t        VBFdeltaEta[99];   //[nCands]
 		UInt_t          nVtx;
 		UInt_t          nJets;
 		UInt_t          nPU;
@@ -168,12 +173,36 @@ class EDBRHistoMaker {
 		Double_t        weight;
 		Double_t        weight2012A;
 		Double_t        weight2012B;
-		UInt_t          event;
-		UInt_t          run;
-		UInt_t          ls;
+		Int_t           VBFTag[99];   //[nCands]
+		Double_t        VBFmJJ[99];   //[nCands]
+		Double_t        VBFdeltaEta[99];   //[nCands]
+		Double_t        VBFptjet1[99];   //[nCands]
+		Double_t        VBFptjet2[99];   //[nCands]
+		Double_t        VBFetajet1[99];   //[nCands]
+		Double_t        VBFetajet2[99];   //[nCands]
+		Double_t        VBFphijet1[99];   //[nCands]
+		Double_t        VBFphijet2[99];   //[nCands]
+		Double_t        massGenX;
+		Double_t        ptGenX;
+		Double_t        yGenX;
+		Double_t        phiGenX;
+		Int_t           pdgIdGenX;
+		Double_t        massGenVll;
+		Double_t        ptGenVll;
+		Double_t        yGenVll;
+		Double_t        phiGenVll;
+		Double_t        massGenVqq;
+		Double_t        ptGenVqq;
+		Double_t        yGenVqq;
+		Double_t        phiGenVqq;
+		Int_t           nLooseMu;
+		Int_t           nLooseEle;
 
 		// List of branches
 		TBranch        *b_nCands;   //!
+		TBranch        *b_event;   //!
+		TBranch        *b_run;   //!
+		TBranch        *b_ls;   //!
 		TBranch        *b_cosThetaStar;   //!
 		TBranch        *b_cosTheta1;   //!
 		TBranch        *b_cosTheta2;   //!
@@ -199,6 +228,7 @@ class EDBRHistoMaker {
 		TBranch        *b_phijet2;   //!
 		TBranch        *b_lep;   //!
 		TBranch        *b_region;   //!
+		TBranch        *b_nXjets;   //!
 		TBranch        *b_mZZ;   //!
 		TBranch        *b_mZZNoKinFit;   //!
 		TBranch        *b_ptmzz;   //!
@@ -219,7 +249,6 @@ class EDBRHistoMaker {
 		TBranch        *b_betajet2;   //!
 		TBranch        *b_puMvajet1;   //!
 		TBranch        *b_puMvajet2;   //!
-		TBranch        *b_nXjets;   //!
 		TBranch        *b_prunedmass;   //!
 		TBranch        *b_mdrop;   //!
 		TBranch        *b_nsubj12;   //!
@@ -229,14 +258,15 @@ class EDBRHistoMaker {
 		TBranch        *b_qjet;   //!
 		TBranch        *b_isolep1;   //!
 		TBranch        *b_isolep2;   //!
-		TBranch        *b_isolep1mod;   //!
-		TBranch        *b_isolep2mod;   //!
+		TBranch        *b_isomu1mod;   //!
+		TBranch        *b_isomu2mod;   //!
+		TBranch        *b_isoele1trk;   //!
+		TBranch        *b_isoele2trk;   //!
+		TBranch        *b_isoele1calo;   //!
+		TBranch        *b_isoele2calo;   //!
 		TBranch        *b_eleMVAId1;   //!
 		TBranch        *b_eleMVAId2;   //!
 		TBranch        *b_LD;   //!
-		TBranch        *b_VBFTag;   //!
-		TBranch        *b_VBFmJJ;   //!
-		TBranch        *b_VBFdeltaEta;   //!
 		TBranch        *b_q1fl;   //!
 		TBranch        *b_q2fl;   //!
 		TBranch        *b_MCmatch;   //!
@@ -252,9 +282,30 @@ class EDBRHistoMaker {
 		TBranch        *b_weight;   //!
 		TBranch        *b_weight2012A;   //!
 		TBranch        *b_weight2012B;   //!
-		TBranch        *b_event;   //!
-		TBranch        *b_run;   //!
-		TBranch        *b_ls;   //!
+		TBranch        *b_VBFTag;   //!
+		TBranch        *b_VBFmJJ;   //!
+		TBranch        *b_VBFdeltaEta;   //!
+		TBranch        *b_VBFptjet1;   //!
+		TBranch        *b_VBFptjet2;   //!
+		TBranch        *b_VBFetajet1;   //!
+		TBranch        *b_VBFetajet2;   //!
+		TBranch        *b_VBFphijet1;   //!
+		TBranch        *b_VBFphijet2;   //!
+		TBranch        *b_massGenX;   //!
+		TBranch        *b_ptGenX;   //!
+		TBranch        *b_yGenX;   //!
+		TBranch        *b_phiGenX;   //!
+		TBranch        *b_pdgIdGenX;   //!
+		TBranch        *b_massGenVll;   //!
+		TBranch        *b_ptGenVll;   //!
+		TBranch        *b_yGenVll;   //!
+		TBranch        *b_phiGenVll;   //!
+		TBranch        *b_massGenVqq;   //!
+		TBranch        *b_ptGenVqq;   //!
+		TBranch        *b_yGenVqq;   //!
+		TBranch        *b_phiGenVqq;   //!
+		TBranch        *b_nLooseMu;   //!
+		TBranch        *b_nLooseEle;   //!
 
 		// Basic functions directly from MakeClass
 		Int_t    GetEntry(Long64_t entry);
@@ -285,14 +336,17 @@ class EDBRHistoMaker {
 
 		int check ( double pt, vector<double> * ptZ  )
 		{
-			int goodw=1;
-			for(unsigned int i =0; i< ptZ->size(); i++)
-			{   
-				if(pt==ptZ->at(i)) { goodw=0; break;}
-			}   
-			return goodw;
-		}
+		  int goodw=1;
+		  for(unsigned int i =0; i< ptZ->size(); i++)
+		    {   
+		      printf("Comparing %g and %g\n",pt,ptZ->at(i));
+		      if(pt==ptZ->at(i)) { goodw=0; break;}
+		      else {printf("I think they're different\n");}
+		    }   
 
+		  return goodw;
+		}
+		
 		// Our added variables
 		int nVars;
 		bool wantElectrons_;
@@ -300,6 +354,7 @@ class EDBRHistoMaker {
 		bool wantSideband_;
 		bool wantSignal_;
 		bool setUnitaryWeights_;
+		bool debug_;
 		int wantNXJets_;
 		double sidebandVHMassLow_;
 		double sidebandVHMassHigh_;
@@ -327,6 +382,9 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetMakeClass(1);
 
 	fChain->SetBranchAddress("nCands", &nCands, &b_nCands);
+	fChain->SetBranchAddress("event", &event, &b_event);
+	fChain->SetBranchAddress("run", &run, &b_run);
+	fChain->SetBranchAddress("ls", &ls, &b_ls);
 	fChain->SetBranchAddress("cosThetaStar", cosThetaStar, &b_cosThetaStar);
 	fChain->SetBranchAddress("cosTheta1", cosTheta1, &b_cosTheta1);
 	fChain->SetBranchAddress("cosTheta2", cosTheta2, &b_cosTheta2);
@@ -352,6 +410,7 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("phijet2", phijet2, &b_phijet2);
 	fChain->SetBranchAddress("lep", &lep, &b_lep);
 	fChain->SetBranchAddress("region", region, &b_region);
+	fChain->SetBranchAddress("nXjets", nXjets, &b_nXjets);
 	fChain->SetBranchAddress("mZZ", mZZ, &b_mZZ);
 	fChain->SetBranchAddress("mZZNoKinFit", mZZNoKinFit, &b_mZZNoKinFit);
 	fChain->SetBranchAddress("ptmzz", ptmzz, &b_ptmzz);
@@ -372,7 +431,6 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("betajet2", betajet2, &b_betajet2);
 	fChain->SetBranchAddress("puMvajet1", puMvajet1, &b_puMvajet1);
 	fChain->SetBranchAddress("puMvajet2", puMvajet2, &b_puMvajet2);
-	fChain->SetBranchAddress("nXjets", nXjets, &b_nXjets);
 	fChain->SetBranchAddress("prunedmass", prunedmass, &b_prunedmass);
 	fChain->SetBranchAddress("mdrop", mdrop, &b_mdrop);
 	fChain->SetBranchAddress("nsubj12", nsubj12, &b_nsubj12);
@@ -382,8 +440,12 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("qjet", qjet, &b_qjet);
 	fChain->SetBranchAddress("isolep1", isolep1, &b_isolep1);
 	fChain->SetBranchAddress("isolep2", isolep2, &b_isolep2);
-	fChain->SetBranchAddress("isolep1mod", isolep1mod, &b_isolep1mod);
-	fChain->SetBranchAddress("isolep2mod", isolep2mod, &b_isolep2mod);
+	fChain->SetBranchAddress("isomu1mod", isomu1mod, &b_isomu1mod);
+	fChain->SetBranchAddress("isomu2mod", isomu2mod, &b_isomu2mod);
+	fChain->SetBranchAddress("isoele1trk", isoele1trk, &b_isoele1trk);
+	fChain->SetBranchAddress("isoele2trk", isoele2trk, &b_isoele2trk);
+	fChain->SetBranchAddress("isoele1calo", isoele1calo, &b_isoele1calo);
+	fChain->SetBranchAddress("isoele2calo", isoele2calo, &b_isoele2calo);
 	fChain->SetBranchAddress("eleMVAId1", eleMVAId1, &b_eleMVAId1);
 	fChain->SetBranchAddress("eleMVAId2", eleMVAId2, &b_eleMVAId2);
 	fChain->SetBranchAddress("LD", LD, &b_LD);
@@ -392,9 +454,6 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("MCmatch", MCmatch, &b_MCmatch);
 	fChain->SetBranchAddress("nVtx", &nVtx, &b_nVtx);
 	fChain->SetBranchAddress("nJets", &nJets, &b_nJets);
-	fChain->SetBranchAddress("VBFTag", &VBFTag, &b_VBFTag);
-	fChain->SetBranchAddress("VBFmJJ", &VBFmJJ, &b_VBFmJJ);
-	fChain->SetBranchAddress("VBFdeltaEta", &VBFdeltaEta, &b_VBFdeltaEta);
 	fChain->SetBranchAddress("nPU", &nPU, &b_nPU);
 	fChain->SetBranchAddress("HLTweight", &HLTweight, &b_HLTweight);
 	fChain->SetBranchAddress("PUweight", &PUweight, &b_PUweight);
@@ -405,9 +464,30 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("weight", &weight, &b_weight);
 	fChain->SetBranchAddress("weight2012A", &weight2012A, &b_weight2012A);
 	fChain->SetBranchAddress("weight2012B", &weight2012B, &b_weight2012B);
-	fChain->SetBranchAddress("event", &event, &b_event);
-	fChain->SetBranchAddress("run", &run, &b_run);
-	fChain->SetBranchAddress("ls", &ls, &b_ls);
+	fChain->SetBranchAddress("VBFTag", VBFTag, &b_VBFTag);
+	fChain->SetBranchAddress("VBFmJJ", VBFmJJ, &b_VBFmJJ);
+	fChain->SetBranchAddress("VBFdeltaEta", VBFdeltaEta, &b_VBFdeltaEta);
+	fChain->SetBranchAddress("VBFptjet1", VBFptjet1, &b_VBFptjet1);
+	fChain->SetBranchAddress("VBFptjet2", VBFptjet2, &b_VBFptjet2);
+	fChain->SetBranchAddress("VBFetajet1", VBFetajet1, &b_VBFetajet1);
+	fChain->SetBranchAddress("VBFetajet2", VBFetajet2, &b_VBFetajet2);
+	fChain->SetBranchAddress("VBFphijet1", VBFphijet1, &b_VBFphijet1);
+	fChain->SetBranchAddress("VBFphijet2", VBFphijet2, &b_VBFphijet2);
+	fChain->SetBranchAddress("massGenX", &massGenX, &b_massGenX);
+	fChain->SetBranchAddress("ptGenX", &ptGenX, &b_ptGenX);
+	fChain->SetBranchAddress("yGenX", &yGenX, &b_yGenX);
+	fChain->SetBranchAddress("phiGenX", &phiGenX, &b_phiGenX);
+	fChain->SetBranchAddress("pdgIdGenX", &pdgIdGenX, &b_pdgIdGenX);
+	fChain->SetBranchAddress("massGenVll", &massGenVll, &b_massGenVll);
+	fChain->SetBranchAddress("ptGenVll", &ptGenVll, &b_ptGenVll);
+	fChain->SetBranchAddress("yGenVll", &yGenVll, &b_yGenVll);
+	fChain->SetBranchAddress("phiGenVll", &phiGenVll, &b_phiGenVll);
+	fChain->SetBranchAddress("massGenVqq", &massGenVqq, &b_massGenVqq);
+	fChain->SetBranchAddress("ptGenVqq", &ptGenVqq, &b_ptGenVqq);
+	fChain->SetBranchAddress("yGenVqq", &yGenVqq, &b_yGenVqq);
+	fChain->SetBranchAddress("phiGenVqq", &phiGenVqq, &b_phiGenVqq);
+	fChain->SetBranchAddress("nLooseMu", &nLooseMu, &b_nLooseMu);
+	fChain->SetBranchAddress("nLooseEle", &nLooseEle, &b_nLooseEle);
 }
 
 EDBRHistoMaker::EDBRHistoMaker(TTree* tree, 
@@ -417,7 +497,7 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 		bool wantSignal,
 		int wantNXJets){
 	fChain = 0;
-	nVars = 78;
+	nVars = 83;
 
 	// Definition of regions
 	sidebandVHMassLow_  =  0.0;  // GeV
@@ -432,6 +512,7 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 	wantSignal_ = wantSignal;
 	wantNXJets_ = wantNXJets;
 
+	debug_ = true;
 	Init(tree);
 	createAllHistos();
 	printAllHistos();
@@ -484,6 +565,11 @@ void EDBRHistoMaker::createAllHistos() {
 
 void EDBRHistoMaker::printAllHistos() {
 	printf("We have %i histograms \n",int(theHistograms.size()));
+	typedef std::map<std::string, TH1D*>::iterator it_type;
+	for(it_type iterator = theHistograms.begin(); iterator != theHistograms.end(); iterator++) {
+	  //iterator->second->Print();
+	  // Repeat if you also want to iterate through the second map.
+	}
 }
 
 void EDBRHistoMaker::saveAllHistos(std::string outFileName) {
@@ -613,66 +699,73 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 			if(jentry==0)printf("Unitary weights set!\n");
 			actualWeight=1.0;
 		}
-		//printf("Actual weight is %g\n",actualWeight);
+		//printf("jentry is %i\n",(int)jentry);
 		// We get the histogram from the map by string and fill it.
 		// We could wrap all the fills in the this->eventPassesCut()
 		// to fill histograms only for the events which pass a given
 		// cut (Sideband / SignalRegion, Muon / Electron, 
 		// Single / Double jet ...) 
-        vector<double> ptZ;
+
+		/*vector<double> ptZ;
+		printf("nCands == %i\n",nCands);
 		for (int iptz=0;iptz<nCands;iptz++)
-        {   
-            if(check(ptZll[iptz],&ptZ)==1){
-                ptZ.push_back(ptZll[iptz]);
-            }   
-        }
-		int wnum = ptZ.size(); 
+		  {   
+		    printf("Okay, going to call check()\n");
+		    if(check(ptZll[iptz],&ptZ)==1){
+		      ptZ.push_back(ptZll[iptz]);
+		    }   
+		  }
+		*/
+		int wnum = 0;
 
 		(theHistograms["nVL"])->Fill(wnum,actualWeight);
 		(theHistograms["nCands"])->Fill(nCands,actualWeight);
-
 		(theHistograms["PUweight"])->Fill(PUweight);
 		(theHistograms["LumiWeight"])->Fill(LumiWeight);
 		(theHistograms["GenWeight"])->Fill(GenWeight);
-
+		
 		for(int ivec=0;ivec<nCands;ivec++){
 
 			if(eventPassesCut(ivec, 80)){
-				//printf("Event passed\n");
-				(theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);
-				(theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);
-				(theHistograms["ptjet1"])->Fill(ptjet1[ivec],actualWeight);
-				(theHistograms["ptjet2"])->Fill(ptjet2[ivec],actualWeight);
-				(theHistograms["ptZll"])->Fill(ptZll[ivec],actualWeight);
-				(theHistograms["ptZjj"])->Fill(ptZjj[ivec],actualWeight);
-				(theHistograms["yZll"])->Fill(yZll[ivec],actualWeight);
-				(theHistograms["yZjj"])->Fill(yZjj[ivec],actualWeight);
-				(theHistograms["mLL"])->Fill(mLL[ivec],actualWeight);
-				(theHistograms["mJJ"])->Fill(mJJ[ivec],actualWeight);
-				(theHistograms["mZZ"])->Fill(mZZ[ivec],actualWeight);
-				(theHistograms["prunedmass"])->Fill(prunedmass[ivec],actualWeight);
-				(theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);
-				(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);
-				(theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);
-				(theHistograms["nVtx"])->Fill(nVtx,actualWeight);
-				(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);
-				(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);
-				(theHistograms["isolep1"])->Fill(isolep1mod[ivec],actualWeight);
-				(theHistograms["isolep2"])->Fill(isolep2mod[ivec],actualWeight);
-				(theHistograms["nJets"])->Fill(nJets,actualWeight);
-				(theHistograms["met"])->Fill(met,actualWeight);
-				(theHistograms["metSign"])->Fill(metSign,actualWeight);
-				(theHistograms["etalep1"])->Fill(etalep1[ivec],actualWeight);
-				(theHistograms["etalep2"])->Fill(etalep2[ivec],actualWeight);
-				(theHistograms["etajet1"])->Fill(etajet1[ivec],actualWeight);
-				(theHistograms["etajet2"])->Fill(etajet2[ivec],actualWeight);
-				(theHistograms["deltaREDBR"])->Fill(deltaREDBR[ivec],actualWeight);
-				(theHistograms["deltaRleplep"])->Fill(deltaRleplep[ivec],actualWeight);
-				(theHistograms["deltaRjetjet"])->Fill(deltaRjetjet[ivec],actualWeight);
-				(theHistograms["VBFTag"])->Fill(VBFTag[ivec],actualWeight);
-				(theHistograms["VBFmJJ"])->Fill(VBFmJJ[ivec],actualWeight);
-				(theHistograms["VBFdeltaEta"])->Fill(VBFdeltaEta[ivec],actualWeight);
-				// (theHistograms[""])->Fill([ivec],actualWeight);
+              	                (theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+                                (theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["ptjet1"])->Fill(ptjet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["ptjet2"])->Fill(ptjet2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["ptZll"])->Fill(ptZll[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["ptZjj"])->Fill(ptZjj[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["yZll"])->Fill(yZll[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["yZjj"])->Fill(yZjj[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mLL"])->Fill(mLL[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mJJ"])->Fill(mJJ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mZZ"])->Fill(mZZ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["prunedmass"])->Fill(prunedmass[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["nVtx"])->Fill(nVtx,actualWeight);//printf("line number %i\n",__LINE__);
+		
+				(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["isomu1mod"])->Fill(isomu1mod[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["isomu2mod"])->Fill(isomu2mod[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["isoele1trk"])->Fill(isoele1trk[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["isoele2trk"])->Fill(isoele2trk[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["isoele1calo"])->Fill(isoele1calo[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["isoele2calo"])->Fill(isoele2calo[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["nJets"])->Fill(nJets,actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["met"])->Fill(met,actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["metSign"])->Fill(metSign,actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["etalep1"])->Fill(etalep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["etalep2"])->Fill(etalep2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["etajet1"])->Fill(etajet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["etajet2"])->Fill(etajet2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["deltaREDBR"])->Fill(deltaREDBR[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["deltaRleplep"])->Fill(deltaRleplep[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["deltaRjetjet"])->Fill(deltaRjetjet[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["VBFTag"])->Fill(VBFTag[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["VBFmJJ"])->Fill(VBFmJJ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["VBFdeltaEta"])->Fill(VBFdeltaEta[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		// (theHistograms[""])->Fill([ivec],actualWeight);
 
 			}//end if eventPassesCut
 		}//end loop over nCands
