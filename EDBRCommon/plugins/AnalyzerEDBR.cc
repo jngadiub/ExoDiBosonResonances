@@ -435,8 +435,12 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("qjet"       ,&qjet    ,"qjet[nCands]/D"    ); 
 	outTree_->Branch("isolep1"         ,&isolep1       ,"isolep1[nCands]/D"      ); 
 	outTree_->Branch("isolep2"         ,&isolep2       ,"isolep2[nCands]/D"      ); 
-	outTree_->Branch("isolep1mod"         ,&isolep1mod       ,"isolep1mod[nCands]/D"      ); 
-	outTree_->Branch("isolep2mod"         ,&isolep2mod       ,"isolep2mod[nCands]/D"      ); 
+	outTree_->Branch("isomu1mod"         ,&isomu1mod       ,"isomu1mod[nCands]/D"      ); 
+	outTree_->Branch("isomu2mod"         ,&isomu2mod       ,"isomu2mod[nCands]/D"      ); 
+	outTree_->Branch("isoele1trk"        ,&isoele1trk      ,"isoele1trk[nCands]/D"      ); 
+	outTree_->Branch("isoele2trk"        ,&isoele2trk      ,"isoele2trk[nCands]/D"      ); 
+	outTree_->Branch("isoele1calo"       ,&isoele1calo     ,"isoele1calo[nCands]/D"      ); 
+	outTree_->Branch("isoele2calo"       ,&isoele2calo     ,"isoele2calo[nCands]/D"      ); 
 	outTree_->Branch("eleMVAId1"       ,&eleMVAId1     ,"eleMVAId1[nCands]/D"    );
 	outTree_->Branch("eleMVAId2"       ,&eleMVAId2     ,"eleMVAId2[nCands]/D"    );
 	outTree_->Branch("LD"              ,&LD            ,"LD[nCands]/D"           );
@@ -600,13 +604,13 @@ void AnalyzerEDBR::analyzeTrigger(edm::Event const& iEvent, edm::EventSetup cons
 
 
 	//number of loose muons/electrons
-	edm::Handle<std::vector<cmg::Electron> > EleHandle;
-	iEvent.getByLabel("electronPreselLoose",EleHandle);
-	nLooseEle = EleHandle -> size();	
+	//edm::Handle<std::vector<cmg::Electron> > EleHandle;
+	//iEvent.getByLabel("electronPreselLoose",EleHandle);
+	//nLooseEle = EleHandle -> size();	
 
-	edm::Handle<std::vector<cmg::Muon> > MuHandle;
-	iEvent.getByLabel("muonPreselLoose",MuHandle);	
-	nLooseMu = MuHandle->size();
+	//edm::Handle<std::vector<cmg::Muon> > MuHandle;
+	//iEvent.getByLabel("muonPreselLoose",MuHandle);	
+	//nLooseMu = MuHandle->size();
 
 }//end  AnalyzeEDBR::analyzeTrigger()
 
