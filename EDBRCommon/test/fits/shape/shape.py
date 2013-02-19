@@ -2,8 +2,38 @@
 
 
 import ROOT as root
+import argparse
+import os,sys
+
+# some utility functions to deduce signal types from filenames
+def desc(filepath):
+    descriptor =  os.path.basename(filepath).replace("treeEDBR_","").replace(".root","")
+    return descriptor
+
+def checkfile(descriptor):
+    retval = True
+    if descriptor.find("RSG")==-1 and descriptor.find("BulkG")==-1 :
+        retval=False
+        print "Warning: The file: "+  descriptor + " doesn't look like a signal sample" 
+        print "it should contain RSG or BulkG in the filename."    
+    return retval
+        
+def deduceBosonType(filepath):
+    descriptor = desc(filepath)
+    boson = "X"
+    if descriptor.find("ZZ")!= -1:
+        boson = "Z"
+    if descriptor.find("WW")!= -1:
+        boson = "W"
+    if boson=="X":
+        print "ERROR: Cannot deduce boson type for file: "+ filepath
+        print "it should contain ZZ or WW in the filename."
+    exit
+
+    return boson
 
 
+# make the PDF, currently uses one functional form for all channels, may need extension  
 def ConstructPdf(workspace):
     
     MatchedFuncBase   = root.RooVoigtian("MatchedFunc","MatchedFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("width_match"))
@@ -19,8 +49,8 @@ def ConstructPdf(workspace):
 
     getattr(workspace,'import')(FitFunc)
 
-
-def defineVars(mass,njets,workspace):
+# set up the variables to be used in the fit. Will need ot be extended if we use different funcional forms for different channels
+def defineVars(descriptor,njets,workspace,plotonly):
     mzz    = root.RooRealVar("mZZ","mZZ",400,2000) ## IMPORTANT: Master fit range must be the same as for the datacards
     weight = root.RooRealVar("weight","weight",0,100000)
     match  = root.RooCategory("match","match")
@@ -49,15 +79,18 @@ def defineVars(mass,njets,workspace):
 
     workspace.defineSet("pars",fitpars,True)
     
-   
-    filename = "pars/inpars_" + str( njets ) + "_" + str( mass ) + ".config" 
+    filename = "pars/"
+    if plotonly:
+        filename +="outpars_"
+    else:
+        filename +="inpars_"
+    filename += descriptor  +"_" +  str( njets ) +  ".config" 
     workspace.set("pars").readFromFile(filename)
-    #workspace.set("pars").writeToFile(filename)
 
-         
+
 
 def readTree(filename, njet, workspace):
-    # set up dataset
+    # set up dataset, filtering for the proper jet category
 
     varlist = root.RooArgSet(workspace.var("mZZ"),workspace.var("weight"),workspace.cat("match"))
     dataset = root.RooDataSet("dataset","dataset",varlist)
@@ -88,8 +121,8 @@ def readTree(filename, njet, workspace):
     getattr(workspace,'import')(weightedSet)
 
 
-
-def plot( category , workspace):
+# male pretty plots of the different categories
+def plot( category , workspace, descriptor):
 
     plot = workspace.var("mZZ").frame()
 
@@ -125,37 +158,77 @@ def plot( category , workspace):
     plot.SetMaximum(1.2*maximum)
 
     plot.Draw()
-    
-    c.SaveAs("test.eps")
 
-    plot.SetMinimum(maximum / workspace.data("weightedSet").numEntries())
+    filename = "plots/"+descriptor
+    if category == 0:
+        filename+= "_unmatched"
+    if category == 1:
+        filename+= "_matched"
+    
+    c.SaveAs(filename+".eps")
+
+    plot.SetMinimum(maximum / max(2,workspace.data("weightedSet").numEntries()))
     plot.Draw()
 
     c.SetLogy(True)
-
-    c.SaveAs("test_log.eps")
+    
+    c.SaveAs(filename+"_log.eps")
     
 
-   
-def main():
-
-    root.gROOT.SetBatch(True)
-
-    mass = 300
-    njets= 2
+def processSubsample(inputpath,njets,plotonly):
+    
+    bosontype = deduceBosonType(inputpath) # we don't use this yet, but meybe we will?
+    descriptor = desc(inputpath) # core string of the input file. This determines the file to read the initial values as well as names of output plots
 
     # set up variables, functions, datasets
     workspace = root.RooWorkspace("ws","ws")
-    defineVars(mass,njets,workspace)           
-    readTree("../trees/treeEDBR_BulkG_ZZ_lljj_c0p2_M1000.root",2,workspace)
+    defineVars(descriptor,njets,workspace,plotonly)           
+    readTree(inputpath,njets,workspace)
     ConstructPdf(workspace)
 
     # fit goes here
     data = workspace.data("weightedSet")
-    result = workspace.pdf("FitFunc").fitTo( data , root.RooFit.Save() )
-    result.Print("v")
-    plot(2,workspace)
+    if not plotonly:
+        result = workspace.pdf("FitFunc").fitTo( data , root.RooFit.Save() )
+        result.Print("v")
+        workspace.set("pars").writeToFile("pars/outpars_"+descriptor +"_" + str( njets ) +  ".config")
+                
+    plot(0,workspace,descriptor+"_"+str(njets))
+    plot(1,workspace,descriptor+"_"+str(njets))
+    plot(2,workspace,descriptor+"_"+str(njets))
     #workspace.Print("v")
+
+   
+def main():
+    parser = argparse.ArgumentParser(description='Signal Shape Fitting Tool')
+    parser.add_argument('-n','--njets',     help='number of jets: 1 or 2 or 3(both), default:both'                   ,type=int, choices=[1,2,3]    , default = 3)
+    parser.add_argument('-f','--filepath',  help='path to input trees, default: ./trees'                             , default = "../trees" )                                      
+    parser.add_argument('-p','--plotonly',  help='don\'t refit, just redraw plots from available parameter files, default = False', default = False, type=bool )                                 
+    args = parser.parse_args()
+    
+    root.gROOT.SetBatch(True)
+
+    print args
+
+    filelist = []
+    # do we run on a single file or a whole diretory?
+    if os.path.isfile(args.filepath): # single file
+        filelist.append(args.filepath)
+    else: #lets run on all suitable files in this directory
+        for file in os.listdir(args.filepath):
+            filelist.append(args.filepath + "/" +  file)
+
+
+    for file in filelist:
+        if(checkfile(desc(file))):
+            if args.njets==3:
+                processSubsample(file,1,args.plotonly)
+                processSubsample(file,2,args.plotonly)           
+            else:
+                processSubsample(file,args.njets,args.plotonly)
+            
+
+
 
 
 if __name__ == "__main__":
