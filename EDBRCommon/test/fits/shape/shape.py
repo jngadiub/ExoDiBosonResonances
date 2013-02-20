@@ -37,7 +37,8 @@ def deduceBosonType(filepath):
 def ConstructPdf(workspace):
     
     MatchedFuncBase   = root.RooVoigtian("MatchedFunc","MatchedFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("width_match"))
-    totalnorm = root.RooRealVar("totalnorm","totalnorm",1,0,100000)
+    #MatchedFuncBase   = root.RooCBShape("MatchedFunc","MatchedFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("alpha_match"),workspace.var("n_match") )
+    totalnorm = root.RooRealVar("totalnorm","totalnorm",100,0,100000)
     matchnorm = root.RooProduct("matchnorm","matchnorm",root.RooArgSet(totalnorm,workspace.var("machfrac")))
     MatchedFunc = root.RooExtendPdf("ExtMatchedFunc","ExtMatchedFunc",MatchedFuncBase,matchnorm)
     
@@ -60,6 +61,8 @@ def defineVars(descriptor,njets,workspace,plotonly):
     mean_match = root.RooRealVar("mean_match","mean_match",0)
     sigma_match = root.RooRealVar("sigma_match","sigma_match",0)
     width_match = root.RooRealVar("width_match","width_match",0)
+    #alpha_match = root.RooRealVar("alpha_match","alpha_match",0)
+    #n_match = root.RooRealVar("n_match","n_match",0)
     
     # unmatched parameters
     mean_unmatch = root.RooRealVar("mean_unmatch","mean_unmatch",0)
@@ -71,6 +74,9 @@ def defineVars(descriptor,njets,workspace,plotonly):
     machfrac = root.RooRealVar("machfrac","machfrac",0)
 
     fitpars   = root.RooArgSet(mean_match,sigma_match,width_match,mean_unmatch,sigma_unmatch,alpha_unmatch,n_unmatch,machfrac)
+    
+    #fitpars.add(alpha_match)
+    #fitpars.add(n_match)
 
      
     getattr(workspace,'import')(mzz)
@@ -99,6 +105,7 @@ def readTree(filename, njet, workspace):
     weight = workspace.var("weight")
     match = workspace.cat("match")
 
+
     #read the tree
     infile = root.TFile.Open(filename)
     tree = infile.Get("SelectedCandidates")
@@ -108,10 +115,14 @@ def readTree(filename, njet, workspace):
             and event.mZZ[i]> mzz.getMin() and event.mZZ[i]< mzz.getMax() : # select events in signal region with corect jet number
                 mzz.setVal(event.mZZ[i])
                 weight.setVal(event.weight)
-                if event.MCmatch[i]!=0:
-                    match.setIndex(1)
+                if njet==2: # mc matching active only for 2-jets right now
+                    if event.MCmatch[i]!=0:
+                        match.setIndex(1)
+                    else:
+                        match.setIndex(0)
                 else:
-                    match.setIndex(0)
+                    match.setIndex(1) #assume all 1-jet events to be matched for now
+                    
                 dataset.add(root.RooArgSet(mzz,match,weight))
     
     
