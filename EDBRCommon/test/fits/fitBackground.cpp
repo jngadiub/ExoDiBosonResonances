@@ -42,8 +42,6 @@ using namespace std ;
 using namespace RooFit ;
 
 //ROOT::gErrorIgnoreLevel=kWarning;
-//gErrorIgnoreLevel = kWarning;
-
 
 RooPlot* ContourPlot(RooRealVar* var1,RooRealVar* var2, RooFitResult* r);
 TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verbose=false);
@@ -51,23 +49,25 @@ void fitPseudo( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* initalv
 void pseudoMassge(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* initalvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2);
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::string t2Name,int nxjCut=-1);
 
-const string inDir="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/thiago20130206/";
-const string outDir="FitSidebandsMJJ_TEST1";
+const string inDir="/afs/cern.ch/work/t/tomei/public/EXOVV_2012/analyzer_trees/productionv1_round2/fullselCA8/";
+const string outDir="FitSidebandsMJJ/";
 const string leptType="ALL";
-const unsigned int nToys = 500;
+const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
+const unsigned int nToys = 250;
 
 //binning for merged Jet topology 
-const int nBins1=17;
+const int nBins1=21;
 const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1500,1750};
+			    1000,1100,1250,1400,1600,1800,2000,2200,2400};
 
 //binning for double Jet topology 
-const int nBins2=17;
+const int nBins2=21;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1500,1750};
+			    1000,1100,1250,1400,1600,1800,2000,2200,2400};
+
 
 int main(){
-  RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING) ;
+  RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR) ;
   //DEBUG=0, INFO=1, PROGRESS=2, WARNING=3, ERROR=4, FATAL=5
   ofstream logf("./log_fitBackground.log",ios::out);
 
@@ -104,7 +104,7 @@ int main(){
   RooRealVar *region=new RooRealVar("region","region",-0.1,1.1);
   RooRealVar* alpha = new RooRealVar("alpha","alpha",1.,0.,100000.);//(RooRealVar*) dsDataSB->addColumn(*alpha_formula) ;
 
-  for( inxj=0;inxj<3;inxj++){
+  for( inxj=1;inxj<3;inxj++){
 
     int nBins;
     const double* bins=0;
@@ -178,35 +178,40 @@ int main(){
     RooDataSet *dsDataSB=new RooDataSet("dsDataSB","dsDataSB",(TTree*)treeDATA_tmp,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep),cutSB.c_str()) ;
     //real data; weight each event by the alpha factor in order to scale to signal region
 
-    logf<<"\n\n================================="<<std::endl;
+    logf<<"\n================================="<<std::endl;
     mZZ->setVal(500.0);
     logf<<"===> MZZ="<<mZZ->getVal()<<"    ALPHA (fromFIT)="<<alpha->getVal()<<std::endl;
     mZZ->setVal(700.0);
     logf<<"===> MZZ="<<mZZ->getVal()<<"    ALPHA (fromFIT)="<<alpha->getVal()<<std::endl;
     mZZ->setVal(900.0);
     logf<<"===> MZZ="<<mZZ->getVal()<<"    ALPHA (fromFIT)="<<alpha->getVal()<<std::endl;
-    logf<<"=================================\n\n"<<std::endl;
+    logf<<"=================================\n"<<std::endl;
 
     RooDataSet *dsDataSB2=new RooDataSet("dsDataSB2","dsDataSB2",weightedData,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*alpha),cutSB.c_str(),"alpha") ;
     RooDataSet *dsDataSIG=new RooDataSet("dsDataSIG","dsDataSIG",(TTree*)treeDATA_tmp,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep),cutSIG.c_str()) ;//real data in signal region; cuts on mjj and nXjets
     // dsDataSB->Print();
-    // dsDataSIG->Print();
-    // dsDataSB2->Print();
-   
+  
+    if(dsDataSB2->numEntries()<5){
+      cout<<"ERROR! Not enough stat in data sidebands ("<<dsDataSB2->numEntries()<<" entries). Quitting."<<endl;
+      continue;
+    }
 
     //fit the weighted dataset with a custom function
-    std::cout<<"STARTING TO FIT WITH CUSTOM FUNCTION"<<std::endl;
-    mZZ->setRange("signalRange",minMZZ,1750.0) ;
+    double minFitRange=600.0;//minMZZ;
+    double maxFitRange=maxMZZ;
+    std::cout<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;
+    logf<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;
+    mZZ->setRange("fitRange",minFitRange,maxFitRange) ;
     
     double inislope;
     if(inxj==1)inislope=-0.25;
-    if(inxj==2)inislope=-0.1;
+    if(inxj==2)inislope=-0.25;
     RooRealVar *a0=new RooRealVar("a0","a0",inislope,-10.0,0.0);
     RooExponential *expo_fit=new RooExponential("exp_fit","exp_fit",*mZZ,*a0);
     //  RooRealVar *exp_norm=new RooRealVar("exp_N","exp_N",0.0,10000.0);
     
-    //  RooFitResult* r_sig = expo_fit->fitTo(*dsDataSB,Save(kTRUE),Range("signalRange")) ;
-    RooFitResult* r_sig2 = expo_fit->fitTo(*dsDataSB2,Save(kTRUE),SumW2Error(kTRUE),RooFit::PrintLevel(-1)) ;
+    //  RooFitResult* r_sig = expo_fit->fitTo(*dsDataSB,Save(kTRUE),Range("fitRange")) ;
+    RooFitResult* r_sig2 = expo_fit->fitTo(*dsDataSB2,Save(kTRUE),SumW2Error(kTRUE),RooFit::PrintLevel(-1),Range("fitRange")) ;
     logf<<"\n\n\n\n\n#################\nCheck entries: "<<dsDataSB->sumEntries()<<"   "<<dsDataSB2->sumEntries()
 	<<"##############\n\n\n\n\n"<<endl;
     RooRealVar *Nent=new RooRealVar("sidebandNormalization","Integral of data in sidebands before signal-rescaling",dsDataSB->numEntries(),0.0,50000.0);
@@ -217,33 +222,35 @@ int main(){
     Nerr->setConstant(kTRUE);
     RooRealVar *Nbkg=new RooRealVar("bkgdNormalization","Total uncertainty on background normalization",dsDataSB2->sumEntries(),0.0,10000.0);
     Nbkg->setConstant(kTRUE);
+    RooRealVar *NbkgRange=new RooRealVar("bkgdNormalizationFitRange"," background normalization in range of fit",dsDataSB2->reduce(CutRange("fitRange"))->sumEntries(),0.0,10000.0);
+    NbkgRange->setConstant(kTRUE);
     // a0->setConstant(kTRUE);
     logf<<"Normalization errors: Nent="<<Nent->getVal()<<" NormErr="<<NormErr->getVal()<<"  Nerr="<<Nerr->getVal()<<std::endl;
-    logf<<"Exp fit done: Norm = "<<Nbkg->getVal()<<"   Slope="<<a0->getVal()<<std::endl;
+    logf<<"Exp fit done: Norm In Range = "<<NbkgRange->getVal()<<"   Slope="<<a0->getVal()<<std::endl;
     
     
     //for levelled exponential
     double initf0=90.0;
-    if(inxj==1)initf0=85.0;
-    if(inxj==2)initf0=80.0;
+    if(inxj==1)initf0=200.0;
+    if(inxj==2)initf0=200.0;
     double initf1=0.0;
     if(inxj==1)initf1=0.0;
     if(inxj==2)initf1=0.0;
 
     RooRealVar *f0=new RooRealVar("f0","sigma",initf0,0.0,300.0);
     RooRealVar *f1=new RooRealVar("f1","alpha",initf1,-0.5,2.0);
-    RooRealVar *f2=new RooRealVar("f2","m",240,200.0,500.0);
+    RooRealVar *f1b=new RooRealVar("f1b","beta",initf1,-0.5,2.0);
+    RooRealVar *f2=new RooRealVar("f2","m",560,200.0,500.0);
     RooRealVar *f3=new RooRealVar("f3","theta",0.0);
     f2->setConstant(kTRUE);
     f3->setConstant(kTRUE);
-    //    if(inxj==2)   
-    f1->setConstant(kTRUE);
+    f1->setConstant(kTRUE);//if both f1 and f1b set constant to zero, levelled expo becomes a normal exponential
     //  RooGenericPdf *expLev_fit=new RooGenericPdf("levelled_exp_fit","exp(-1.0*(mZZ-f2)/(f0 + f1*(mZZ-f2)))",RooArgList(*mZZ,*f0,*f1,*f2));
-    RooLevelledExp *expLev_fit=new RooLevelledExp("levelled_exp_fit","levelled_exp_fit",*mZZ,*f0,*f1,*f2,*f3);
-    RooFitResult* r_sig_expLev = expLev_fit->fitTo(*dsDataSB2,Save(kTRUE),SumW2Error(kTRUE),RooFit::PrintLevel(-1)) ;//,SumW2Error(kTRUE)
+    RooLevelledExp2 *expLev_fit=new RooLevelledExp2("levelled_exp_fit","levelled_exp_fit",*mZZ,*f0,*f1,*f1b,*f2,*f3);
+    RooFitResult* r_sig_expLev = expLev_fit->fitTo(*dsDataSB2,Save(kTRUE),SumW2Error(kTRUE),RooFit::PrintLevel(-1),Range("fitRange")) ;//,Range("fitRange"),SumW2Error(kTRUE)
     
-    logf<<"Alpha = "<<f0->getVal()<<"   Sigma="<<f1->getVal()<<"   m="<<f2->getVal()<<"  Theta="<<f3->getVal()<<std::endl;
-    logf<<"FIT PERFORMED ! DECORRELATING PARAMETERS."<<std::endl;
+    logf<<"LevExpo fit done: Sigma = "<<f0->getVal()<<"   alpha="<<f1->getVal()<<"   beta="<<f1b->getVal()<<"   m="<<f2->getVal()<<"  Theta="<<f3->getVal()<<std::endl;
+    logf<<"LEVELLED EXPO FIT PERFORMED ! DECORRELATING PARAMETERS."<<std::endl;
     
     //now decorrelate parameters:
     RooWorkspace *wstmp=new RooWorkspace("tempWorkSpace","tempWorkSpac");
@@ -251,43 +258,42 @@ int main(){
     sprintf( diagonalizerName, "expLev_%db", inxj);
     PdfDiagonalizer diago(diagonalizerName, wstmp, *r_sig_expLev );
     RooAbsPdf  *background_decorr_ =diago.diagonalize(*expLev_fit);//RooAbsPdf
-    background_decorr_->SetName("levelled_exp_decorr");
+    background_decorr_->SetName("levexp_dcr");
     char var1[50],var2[50];
     sprintf(var1,"expLev_%db_eig0",inxj);
     sprintf(var2,"expLev_%db_eig1",inxj);
     RooRealVar *f0rot=(RooRealVar*)wstmp->var(var1);
-    RooRealVar *f1rot=0;
-    f1rot=new RooRealVar(*f1); f1rot->SetName(var2);
-    // if(inxj==2){f1rot=new RooRealVar(*f1); f1rot->SetName(var2);}
-    // else f1rot=(RooRealVar*)wstmp->var(var2);  
-    // wstmp->Print();
+    RooRealVar *f1rot=(RooRealVar*)wstmp->var(var2);
+    //if only one free par in roolevexpo
+    //RooRealVar *f1rot=0;
+    // f1rot=new RooRealVar(*f1); f1rot->SetName(var2);
+ 
+
     //refit to get a new covariance matrix to check that this has worked
-    RooFitResult *r_sig_expLev_decorr = background_decorr_->fitTo(*dsDataSB2, Save(),SumW2Error(kTRUE),RooFit::PrintLevel(-1));
+    RooFitResult *r_sig_expLev_decorr = background_decorr_->fitTo(*dsDataSB2, Save(),SumW2Error(kTRUE),RooFit::PrintLevel(-1),Range("fitRange"));
     char fitResultName_eig[200];
     sprintf( fitResultName_eig, "resultsExpLevelledFit_%dJ_%s_decorr",inxj , leptType.c_str() );
     r_sig_expLev_decorr->SetName(fitResultName_eig); 
-    logf<<"Alpha= "<<f0->getVal()<<" -> AlphaDecorr="<<f0rot->getVal()<<std::endl;
-    logf<<"Sigma= "<<f1->getVal()<<" -> SigmaDecorr="<<f1rot->getVal()<<std::endl;
+    logf<<"Sigma= "<<f0->getVal()<<" -> SigmaDecorr="<<f0rot->getVal()<<std::endl;
+    logf<<"Alphaa= "<<f1b->getVal()<<" -> AlphaDecorr="<<f1rot->getVal()<<std::endl;
     logf<<"m= "<<f2->getVal()<<" Theta="<<f3->getVal()<<std::endl;
-    //  return 0;
     sprintf( fitResultName_eig, "%s/resultsExpLevelledFit_%dJ_%s_decorr.txt",outDir.c_str(),inxj , leptType.c_str() );
     RooArgSet rotvars( *f0rot,*f1rot );
     rotvars.writeToFile(fitResultName_eig);
 
     //plot the correlated/decorrelated uncertainties
- 
-    bool plotDecorr=false;
+    bool plotDecorr=true;
     if(plotDecorr){
     TCanvas* c_rot = new TCanvas("canvas_rot", "CANVAS PARS ROT", 800, 800);
     c_rot->cd();
     double f0val=f0->getVal();
-    double f1val=f1->getVal();
+    double f1val=f1b->getVal();
     double f0err=f0->getError();
-    double f1err=f1->getError();
-    Double_t rho= r_sig_expLev->correlation(f0->GetName(),f1->GetName());
+    double f1err=f1b->getError();
+    Double_t rho= r_sig_expLev->correlation(f0->GetName(),f1b->GetName());
     RooEllipse *contour= new RooEllipse("contour",f0val,f1val,f0err,f1err,rho,500);
     contour->SetLineWidth(2) ;
-    RooPlot *plot = new RooPlot(*f0,*f1,f0val-2*f0err,f0val+2*f0err,f1val-2*f1err,f1val+2*f1err);
+    RooPlot *plot = new RooPlot(*f0,*f1b,f0val-2*f0err,f0val+2*f0err,f1val-2*f1err,f1val+2*f1err);
     plot->addPlotable(contour);
     plot->Draw();
     c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J"+leptType+".eps").c_str());
@@ -317,6 +323,7 @@ int main(){
     logf<<"\n\nName of new WS: "<<wsnew->GetName()<<std::endl;
     //wsnew->import(*expo_fit);
     wsnew->import(*Nbkg);
+    wsnew->import(*NbkgRange);
     wsnew->import(*Nent);
     wsnew->import(*alphaErr);
     wsnew->import(*NormErr);
@@ -332,7 +339,8 @@ int main(){
     r_sig_expLev_decorr->Write();
     weightedData->Write();
     
-    
+
+    if(doPseudoExp){
     //do pseudo-experiments for alpha-error
     for( unsigned n=0 ;n<nToys;n++){
       //get alternative weights
@@ -341,7 +349,6 @@ int main(){
       TTree* weightedPseudo = weightTree(treeDATA_tmp ,(TH1D*)falpha->Get(alphahname), alphahname);
       RooDataSet pseudoSB2("pseudoSB2","pseudoSB2",weightedPseudo,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*alpha),cutSB.c_str(),"alpha") ;
       fitPseudo(pseudoSB2,*wsnew,n,fitResultName_eig,inxj);
-      
       //      delete weightedPseudo;
     }
     char var1errA[50];
@@ -355,6 +362,8 @@ int main(){
 
     wsnew->import(errV1);
     wsnew->import(errV2);
+    }//end if doPseudoExp
+
     fout->cd();
     wsnew->Write();
    
@@ -364,17 +373,24 @@ int main(){
     TCanvas *can1=new TCanvas("canvas1", "can1",800,800);
     can1->cd();
     RooPlot *xf=mZZ->frame();
+    string frameTitle="Bkgd Estimation from Data Sidebands ("+ssnxj.str()+"J - "+leptType+" lept flav)";
+    xf->SetTitle(frameTitle.c_str());
     //DO NOT CHANGE THE ORDER !!!!!!! DATA AS FIRST ONES !!!!
     dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));
-    background_decorr_->plotOn(xf, Normalization(Nbkg->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,2.0,kFALSE),FillColor(kYellow));
-    background_decorr_->plotOn(xf, Normalization(Nbkg->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,1.0,kFALSE),FillColor(kGreen));
-    expo_fit->plotOn(xf, Normalization(Nbkg->getVal(),RooAbsPdf::NumEvent), LineColor(kBlue), LineStyle(kDashed));
-    expLev_fit->plotOn(xf, Normalization(Nbkg->getVal(),RooAbsPdf::NumEvent), LineColor(kOrange+3));//RooAbsPdf::NumEvent
-    background_decorr_->plotOn(xf, Normalization(Nbkg->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2));
-    background_decorr_->plotOn(xf, Normalization((Nbkg->getVal()+Nerr->getVal()*Nbkg->getVal()),RooAbsPdf::NumEvent), LineColor(kViolet-2), LineStyle(kDashed));
-    background_decorr_->plotOn(xf, Normalization((Nbkg->getVal()-Nerr->getVal()*Nbkg->getVal()),RooAbsPdf::NumEvent), LineColor(kViolet-2), LineStyle(kDashed));
+    //plot error bands of fit
+    background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kRed));
+    background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
+    background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
+    //plot fits
+    expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
+    expLev_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kOrange+3));//RooAbsPdf::NumEvent
+    //plot fit with decorrelated parameters (should superimpose the previous)
+    background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2));
+    background_decorr_->plotOn(xf, Normalization((NbkgRange->getVal()+Nerr->getVal()*NbkgRange->getVal()),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2), LineStyle(kDashed));
+    background_decorr_->plotOn(xf, Normalization((NbkgRange->getVal()-Nerr->getVal()*NbkgRange->getVal()),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2), LineStyle(kDashed));
+
     dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));//,Normalization(dsDataSB2->numEntries(),RooAbsPdf::NumEvent)
-    logf<<"Check nromalization: NumEntries of dsDataSIG= "<<dsDataSIG->numEntries() <<"("<<dsDataSIG->sumEntries() <<")    SumEntries of dsDataSB2="<<dsDataSB2->sumEntries()<<"   numEntries="<<dsDataSB2->numEntries()<<"    Nbkg (NORM)="<<Nbkg->getVal()<<"   Nent="<<Nent->getVal()<<"     Nerr="<<Nerr->getVal() <<std::endl;
+    logf<<"Check nromalization: NumEntries of dsDataSIG= "<<dsDataSIG->numEntries() <<"("<<dsDataSIG->sumEntries() <<")    SumEntries of dsDataSB2="<<dsDataSB2->sumEntries()<<"   numEntries="<<dsDataSB2->numEntries()<<"    Nbkg (NORM)="<<NbkgRange->getVal()<<"   Nent="<<Nent->getVal()<<"     Nerr="<<Nerr->getVal() <<std::endl;
     xf->Draw();
     can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+leptType+".root").c_str());
     can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+leptType+".eps").c_str());
@@ -464,14 +480,13 @@ void fitPseudo( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char* inital
   char var1[50];
   char var2[50];
   sprintf(var1,"expLev_%db_eig0",nxj);
-  //  sprintf(var2,"expLev_%db_eig1",nxj);
-  char both[100];
-  if(nxj==2) sprintf(both,"%s",var1);
-  else sprintf(both,"%s,%s",var1,var2);
-  sprintf(both,"%s",var1);
-  ws.argSet(both).readFromFile(initalvalues);
-
-  RooFitResult* r_pseudo = ws.pdf("levelled_exp_decorr")->fitTo(ModSideband, SumW2Error(kTRUE), Save(),RooFit::PrintLevel(-1) );
+  sprintf(var2,"expLev_%db_eig1",nxj);
+  char argname[100];
+  //  if(nxj==2) sprintf(argname,"%s",var1);
+  // else sprintf(argname,"%s,%s",var1,var2);
+  sprintf(argname,"%s,%s",var1,var2);
+  ws.argSet(argname).readFromFile(initalvalues);
+  RooFitResult* r_pseudo = ws.pdf("levexp_dcr")->fitTo(ModSideband, SumW2Error(kTRUE), Save(),RooFit::PrintLevel(-1),Range("fitRange") );
 
   char indexstring[200];
   sprintf(indexstring,"TMPResult_%dtag_%d",nxj,seed);
@@ -483,13 +498,13 @@ void fitPseudo( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char* inital
 void pseudoMassge(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* initalvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2){
   char var1[50];
   char var2[50];
-  sprintf(var1,"expLev_%db_eig0",nxj);
-  sprintf(var2,"expLev_%db_eig1",nxj);
-  char both[100];
-  if(nxj==2) sprintf(both,"%s",var1);
-  else sprintf(both,"%s,%s",var1,var2);
-  sprintf(both,"%s",var1);
-  ws.argSet(both).readFromFile(initalvalues);
+  sprintf(var1,"expLev_%db_eig0",nxj);//this must be equal to what is in fitPseudo
+  sprintf(var2,"expLev_%db_eig1",nxj);//this must be equal to what is in fitPseudo
+  char argname[100];
+  //  if(nxj==2) sprintf(argname,"%s",var1);
+  // else sprintf(argname,"%s,%s",var1,var2);
+  sprintf(argname,"%s,%s",var1,var2);
+  ws.argSet(argname).readFromFile(initalvalues);
 
   RooPlot *plot_MCbkg = ws.var("mZZ")->frame();
   
@@ -501,17 +516,25 @@ void pseudoMassge(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* init
   vals2.reserve(nToys);
 
   char indexstring[200];
+  cout<<"pseudoMassge starts to loop over "<<nToys<<" toys"<<endl;
   for(unsigned i =0 ; i < nToys ; i++){
     sprintf(indexstring,"TMPResult_%dtag_%d",nxj,i);
-    ws.argSet(both).readFromFile(indexstring);
+    ws.argSet(argname).readFromFile(indexstring);
     vals1.push_back(ws.var(var1)->getVal());
-    //    if(nxj!=2)vals2.push_back(ws.var(var2)->getVal());
-    ws.pdf("levelled_exp_decorr")->plotOn(plot_MCbkg,LineWidth(1),LineColor(1));
+    vals2.push_back(ws.var(var2)->getVal());
+    cout<<"Plot levexp_dcr #"<<i<<endl;
+    ws.pdf("levexp_dcr")->plotOn(plot_MCbkg,LineWidth(1),LineColor(1));
+
+    //   char nameTmpFit[64];
+    // sprintf(nameTmpFit,"levexp_dcr_%d",i);
+    // ws.pdf("levexp_dcr")->plotOn(plot_MCbkg,LineWidth(1),LineColor(1));//,Name(nameTmpFit));
+    // ws.pdf(nameTmpFit)->plotOn(plot_MCbkg,LineWidth(1),LineColor(1),Name(nameTmpFit));
     std::string mkdir_command("rm ");  
     mkdir_command+= indexstring;
     system(mkdir_command.c_str());
     if(i%100==0)    std::cout << mkdir_command << std::endl;
   }
+  cout<<"pseudoMassge finished to loop over "<<nToys<<" toys"<<endl;
 
   RooCurve* upper = new RooCurve();
   RooCurve* lower = new RooCurve();
@@ -523,7 +546,8 @@ void pseudoMassge(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* init
   for(unsigned int x =0 ; x < 200 ; x++  ){
     float xval = min +x*range/200.;
     for(unsigned i =0 ; i < nToys ; i++){
-      vals.push_back(((RooCurve*)(plot_MCbkg->getObject(i)))->interpolate(xval));
+      //   vals.push_back(((RooCurve*)(plot_MCbkg->getObject(i)))->interpolate(xval));
+      vals.push_back(0.0);
     }
 
     std::sort(vals.begin(),vals.end());
@@ -532,7 +556,7 @@ void pseudoMassge(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* init
     vals.clear();
   }
 
-  ws.argSet(both).readFromFile(initalvalues);// read nominal best fit value
+  ws.argSet(argname).readFromFile(initalvalues);// read nominal best fit value
   double x1= ws.var(var1)->getVal();
   double x2= 0.0;
   //  if(nxj!=2)x2=ws.var(var2)->getVal();
@@ -546,12 +570,12 @@ void pseudoMassge(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* init
   upper->SetLineWidth(2);
   upper->SetLineColor(2);
 
-
-  ws.pdf("levelled_exp_decorr")->plotOn(plot_MCbkg,VisualizeError(*r_nominal,2.0,kFALSE),FillColor(kYellow));
-  ws.pdf("levelled_exp_decorr")->plotOn(plot_MCbkg,VisualizeError(*r_nominal,1.0,kFALSE),FillColor(kGreen));
-  ws.pdf("levelled_exp_decorr")->plotOn(plot_MCbkg);
-  ws.pdf("levelled_exp_decorr")->plotOn(plot_MCbkg, LineColor(kViolet-2), LineStyle(kDashed), Normalization(1.0+NormRelErr,RooAbsReal::Relative));
-  ws.pdf("levelled_exp_decorr")->plotOn(plot_MCbkg, LineColor(kViolet-2), LineStyle(kDashed), Normalization(1.0-NormRelErr,RooAbsReal::Relative));
+  cout<<"Plotting with pseudo experiments for "<<nxj<<"-J topology "<<endl;
+  ws.pdf("levexp_dcr")->plotOn(plot_MCbkg,VisualizeError(*r_nominal,2.0,kFALSE),FillColor(kYellow));
+  ws.pdf("levexp_dcr")->plotOn(plot_MCbkg,VisualizeError(*r_nominal,1.0,kFALSE),FillColor(kGreen));
+  ws.pdf("levexp_dcr")->plotOn(plot_MCbkg);
+  ws.pdf("levexp_dcr")->plotOn(plot_MCbkg, LineColor(kViolet-2), LineStyle(kDashed), Normalization(1.0+NormRelErr,RooAbsReal::Relative));
+  ws.pdf("levexp_dcr")->plotOn(plot_MCbkg, LineColor(kViolet-2), LineStyle(kDashed), Normalization(1.0-NormRelErr,RooAbsReal::Relative));
   plot_MCbkg->addPlotable(lower);
   plot_MCbkg->addPlotable(upper);
 
@@ -562,7 +586,7 @@ void pseudoMassge(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* init
   lower->GetPoint(0,x0,low0);  
   RooRealVar *r0=new RooRealVar("mZZ","mZZ",x0);
   RooArgSet *tmparg=new RooArgSet(*r0);
-  double central0=1.0;//ws.pdf("levelled_exp_decorr")->getValV();
+  double central0=1.0;//ws.pdf("levexp_dcr")->getValV();
   RooRealVar normUp("norm_upper_staterr_alpha","norm_upper_staterr_alpha",up0/central0);
   RooRealVar normDown("norm_lower_staterr_alpha","norm_lower_staterr_alpha",low0/central0);
   std::cout<<"###Norm for UP/LOW: "<<x0<<" - "<< r0->getVal()<<" - "<<up0<<" - "<<low0<<" - "<<central0<<" - "<<normUp.getVal()<<std::endl;
@@ -572,7 +596,7 @@ void pseudoMassge(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* init
   c1->cd();
   plot_MCbkg->Draw();
   char canvasName[400];
-  sprintf( canvasName, "%s/mZZ_sidenbandData_alphaVar_%dnxj_%s", outDir.c_str(), nxj, "ALL");
+  sprintf( canvasName, "%s/mZZ_sidebandData_alphaVarWithToys_%dJ_%s", outDir.c_str(), nxj, "ALL");
   std::string canvasName_str(canvasName);
   std::string canvasName_eps = canvasName_str + ".eps";
   c1->SaveAs(canvasName_eps.c_str());

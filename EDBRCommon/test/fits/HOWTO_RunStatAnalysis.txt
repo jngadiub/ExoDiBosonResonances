@@ -4,14 +4,22 @@
 
 cd ${CMSSW_BASE}/src
 cvs co -r V02-07-00 HiggsAnalysis/CombinedLimit/
+
+# these should be put in release of HiggsAnalysis/CombinedLimit/, needed for RooLevelledExp2
+cp ${CMSSW_BASE}/src/ExoDiBosonResonances/EDBRCommon/test/fits/HZZ2L2QRooPdfs.h ${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/interface/
+cp ${CMSSW_BASE}/src/ExoDiBosonResonances/EDBRCommon/test/fits/HZZ2L2QRooPdfs.cc ${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/src/
+cp ${CMSSW_BASE}/src/ExoDiBosonResonances/EDBRCommon/test/fits/LinkDef.h.CombinedLimit ${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/src/LinkDef.h
+
 cd -
+scram b -j 4
 
 
 ------------------------------------
 1: Calculate sideband extrapolation factor
 
-a) necessary inputs: the final TTrees produced by the
-EXO-VV analysis framework. The trees must have been produced from
+a) necessary inputs: the final TTrees with the MC background 
+produced by the EXO-VV analysis framework. 
+The trees must have been produced from
 the final collection of candidates, those with the full Selection
 (i.e. one cand per event, either in signal or sideband region)
 
@@ -61,8 +69,29 @@ and for each of them saves in the output directory:
 2: apply the alpha ratio to the data in the sideband region + fit to
 extrapolated background
 
+a) necessary inputs: the final TTrees produced by the EXO-VV 
+analysis framework containing the data in the sideband region.
+Same considerations as 1.a) on the format of the trees apply.
+The workspaces produced by fitSidebands (i.e., part 1)
+
+b) inside fitBackgrounds.cpp, set the path to the trees 
+with the data, the output directory (must match the one 
+set in fitSidebands.cpp). The code attempts by default
+a fit using two functions: simple exponential and levelled
+exponential. If you want to change this, you must edit
+this in the main() function. Also, the fit is performed
+in the range [600, 2400]. The range is set in the variables
+minFitRange and maxFitRange.
+
+c) compile and run it:
 make fitBackground
-./fitBackground
+./fitBackground &> log_fitBackground.STDOUT.txt 
+
+d) the results of the fits are stored in RooFit workspaces in the output dir.
+In the same directory, several diagnostics plots will be created. The main
+ones are called fitPlot_*J_ALL* and show the *extrapolated* data in the
+sideband and the fit to them, including the error bands on the fit.
+
 
 ------------------------------------
 3: make plots of extrapolated background superimposed to data in signal region

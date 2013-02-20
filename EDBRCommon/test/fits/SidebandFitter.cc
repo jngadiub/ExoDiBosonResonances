@@ -34,7 +34,7 @@
 #include "RooExponential.h"
 //#include "RooEllipse.h"
 //#include "RooLevelledExp.h"
-//#include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
+#include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
 
 
 //#include "PdfDiagonalizer.h"
@@ -51,15 +51,14 @@ using namespace RooFit;
 
 
 //binning for merged Jet topology 
-const int nBins1=17;
+const int nBins1=21;
 const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1500,1750};
+			    1000,1100,1250,1400,1600,1800,2000,2200,2400};
 
 //binning for double Jet topology 
-const int nBins2=17;
+const int nBins2=21;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1500,1750};
-
+			    1000,1100,1250,1400,1600,1800,2000,2200,2400};
 
 
 SidebandFitter::SidebandFitter(const std::string& PUType ) {
@@ -69,7 +68,7 @@ SidebandFitter::SidebandFitter(const std::string& PUType ) {
   mZZmin_ = bins1[0];
   mZZmax_ = 1250.0;
 
-  rangecut_ = 570.0;// mZZmax_;//600
+  rangecut_ = 480.0;// mZZmax_;//600
 
   CMS_hzz2l2q_mZZ_ = new RooRealVar("CMS_exovv_mVV", "m_{VV}", mZZmin_, mZZmax_, "GeV");
   fitfuncName_="alpha_fitfunc";
@@ -125,6 +124,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
     std::cout<<"ERROR in SidebandFitter::getAlphaFit ! WRONG nxjCategory = "<<   nxjCategory<<std::endl; 
   }
 
+ 
   mZZmax_=binpointer[nb];
   CMS_hzz2l2q_mZZ_->setMax(mZZmax_);
 
@@ -193,15 +193,31 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
   h1_alpha->Draw("F");
   h1_alpha_smooth->Draw("Fsames");
   fpol0->SetLineColor(kMagenta);
-  fpol0->Draw("Lsames");
+  //  fpol0->Draw("Lsames");
   fpolH->SetLineColor(kBlue-9);
-  fpolH->Draw("Lsames");
+  //  fpolH->Draw("Lsames");
   TLegend *l1=new TLegend(0.18,0.86,0.45,0.99);
   l1->AddEntry(h1_alpha,"Original","P");
   l1->AddEntry(h1_alpha_smooth,"Smoothened","P");
   l1->Draw();
   sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s.eps", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
   c1->SaveAs(canvasName);
+
+  TCanvas* c1sig = new TCanvas("c1Sig", "can_fit_hist_SigReg", 600, 600);
+  c1sig->cd();
+  h1_mZZ_signalRegion.SetMarkerStyle(20);
+  h1_mZZ_signalRegion.SetMarkerColor(kBlue);
+  h1_mZZ_signalRegion.Draw();
+  sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_SIGONLY.root", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+  c1sig->SaveAs(canvasName);
+  TCanvas* c1sb = new TCanvas("c1SB", "can_fit_hist_SBReg", 600, 600);
+  c1sb->cd();
+  h1_mZZ_sidebands.SetMarkerStyle(21);
+  h1_mZZ_sidebands.SetMarkerColor(kRed);
+  h1_mZZ_sidebands.Draw();
+  sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_SBONLY.root", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+  c1sb->SaveAs(canvasName);
+
   std::cout<<" PART1 of SidebandFitter::getAlphaFit is FINISHED !\n\n"<<std::endl;
 
   //////////////////////////////////////////////
@@ -212,10 +228,13 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
 
  //fill a RooDataHist from the TH1D; the errors will be the proper ones
   double minMZZ=bins1[0];
-rangecut_=binpointer[nb];
+ rangecut_=binpointer[nb];
   //  RooRealVar *mZZ = new RooRealVar("mZZ", "m_{ZZ}", mZZmin_, mZZmax_, "GeV");
   RooRealVar mZZ("mZZ","mZZ",minMZZ, bins1[nBins1-1]);//range to be synchronized with array of histo
-  mZZ.setRange("fitRange",minMZZ,rangecut_);
+  mZZ.setRange("fullRange",minMZZ,bins1[nBins1-1]);
+  // mZZ.setRange("fitRange",minMZZ,rangecut_);
+  mZZ.setRange("fitRange",600.0,rangecut_);
+  // mZZ.setBins(1000);
 
   RooDataHist *dhAlpha=new RooDataHist("DataHistAlpha","DataHist Alpha vs MZZ",mZZ,Import(*h1_alpha)) ;
   //define the model, i.e. the fit function we want to use (pol0)
@@ -247,15 +266,45 @@ rangecut_=binpointer[nb];
     // ------------------------ fit with a single exponential ------------------------------
     RooRealVar *slope_SIG = new RooRealVar("slopeSIG","exponential slope (SIGNAL)",-0.1,-5.0,0.0);
     RooExponential *bkgd_fit_SIG = new RooExponential("background_SIG","background_SIG",mZZ,*slope_SIG);
+
+    //for levelled exponential
+    RooRealVar *f0_SIG=new RooRealVar("f0_SIG","sigma_SIG",30,0.0,300.0);
+    RooRealVar *f1_SIG=new RooRealVar("f1_SIG","alpha_SIG",0.0,-0.5,2.0);
+    RooRealVar *f2_SIG=new RooRealVar("f2_SIG","m_SIG",560,200.0,500.0);
+    RooRealVar *f3_SIG=new RooRealVar("f3_SIG","theta_SIG",0.0);
+    f2_SIG->setConstant(kTRUE);
+    f3_SIG->setConstant(kTRUE);
+    //f1_SIG->setConstant(kTRUE);//if f1 set constant to zero, levelled expo becomes a normal exponential
+    RooLevelledExp *expLev_fit_SIG=new RooLevelledExp("levelled_exp_SIG","levelled_exp_fit (SIGNAL region)",mZZ,*f0_SIG,*f1_SIG,*f2_SIG,*f3_SIG);
+
+
     
     //same for sb
     RooRealVar *slope_SB = new RooRealVar("slopeSB","exponential slope (SIDEBAND)",-0.1,-5.0,0.0);
     RooExponential *bkgd_fit_SB = new RooExponential("background_SB","background_SB",mZZ,*slope_SB);
     
+    RooRealVar *f0_SB=new RooRealVar("f0_SB","sigma_SB",30,0.0,300.0);
+    RooRealVar *f1_SB=new RooRealVar("f1_SB","alpha_SB",0.0,-0.5,2.0);
+    RooRealVar *f1b_SB=new RooRealVar("f1b_SB","beta_SB",0.0,-0.5,2.0);
+    RooRealVar *f2_SB=new RooRealVar("f2_SB","m_SB",560,200.0,500.0);
+    RooRealVar *f3_SB=new RooRealVar("f3_SB","theta_SB",0.0);
+    f2_SB->setConstant(kTRUE);
+    f3_SB->setConstant(kTRUE);
+    f1_SB->setConstant(kTRUE);//if both f1 and f1b ==0, RooLevelledExp2 -> Simple Expo
+    RooLevelledExp2 *expLev_fit_SB=new RooLevelledExp2("levelled_exp_SB","levelled_exp_fit (SB region)",mZZ,*f0_SB,*f1_SB,*f1b_SB,*f2_SB,*f3_SB);
 
-    RooFitResult* res_cb_SIG= bkgd_fit_SIG->fitTo(*mcSigDSet,Save(kTRUE),SumW2Error(kTRUE),Range("fitRange")) ;//,Range("fitRange")
-    RooFitResult* res_cb_SB = bkgd_fit_SB->fitTo(*mcSBDSet,Save(kTRUE),SumW2Error(kTRUE),Range("fitRange")) ;//,Range("fitRange")
 
+    RooFitResult* res_cb_SIG= bkgd_fit_SIG->fitTo(*mcSigDSet,Save(kTRUE),SumW2Error(kTRUE),Range("fitRange")) ;
+    RooFitResult* res_cb_SB = bkgd_fit_SB->fitTo(*mcSBDSet,Save(kTRUE),SumW2Error(kTRUE),Range("fitRange")) ;
+    RooFitResult* r_sig_expLev_SIG = expLev_fit_SIG->fitTo(*mcSigDSet,Save(kTRUE),SumW2Error(kTRUE),Range("fitRange")) ;
+    RooFitResult* r_sig_expLev_SB = expLev_fit_SB->fitTo(*mcSBDSet,Save(kTRUE),SumW2Error(kTRUE),Range("fitRange")) ;
+
+    cout<<"LevExpo fit in SIGNAL region done: Sigma = "<<f0_SIG->getVal()<<"   Alpha="<<f1_SIG->getVal()<<"   m="<<f2_SIG->getVal()<<"  Theta="<<f3_SIG->getVal()<<std::endl;
+    cout<<"LevExpo fit in SB region done: Sigma = "<<f0_SB->getVal()<<"   Alpha="<<f1_SB->getVal()<<"   m="<<f2_SB->getVal()<<"  Theta="<<f3_SB->getVal()<<std::endl;
+
+    //    cout<<"Printing results of leveled fit in signal region:"<<endl;
+    // r_sig_expLev_SIG->printMultiline(std::cout,3);
+    cout<<endl<<endl;
     TCanvas* c2 = new TCanvas("c2", "can_fit_roofit", 600, 900);
     c2->Divide(1,3);
    
@@ -263,11 +312,21 @@ rangecut_=binpointer[nb];
     TCanvas* c2b = new TCanvas("c2b", "can_fit_roofit_SB", 600, 900);
 
     RooPlot *xf=mZZ.frame();
-    
+    xf->SetTitle("MC - Signal region");
     double minyscale = nxjCategory==2? 0.000006 : 0.000006;
     double maxyscale = 0.15;
+
+    RooRealVar *NbkgSIG=new RooRealVar("bkgdNormalizationSIG","Background normalization in fit range (SIG region)",mcSigDSet->reduce(CutRange("fitRange"))->sumEntries(),0.0,10000.0);
+    cout<<"Entries in fit range (signal region) = "<<NbkgSIG->getVal()<<endl;
+    RooRealVar *NbkgSB=new RooRealVar("bkgdNormalizationSB","Background normalization in fit range (SB region)",mcSBDSet->reduce(CutRange("fitRange"))->sumEntries(),0.0,10000.0);
+    cout<<"Entries in fit range (sb region) = "<<NbkgSB->getVal()<<endl;
+    //double integralSB=mcSBDSet->createIntegral(*mZZ,RooFit::Range("fitRange"))->getVal();
+
+
+
     mcSigDSet->plotOn(xf,Binning(RooBinning(nBins1-1,bins1)),MarkerStyle(21),MarkerColor(kBlue));
-    bkgd_fit_SIG->plotOn(xf, Normalization(mcSigDSet->sumEntries(),RooAbsPdf::NumEvent), LineColor(kOrange),Range("fitRange"));//,RooAbsPdf::NumEvent
+    bkgd_fit_SIG->plotOn(xf, Normalization(NbkgSIG->getVal(),RooAbsPdf::NumEvent), LineColor(kOrange),Range("fitRange"));
+    expLev_fit_SIG->plotOn(xf, Normalization(NbkgSIG->getVal(),RooAbsPdf::NumEvent), LineColor(kGreen),LineStyle(kDashed),Range("fitRange"));// Normalization(mcSigDSet->sumEntries(),RooAbsPdf::NumEvent)
     // mcSigDSet->plotOn(xf,Binning(RooBinning(nBins-1,bins1)),MarkerStyle(21),MarkerColor(kBlue));
     c2a->cd();
     xf->SetMinimum(0.0);
@@ -283,8 +342,10 @@ rangecut_=binpointer[nb];
     
     
     RooPlot *xf2=mZZ.frame();
+    xf2->SetTitle("MC - Sideband region");
     mcSBDSet->plotOn(xf2,Binning(RooBinning(nBins1-1,bins1)),MarkerStyle(21),MarkerColor(kRed));
-    bkgd_fit_SB->plotOn(xf2, Normalization(mcSBDSet->sumEntries(),RooAbsPdf::NumEvent), LineColor(kGreen));//,RooAbsPdf::NumEvent
+    bkgd_fit_SB->plotOn(xf2, Normalization(NbkgSB->getVal(),RooAbsPdf::NumEvent), LineColor(kOrange));//,RooAbsPdf::NumEvent
+    expLev_fit_SB->plotOn(xf2, Normalization(NbkgSB->getVal(),RooAbsPdf::NumEvent), LineColor(kGreen),LineStyle(kDashed),Range("fitRange"));
     // mcSBDSet->plotOn(xf2,Binning(RooBinning(nBins-1,bins1)),MarkerStyle(21),MarkerColor(kRed));
     c2b->cd();
     xf2->SetMinimum(0.0);
@@ -298,14 +359,62 @@ rangecut_=binpointer[nb];
     gPad->SetLogy();
     xf2->Draw();
     c2->cd(3);
+    h1_alpha_smooth->SetLineColor(kBlack);
+    TF1 *fitPoly6 = new TF1("fitPolyRooFit", "pol6", 600.0, rangecut_);
+    fitPoly6->SetLineColor(kGreen+3);
+    fitPoly6->SetLineStyle(kDashed);
+    h1_alpha_smooth->Fit(fitPoly6,"QRS+");
+
+
+    double alpha_fit_SIG=slope_SIG->getVal();
+    double alpha_fit_SB=slope_SB->getVal();
+    double alpha_fit_ratio=alpha_fit_SIG/alpha_fit_SB;
+    double alpha_hist_int=h1_alpha_smooth->Integral(h1_alpha_smooth->FindBin(600.0),h1_alpha_smooth->FindBin(rangecut_));
+    cout<<"Ratio of exponential fits: SIG_slope="<<alpha_fit_SIG<<"  SB_slope="<<alpha_fit_SB<<"  Sig/SB="<<alpha_fit_ratio<<"  Integral of ratio in [600,"<<rangecut_<<"]="<<alpha_hist_int <<endl;
+    /*
+    double tmpintegral=0.0;
+    for(int tmpbin=1;tmpbin<=h1_alpha_smooth->GetNbinsX();tmpbin++){
+      double tmpcont=h1_alpha_smooth->GetBinContent(tmpbin);
+      if(h1_alpha_smooth->GetBinCenter(tmpbin)<600.0)continue;
+      tmpintegral+=tmpcont;
+    }
+    cout<<"Same Integral calculated by hand: "<<tmpintegral<<endl;
+    */
+
+    TF1 *fitExpoRatio=new TF1("ratio_fit_expo","[0]*expo(1)",600.0, rangecut_);
+    fitExpoRatio->FixParameter(1,0.0);
+    fitExpoRatio->FixParameter(2,(alpha_fit_SIG-alpha_fit_SB));
+    fitExpoRatio->SetLineColor(kMagenta);
+    h1_alpha_smooth->Fit(fitExpoRatio,"QR+");   
+
+    h1_alpha_smooth->SetStats(0);
     h1_alpha_smooth->Draw("F");
+
+    RooRealVar *f0_SBinv=new RooRealVar("f0_SBinv","sigma_SB",-1.0*f0_SB->getVal(),0.0,300.0);
+    RooRealVar *f1_SBinv=new RooRealVar("f1_SBinv","alpha_SB",-1.0*f1_SB->getVal(),-0.5,2.0);
+    RooRealVar *f1b_SBinv=new RooRealVar("f1b_SBinv","beta_SB",-1.0*f1b_SB->getVal(),-0.5,2.0);
+    f0_SBinv->setConstant(kTRUE);
+    f1_SBinv->setConstant(kTRUE);
+    f1b_SBinv->setConstant(kTRUE);
+    RooLevelledExp2 *expLev_fit_SBinv=new RooLevelledExp2("levelled_exp_SBinv","inverse levelled_exp_fit (SB region)",mZZ,*f0_SBinv,*f1_SBinv,*f1b_SBinv,*f2_SB,*f3_SB);
+    RooPlot *xfRatio=mZZ.frame();
+    RooProdPdf *ratioFit2=new RooProdPdf("ratioFitV2","ratio of Expo_SIG / levExpo_SB",*bkgd_fit_SIG,*expLev_fit_SBinv);
+    // double tmpRatioInt=ratioFit2->createIntegral(mZZ,RooFit::Range("fitRange"))->getVal();
+    // cout<<"TMP RATIO INT ="<<tmpRatioInt<<endl;
+    // double corrIntegral=alpha_hist_int/tmpRatioInt;
+    ratioFit2->plotOn(xfRatio, RooFit::Normalization(1.1*alpha_hist_int,RooAbsPdf::NumEvent), RooFit::LineColor(kRed),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
+    xfRatio->SetMinimum(h1_alpha_smooth->GetMinimum());
+    xfRatio->SetMaximum(h1_alpha_smooth->GetMaximum());
+    xfRatio->Draw("same");
+
+    /*
     //draw ratio of functions fitted above 
     TH1D *h1_funcRatio=new TH1D("h_alphaRatioMCFit","Ratio of fits to MC",nBins1*20,bins1[0],bins1[nBins1-1]);
     h1_funcRatio->SetLineColor(kViolet);
     h1_funcRatio->SetMarkerColor(kViolet);
     h1_funcRatio->SetMarkerStyle(20);
-    double mcSigNorm=mcSigDSet->sumEntries();
-    double mcSBNorm=mcSBDSet->sumEntries();
+    double mcSigNorm=NbkgSIG->getVal();//mcSigDSet->sumEntries();
+    double mcSBNorm=NbkgSB->getVal();//mcSBDSet->sumEntries();
     double rNorm=mcSigNorm/mcSBNorm;
     
     cout<<"\n\n\n\nNORMALIZATIONS "<<nxjCategory<<"-jets : SIG="<<mcSigNorm<<" ("<<h1_mZZ_signalRegion.GetEntries()<<")      SB="<< mcSBNorm<<" ("<<h1_mZZ_sidebands.GetEntries()<<")   Ratio="<<rNorm<<std::endl<<std::endl<<std::endl<<std::endl;
@@ -317,18 +426,31 @@ rangecut_=binpointer[nb];
       h1_funcRatio->SetBinContent(ib,rNorm*(sigval/sbval) );
     }
     h1_funcRatio->Draw("sames");
+    */
+
+
     sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFIT.eps", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
     c2->SaveAs(canvasName);
     sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFIT_SIGONLY.eps", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
     c2a->SaveAs(canvasName);
     sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFITSBONLY.eps", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
     c2b->SaveAs(canvasName);
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFIT.root", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+    c2->SaveAs(canvasName);
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFIT_SIGONLY.root", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+    c2a->SaveAs(canvasName);
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFITSBONLY.root", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+    c2b->SaveAs(canvasName);
 
 
     delete c2;    delete c2a;    delete c2b;
-    
-    delete mcSBDSet; delete bkgd_fit_SB;//delete expLev_fit_SB;
-    delete mcSigDSet; delete bkgd_fit_SIG;//delete expLev_fit_SIG;
+
+    delete bkgd_fit_SIG; delete expLev_fit_SIG; 
+    delete bkgd_fit_SB; delete expLev_fit_SB;delete expLev_fit_SBinv;delete ratioFit2;
+     delete xf2; delete xfRatio;
+
+     delete mcSBDSet;
+     delete mcSigDSet;
   }//end if with roofit
   cout<<"\n\nContinuing..."<<std::endl;
   

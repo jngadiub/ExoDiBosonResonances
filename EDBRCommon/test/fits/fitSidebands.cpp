@@ -15,8 +15,9 @@
 
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1);
 void doAlpha(TTree *chMC, std::string wType);
-const std::string myOutDir="FitSidebandsMJJ_TEST1";
-const string inDir="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/thiago20130206/";
+const std::string myOutDir="FitSidebandsMJJ/";//it must already exist !
+
+const string inDir="/afs/cern.ch/work/t/tomei/public/EXOVV_2012/analyzer_trees/productionv1_round2/fullselSIGNALCA8/";
 int main( int argc, char* argv[] ) {
 
   std::string weighting = "weight";
@@ -24,25 +25,38 @@ int main( int argc, char* argv[] ) {
   
   TChain* chainMC = new TChain("SelectedCandidates");
   std::string bgTreeName;
+  chainMC->Add( (inDir+"treeEDBR_DYJetsPt50To70.root").c_str());
   chainMC->Add( (inDir+"treeEDBR_DYJetsPt70To100.root").c_str());
   chainMC->Add( (inDir+"treeEDBR_DYJetsPt100.root").c_str());
   chainMC->Add( (inDir+"treeEDBR_TTBAR.root").c_str());
+  chainMC->Add( (inDir+"treeEDBR_WZ.root").c_str());
   chainMC->Add( (inDir+"treeEDBR_ZZ.root").c_str());
   gROOT->cd(); //magic!
 
   const int nxjCut=-1;//if negative: no cut
   const std::string tmpTreeName="SelectedCandidatesV2";
   char foutn[64];
-  if(nxjCut>=0)  sprintf(foutn,"EXOVVTree_forAlpha_%d.root",nxjCut);
-  else   sprintf(foutn,"EXOVVTree_forAlpha_NOcut.root");
+  if(nxjCut>=0)  sprintf(foutn,"EXOVVTree_forAlpha_SIG_%d.root",nxjCut);
+  else   sprintf(foutn,"EXOVVTree_forAlpha_SIG_NOcut.root");
   std::string tmpFileName=foutn;
 
   CopyTreeVecToPlain(chainMC,weighting,tmpFileName,tmpTreeName);//(TTree*)
 
   delete chainMC; //delete chainData;
   
-  TFile *ftree=new TFile(foutn,"READ");
-  TTree *tTmp=(TTree*)ftree->Get(tmpTreeName.c_str());
+
+  //  TFile *ftree=new TFile(foutn,"READ");
+  // TTree *tTmp=(TTree*)ftree->Get(tmpTreeName.c_str());
+
+  //  sprintf(foutn,"EXOVVTree_forAlpha_%d.root",nxjCut);
+  // TFile *ftree2=new TFile(foutn,"READ");
+ 
+  TChain *tTmp=new TChain(tmpTreeName.c_str());
+  tTmp->Add(foutn);
+   if(nxjCut>=0) sprintf(foutn,"EXOVVTree_forAlpha_SB_%d.root",nxjCut);
+   else  sprintf(foutn,"EXOVVTree_forAlpha_SB_NOcut.root");
+  tTmp->Add(foutn);
+
   doAlpha(tTmp,weighting);
 
   delete tTmp;
@@ -200,8 +214,6 @@ void doAlpha(TTree *chMC, std::string wType){
 
 
   } //end loop on nXjets
-
-  //  return 0;
  
 }//end void doAlpha
 
@@ -215,7 +227,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   double leptType;
   int mynxj[35];
   double mZZd[35],region[35],mZqq[35];
-
+  double nsubj[35];
 
   t1->SetBranchAddress("nCands",&ncands);
   t1->SetBranchAddress("run",&nrun);
@@ -226,7 +238,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   t1->SetBranchAddress("nXjets",mynxj);
   t1->SetBranchAddress("mJJ",mZqq);
   t1->SetBranchAddress("region",region);
-
+  t1->SetBranchAddress("nsubj12",nsubj);
 
   TFile *fOut=new TFile(f2Name.c_str(),"RECREATE");
   fOut->cd();
@@ -271,7 +283,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
       }
 
       if(mynxj_2==nxjCut||nxjCut<0) {
-	int nb=t2->Fill();
+	t2->Fill();
 	//	if(i%1000==1)cout<<"Filled "<<nb<<" bytes"<<endl;
 	//	if(nb<0)cout<<"====>  Event"<<nevt_2 <<"  Filled "<<nb<<" bytes"<<endl;
       }
@@ -292,5 +304,4 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
  
 
   //  cout<<"returning"<<endl;
-  // return t2;
 }
