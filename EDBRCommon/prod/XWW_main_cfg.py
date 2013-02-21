@@ -117,7 +117,7 @@ HLTlistEle = cms.vstring("HLT_DoubleEle33_*") # triggers for DoubleElectron PD
 #HLTlistSE = cms.vstring("HLT_Ele80_CaloIdVT_GsfTrkIdT_v1 AND NOT HLT_DoubleEle33*") # triggers fro SingleElectron PD
 #HLTlistSM  = cms.vstring("HLT_Mu40_* AND NOT HLT_Mu17_Mu8* AND NOT HLT_Mu22_TkMu22*")
 
-HLTlistSE = cms.vstring("HLT_Ele80_CaloIdVT_GsfTrkIdT_v1")
+HLTlistSE = cms.vstring("HLT_Ele80_CaloIdVT*")
 HLTlistSM  = cms.vstring("HLT_Mu40_*")
 
 process.hltHighLevelEle = cms.EDFilter("HLTHighLevel",
