@@ -40,7 +40,6 @@ DEFINE_FWK_MODULE(CmgDiElectronSingleJetEDBRSelector);
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::DiMuonSingleJetEDBR> > CmgDiMuonSingleJetEDBRSelector;
 DEFINE_FWK_MODULE(CmgDiMuonSingleJetEDBRSelector);
 
-#define EDBRNEUTRINO
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::WelenuDiJetEDBR> > CmgWelenuDiJetEDBRSelector;
 DEFINE_FWK_MODULE(CmgWelenuDiJetEDBRSelector);
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::WmunuDiJetEDBR> > CmgWmunuDiJetEDBRSelector;
@@ -49,7 +48,7 @@ typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::WelenuSi
 DEFINE_FWK_MODULE(CmgWelenuSingleJetEDBRSelector);
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::WmunuSingleJetEDBR> > CmgWmunuSingleJetEDBRSelector;
 DEFINE_FWK_MODULE(CmgWmunuSingleJetEDBRSelector);
-#undef EDBRNEUTRINO
+
 
 //define mergers for Resonance-like objects
 typedef Merger<std::vector<cmg::DiElectronDiJetEDBR>, std::vector<cmg::DiElectronDiJetEDBR> > CmgDiElectronDiJetEDBRMerger;
@@ -61,7 +60,6 @@ DEFINE_FWK_MODULE( CmgDiElectronSingleJetEDBRMerger );
 typedef Merger<std::vector<cmg::DiMuonSingleJetEDBR>, std::vector<cmg::DiMuonSingleJetEDBR> > CmgDiMuonSingleJetEDBRMerger;
 DEFINE_FWK_MODULE( CmgDiMuonSingleJetEDBRMerger );
 
-#define EDBRNEUTRINO
 typedef Merger<std::vector<cmg::WelenuDiJetEDBR>, std::vector<cmg::WelenuDiJetEDBR> > CmgWelenuDiJetEDBRMerger;
 DEFINE_FWK_MODULE( CmgWelenuDiJetEDBRMerger );
 typedef Merger<std::vector<cmg::WmunuDiJetEDBR>, std::vector<cmg::WmunuDiJetEDBR> > CmgWmunuDiJetEDBRMerger;
@@ -70,7 +68,6 @@ typedef Merger<std::vector<cmg::WelenuSingleJetEDBR>, std::vector<cmg::WelenuSin
 DEFINE_FWK_MODULE( CmgWelenuSingleJetEDBRMerger );
 typedef Merger<std::vector<cmg::WmunuSingleJetEDBR>, std::vector<cmg::WmunuSingleJetEDBR> > CmgWmunuSingleJetEDBRMerger;
 DEFINE_FWK_MODULE( CmgWmunuSingleJetEDBRMerger );
-#undef EDBRNEUTRINO
 
 DEFINE_FWK_MODULE(PUWeightProducer);
 DEFINE_FWK_MODULE(PTWeightProducer);
@@ -95,7 +92,6 @@ DEFINE_FWK_MODULE(DiElectronSingleJetEDBRKineAdder);
 DEFINE_FWK_MODULE(DiMuonSingleJetEDBRKineAdder);
 
 
-#define EDBRNEUTRINO
 typedef KineVarsAdder<cmg::WelenuDiJetEDBR> WelenuDiJetEDBRKineAdder;
 typedef KineVarsAdder<cmg::WmunuDiJetEDBR>     WmunuDiJetEDBRKineAdder;
 DEFINE_FWK_MODULE(WelenuDiJetEDBRKineAdder);
@@ -104,7 +100,6 @@ typedef KineVarsAdder<cmg::WelenuSingleJetEDBR> WelenuSingleJetEDBRKineAdder;
 typedef KineVarsAdder<cmg::WmunuSingleJetEDBR>     WmunuSingleJetEDBRKineAdder;
 DEFINE_FWK_MODULE(WelenuSingleJetEDBRKineAdder);
 DEFINE_FWK_MODULE(WmunuSingleJetEDBRKineAdder);
-#undef EDBRNEUTRINO
 
 //////define candidate selectors
 typedef BestCandidateSelector<cmg::DiElectronSingleJetEDBR, cmg::DiElectronDiJetEDBR> DiElectronNJetEDBRBestCandidateSelector;
@@ -112,12 +107,11 @@ typedef BestCandidateSelector<cmg::DiMuonSingleJetEDBR, cmg::DiMuonDiJetEDBR>   
 DEFINE_FWK_MODULE(DiElectronNJetEDBRBestCandidateSelector);
 DEFINE_FWK_MODULE(DiMuonNJetEDBRBestCandidateSelector);
 
-#define EDBRNEUTRINO
 typedef BestCandidateSelector<cmg::WelenuSingleJetEDBR, cmg::WelenuDiJetEDBR> WelenuNJetEDBRBestCandidateSelector;
 typedef BestCandidateSelector<cmg::WmunuSingleJetEDBR, cmg::WmunuDiJetEDBR>     WmunuNJetEDBRBestCandidateSelector;
 DEFINE_FWK_MODULE(WelenuNJetEDBRBestCandidateSelector);
 DEFINE_FWK_MODULE(WmunuNJetEDBRBestCandidateSelector);
-#undef EDBRNEUTRINO
+
 
 /////define weight adders (weight because of PU, HLT...)
 typedef WeightAdder<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRWeightAdder;
@@ -137,7 +131,6 @@ typedef HLTWeightProducer<cmg::DiMuonSingleJetEDBR>     HLTWeightProducerMuVJet;
 DEFINE_FWK_MODULE(HLTWeightProducerEleVJet);
 DEFINE_FWK_MODULE(HLTWeightProducerMuVJet);
 
-#define EDBRNEUTRINO
 typedef WeightAdder<cmg::WelenuDiJetEDBR>     WelenuDiJetEDBRWeightAdder;
 DEFINE_FWK_MODULE(WelenuDiJetEDBRWeightAdder);
 typedef HLTWeightProducer<cmg::WelenuDiJetEDBR>     HLTWeightProducerWelenuDiJet;
@@ -154,7 +147,6 @@ typedef WeightAdder<cmg::WmunuSingleJetEDBR>     WmunuSingleJetEDBRWeightAdder;
 DEFINE_FWK_MODULE(WmunuSingleJetEDBRWeightAdder);
 typedef HLTWeightProducer<cmg::WmunuSingleJetEDBR>     HLTWeightProducerWmunuSingleJet;
 DEFINE_FWK_MODULE(HLTWeightProducerWmunuSingleJet);
-#undef EDBRNEUTRINO
 
 //define VBF taggers
 typedef EDBRTagger<cmg::DiElectronDiJetEDBR> DiElectronDiJetEDBRTagger;
@@ -166,7 +158,6 @@ typedef EDBRTagger<cmg::DiMuonSingleJetEDBR>     DiMuonSingleJetEDBRTagger;
 DEFINE_FWK_MODULE(DiElectronSingleJetEDBRTagger);
 DEFINE_FWK_MODULE(DiMuonSingleJetEDBRTagger);
 
-#define EDBRNEUTRINO
 typedef EDBRTagger<cmg::WelenuDiJetEDBR>     WelenuDiJetEDBRTagger;
 DEFINE_FWK_MODULE(WelenuDiJetEDBRTagger);
 typedef EDBRTagger<cmg::WmunuDiJetEDBR>     WmunuDiJetEDBRTagger;
@@ -175,7 +166,7 @@ typedef EDBRTagger<cmg::WelenuSingleJetEDBR>     WelenuSingleJetEDBRTagger;
 DEFINE_FWK_MODULE(WelenuSingleJetEDBRTagger);
 typedef EDBRTagger<cmg::WmunuSingleJetEDBR>     WmunuSingleJetEDBRTagger;
 DEFINE_FWK_MODULE(WmunuSingleJetEDBRTagger);
-#undef EDBRNEUTRINO
+
 
 DEFINE_FWK_MODULE(DummyGenProducer);
 //DEFINE_FWK_MODULE(DummyConversionProducer);

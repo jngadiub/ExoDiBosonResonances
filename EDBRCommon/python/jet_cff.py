@@ -13,26 +13,18 @@ jetCountFilter = cms.EDFilter("CandViewCountFilter",
                                  minNumber = cms.uint32(2)
 )
 
-genSelectorZQQ = cms.EDFilter("GenParticleSelector", # matches Z and W with hadronic decays
+genSelectorZQQ = cms.EDFilter("GenParticleSelector",
     src = cms.InputTag("genParticles"),
-    cut = cms.string(' (abs(pdgId)==23 || abs(pdgId)==24 ) && numberOfDaughters> 0 && abs(daughter(0).pdgId)<9 && status==3')
+    cut = cms.string(' abs(pdgId)==23 &&numberOfDaughters> 0 && abs(daughter(0).pdgId)<9 && status==3')
 )
 
-genSelectorZDaughter = cms.EDFilter("GenParticleSelector",# matches leptons from Z and W
+genSelectorZDaughter = cms.EDFilter("GenParticleSelector",
     src = cms.InputTag("genParticles"),
-    cut = cms.string(' (abs(pdgId)==11 || abs(pdgId)==13)&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24) ')
+    cut = cms.string(' (abs(pdgId)==11 || abs(pdgId)==13)&& abs(mother.pdgId)==23 ')
 )
-genSelectorZQDaughter = cms.EDFilter("GenParticleSelector",# matches quarks from Z and W
+genSelectorZQDaughter = cms.EDFilter("GenParticleSelector",
     src = cms.InputTag("genParticles"),
-    cut = cms.string(' (abs(pdgId) < 9 )&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24)')
-)
-genSelectorZRQDaughter = cms.EDFilter("GenParticleSelector",# matches quarks (not antiquarks) from Z and W
-    src = cms.InputTag("genParticles"),
-    cut = cms.string(' (pdgId < 9 && pdgId > 0)&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24)')
-)
-genSelectorZAQDaughter = cms.EDFilter("GenParticleSelector",# matches anti-quarks (not quarks) from Z and W
-    src = cms.InputTag("genParticles"),
-    cut = cms.string(' (pdgId > -9 && pdgId < 0)&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24)')
+    cut = cms.string(' (abs(pdgId) < 9 )&& abs(mother.pdgId)==23 ')
 )
 
 
@@ -101,21 +93,7 @@ cmgJetStructured = cms.EDProducer("cmgVJetCleaner",
                                                                            checkRecoComponents = cms.bool(False), # don't check if they share some AOD object ref
                                                                            pairCut             = cms.string(""),
                                                                            requireNoOverlaps = cms.bool(False), # overlaps don't cause the electron to be discared
-                                                                        ),              
-                                                    genQuarks = cms.PSet( src = cms.InputTag("genSelectorZRQDaughter"),
-                                                                          preselection        = cms.string(""),  # don't preselect the muons
-                                                                          deltaR              = cms.double(0.7),
-                                                                          checkRecoComponents = cms.bool(False), # don't check if they share some AOD object ref
-                                                                          pairCut             = cms.string(""),
-                                                                          requireNoOverlaps = cms.bool(False), # overlaps don't cause the electron to be discared
-                                                                          ),
-                                                    genAntiQuarks = cms.PSet( src = cms.InputTag("genSelectorZAQDaughter"),
-                                                                              preselection        = cms.string(""),  # don't preselect the muons
-                                                                              deltaR              = cms.double(0.7),
-                                                                              checkRecoComponents = cms.bool(False), # don't check if they share some AOD object ref
-                                                                              pairCut             = cms.string(""),
-                                                                              requireNoOverlaps = cms.bool(False), # overlaps don't cause the electron to be discared
-                                                                              ),              
+                                                                           ),              
                                                     ),
                                   finalCut = cms.string('')
                                   )
@@ -164,8 +142,6 @@ jetSequence = cms.Sequence(
 mergedJetSequence = cms.Sequence(
     highPtJets*jetCountFilter
     + genSelectorZQQ
-    + genSelectorZRQDaughter
-    + genSelectorZAQDaughter
     + puJetIdSequence
     + cmgJetStructuredRaw
     + cmgJetStructured

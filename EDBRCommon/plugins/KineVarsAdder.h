@@ -4,7 +4,6 @@
 #include <TF1.h>
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 template<class edbrtype>
@@ -76,55 +75,15 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 
 
 		////////////////////////////////////////////////////////////////////
+	    float iso1=-99.0;;
+	    float iso2=-99.0;
+		bool isleg1GoodLep = ( abs(newCand.leg1().leg1().pdgId())== 11  || abs(newCand.leg1().leg1().pdgId())== 13 ) ; //check that lep1 is either an ele or a mu
+		bool isleg2GoodLep = ( abs(newCand.leg1().leg2().pdgId())== 11  || abs(newCand.leg1().leg2().pdgId())== 13 ) ; //check that lep2 is either an ele or a mu
 
-		/// Electron isolation:
-		//    isHEEP = cms.string('sourcePtr().userInt("HEEPId") == 0'),
-		//    isIsolTrk = cms.string('sourcePtr().userIso(0) < 5.0'),
-		//    isIsolCalo ~ (ele.userIso(1) + ele.userIso(2))/ele.et(); (ECAL+HCAL)/et
-		// Notice that the cut value for the last one is a VERY complicated formula - check: 
-		//     EDBRElectron/python/skims/selEventsElectrons_cfi.py
-		// It depends on the fact that electrons may be barrel or endcap, and their energies, etc.
-		// To first approximation, the cut is isolCalo < A + B*et,
-		// so we plot the variable isolCalo/et/
-		float trkiso1=-99.0;
-		float trkiso2=-99.0;
-		float caloiso1=-99.0;
-		float caloiso2=-99.0;
-		bool isleg1GoodEle = ( abs(newCand.leg1().leg1().pdgId())== 11 ) ; //check that lep1 is an ele
-		bool isleg2GoodEle = ( abs(newCand.leg1().leg2().pdgId())== 11 ) ; //check that lep2 is an ele
-		
-		if(isleg1GoodEle) {
-		  trkiso1 = (*(*newCand.leg1().leg1().sourcePtr())).userIso(0);
-		  caloiso1 = ( (*(*newCand.leg1().leg1().sourcePtr())).userIso(1) + 
-			       (*(*newCand.leg1().leg1().sourcePtr())).userIso(2) ) / 
-		    newCand.leg1().leg1().pt();
-		}
-
-		#ifdef EDBRNEUTRINO
-		if(isleg2GoodEle) {
-		  trkiso2 = (*(*newCand.leg1().leg2().sourcePtr())).userIso(0);
-		  caloiso2 = ( (*(*newCand.leg1().leg2().sourcePtr())).userIso(1) + 
-			       (*(*newCand.leg1().leg2().sourcePtr())).userIso(2) ) / 
-		    newCand.leg1().leg2().pt();
-		}
-                #else
-		if(isleg2GoodEle) {
-		  trkiso2 = -99;
-		  caloiso2 = -99;
-		}
-                #endif
-
-		/// Muon isolation:
-		//  Is just the tracker based isolation minus the other muon pt if it is deltaR < 0.3.
-		float iso1=-99.0;
-		float iso2=-99.0;
-		bool isleg1GoodMuon = ( abs(newCand.leg1().leg1().pdgId())== 13 ) ; //check that lep1 is a mu
-		bool isleg2GoodMuon = ( abs(newCand.leg1().leg2().pdgId())== 13 ) ; //check that lep2 is a mu
-
-		if( isleg1GoodMuon ){
+		if( isleg1GoodLep ){
 
 			iso1 = (*(newCand.leg1().leg1().sourcePtr()))->trackIso() / newCand.leg1().leg1().pt();   
-			if(  isleg2GoodMuon ) { //correct iso1 from lep2 and iso2 from lep1
+			if(  isleg2GoodLep ) { //correct iso1 from lep2 and iso2 from lep1
 				iso2 = (*(newCand.leg1().leg2().sourcePtr()))->trackIso() / newCand.leg1().leg2().pt();   
 
 				/// Let's correct!
@@ -137,8 +96,8 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 					iso1 = (iso1 - newCand.leg1().leg2().pt()/newCand.leg1().leg1().pt());
 					iso2 = (iso2 - newCand.leg1().leg1().pt()/newCand.leg1().leg2().pt());
 				}
-			}//end if lep2 is a good muon
-		}//end if lep1 is a good muon
+			}//end if lep2 is a good one
+		}//end if lep1 is a good one
 		/////////////////////////////////////////////////
 
 		if(isDoubleJet_){
@@ -163,12 +122,8 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 			}
 		}
 
-		newCand.addUserFloat("isomu1mod",iso1 );
-		newCand.addUserFloat("isomu2mod",iso2 );
-		newCand.addUserFloat("isoele1trk",trkiso1 );
-		newCand.addUserFloat("isoele2trk",trkiso2 );
-		newCand.addUserFloat("isoele1calo",caloiso1 );
-		newCand.addUserFloat("isoele2calo",caloiso2 );
+		newCand.addUserFloat("isolep1mod",iso1 );
+		newCand.addUserFloat("isolep2mod",iso2 );
 		newCand.addUserFloat("nXJets",nXJets );
 		newCand.addUserFloat("nokinfitMZZ",mzzNKF );
 		newCand.addUserFloat("nokinfitPT",ptNKF);

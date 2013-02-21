@@ -10,8 +10,12 @@ import FWCore.ParameterSet.Config as cms
 ## Add VBF tag to two collections (single- and double-jet)
 vbfString = cms.string("vbfptr.isAvailable")
 #nXJets was added as userfloat by KineVarsAdder
-kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && userFloat(\"nXJets\") == 1.0") # && leg2.pt()>80.0
-kineString2Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && userFloat(\"nXJets\") == 2.0") # && leg2.pt()>80.0
+kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 1.0")
+kineString2Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 2.0")
+#sigreg1Jet=cms.string("leg2.getSelection(\"cuts_signalBoostedZ\")")
+#sbreg1Jet=cms.string("leg2.getSelection(\"cuts_sidebandBoostedZ\")")
+#sigreg2Jet=cms.string("userFloat(\"isMJJSigReg\") ==1.0")
+#sbreg2Jet=cms.string("userFloat(\"isMJJSigReg\") ==0.0")
 sigreg=cms.string("leg2.getSelection(\"cuts_isSignal\")")
 sbreg=cms.string("leg2.getSelection(\"cuts_isSideband\")")
 
@@ -22,41 +26,41 @@ sbreg=cms.string("leg2.getSelection(\"cuts_isSideband\")")
 
 
 edbrtags =  cms.PSet( vbfDoubleJet = cms.PSet( vbf = vbfString,
-                                               kine = kineString2Jet,
+                                                    kine = kineString2Jet,
                                                sigRegion = sigreg
                                                # LD  = LDString0,
                                                #btag= bString0
                                                ),
-                      DoubleJet = cms.PSet( kine = kineString2Jet,
-                                            sigRegion = sigreg
-                                            ),
-                      ##### similar but select only in the sideband region
-                      vbfDoubleJetSB = cms.PSet( vbf = vbfString,
-                                                 kine = kineString2Jet,
-                                                 sbRegion = sbreg
-                                                 # LD  = LDString0,
+                           DoubleJet = cms.PSet( kine = kineString2Jet,
+                                                 sigRegion = sigreg
+                                                 ),
+                           ##### similar but select only in the sideband region
+                           vbfDoubleJetSB = cms.PSet( vbf = vbfString,
+                                                      kine = kineString2Jet,
+                                                      sbRegion = sbreg
+                                                      # LD  = LDString0,
                                                  #btag= bString0
-                                                 ),
-                      DoubleJetSB = cms.PSet( kine = kineString2Jet,
-                                              sbRegion = sbreg
+                                                      ),
+                           DoubleJetSB = cms.PSet( kine = kineString2Jet,
+                                                   sbRegion = sbreg
                                               ),
-                      ####
-                      vbfSingleJet = cms.PSet( vbf = vbfString,
-                                               kine = kineString1Jet,
-                                               sigRegion = sigreg
-                                               ),
-                      SingleJet = cms.PSet( kine = kineString1Jet,
-                                            sigRegion = sigreg
-                                            ),
-                      ##### similar but select only in the sideband region
-                      vbfSingleJetSB = cms.PSet( vbf = vbfString,
-                                                 kine = kineString1Jet,
-                                                 sbRegion = sbreg
+                           ####
+                           vbfSingleJet = cms.PSet( vbf = vbfString,
+                                                    kine = kineString1Jet,
+                                                    sigRegion = sigreg
+                                                    ),
+                           SingleJet = cms.PSet( kine = kineString1Jet,
+                                                 sigRegion = sigreg
                                                  ),
-                      SingleJetSB = cms.PSet( kine = kineString1Jet,
-                                              sbRegion = sbreg
-                                              )                           
-                      )#end edbrtags
+                           ##### similar but select only in the sideband region
+                           vbfSingleJetSB = cms.PSet( vbf = vbfString,
+                                                      kine = kineString1Jet,
+                                                      sbRegion = sbreg
+                                                      ),
+                           SingleJetSB = cms.PSet( kine = kineString1Jet,
+                                                   sbRegion = sbreg
+                                                   )                           
+                           )#end edbrtags
 
 
 

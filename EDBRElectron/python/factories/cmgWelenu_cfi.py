@@ -15,9 +15,9 @@ cmgWelenuEDBR = cms.EDFilter(
     cfg = WelenuFactory.clone(),
     cuts = cms.PSet(
        Welenu_kinematics = Welenu_kinematics.clone(),
-       ##       Welenu_quality = Welenu_quality.clone(),
-       Welenu_validation = Welenu_validation.clone(),
-       genP = cms.PSet(genP = cms.string("leg1.sourcePtr.get.hasOverlaps(\"genLeptonsW\")")
+##       Welenu_quality = Welenu_quality.clone(),
+	   Welenu_validation = Welenu_validation.clone(),
+       genP = cms.PSet(genP = cms.string("leg1.sourcePtr.get.hasOverlaps(\"genLeptons\")")
        ) 
     )
 )

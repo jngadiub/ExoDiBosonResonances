@@ -21,11 +21,6 @@ echo
 
 CFGAREA=${MYWORKAREA}/ExoDiBosonResonances/EDBRCommon/test/tmp_cfg/
 mkdir -p $CFGAREA
-
-OUTDIR=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/preselCA8/
-mkdir -p $OUTDIR/logs
-
-# ok, now do the job:
 sed -e "s/<SAMPLE>/${TAG}/g" < ${MYWORKAREA}/ExoDiBosonResonances/EDBRCommon/test/analyzerEDBR_zz2l2j_tpl.py >  ${CFGAREA}/analyzerEDBR_zz2l2j_${TAG}_cfg.py
 
 cmsRun  ${CFGAREA}/analyzerEDBR_zz2l2j_${TAG}_cfg.py &> "log_AnalyzerPresel_${TAG}.out"
@@ -36,7 +31,11 @@ echo "--------------"
 ls -lhrt
 echo
 
+#cp *root /afs/cern.ch/user/b/bonato/scratch0/PhysAnalysis/CMGTools/CMSSW_4_2_3/src/HiggsAna/HLLJJCommon/test/
+#cp *.out /afs/cern.ch/user/b/bonato/scratch0/PhysAnalysis/CMGTools/CMSSW_4_2_3/src/HiggsAna/HLLJJCommon/test/
 
+OUTDIR=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/
+mkdir -p $OUTDIR/logs
 echo
 echo "Copying to $OUTDIR"
 echo
