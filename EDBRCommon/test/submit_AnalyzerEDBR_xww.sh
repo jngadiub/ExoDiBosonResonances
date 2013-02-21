@@ -5,7 +5,7 @@ SampleName=( SingleMu_Run2012A_13Jul2012_xww  SingleMu_Run2012A_recover_xww Sing
 for sample in  "${SampleName[@]}"
 do
 echo "Submitting $sample"
-bsub -q 8nh -J "treeEDBR_${sample}" run_AnalyzerEDBR_xww.sh $sample
+bsub -q 8nh -J "treeEDBR_${sample}" run_AnalyzerEDBR.sh $sample
 echo
 done
 
