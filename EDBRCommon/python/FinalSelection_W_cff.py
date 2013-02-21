@@ -10,8 +10,12 @@ import FWCore.ParameterSet.Config as cms
 ## Add VBF tag to two collections (single- and double-jet)
 vbfString = cms.string("vbfptr.isAvailable")
 #nXJets was added as userfloat by KineVarsAdder
-kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && userFloat(\"nXJets\") == 1.0") # && leg2.pt()>80.0
-kineString2Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && userFloat(\"nXJets\") == 2.0") # && leg2.pt()>80.0
+kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 1.0")
+kineString2Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 2.0")
+#sigreg1Jet=cms.string("leg2.getSelection(\"cuts_signalBoostedZ\")")
+#sbreg1Jet=cms.string("leg2.getSelection(\"cuts_sidebandBoostedZ\")")
+#sigreg2Jet=cms.string("userFloat(\"isMJJSigReg\") ==1.0")
+#sbreg2Jet=cms.string("userFloat(\"isMJJSigReg\") ==0.0")
 sigreg=cms.string("leg2.getSelection(\"cuts_isSignal\")")
 sbreg=cms.string("leg2.getSelection(\"cuts_isSideband\")")
 
@@ -84,15 +88,13 @@ SingleJetVBFTagger =  cms.EDProducer("WelenuSingleJetEDBRTagger",
 BestCandSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
                                   srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
                                   srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
-                                  tagSelectionList =cms.vstring("tag_SingleJet","tag_DoubleJet"),#highest priority to lowest priority
-                                  VMass            =cms.double(80.4)
+                                  tagSelectionList =cms.vstring("tag_SingleJet","tag_DoubleJet")#highest priority to lowest priority
                                            )
 
 BestSidebandSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
                                     srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
                                     srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
-                                    tagSelectionList =cms.vstring("tag_SingleJetSB","tag_DoubleJetSB"),#highest priority to lowest priority
-                                    VMass            =cms.double(80.4)
+                                    tagSelectionList =cms.vstring("tag_SingleJetSB","tag_DoubleJetSB")#highest priority to lowest priority
                                     )
 
 allSelectedEDBR = cms.EDProducer("CandViewMerger",

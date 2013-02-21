@@ -36,12 +36,10 @@ WmunuSingleJetEDBRFactory = cms.PSet(
                          #      +"deltaR(vbfptr.leg2.eta,vbfptr.leg2.phi,leg1.leg2.sourcePtr.eta,leg1.leg2.sourcePtr.phi) > 0.5 ")
 )
 
-from ExoDiBosonResonances.EDBRCommon.selections.vjetmcmatch_cfi import * 
 cmgWmunuSingleJetEDBR = cms.EDFilter(
     "WmunuSingleJetEDBRPOProducer",
     cfg = WmunuSingleJetEDBRFactory.clone(),
-    cuts = cms.PSet(  genMatch = genMatchVQQ,
-                      genMatchZ = genMatchVV 
+    cuts = cms.PSet( genMatch = cms.PSet(genMatch = cms.string("leg1.getSelection(\"cuts_genP\") && leg2.getSelection(\"cuts_genP\")"))
                      )   
     
     ) 

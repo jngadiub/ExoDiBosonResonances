@@ -18,7 +18,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-process.load("Configuration.Geometry.GeometryIdeal_cff")
+process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #from Configuration.PyReleaseValidation.autoCond import autoCond
 #process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
@@ -37,11 +37,10 @@ fullname  = "ExoDiBosonResonances.EDBRCommon.datasets." + options.infile
 print 'Importing dataset from '
 print fullname
 process.load(fullname)
-##skip events with problem related to kinematic fit                    DYJetsToLL_PtZ-50To70              TTBar                    WJetsPt70To100
-process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:58698863"),cms.EventRange("1:11250208"),cms.EventRange("1:15386873"))
 ####for synch studies
 #process.source.eventsToProcess = cms.untracked.VEventRange(cms.EventRange("166699:715236831"),cms.EventRange("173389:180639524"))
 #process.source.eventsToProcess  = cms.untracked.VEventRange(cms.EventRange("1:231104"))
+
 
 
 ###########
@@ -100,14 +99,14 @@ process.badEventFilter = cms.EDFilter("HLTHighLevel",
 ###########
 
 # provide list of HLT paths (or patterns) you want
-HLTlistMu  = cms.vstring("HLT_Mu17_Mu8*","HLT_Mu22_TkMu22*")   # triggers for DoubleMuon PD   
+HLTlistMu  = cms.vstring("HLT_Mu17_Mu8","HLT_Mu22_TkMu22")   # triggers for DoubleMuon PD   
 HLTlistEle = cms.vstring("HLT_DoubleEle33_*") # triggers for DoubleElectron PD
 
 ### for SingleElectron and SingleMuon PD, request single lept trigger and
 #veto the same triggers used for double ele and DoubleMu PD: in this way
 #remove events in both PDs
 HLTlistSE = cms.vstring("HLT_Ele80_CaloIdVT_GsfTrkIdT_v1 AND NOT HLT_DoubleEle33*") # triggers fro SingleElectron PD
-HLTlistSM  = cms.vstring("HLT_Mu40_* AND NOT HLT_Mu17_Mu8* AND NOT HLT_Mu22_TkMu22*")
+HLTlistSM  = cms.vstring("HLT_Mu40_* AND NOT HLT_Mu17_Mu8 AND NOT HLT_Mu22_TkMu22")
 
 process.hltHighLevelEle = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
@@ -142,16 +141,10 @@ process.hltHighLevelSE = cms.EDFilter("HLTHighLevel",
 ### add them to event filter
 process.eventFilterSequence = cms.Sequence(process.badEventFilter)
 
-####################
-# Hacks for DATA   #
-####################
-if "DATA" in options.mcordata :
+
+###if "DATA" in options.mcordata :
 ###     process.eventFilterSequence.insert(0, process.rndmEventBlinding) ##insert at the front of the list
-     process.genParticles = cms.EDProducer("DummyGenProducer")
-     process.eventFilterSequence.insert(1, process.genParticles)
 
-
-#### add HLT filters to path (only for data)
 if options.mcordata == "DATAELE" :
      process.eventFilterSequence +=process.hltHighLevelEle
 if options.mcordata == "DATASE" :
@@ -160,9 +153,6 @@ if options.mcordata == "DATAMU" :
      process.eventFilterSequence +=process.hltHighLevelMu
 if options.mcordata == "DATASM" :
      process.eventFilterSequence +=process.hltHighLevelSM
-
-
-
 
 ###################################################################
 # Ele Sequence: select electrons and build di-electrons from them #
@@ -181,7 +171,6 @@ process.analysisSequenceElectrons = cms.Sequence(
     process.selectedZSequence
     )
 
-     
 ##############
 # PU weights #
 ##############
@@ -210,8 +199,6 @@ process.analysisSequenceMuons = cms.Sequence(
     )
 if not ( options.lepton == "both" or options.lepton == "ele"): #only muon
      process.muonSequence.insert(0,process.PUseq)
-
-
 
 ###################################################################
 # Jet Sequence: select jets and build di-jets from them           #
@@ -341,13 +328,13 @@ massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRMergedSelEle"
 
 #collect adjusted sequences into paths
 if options.lepton == "both" or options.lepton == "ele":
-     process.cmgEDBRZZEle = cms.Path(process.eventFilterSequence+
+     process.cmgEDBRZZEle = cms.Path(process.badEventFilter+
                                     process.analysisSequenceEEJJFullE +
                                     process.analysisSequenceMergedJetsFullJ + process.edbrSequenceMergedEle +
                                     process.cmgSeqEle )
 
 if options.lepton == "both" or options.lepton == "mu":
-     process.cmgEDBRZZMu = cms.Path(process.eventFilterSequence+
+     process.cmgEDBRZZMu = cms.Path(process.badEventFilter+
                                     process.analysisSequenceMMJJFullM +
                                     process.analysisSequenceMergedJetsFullJ + process.edbrSequenceMergedMMJ +
                                     process.cmgSeqMu )

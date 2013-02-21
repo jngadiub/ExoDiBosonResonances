@@ -35,28 +35,20 @@ namespace cmg {
 	class Neutrino : public AbstractPhysicsObject {
 		public:
 
-	                //dummy constructor to set tne dummyPtr_
-	                //If we try to persist this pointer, the world ends.
-	                Neutrino(){pat::PATPtr(NULL,0);}
+			//empty constructor
+			Neutrino(){};
 
 			virtual ~Neutrino(){}
 
 			//return pointer to the Lepton FIXME
-			// THIAGO: added dummy implementation.
 			void setnlep(int nlep_){nlep=nlep_;}
 			void setleppt(double lep_pt_){lep_pt=lep_pt_;}
 			void setlepeta(double lep_eta_){lep_eta=lep_eta_;}
 			void setlepphi(double lep_phi_){lep_phi=lep_phi_;}
-			int getnlep() const{return nlep;}
+			const int getnlep(){return nlep;}
 			double getleppt() const{return lep_pt;}
 			double getlepeta() const{return lep_eta;}
 			double getlepphi() const{return lep_phi;}
-			// Dummy implementation.
-			pat::PATPtr const* sourcePtr() const{return &dummyPtr_;}
-
-			//some functions just to sync with lepton, so we dont need to change the tree code
-			double relIso()   const{return 0;}
-			double mvaTrigV0()const{return 0;}
 
 			friend class NeutrinoFactory;
 
@@ -65,7 +57,6 @@ namespace cmg {
 			double lep_pt;
 			double lep_eta;
 			double lep_phi;
-			pat::PATPtr dummyPtr_;
 
 	};
 }

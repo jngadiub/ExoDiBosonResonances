@@ -6,11 +6,6 @@ muonPreselNoIso = cms.EDFilter(
     cut = cms.string( "getSelection(\"cuts_kinematics\") && getSelection(\"cuts_HPTTKmuon\") " )
     )
 
-muonPreselLoose = cms.EDFilter(
-    "CmgMuonSelector",
-    src = cms.InputTag("cmgMuon"),
-    cut = cms.string( "getSelection(\"cuts_kinematics\") && getSelection(\"cuts_HPTmuonLoose\") " )
-    ) 
 
 ## isolation cut done by a special module for including PU-corrections
 ## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation
@@ -29,12 +24,4 @@ selectedMuonCandFilter = cms.EDFilter("CandViewCountFilter",
    minNumber = cms.uint32(0)
  )
 
-selectedMuonLooseCandFilter = cms.EDFilter("CandViewCountFilter",
-   src = cms.InputTag('muonPreselLoose'),
-   minNumber = cms.uint32(0)
-#   maxNumber = cms.uint32(1)
- )
-
-selectedMuonSequence = cms.Sequence(muonPreselNoIso + selectedMuonCandFilter 
-                                       +  muonPreselLoose + selectedMuonLooseCandFilter   )
-
+selectedMuonSequence = cms.Sequence(muonPreselNoIso+selectedMuonCandFilter)
