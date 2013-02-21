@@ -49,6 +49,13 @@ process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:58698
 # Output  #
 ###########
 process.load('ExoDiBosonResonances.EDBRCommon.outputModules_cff')
+#adjust name of full path for XWW analysis
+if options.selection == "full":
+     process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring() )
+     if options.lepton == "both" or options.lepton == "ele":
+          process.out.SelectEvents.SelectEvents.append("cmgEDBRWWEle")
+     if options.lepton == "both" or options.lepton == "mu":
+          process.out.SelectEvents.SelectEvents.append("cmgEDBRWWMu")
 process.outpath = cms.EndPath(process.out)
 
 ###################

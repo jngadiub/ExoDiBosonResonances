@@ -6,7 +6,7 @@ SAMPLE_Run2012ELE=( DoublePhotonHighPt_Run2012B_13Jul2012  DoublePhotonHighPt_Ru
 
 SAMPLE_MC1=( TTBAR DYJetsPt50To70 DYJetsPt70To100 DYJetsPt100 WW WZ ZZ) # MC Background
 SAMPLE_MC2=( BulkG_ZZ_lljj_c0p2_M1000 BulkG_ZZ_lljj_c0p2_M600 BulkG_ZZ_lljj_c1p0_M1000 BulkG_ZZ_lljj_c1p0_M1500 BulkG_ZZ_lljj_c1p0_M600 RSG_ZZ_lljj_c0p05_M1000 RSG_ZZ_lljj_c0p2_M1000 RSG_ZZ_lljj_c0p2_M1500) #MC signal: JHUGrav300 
-OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1b"
+OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1"
 
 OUTPATHDATA=${OUTPATHBASE}/Run2012/presel/
 OUTPATHMC=${OUTPATHBASE}/Summer12/presel/
@@ -48,7 +48,7 @@ for sample in "${SAMPLE_MC2[@]}"
   NFILES=2
  # cmsMkdir  $OUTDIR
 
-   ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py  $NFILES  EDBR_main_cfg.py  -o ${LOGDIR}/${sample} -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=summer12_${sample}_cff lepton=both selection=full mcordata=MC"
+   ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py  $NFILES  EDBR_main_cfg.py  -o ${LOGDIR}/${sample} -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=summer12_${sample}_cff lepton=both selection=presel mcordata=MC"
    let sub_ind=$sub_ind +1
 done
 
