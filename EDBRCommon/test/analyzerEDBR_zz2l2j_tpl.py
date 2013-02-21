@@ -26,7 +26,7 @@ from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
 process.ANEDBR = AnalyzerXZZ.clone(
     debug=cms.bool(False),
     outFileName=cms.string("treeEDBR_<SAMPLE>.root"),
-	VType=cms.string("Z"),
+	VType=cms.string("W"),
     Ngen=cms.uint32(1),
     xsec=cms.double(1.0) ###in pb
     )
@@ -201,7 +201,7 @@ print '---> Ngen=',process.ANEDBR.Ngen,'  Xsect=',process.ANEDBR.xsec
 
 process.filterFinalSelPath = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
-                                       HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
+                                       HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu"),
                                        eventSetupPathsKey = cms.string(''),
                                        andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
                                        throw = cms.bool(True)    # throw exception on unknown path names

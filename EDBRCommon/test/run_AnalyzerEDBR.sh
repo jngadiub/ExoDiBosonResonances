@@ -1,6 +1,6 @@
 #! /bin/bash
 
-MYWORKAREA=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/CMGTools/CMSSW_5_3_3_patch3/src/
+MYWORKAREA=$CMSSW_BASE/src/
 cd $MYWORKAREA
 eval `scram runtime -sh`
 cd /tmp/${USER}/
@@ -19,16 +19,18 @@ echo
 echo "My working area is $MYWORKAREA"
 echo
 
+
 CFGAREA=${MYWORKAREA}/ExoDiBosonResonances/EDBRCommon/test/tmp_cfg/
 mkdir -p $CFGAREA
 
-OUTDIR=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1/preselCA8/
+type="full" #### could be full or presel, denpends on analyzerEDBR_zz2l2j_tpl.py
+OUTDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv4/test/$type/
 mkdir -p $OUTDIR/logs
 
 # ok, now do the job:
-sed -e "s/<SAMPLE>/${TAG}/g" < ${MYWORKAREA}/ExoDiBosonResonances/EDBRCommon/test/analyzerEDBR_zz2l2j_tpl.py >  ${CFGAREA}/analyzerEDBR_zz2l2j_${TAG}_cfg.py
+sed -e "s/<SAMPLE>/${TAG}/g" < ${MYWORKAREA}/ExoDiBosonResonances/EDBRCommon/test/analyzerEDBR_zz2l2j_tpl.py >  ${CFGAREA}/analyzerEDBR_zz2l2j_${type}_${TAG}_cfg.py
 
-cmsRun  ${CFGAREA}/analyzerEDBR_zz2l2j_${TAG}_cfg.py &> "log_AnalyzerPresel_${TAG}.out"
+cmsRun  ${CFGAREA}/analyzerEDBR_zz2l2j_${type}_${TAG}_cfg.py &> "log_AnalyzerPresel_${type}_${TAG}.out"
 
 echo
 echo
