@@ -26,7 +26,7 @@ from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
 process.ANEDBR = AnalyzerXZZ.clone(
     debug=cms.bool(False),
     outFileName=cms.string("treeEDBR_<SAMPLE>.root"),
-	VType=cms.string("W"),
+	VType=cms.string("Z"),
     Ngen=cms.uint32(1),
     xsec=cms.double(1.0) ###in pb
     )
@@ -56,15 +56,15 @@ if "TTBAR" in "<SAMPLE>" :
     process.ANEDBR.xsec=cms.double(225.197)
 elif "DYJetsPt50To70" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(4823000)
-    process.ANEDBR.xsec=cms.double(89.0)
+    process.ANEDBR.xsec=cms.double(105.7)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "DYJetsPt70To100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(4000000)
-    process.ANEDBR.xsec=cms.double(53.0)
+    process.ANEDBR.xsec=cms.double(62.9)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "DYJetsPt100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(2500000)
-    process.ANEDBR.xsec=cms.double(32.9)
+    process.ANEDBR.xsec=cms.double(39.1)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "WW" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(3870000)
@@ -78,15 +78,15 @@ elif "ZZ" in "<SAMPLE>" :
     process.ANEDBR.FillGenLevelCode=cms.uint32(3)
 elif "WJetsPt50To70" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(24950166)
-    process.ANEDBR.xsec=cms.double(811.2)
+    process.ANEDBR.xsec=cms.double(1001.0)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "WJetsPt70To100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(20916010)
-    process.ANEDBR.xsec=cms.double(428.9)
+    process.ANEDBR.xsec=cms.double(529.3)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "WJetsPt100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(12106534)
-    process.ANEDBR.xsec=cms.double(228.9)
+    process.ANEDBR.xsec=cms.double(282.5)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 ### MC signal
 #zz
@@ -201,7 +201,7 @@ print '---> Ngen=',process.ANEDBR.Ngen,'  Xsect=',process.ANEDBR.xsec
 
 process.filterFinalSelPath = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
-                                       HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu"),
+                                       HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
                                        eventSetupPathsKey = cms.string(''),
                                        andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
                                        throw = cms.bool(True)    # throw exception on unknown path names
