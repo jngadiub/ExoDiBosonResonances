@@ -11,7 +11,7 @@
 // to be part of the class... possibly if I change
 // them to be std::vectors, eventually?
 
-const std::string vars[83] = 
+const std::string vars[86] = 
   {"nCands", "cosThetaStar", "cosTheta1", "cosTheta2", "phi", "phiStar1", "ptlep1",
    "ptlep2", "ptjet1", "ptjet2", "ptZll", "ptZjj", "yZll", "yZjj",
    "phiZll", "phiZjj", "etalep1", "etalep2", "etajet1", "etajet2", "philep1",
@@ -23,24 +23,24 @@ const std::string vars[83] =
    "isoele1calo", "isoele2calo", "isoele1trk", "isoele2trk", "LD", "q1fl", "q2fl", "MCmatch", "nVtx",
    "nJets", "nPU", "HLTweight", "PUweight", "PUweight2012A", "PUweight2012B", "LumiWeight",
    "GenWeight", "weight", "weight2012A", "weight2012B", "event", "run", "ls",
-   "nVL","VBFTag","VBFmJJ","VBFdeltaEta"};
+   "nVL","VBFTag","VBFmJJ","VBFdeltaEta","nLooseEle","nLooseMu","mt"};
 
-const int nBins[83] = 
-  {13,  100, 100, 100, 100, 100, 100,
+const int nBins[86] = 
+  {30,  100, 100, 100, 100, 100, 100,
    100, 100, 100, 92,  100, 28,  28,
    100, 100, 26,  26,  26,  26,  100,
    100, 100, 100, 100, 100, 50,  50,
-   35,  35,  50,  80,  75,  20,  20,
+   35,  35,  50,  80,  75,  100, 20,
    100, 100, 100, 100, 100, 100, 100,
    100, 100, 100, 100, 3,   22,  100,
    40,  100, 100, 100, 100, 100, 100,
    100, 100, 100, 100, 100, 4,   4,   100, 43,
    10,  2,   100, 100, 100, 100, 100,
    100, 100, 100, 100, 100, 100, 100,
-   10,  2,   100, 100};
+   10,  2,   100, 100, 10,  10,  80};
 
-const double minBin[83] = 
-  {0.5,   -1.15,  -1.15,  -1.15,  -3.7,   -3.7,    0.0,
+const double minBin[86] = 
+  {0.0,   -1.15,  -1.15,  -1.15,  -3.7,   -3.7,    0.0,
    0.0,    0.0,    0.0,    80.0,   0.0,   -2.8,   -2.8,
   -3.7,   -3.7,   -2.6,   -2.6,   -2.6,   -2.6,   -3.7,
   -3.7,   -3.7,   -3.7,    0.0,    0.0,    0.0,    0.0,
@@ -51,21 +51,21 @@ const double minBin[83] =
    0.0,    0.0,    0.0,    0.0,   -101.,  -101.,  -101., -1.2, -0.5,
    0.5,    0.,     0.99,   0.,     0.,     0.,     0.,
    0.,     0.,     0.,     0.,     0.,     190000, 0,
-   0.,     0.,     0.,     0.};
+   0.,     0.,     0.,     0.,     0.,     0.,     0.};
 
-const double maxBin[83] = 
-  {13.5,   1.15,  1.15, 1.15,   3.7,     3.7,   500.0,
+const double maxBin[86] = 
+  {30.0,  1.15,  1.15, 1.15,   3.7,     3.7,   500.0,
    500.0, 500.0, 500.0, 1000.0, 1000.0,  2.8,   2.8,
    3.7,   3.7,   2.6,   2.6,    2.6,     2.6,   3.7,
    3.7,   3.7,   3.7,   1.0,    1.0,     2000,  2000,
-   350.0, 350.0, 110.0, 140.0,  190.0,   100.0, 10.0,
+   350.0, 350.0, 110.0, 140.0,  190.0,   500.0, 10.0,
    0.,    4.0,   4.0,   4.0,    -97.8,   -97.8, -97.8 ,
    1.1,   1.2,   1000., 1000.,  3.,      105.,  100.,
    1.,    100.,  100.,  100.,   100.,    0.20,  0.20,
    1.0,   1.0,   10.0,  10.0,   -97.,    -97.,  -97., 1.2, 42.5,
    10.5,  1.0,   10.0,  10.0,   10.,      10.,  0.1,
    10,    10,    10,    10,     1.0E9,   210000,10000,
-   10,    2.0,   1000., 10.0};
+   10,    2.0,   1000., 10.0,   10.0,    10.0,  130.0};
 
 /// EDBRHistoMaker is the class that analyzes the flat
 /// TTree that comes out from the NTuple dumper module.
@@ -117,7 +117,7 @@ class EDBRHistoMaker {
 		Double_t        philep2[99];   //[nCands]
 		Double_t        phijet1[99];   //[nCands]
 		Double_t        phijet2[99];   //[nCands]
-		Double_t        lep;
+		Double_t        lep[99];       //[nCands]
 		Double_t        region[99];   //[nCands]
 		Int_t           nXjets[99];   //[nCands]
 		Double_t        mZZ[99];   //[nCands]
@@ -197,6 +197,7 @@ class EDBRHistoMaker {
 		Double_t        phiGenVqq;
 		Int_t           nLooseMu;
 		Int_t           nLooseEle;
+		Double_t        mt[99];      //[nCands]
 
 		// List of branches
 		TBranch        *b_nCands;   //!
@@ -306,6 +307,7 @@ class EDBRHistoMaker {
 		TBranch        *b_phiGenVqq;   //!
 		TBranch        *b_nLooseMu;   //!
 		TBranch        *b_nLooseEle;   //!
+		TBranch        *b_mt;   //!
 
 		// Basic functions directly from MakeClass
 		Int_t    GetEntry(Long64_t entry);
@@ -325,13 +327,14 @@ class EDBRHistoMaker {
 		void setWantNXJets(int nxj=1){wantNXJets_=nxj;}
 		void setUnitaryWeights(bool setuniw=false){setUnitaryWeights_=setuniw;}
 
-		bool eventPassesFlavorCut();
+		bool eventPassesFlavorCut(int i);
 		bool eventPassesLeptonicZPtCut(int i, double ptZll_threshold);
+		bool eventPassesLep1PtCut(int i, double ptlep1_threshold);
 		bool eventInSidebandRegion(int i);
 		bool eventInSignalRegion(int i);
 		bool eventPassesRegionCut(int i);
 		bool eventPassesNXJetCut(int i);  
-		bool eventPassesCut(int i, double ptZll_threshold);
+		bool eventPassesCut(int i, double ptZll_threshold, double ptlep1_threshold );
 		bool eventPassesVBFCut(int i);
 
 		int check ( double pt, vector<double> * ptZ  )
@@ -339,9 +342,9 @@ class EDBRHistoMaker {
 		  int goodw=1;
 		  for(unsigned int i =0; i< ptZ->size(); i++)
 		    {   
-		      printf("Comparing %g and %g\n",pt,ptZ->at(i));
+		      //printf("Comparing %g and %g\n",pt,ptZ->at(i));
 		      if(pt==ptZ->at(i)) { goodw=0; break;}
-		      else {printf("I think they're different\n");}
+		      //else {printf("I think they're different\n");}
 		    }   
 
 		  return goodw;
@@ -408,7 +411,7 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("philep2", philep2, &b_philep2);
 	fChain->SetBranchAddress("phijet1", phijet1, &b_phijet1);
 	fChain->SetBranchAddress("phijet2", phijet2, &b_phijet2);
-	fChain->SetBranchAddress("lep", &lep, &b_lep);
+	fChain->SetBranchAddress("lep", lep, &b_lep);
 	fChain->SetBranchAddress("region", region, &b_region);
 	fChain->SetBranchAddress("nXjets", nXjets, &b_nXjets);
 	fChain->SetBranchAddress("mZZ", mZZ, &b_mZZ);
@@ -488,6 +491,7 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("phiGenVqq", &phiGenVqq, &b_phiGenVqq);
 	fChain->SetBranchAddress("nLooseMu", &nLooseMu, &b_nLooseMu);
 	fChain->SetBranchAddress("nLooseEle", &nLooseEle, &b_nLooseEle);
+	fChain->SetBranchAddress("mt", mt, &b_mt);
 }
 
 EDBRHistoMaker::EDBRHistoMaker(TTree* tree, 
@@ -497,7 +501,7 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 		bool wantSignal,
 		int wantNXJets){
 	fChain = 0;
-	nVars = 83;
+	nVars = 86;
 
 	// Definition of regions
 	sidebandVHMassLow_  =  0.0;  // GeV
@@ -588,11 +592,22 @@ void EDBRHistoMaker::saveAllHistos(std::string outFileName) {
 // Physics functions
 //------------------
 
-bool EDBRHistoMaker::eventPassesFlavorCut(){
-	bool passesFlavour = ((lep == 0 and wantElectrons_) or
-			(lep == 1 and wantMuons_));
+bool EDBRHistoMaker::eventPassesFlavorCut(int i){
+	bool passesFlavour = ((lep[i] == 0 and wantElectrons_) or
+			(lep[i] == 1 and wantMuons_));
 
 	return passesFlavour;
+}
+
+
+bool EDBRHistoMaker::eventPassesLep1PtCut(int i, double ptlep1_threshold) {
+
+    bool pass = false;
+
+    pass = ( ptlep1 [i] > ptlep1_threshold);
+
+    return pass;
+
 }
 
 bool EDBRHistoMaker::eventPassesLeptonicZPtCut(int i, double ptZll_threshold){
@@ -652,17 +667,19 @@ bool EDBRHistoMaker::eventPassesVBFCut(int i){
 
 
 
-bool EDBRHistoMaker::eventPassesCut(int i, double ptZll_threshold) {
+bool EDBRHistoMaker::eventPassesCut(int i, double ptZll_threshold, double ptlep1_threshold ) {
 
-	bool passesFlavour = eventPassesFlavorCut();
+	bool passesFlavour = eventPassesFlavorCut(i);
 	bool passesRegion  = eventPassesRegionCut(i);
 	bool passesNXJet   = eventPassesNXJetCut(i);
 	bool passesLeptonicZPt = eventPassesLeptonicZPtCut(i, ptZll_threshold);
+	bool passesLep1Pt  = eventPassesLep1PtCut(i, ptlep1_threshold);
 	bool passesVBF     = eventPassesVBFCut(i);
 	bool result = 
 		passesFlavour and
 		passesRegion and
 		passesNXJet and 
+		passesLep1Pt and
 		passesLeptonicZPt;
 
 	return result;
@@ -706,29 +723,44 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 		// cut (Sideband / SignalRegion, Muon / Electron, 
 		// Single / Double jet ...) 
 
-		/*vector<double> ptZ;
-		printf("nCands == %i\n",nCands);
+		vector<double> ptZ;
+		//printf("nCands == %i\n",nCands);
 		for (int iptz=0;iptz<nCands;iptz++)
-		  {   
-		    printf("Okay, going to call check()\n");
+		{   
+		    //printf("Okay, going to call check()\n");
 		    if(check(ptZll[iptz],&ptZ)==1){
 		      ptZ.push_back(ptZll[iptz]);
 		    }   
-		  }
-		*/
-		int wnum = 0;
-
-		(theHistograms["nVL"])->Fill(wnum,actualWeight);
-		(theHistograms["nCands"])->Fill(nCands,actualWeight);
-		(theHistograms["PUweight"])->Fill(PUweight);
-		(theHistograms["LumiWeight"])->Fill(LumiWeight);
-		(theHistograms["GenWeight"])->Fill(GenWeight);
+		 }
 		
+		int wnum = ptZ.size();;
+	
+		bool filled = 0;
+	
 		for(int ivec=0;ivec<nCands;ivec++){
 
-			if(eventPassesCut(ivec, 80)){
-              	                (theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-                                (theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+			if(eventPassesCut(ivec, 80, 50)){
+
+			if((nLooseEle+nLooseMu==1)&&met>40);//global selection
+        	else continue;	
+
+                if(filled==0)
+                {   
+                    (theHistograms["nVL"])->Fill(wnum,actualWeight);
+                    (theHistograms["nCands"])->Fill(nCands,actualWeight);
+
+                    (theHistograms["PUweight"])->Fill(PUweight);
+                    (theHistograms["LumiWeight"])->Fill(LumiWeight);
+                    (theHistograms["GenWeight"])->Fill(GenWeight);
+
+                    (theHistograms["nLooseEle"])->Fill(nLooseEle,actualWeight);
+                    (theHistograms["nLooseMu"])->Fill(nLooseMu,actualWeight);
+
+                    filled =1; 
+                } 
+
+              	(theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+                (theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["ptjet1"])->Fill(ptjet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["ptjet2"])->Fill(ptjet2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["ptZll"])->Fill(ptZll[ivec],actualWeight);//printf("line number %i\n",__LINE__);
@@ -765,6 +797,8 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["VBFTag"])->Fill(VBFTag[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["VBFmJJ"])->Fill(VBFmJJ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["VBFdeltaEta"])->Fill(VBFdeltaEta[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mt"])->Fill(mt[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["lep"])->Fill(lep[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 		// (theHistograms[""])->Fill([ivec],actualWeight);
 
 			}//end if eventPassesCut
