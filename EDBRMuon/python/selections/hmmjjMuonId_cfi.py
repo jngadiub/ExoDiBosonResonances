@@ -46,7 +46,7 @@ HPTmuonGlobalId2012 = cms.PSet(
     dz = cms.string('abs(dz()) < 0.5')
     )
 
-
+'''
 HPTmuonLooseId = cms.PSet( ###### now it is HPTmuonGlobalId2012 + isolation
     isGlobal = cms.string('isGlobalMuon()'),
     #Updated for 2012 with new cut from the Muon POG
@@ -62,9 +62,20 @@ HPTmuonLooseId = cms.PSet( ###### now it is HPTmuonGlobalId2012 + isolation
     ##isolation
 	isIsolated=cms.string('sourcePtr().trackIso()/pt() < 0.1')
 )
+'''
 
-
-
+HPTmuonLooseId = cms.PSet(  ###### now it is HPTmuonTKId2012
+    isTracker = cms.string('isTrackerMuon()'),
+    #Updated for 2012 with new cut from the Muon POG
+    #numberOfValidTrackerHits = cms.string('numberOfValidTrackerHits() > 10'),
+    trackerLayersWithMeasurement = cms.string('trackerLayersWithMeasurement() > 8'),
+    numberOfValidPixelHits = cms.string('numberOfValidPixelHits() > 0'),
+    numberOfMatches = cms.string('numberOfMatchedStations() > 1'),
+ #   normalizedChi2 = cms.string('normalizedChi2() < 10'),
+ #   dxy = cms.string('abs(dB(pat::Muon::PV3D)) < 0.2'),
+    dxy = cms.string('abs(dxy()) < 0.2'),
+    dz = cms.string('abs(dz()) < 0.5')
+    )
 
 
 
