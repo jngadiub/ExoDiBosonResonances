@@ -2,11 +2,11 @@
 
 
 SAMPLE_Run2012MU=( DoubleMu_Run2012A_13Jul2012 DoubleMu_Run2012A_recover DoubleMu_Run2012B_13Jul2012 DoubleMu_Run2012C_24Aug2012 DoubleMu_Run2012C_PRv2 DoubleMu_Run2012D_PRv1) 
-#SAMPLE_Run2012ELE=( DoublePhotonHighPt_Run2012B_13Jul2012  DoublePhotonHighPt_Run2012C_24Aug2012 DoublePhotonHighPt_Run2012C_PRv2 DoublePhotonHighPt_Run2012D_PRv1 Photon_Run2012A_13Jul2012 Photon_Run2012A_recover)
+SAMPLE_Run2012ELE=( DoublePhotonHighPt_Run2012B_13Jul2012  DoublePhotonHighPt_Run2012C_24Aug2012 DoublePhotonHighPt_Run2012C_PRv2 DoublePhotonHighPt_Run2012D_PRv1 Photon_Run2012A_13Jul2012 Photon_Run2012A_recover)
 
-SAMPLE_MC1=( DYJetsPt50To70 DYJetsPt70To100 TTBAR DYJetsPt50To70 DYJetsPt70To100 DYJetsPt100 WW WZ ZZ) # MC Background
-#SAMPLE_MC2=( ) #MC signal: JHUGrav300 
-OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/tomeiTEST"
+SAMPLE_MC1=( TTBAR DYJetsPt50To70 DYJetsPt70To100 DYJetsPt100 WW WZ ZZ) # MC Background
+SAMPLE_MC2=( BulkG_ZZ_lljj_c0p2_M1000 BulkG_ZZ_lljj_c0p2_M600 BulkG_ZZ_lljj_c1p0_M1000 BulkG_ZZ_lljj_c1p0_M1500 BulkG_ZZ_lljj_c1p0_M600 RSG_ZZ_lljj_c0p05_M1000 RSG_ZZ_lljj_c0p2_M1000 RSG_ZZ_lljj_c0p2_M1500) #MC signal: JHUGrav300 
+OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1b"
 
 OUTPATHDATA=${OUTPATHBASE}/Run2012/presel/
 OUTPATHMC=${OUTPATHBASE}/Summer12/presel/
@@ -20,8 +20,8 @@ cd $MYCMSSW_AREA
 eval `scram runtime -sh`
 cd -
 
+### MC BACKGROUND 
 sub_ind=0
-
 for sample in "${SAMPLE_MC1[@]}"
   do
 
@@ -31,27 +31,30 @@ for sample in "${SAMPLE_MC1[@]}"
 #  cmsMkdir  $OUTDIR
   QUEUE="8nh"
 
-#for MC
+#for MC 
    ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py $NFILES EDBR_main_cfg.py  --notagCVS -o ${LOGDIR}/${sample} -r ${OUTDIR} -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=summer12_${sample}_cff lepton=both selection=presel mcordata=MC"
 
    let sub_ind=$sub_ind +1
 
 done
 
+#### MC - SIGNAL 
 sub_ind=0
 for sample in "${SAMPLE_MC2[@]}"
   do
   LOGDIR=logs/Summer12/
   OUTDIR=${OUTPATHMC}/${sample}
   QUEUE="8nh"
+  NFILES=2
  # cmsMkdir  $OUTDIR
 
-
-#for MC
-   ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py 2  EDBR_main_cfg.py  -o ${LOGDIR}/${sample} -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=summer11_${sample}_cff lepton=both selection=full mcordata=MC"
+   ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py  $NFILES  EDBR_main_cfg.py  -o ${LOGDIR}/${sample} -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=summer12_${sample}_cff lepton=both selection=full mcordata=MC"
    let sub_ind=$sub_ind +1
 done
 
+
+
+#### DATA (ele)
 sub_ind=0
 for sample in "${SAMPLE_Run2012ELE[@]}"
   do
@@ -79,13 +82,13 @@ for sample in "${SAMPLE_Run2012ELE[@]}"
       exit 1
   fi
 
-#for data
-#  echo $JSONFILE
    ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py $NFILES EDBR_main_cfg.py   -o ${LOGDIR}/${sample} -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=data12_${sample}_cff lepton=both selection=presel mcordata=DATAELE json=${JSONFILE}"
 
    let sub_ind=$sub_ind +1
 done
 
+
+#### DATA (mu)
 sub_ind=0
 for sample in "${SAMPLE_Run2012MU[@]}"
   do
@@ -114,8 +117,6 @@ for sample in "${SAMPLE_Run2012MU[@]}"
       exit 1
   fi
 
-#for MC
-#  /afs/cern.ch/user/b/bonato/scratch0/PhysAnalysis/CMGTools/CMSSW_4_2_3/src/CMGTools/Common/scripts/cmsBatch2L2Q_MM2.py 15 HLLJJTemplateBoth_cff.py -o logs/${sample} -r ${OUTDIR} -b "bsub -q 1nd -J "cmg${sample}" < batchScript.sh" -c "infile=summer11_${sample}_cff lepton=both selection=full mcordata=MC"
 
 #for data
 ###  echo $JSONFILE
