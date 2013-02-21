@@ -739,10 +739,10 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 	
 		for(int ivec=0;ivec<nCands;ivec++){
 
-			if(eventPassesCut(ivec, 80, 50)){
+			if(eventPassesCut(ivec, 80, 20)){
 
-			if((nLooseEle+nLooseMu==1)&&met>40);//global selection
-        	else continue;	
+			//if((nLooseEle+nLooseMu==1)&&met>40);//global selection
+        	//else continue;	
 
                 if(filled==0)
                 {   
