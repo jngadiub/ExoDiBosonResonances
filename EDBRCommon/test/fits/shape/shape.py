@@ -35,8 +35,9 @@ def deduceBosonType(filepath):
 
 # make the PDF, currently uses one functional form for all channels, may need extension  
 def ConstructPdf(workspace):
-    
-    MatchedFuncBase   = root.RooVoigtian("MatchedFunc","MatchedFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("width_match"))
+    #MatchedFuncBase   = root.RooVoigtianShape("MatchedFunc","MatchedFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("alpha_match"),workspace.var("n_match"),workspace.var("width_match"),True)
+    MatchedFuncBase   = root.RooDoubleCB("MatchedFunc","MatchedFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("alpha1_match"),workspace.var("n1_match"),workspace.var("alpha2_match"),workspace.var("n2_match")) 
+    #MatchedFuncBase   = root.RooVoigtian("MatchedFunc","MatchedFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("width_match"))
     #MatchedFuncBase   = root.RooCBShape("MatchedFunc","MatchedFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("alpha_match"),workspace.var("n_match") )
     totalnorm = root.RooRealVar("totalnorm","totalnorm",100,0,100000)
     matchnorm = root.RooProduct("matchnorm","matchnorm",root.RooArgSet(totalnorm,workspace.var("machfrac")))
@@ -61,8 +62,10 @@ def defineVars(descriptor,njets,workspace,plotonly):
     mean_match = root.RooRealVar("mean_match","mean_match",0)
     sigma_match = root.RooRealVar("sigma_match","sigma_match",0)
     width_match = root.RooRealVar("width_match","width_match",0)
-    #alpha_match = root.RooRealVar("alpha_match","alpha_match",0)
-    #n_match = root.RooRealVar("n_match","n_match",0)
+    alpha1_match = root.RooRealVar("alpha1_match","alpha1_match",0)
+    n1_match = root.RooRealVar("n1_match","n1_match",0)
+    alpha2_match = root.RooRealVar("alpha2_match","alpha2_match",0)
+    n2_match = root.RooRealVar("n2_match","n2_match",0)
     
     # unmatched parameters
     mean_unmatch = root.RooRealVar("mean_unmatch","mean_unmatch",0)
@@ -75,8 +78,10 @@ def defineVars(descriptor,njets,workspace,plotonly):
 
     fitpars   = root.RooArgSet(mean_match,sigma_match,width_match,mean_unmatch,sigma_unmatch,alpha_unmatch,n_unmatch,machfrac)
     
-    #fitpars.add(alpha_match)
-    #fitpars.add(n_match)
+    fitpars.add(alpha1_match)
+    fitpars.add(n1_match)
+    fitpars.add(alpha2_match)
+    fitpars.add(n2_match)
 
      
     getattr(workspace,'import')(mzz)
@@ -218,6 +223,7 @@ def main():
     args = parser.parse_args()
     
     root.gROOT.SetBatch(True)
+    root.gSystem.Load('libHiggsAnalysisCombinedLimit')
 
     print args
 
