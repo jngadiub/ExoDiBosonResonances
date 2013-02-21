@@ -175,6 +175,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 			   edbr->leg1().leg1().eta(),
 			   edbr->leg1().leg2().phi(),
 			   edbr->leg1().leg2().eta());
+
+   mt[ih] = sqrt( 2*edbr->leg1().leg1().pt()*edbr->leg1().leg2().pt()*( 1-cos(edbr->leg1().leg1().phi()-edbr->leg1().leg2().phi()) ) );
    
   
 
@@ -388,7 +390,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     //
     if(debug_)cout<<"Inside AnalyzerEDBR::analyzeMuon"<<endl;
 
-
+	lep[ih]=1;
 
     //dummy for muons 
     eleMVAId1[ih] = -1.0;
@@ -403,7 +405,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     bool highptLep1=true;
     if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
 	if(VType_=="W")highptLep1=true;//for ww case, we don't compare pt of lepton and neutrino
-    
+	lep[ih]=0;    
     
     if(highptLep1){
       eleMVAId1[ih] = edbr->leg1().leg1().mvaTrigV0(); 
@@ -505,7 +507,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double phiZll[nMaxCand];//={init};
   double phiZjj[nMaxCand];//={init};
   double met, metSign;            // MET and its significance
-  double btag[nMaxCand], lep, reg[nMaxCand];    // b-tags, lep category, region (sig, sideband)
+  double btag[nMaxCand], lep[nMaxCand], reg[nMaxCand];    // b-tags, lep category, region (sig, sideband)
   double qgjet1[nMaxCand], qgjet2[nMaxCand], qgProduct[nMaxCand];    // QG likelihoods
   double betajet1[nMaxCand],betajet2[nMaxCand],puMvajet1[nMaxCand],puMvajet2[nMaxCand];//jet ID 
   double isolep1[nMaxCand], isolep2[nMaxCand], eleMVAId1[nMaxCand], eleMVAId2[nMaxCand];//lepton ID 
@@ -539,6 +541,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   //flag of the number of loose muons/electrons in one event
   int nLooseMu;
   int nLooseEle;
+
+  //transvers mass of w
+  double mt[nMaxCand];
 
 };//end class AnalyzerEDBR 
 

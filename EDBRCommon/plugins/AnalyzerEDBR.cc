@@ -74,14 +74,14 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
 	//use these for X->ZZ analysis
-	
+		
 	typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
 	typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
 	typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
 	typedef  cmg::DiMuonDiJetEDBR     cmgMuDiJetEDBR  ;
 	
 	//use these for X->WW analysis
-	/*
+	/*	
 	typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
 	typedef  cmg::WmunuSingleJetEDBR     cmgMuSingleJetEDBR  ; 
 	typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
@@ -142,7 +142,6 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
 	if(muPath_){
 
-		lep=1; 
 
 		if(singleJetPath_){
 
@@ -232,7 +231,6 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	//  if(cat_=="eejj"){
 	if(elePath_){
 
-		lep=0; 
 
 		if(singleJetPath_){
 			edm::Handle<edm::View< cmgEleSingleJetEDBR > > finalEDBRcand;
@@ -346,7 +344,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
 
 	bool passCuts=true;
-	bool storeEvt=goodKinFit && (muPath_ || elePath_) && lep<2 && passCuts;
+	bool storeEvt=goodKinFit && (muPath_ || elePath_)  && passCuts;
 	//  if(debug_&& singleJetEvent&&doubleJetEvent)cout<<" Run "<<run<<"  Event "<<nevent<<"\tThis muon-event has both single and double jet topology."<<endl;
 	if( singleJetEvent&&doubleJetEvent &&debug_)cout<<" Run "<<run<<"  Event "<<nevent<<"\tThis muon-event has both single and double jet topology."<<endl;
 	if(storeEvt){
@@ -403,7 +401,8 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("philep2"         ,&philep2       ,"philep2[nCands]/D"      );
 	outTree_->Branch("phijet1"         ,&phijet1       ,"phijet1[nCands]/D"      );
 	outTree_->Branch("phijet2"         ,&phijet2       ,"phijet2[nCands]/D"      );
-	outTree_->Branch("lep"             ,&lep           ,"lep/D"                  );
+	outTree_->Branch("lep"             ,&lep           ,"lep[nCands]/D"          );
+	outTree_->Branch("mt"              ,&mt            ,"mt[nCands]/D"           );
 	outTree_->Branch("region"          ,&reg           ,"region[nCands]/D"       );
 	outTree_->Branch("nXjets"          ,&nXjets        ,"nXjets[nCands]/I"    ); 
 	outTree_->Branch("mZZ"             ,&mzz           ,"mZZ[nCands]/D"          );
@@ -503,7 +502,6 @@ void AnalyzerEDBR::initTree(){
 
 void AnalyzerEDBR::initDataMembers(){
 
-	lep   = -99;
 	lumiw  =   1.0;
 	PU    =   1.0;
 	PUA   =   1.0;
@@ -530,7 +528,7 @@ void AnalyzerEDBR::initDataMembers(){
 		ptZll[i]=-99.; ptZjj[i]=-99.; yZll[i]=-99.; yZjj[i]=-99.; deltaRleplep[i]=-99.; deltaRjetjet[i]=-99.;
 		phiZll[i]=-99.;
 		phiZjj[i]=-99.;
-		btag[i]=-99.; lep=-99.; reg[i]=-99.;  
+		btag[i]=-99.; lep[i]=-99.; reg[i]=-99.;  
 		qgjet1[i]=-99.; qgjet2[i]=-99.; qgProduct[i]=-99.;   
 		betajet1[i]=-99.;betajet2[i]=-99.;puMvajet1[i]=-99.;puMvajet2[i]=-99.;
 		isolep1[i]=-99.; isolep2[i]=-99.; eleMVAId1[i]=-99.; eleMVAId2[i]=-99.;
@@ -539,7 +537,7 @@ void AnalyzerEDBR::initDataMembers(){
 		mdrop[i]=-99.;prunedmass[i]=-99.;
 		VBFTag[i]=-999;
 		VBFmJJ[i]=-999.0; VBFdeltaEta[i]=-999.0; VBFptjet1[i]=-999.0; VBFptjet2[i]=-999.0; VBFetajet1[i]=-999.0; VBFetajet2[i]=-999.0; VBFphijet1[i]=-999.0; VBFphijet2[i]=-999.0;
-
+		mt[i]=-99.;
 	}
 
 
@@ -601,16 +599,14 @@ void AnalyzerEDBR::analyzeTrigger(edm::Event const& iEvent, edm::EventSetup cons
 	if(muPath_ || elePath_) anyPath_=true;
 
 
-
-
 	//number of loose muons/electrons
-	//edm::Handle<std::vector<cmg::Electron> > EleHandle;
-	//iEvent.getByLabel("electronPreselLoose",EleHandle);
-	//nLooseEle = EleHandle -> size();	
+	edm::Handle<std::vector<cmg::Electron> > EleHandle;
+	iEvent.getByLabel("electronPreselLoose",EleHandle);
+	nLooseEle = EleHandle -> size();	
 
-	//edm::Handle<std::vector<cmg::Muon> > MuHandle;
-	//iEvent.getByLabel("muonPreselLoose",MuHandle);	
-	//nLooseMu = MuHandle->size();
+	edm::Handle<std::vector<cmg::Muon> > MuHandle;
+	iEvent.getByLabel("muonPreselLoose",MuHandle);	
+	nLooseMu = MuHandle->size();
 
 }//end  AnalyzeEDBR::analyzeTrigger()
 
