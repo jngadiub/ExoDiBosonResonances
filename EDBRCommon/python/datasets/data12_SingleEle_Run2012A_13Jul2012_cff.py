@@ -7,7 +7,7 @@ source = cms.Source("PoolSource",
                                                 fileNames = readFiles
                                                 )
 readFiles.extend([
-     '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/qili/EDBR_PATtuple_20130130_SingleEle_20130130_164321/qili/SingleElectron/EDBR_PATtuple_edbr_SingleEle/2ad8dbf1b6d01aad76d411d865470793/SingleElectron__Run2012A-13Jul2012-v1__AOD_100_1_IWn.root',
+       '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/qili/EDBR_PATtuple_20130130_SingleEle_20130130_164321/qili/SingleElectron/EDBR_PATtuple_edbr_SingleEle/2ad8dbf1b6d01aad76d411d865470793/SingleElectron__Run2012A-13Jul2012-v1__AOD_100_1_IWn.root',
        '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/qili/EDBR_PATtuple_20130130_SingleEle_20130130_164321/qili/SingleElectron/EDBR_PATtuple_edbr_SingleEle/2ad8dbf1b6d01aad76d411d865470793/SingleElectron__Run2012A-13Jul2012-v1__AOD_101_1_Kih.root',
        '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/qili/EDBR_PATtuple_20130130_SingleEle_20130130_164321/qili/SingleElectron/EDBR_PATtuple_edbr_SingleEle/2ad8dbf1b6d01aad76d411d865470793/SingleElectron__Run2012A-13Jul2012-v1__AOD_102_2_HfH.root',
        '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/qili/EDBR_PATtuple_20130130_SingleEle_20130130_164321/qili/SingleElectron/EDBR_PATtuple_edbr_SingleEle/2ad8dbf1b6d01aad76d411d865470793/SingleElectron__Run2012A-13Jul2012-v1__AOD_103_1_shk.root',
