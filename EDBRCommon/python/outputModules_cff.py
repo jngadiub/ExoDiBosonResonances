@@ -51,11 +51,11 @@ if options.selection != "none":
 
 if options.selection == "full":
     if options.lepton == "both" or options.lepton == "ele":
-        out.SelectEvents.SelectEvents.append("EDBRZZEE")
-        out.SelectEvents.SelectEvents.append("EDBRZZEESideband")
+        out.SelectEvents.SelectEvents.append("cmgEDBRZZEle")
+#        out.SelectEvents.SelectEvents.append("EDBRZZEESideband")
     if options.lepton == "both" or options.lepton == "mu":
-        out.SelectEvents.SelectEvents.append("EDBRZZMM")
-        out.SelectEvents.SelectEvents.append("EDBRZZMMSideband")
+        out.SelectEvents.SelectEvents.append("cmgEDBRZZMu")
+#        out.SelectEvents.SelectEvents.append("EDBRZZMMSideband")
 if options.selection == "presel":
     if options.lepton == "both" or options.lepton == "ele":
         out.SelectEvents.SelectEvents.append("preselElePath")
