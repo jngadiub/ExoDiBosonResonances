@@ -74,7 +74,7 @@ public:
   
   /// get reasonable colors for stacks.
   int getFillColor(int index){
-    if(index < 7)return EDBRColors[index];
+    if(index < 20)return EDBRColors[index];
     return kWhite;
   }
   
