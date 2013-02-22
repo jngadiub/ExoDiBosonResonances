@@ -745,9 +745,11 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 			if(eventPassesCut(ivec, 80, 20)){
 
-			//if((nLooseEle+nLooseMu==1)&&met>40);//global selection
-        	//else continue;	
-
+			if(isZZchannel_==0)//WW channel, veto second loose lepton
+			{
+				if((nLooseEle+nLooseMu==1)&&met>40);//global selection
+        		else continue;	
+			}
                 if(filled==0)
                 {   
                     (theHistograms["nVL"])->Fill(wnum,actualWeight);
