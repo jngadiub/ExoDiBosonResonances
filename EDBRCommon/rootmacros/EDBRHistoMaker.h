@@ -81,7 +81,8 @@ class EDBRHistoMaker {
 				bool wantMuons=true,
 				bool wantSideband=true, 
 				bool wantSignal=false,
-				int wantNXJets=1);
+				int  wantNXJets=1,
+				bool isZZchannel=1);
 		virtual ~EDBRHistoMaker();
 
 		/// This is the tree structure. This comes directly from MakeClass
@@ -363,6 +364,7 @@ class EDBRHistoMaker {
 		double sidebandVHMassHigh_;
 		double signalVHMassLow_;
 		double signalVHMassHigh_;
+		bool isZZchannel_;
 
 		// The histograms
 		std::map<std::string,TH1D*> theHistograms;
@@ -499,7 +501,8 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 		bool wantMuons,
 		bool wantSideband,
 		bool wantSignal,
-		int wantNXJets){
+		int  wantNXJets,
+		bool isZZchannel){
 	fChain = 0;
 	nVars = 86;
 
@@ -515,6 +518,7 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 	wantSideband_ = wantSideband;
 	wantSignal_ = wantSignal;
 	wantNXJets_ = wantNXJets;
+	isZZchannel_ =isZZchannel;
 
 	debug_ = true;
 	Init(tree);
@@ -804,6 +808,21 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 			}//end if eventPassesCut
 		}//end loop over nCands
 	}//end loop over entries
+
+	if(isZZchannel_==0)//WW channel, change the names, which will be the plot lable
+	{
+		(theHistograms["ptlep1"])->SetName("ptlepton");
+		(theHistograms["ptlep2"])->SetName("ptneutrino");
+		(theHistograms["ptZll"])->SetName("ptWL");
+		(theHistograms["ptZjj"])->SetName("ptWjj");
+		(theHistograms["yZll"])->SetName("yWL");
+		(theHistograms["yZjj"])->SetName("yWjj");
+		(theHistograms["mLL"])->SetName("mWL");
+		(theHistograms["mZZ"])->SetName("mWW");
+		(theHistograms["etalep1"])->SetName("etalep");
+		(theHistograms["etalep2"])->SetName("etaneu");
+	}
+
 	std::cout<<"From makeHisto: the histo with #vtx has "<<(theHistograms["nVtx"])->GetEntries()<<" entries"<<std::endl;
 	this->saveAllHistos(outFileName);
 }
