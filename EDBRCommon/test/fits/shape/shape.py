@@ -120,7 +120,7 @@ def readTree(filename, njet, workspace):
             and event.mZZ[i]> mzz.getMin() and event.mZZ[i]< mzz.getMax() : # select events in signal region with corect jet number
                 mzz.setVal(event.mZZ[i])
                 weight.setVal(event.weight)
-                if njet==2: # mc matching active only for 2-jets right now
+                if njet==2 or njet==1 : # mc matching active only for 2-jets right now
                     if event.MCmatch[i]!=0:
                         match.setIndex(1)
                     else:
