@@ -52,7 +52,7 @@ For example you can switch from a file list to another in this way :
 cmsRun EDBR_main_cfg.py infile="newFileList_cff"
 
 If you want to run on dat instead of MC:
-cmsRun EDBR_main_cfg.py mcordata=DATA
+cmsRun EDBR_main_cfg.py mcordata=DATASE/DATASM/DATAELE/DATAMU
 
 If you want to store only certain products:
 cmsRun EDBR_main_cfg.py content=gen
@@ -95,6 +95,12 @@ format
 
 and then copy the content of list_PATtuples_tmp.txt into the list in ExoDiBosonResonances/EDBRCommon/python/datasets/summer12_<LABEL>_cff.py
 
+There is a script to make such cff files.
+Change the path and sample names in ExoDiBosonResonances/EDBRCommon/python/datasets/makeCffInputFiles_ls.sh,
+and run with
+./makeCffInputFiles_ls.sh
+A new folder with your username will be generated. The cff files will be ready
+in this folder.
 
 2) Specify output contents and output file name in EDBRCommon/python/outputModules_cff.py
 
@@ -116,6 +122,9 @@ and then copy the content of list_PATtuples_tmp.txt into the list in ExoDiBosonR
 4) run it with
   -$> cd ExoDiBosonResonances/EDBRCommon/prod/
   -$> ./run_cmgTuple_prod.sh
+
+  if you want to run on XWW channel, do
+	  ./run_cmgTuple_prod_XWW.sh
 
 5) you can check if some parallel job had problems ending with an exception 
 running the script 
