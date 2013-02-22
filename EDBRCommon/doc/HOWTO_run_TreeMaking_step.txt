@@ -75,8 +75,9 @@ of the collection if you want the events in the signal or the sidebands.
 
 5) The default is for the ZZ analysis. For the WW some hand corrections
 are needed.
-    i) add in the module process.ANEDBR inside EDBRCommon/test/analyzerEDBR_zz2l2j_tpl.py
-       the parameter VType=cms.string("W")
+    i) in EDBRCommon/test/analyzerEDBR_zz2l2j_tpl.py
+       a) change VType=cms.string("W")
+	   b) change HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu")
    ii) go in EDBRCommon/plugins/AnalyzerEDBR.cc and comment the block of lines
 
 //comment these for X->WW analysis
@@ -87,10 +88,11 @@ are needed.
 
 and de-comment the typedefs immediately below.
 
-
+	
 6) open run_AnalyzerEDBR.sh and edit the fields with the paths, 
 in particular $MYWORKAREA, $CFGAREA and $OUTDIR . The output TTrees 
 and the logs will be saved in $OUTDIR
+Change type="full" or "presel" denpending on processFullSel=True or False in analyzerEDBR_zz2l2j_tpl.py 
 
 7) open submit_AnalyzerEDBR.sh and add in the array SampleName
 all the samples that you want to process. It is important that the
@@ -99,6 +101,9 @@ analyzerEDBR_zz2l2j_tpl.py and the cmgTuple list in ExoDiBosonResonances/EDBRCom
 
 8) just execute:
 ./submit_AnalyzerEDBR.sh
+
+If you want to run XWW analysis, do
+./submit_AnalyzerEDBR_xww.sh
 
 the jobs will be submitted to the LXBatch system, one for each sample.
 

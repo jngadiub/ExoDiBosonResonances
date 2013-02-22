@@ -45,7 +45,7 @@ ExoDiBosonResonances/EDBRCommon/rootmacros/loopPlot.C
 === RUNNING ===
 
 0) Define, in loopPlot.C, which high-level flags you want to set:
-   *) electrons/muons, sideband/signal, single/double jet
+   *) electrons/muons, sideband/signal, single/double jet, ZZ/WW channel
    *) lumi, kFactor and scale to data or not
    *) if we should redo histogram or use the ones we already made
    *) trees location
