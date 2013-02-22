@@ -16,29 +16,32 @@ void loopPlot(){
 
   gErrorIgnoreLevel=kFatal;//suppresses all info messages
   setTDRStyle();//TDR style
-   
+  
+  
+ //#####################EDIT THE OPTIONS##############################
   /// Boolean flags to steer the histogram making
-  bool wantElectrons = true; // Will make histograms for electrons
-  bool wantMuons     = false; // Will make histograms for muons
+  bool wantElectrons = false; // Will make histograms for electrons
+  bool wantMuons     = true; // Will make histograms for muons
   bool wantSideband  = true; // Will make histograms for sideband region
   bool wantSignal    = false; // Will make histograms for signal region
-  int  wantNXJets    = 2; // Will make histograms for 1 or 2 jet topology
+  int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
+  int  isZZchannel   = true; //plot lable for zz or ww
   int  flavour = 0; 
   if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
   
   /// Luminosity value in pb^-1
-  double lumiValue = 19477.6;
+  double lumiValue = 19477.6;//19538.85 for SingleMu2012
   /// k-factor for LO to NNLO
   double kFactor = 1.2;
   /// Should we scale the histograms to data?
   bool scaleToData = true;
   /// Should we REDO histograms?
   bool redoHistograms = true;
-  
+
   /// Path to wherever the files with the trees are. 
-  std::string pathToTrees="/afs/cern.ch/user/t/tomei/EXOVV_2012/analyzer_trees/productionv1_round2/fullselCA8/";
+  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv4/test/presel/";
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./doubleJetElectrons_fullsel";
+  std::string outputDir = "./pre_mu_sideband_1j_v4test_wl80_lep50_noscale_k1_veto1";
 
   /// Setup names of data files for trees.
   const int nDATA=6;//set to zero if you don't want to plot
@@ -49,20 +52,30 @@ void loopPlot(){
   				 "DoubleMu_Run2012C_PRv2",
   				 "DoubleMu_Run2012D_PRv1"};
   */
+  /*
   std::string dataLabels[nDATA]={"Photon_Run2012A_13Jul2012",
   				 "Photon_Run2012A_recover",
   				 "DoublePhotonHighPt_Run2012B_13Jul2012",
 				 "DoublePhotonHighPt_Run2012C_24Aug2012",
 				 "DoublePhotonHighPt_Run2012C_PRv2",
 				 "DoublePhotonHighPt_Run2012D_PRv1"};
-  
+  */
+ std::string dataLabels[nDATA]={"SingleMu_Run2012A_13Jul2012_xww",
+                 "SingleMu_Run2012A_recover_xww",
+                 "SingleMu_Run2012B_13Jul2012_xww",
+                 "SingleMu_Run2012C_24Aug2012_xww",
+                 "SingleMu_Run2012C_PromptReco_xww",
+                 "SingleMu_Run2012D_PromptReco_xww"};
+
+
   std::vector<std::string> fData;
   for(int ii=0;ii<nDATA;ii++){
     fData.push_back(pathToTrees+"treeEDBR_"+dataLabels[ii]+".root");
   }
 
   /// Setup names of MC files for trees.
-  const int nMC=7;//set to zero if you don't want to plot
+  const int nMC=10;//set to zero if you don't want to plot
+  /*
   std::string mcLabels[nMC]={"TTBAR",
 			     "WW",
 			     "WZ",
@@ -70,6 +83,18 @@ void loopPlot(){
 			     "DYJetsPt50To70",
 			     "DYJetsPt70To100",
 			     "DYJetsPt100"};
+  */
+  std::string mcLabels[nMC]={"TTBAR_xww",
+                 "WW_xww",
+                 "WZ_xww",
+                 "ZZ_xww",
+                 "DYJetsPt50To70_xww",
+                 "DYJetsPt70To100_xww",
+                 "DYJetsPt100_xww",
+                 "WJetsPt50To70_xww",
+                 "WJetsPt70To100_xww",
+                 "WJetsPt100_xww",
+                 };
 
   std::vector<std::string> fMC;
   for(int ii=0;ii<nMC;ii++){
@@ -94,7 +119,8 @@ void loopPlot(){
   ///		       bool wantMuons,
   ///		       bool wantSideband,
   ///		       bool wantSignal,
-  ///		       int wantNXJets)
+  ///		       int  wantNXJets,
+  ///              bool isZZchannel)
 
   printf("\nStart making histograms\n\n");
 
@@ -114,7 +140,8 @@ void loopPlot(){
 						 wantMuons,
 						 wantSideband,
 						 wantSignal,
-						 wantNXJets);
+						 wantNXJets,
+						 isZZchannel);
       maker->setUnitaryWeights(true);
       maker->Loop(buffer);
       //delete maker; // This class is badly written and deleting it isn't safe!
@@ -140,7 +167,8 @@ void loopPlot(){
 						 wantMuons, 
 						 wantSideband, 
 						 wantSignal, 
-						 wantNXJets);
+						 wantNXJets,
+						 isZZchannel);
       maker->setUnitaryWeights(false);
       maker->Loop(buffer);
       //delete maker; // This class is badly written and deleting it isn't safe!
@@ -160,7 +188,8 @@ void loopPlot(){
   //			 bool wantMuons,
   //			 bool wantSideband,
   //			 bool wantSignal,
-  //			 int wantNXJets){
+  //			 int  wantNXJets,
+  //			 bool isZZchannel){
     
   printf("\nStart looping over histograms\n\n");
   //make nice plots
@@ -180,7 +209,7 @@ void loopPlot(){
       if (!cl->InheritsFrom("TH1")) continue;
       TH1 *hTMP = (TH1*)key->ReadObj();
       std::string hName=hTMP->GetName();
-      //   printf("Histogram found: %s\n",hName.c_str());
+         printf("Histogram found: %s\n",hName.c_str());
       listOfHistos.push_back(hName);
     }//end while loop
     oneFile->Close();
@@ -199,7 +228,7 @@ void loopPlot(){
   plotter->setDebug(false);
 
   //colors are assigned in the same order of mcLabels
-  ////// {"TTBAR","WW","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100"};
+  ////// {"TTBAR","WW","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100","WJetsPt50To70","WJetsPt70To100","WJetsPt100"};
   std::vector<int> fColorsMC;
   fColorsMC.push_back(kGreen-3);
   fColorsMC.push_back(kMagenta-9);
@@ -208,9 +237,10 @@ void loopPlot(){
   fColorsMC.push_back(kBlue-3);
   fColorsMC.push_back(kBlue-6);
   fColorsMC.push_back(kBlue-9);
-  fColorsMC.push_back(kGreen+3);
-  fColorsMC.push_back(kGreen);
-  fColorsMC.push_back(kGreen-3);
+  fColorsMC.push_back(kRed-9);
+  fColorsMC.push_back(kRed);
+  fColorsMC.push_back(kRed+3);
+
 
   plotter->setFillColor(fColorsMC);
 
