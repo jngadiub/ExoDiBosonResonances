@@ -81,7 +81,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	typedef  cmg::DiMuonDiJetEDBR     cmgMuDiJetEDBR  ;
 	
 	//use these for X->WW analysis
-	/*	
+	/*		
 	typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
 	typedef  cmg::WmunuSingleJetEDBR     cmgMuSingleJetEDBR  ; 
 	typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
@@ -488,6 +488,8 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("nLooseEle"       ,&nLooseEle     ,"nLooseEle/I"            );
 	outTree_->Branch("nbtags"          ,&nbtags        ,"nbtags[nCands]/D"       );
 	outTree_->Branch("nbtagsclean"     ,&nbtagsclean   ,"nbtagsclean[nCands]/D"  );
+	outTree_->Branch("Ngen"            ,&Ngen_         ,"Ngen/I"                  );
+	outTree_->Branch("xsec"            ,&xsec_         ,"xsec/D"                  );
 
 	if(triggerNames_.size()>0){
 		if(debug_)cout<<"Adding branches with trigger names"<<endl;
