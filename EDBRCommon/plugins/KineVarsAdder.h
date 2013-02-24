@@ -69,18 +69,24 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
     edm::Handle<pat::JetCollection> ca8jetCands;
     iEvent.getByLabel("selectedPatJetsCA8CHSpruned",ca8jetCands);
 
-	float nbtags=0.;
-	float nbtagsclean=0.;
+	float nbtagsL=0.;
+	float nbtagsM=0.;
+	float nbtagsT=0.;
+	float nbtagscleanL=0.;
+	float nbtagscleanM=0.;
+	float nbtagscleanT=0.;
 	bool isclean=0;
 	
 	//std::cout<<"################################"<<std::endl;
 	for(pat::JetCollection::const_iterator ak5 = ak5jetCands->begin(); ak5 != ak5jetCands->end(); ++ak5 ){
 		double discCSV = ak5->bDiscriminator( "combinedSecondaryVertexBJetTags" );
-		//double discJP  = mi->bDiscriminator( "JetProbabilityBJetTags" );
-		//std::cout<<discCSV<<" "<<discJP<<std::endl;
+		//double discJP  = ak5->bDiscriminator( "JetProbabilityBJetTags" );
+		//double   discSSVHE=ak5->bDiscriminator( "SimpleSecondaryVertexHighEffBJetTags");
+		//std::cout<<discCSV<<" "<<discSSVHE<<std::endl;
 		//std::cout<<discCSV<<std::endl;
-		if(discCSV>0.679) nbtags++;// medium working point
-		else continue;
+		if(discCSV>0.244) nbtagsL++;// loose working point
+		if(discCSV>0.679) nbtagsM++;// medium working point
+		if(discCSV>0.898) nbtagsT++;// tight working point
 
 		//check if the btagged ak5 is overlapped with ca8(mass>50)
 		isclean=1;
@@ -88,7 +94,9 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 			//std::cout<<ca8->mass()<<" "<<deltaR(  ak5->eta(),ak5->phi(),ca8->eta(),ca8->phi()  )<<std::endl;
 			if(ca8->mass()>50&&deltaR(  ak5->eta(),ak5->phi(),ca8->eta(),ca8->phi()  )<0.8) { isclean=0; break; }
 		}
-		if(isclean==1) nbtagsclean++;
+		if(discCSV>0.244&&isclean==1) nbtagscleanL++;
+		if(discCSV>0.679&&isclean==1) nbtagscleanM++;
+		if(discCSV>0.898&&isclean==1) nbtagscleanT++;
 	}
 	//std::cout<<nbtags<<" "<<nbtagsclean<<std::endl;
 	//std::cout<<"################################"<<std::endl;
@@ -212,8 +220,12 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 		newCand.addUserFloat("nokinfitPTJJ",ptjjNKF);
 		newCand.addUserFloat("nokinfitEtaJJ",etajjNKF);
 		newCand.addUserFloat("nokinfitPhiJJ",phijjNKF);
-		newCand.addUserFloat("nbtags",nbtags);
-		newCand.addUserFloat("nbtagsclean",nbtagsclean);
+		newCand.addUserFloat("nbtagsL",nbtagsL);
+		newCand.addUserFloat("nbtagsM",nbtagsM);
+		newCand.addUserFloat("nbtagsT",nbtagsT);
+		newCand.addUserFloat("nbtagscleanL",nbtagscleanL);
+		newCand.addUserFloat("nbtagscleanM",nbtagscleanM);
+		newCand.addUserFloat("nbtagscleanT",nbtagscleanT);
 
 		//LD calculation is de-activated for the moment...
 		//adding the value of the LD discriminant:

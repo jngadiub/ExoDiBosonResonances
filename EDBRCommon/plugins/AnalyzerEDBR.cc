@@ -74,19 +74,19 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
 	//use these for X->ZZ analysis
-		
+	/*		
 	typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
 	typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
 	typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
 	typedef  cmg::DiMuonDiJetEDBR     cmgMuDiJetEDBR  ;
-	
+	*/
 	//use these for X->WW analysis
-	/*		
+			
 	typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
 	typedef  cmg::WmunuSingleJetEDBR     cmgMuSingleJetEDBR  ; 
 	typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
 	typedef  cmg::WmunuDiJetEDBR     cmgMuDiJetEDBR  ;
-	*/
+	
 	if(debug_) cout<<"\n\nAnalyzing event"<<endl;
 	initDataMembers();
 
@@ -486,10 +486,15 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("phiGenVqq"       ,&phiGenZqq     ,"phiGenVqq/d"            );
 	outTree_->Branch("nLooseMu"        ,&nLooseMu      ,"nLooseMu/I"             );
 	outTree_->Branch("nLooseEle"       ,&nLooseEle     ,"nLooseEle/I"            );
-	outTree_->Branch("nbtags"          ,&nbtags        ,"nbtags[nCands]/D"       );
-	outTree_->Branch("nbtagsclean"     ,&nbtagsclean   ,"nbtagsclean[nCands]/D"  );
-	outTree_->Branch("Ngen"            ,&Ngen_         ,"Ngen/I"                  );
-	outTree_->Branch("xsec"            ,&xsec_         ,"xsec/D"                  );
+	outTree_->Branch("nbtagsL"          ,&nbtagsL        ,"nbtagsL[nCands]/D"       );
+	outTree_->Branch("nbtagsM"          ,&nbtagsM        ,"nbtagsM[nCands]/D"       );
+	outTree_->Branch("nbtagsT"          ,&nbtagsT        ,"nbtagsT[nCands]/D"       );
+	outTree_->Branch("nbtagscleanL"     ,&nbtagscleanL   ,"nbtagscleanL[nCands]/D"  );
+	outTree_->Branch("nbtagscleanM"     ,&nbtagscleanM   ,"nbtagscleanM[nCands]/D"  );
+	outTree_->Branch("nbtagscleanT"     ,&nbtagscleanT   ,"nbtagscleanT[nCands]/D"  );
+	
+	outTree_->Branch("Ngen"            ,&Ngen_         ,"Ngen/I"                 );
+	outTree_->Branch("xsec"            ,&xsec_         ,"xsec/D"                 );
 
 	if(triggerNames_.size()>0){
 		if(debug_)cout<<"Adding branches with trigger names"<<endl;
@@ -542,7 +547,9 @@ void AnalyzerEDBR::initDataMembers(){
 		VBFTag[i]=-999;
 		VBFmJJ[i]=-999.0; VBFdeltaEta[i]=-999.0; VBFptjet1[i]=-999.0; VBFptjet2[i]=-999.0; VBFetajet1[i]=-999.0; VBFetajet2[i]=-999.0; VBFphijet1[i]=-999.0; VBFphijet2[i]=-999.0;
 		mt[i]=-99.;
-		nbtags[i]=-99.; nbtagsclean[i]=-99.;
+		nbtagsL[i]=-99.; nbtagscleanL[i]=-99.;
+		nbtagsM[i]=-99.; nbtagscleanM[i]=-99.;
+		nbtagsT[i]=-99.; nbtagscleanT[i]=-99.;
 	}
 
 
