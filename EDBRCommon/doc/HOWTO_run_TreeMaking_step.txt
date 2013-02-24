@@ -107,5 +107,14 @@ If you want to run XWW analysis, do
 
 the jobs will be submitted to the LXBatch system, one for each sample.
 
+9) you can check if you trees are correctly produced.
+modify the path of your trees in ExoDiBosonResonances/EDBRCommon/test/check_trees.sh,
+and then 
+./check_trees.sh
+This script will look for "1 fileAction           -s file_close  " in the logs.
+If not found, it will give out a warnig.
+
+
+
 
 
