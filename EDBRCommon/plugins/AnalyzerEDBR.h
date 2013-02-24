@@ -177,7 +177,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 			   edbr->leg1().leg2().eta());
 
    mt[ih] = sqrt( 2*edbr->leg1().leg1().pt()*edbr->leg1().leg2().pt()*( 1-cos(edbr->leg1().leg1().phi()-edbr->leg1().leg2().phi()) ) );
-   
+   nbtags[ih] = edbr->userFloat("nbtags");
+   nbtagsclean[ih] = edbr->userFloat("nbtagsclean"); 
   
 
    //if(finalM_||sbM_||finalE_||sbE_){//with this if condition, presel will have PU weights==1
@@ -544,6 +545,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
   //transvers mass of w
   double mt[nMaxCand];
+
+  //number of btagged jets
+  double nbtags[nMaxCand], nbtagsclean[nMaxCand];
 
 };//end class AnalyzerEDBR 
 

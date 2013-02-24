@@ -6,6 +6,7 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "ExoDiBosonResonances/EDBRCommon/interface/VJetFactory.h"
 
 template<class edbrtype>
 class KineVarsAdder : public edm::EDProducer {
@@ -62,6 +63,39 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 	std::vector<edbrtype> outCands;   
 
 
+	//for b tagging: get AK5 jet and CA8 jet
+	edm::Handle<pat::JetCollection> ak5jetCands;
+	iEvent.getByLabel("selectedPatJets",ak5jetCands);
+    edm::Handle<pat::JetCollection> ca8jetCands;
+    iEvent.getByLabel("selectedPatJetsCA8CHSpruned",ca8jetCands);
+
+	float nbtags=0.;
+	float nbtagsclean=0.;
+	bool isclean=0;
+	
+	//std::cout<<"################################"<<std::endl;
+	for(pat::JetCollection::const_iterator ak5 = ak5jetCands->begin(); ak5 != ak5jetCands->end(); ++ak5 ){
+		double discCSV = ak5->bDiscriminator( "combinedSecondaryVertexBJetTags" );
+		//double discJP  = mi->bDiscriminator( "JetProbabilityBJetTags" );
+		//std::cout<<discCSV<<" "<<discJP<<std::endl;
+		//std::cout<<discCSV<<std::endl;
+		if(discCSV>0.679) nbtags++;// medium working point
+		else continue;
+
+		//check if the btagged ak5 is overlapped with ca8(mass>50)
+		isclean=1;
+		for(pat::JetCollection::const_iterator ca8 = ca8jetCands->begin(); ca8 != ca8jetCands->end(); ++ca8){
+			//std::cout<<ca8->mass()<<" "<<deltaR(  ak5->eta(),ak5->phi(),ca8->eta(),ca8->phi()  )<<std::endl;
+			if(ca8->mass()>50&&deltaR(  ak5->eta(),ak5->phi(),ca8->eta(),ca8->phi()  )<0.8) { isclean=0; break; }
+		}
+		if(isclean==1) nbtagsclean++;
+	}
+	//std::cout<<nbtags<<" "<<nbtagsclean<<std::endl;
+	//std::cout<<"################################"<<std::endl;
+
+
+
+
 	for (unsigned int i=0 ; i<edbrcandidates->size() ; ++i ) {
 		edm::RefToBase<edbrtype>  edbrCand = edbrcandidates->refAt(i);
 
@@ -92,27 +126,27 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 		float caloiso2=-99.0;
 		bool isleg1GoodEle = ( abs(newCand.leg1().leg1().pdgId())== 11 ) ; //check that lep1 is an ele
 		bool isleg2GoodEle = ( abs(newCand.leg1().leg2().pdgId())== 11 ) ; //check that lep2 is an ele
-		
+
 		if(isleg1GoodEle) {
-		  trkiso1 = (*(*newCand.leg1().leg1().sourcePtr())).userIso(0);
-		  caloiso1 = ( (*(*newCand.leg1().leg1().sourcePtr())).userIso(1) + 
-			       (*(*newCand.leg1().leg1().sourcePtr())).userIso(2) ) / 
-		    newCand.leg1().leg1().pt();
+			trkiso1 = (*(*newCand.leg1().leg1().sourcePtr())).userIso(0);
+			caloiso1 = ( (*(*newCand.leg1().leg1().sourcePtr())).userIso(1) + 
+					(*(*newCand.leg1().leg1().sourcePtr())).userIso(2) ) / 
+				newCand.leg1().leg1().pt();
 		}
 
-		#ifdef EDBRNEUTRINO
+#ifdef EDBRNEUTRINO
 		if(isleg2GoodEle) {
-		  trkiso2 = (*(*newCand.leg1().leg2().sourcePtr())).userIso(0);
-		  caloiso2 = ( (*(*newCand.leg1().leg2().sourcePtr())).userIso(1) + 
-			       (*(*newCand.leg1().leg2().sourcePtr())).userIso(2) ) / 
-		    newCand.leg1().leg2().pt();
+			trkiso2 = (*(*newCand.leg1().leg2().sourcePtr())).userIso(0);
+			caloiso2 = ( (*(*newCand.leg1().leg2().sourcePtr())).userIso(1) + 
+					(*(*newCand.leg1().leg2().sourcePtr())).userIso(2) ) / 
+				newCand.leg1().leg2().pt();
 		}
-                #else
+#else
 		if(isleg2GoodEle) {
-		  trkiso2 = -99;
-		  caloiso2 = -99;
+			trkiso2 = -99;
+			caloiso2 = -99;
 		}
-                #endif
+#endif
 
 		/// Muon isolation:
 		//  Is just the tracker based isolation minus the other muon pt if it is deltaR < 0.3.
@@ -178,7 +212,8 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 		newCand.addUserFloat("nokinfitPTJJ",ptjjNKF);
 		newCand.addUserFloat("nokinfitEtaJJ",etajjNKF);
 		newCand.addUserFloat("nokinfitPhiJJ",phijjNKF);
-
+		newCand.addUserFloat("nbtags",nbtags);
+		newCand.addUserFloat("nbtagsclean",nbtagsclean);
 
 		//LD calculation is de-activated for the moment...
 		//adding the value of the LD discriminant:

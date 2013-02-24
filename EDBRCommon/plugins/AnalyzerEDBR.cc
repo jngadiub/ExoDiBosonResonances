@@ -414,7 +414,7 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("mJJNoKinFit"     ,&mjjNoKinFit   ,"mJJNoKinFit[nCands]/D"  );
 	outTree_->Branch("met"             ,&met           ,"met/D"                  );
 	outTree_->Branch("metSign"         ,&metSign       ,"metSign/D"              );
-	outTree_->Branch("nBTags"          ,&btag          ,"nBTags[nCands]/D"       );
+	//outTree_->Branch("nBTags"          ,&btag          ,"nBTags[nCands]/D"       );
 	outTree_->Branch("deltaREDBR"     ,&deltaREDBR   ,"deltaREDBR[nCands]/D"  );
 	outTree_->Branch("deltaRleplep"    ,&deltaRleplep  ,"deltaRleplep[nCands]/D" );
 	outTree_->Branch("deltaRjetjet"    ,&deltaRjetjet  ,"deltaRjetjet[nCands]/D" );
@@ -486,6 +486,8 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("phiGenVqq"       ,&phiGenZqq     ,"phiGenVqq/d"            );
 	outTree_->Branch("nLooseMu"        ,&nLooseMu      ,"nLooseMu/I"             );
 	outTree_->Branch("nLooseEle"       ,&nLooseEle     ,"nLooseEle/I"            );
+	outTree_->Branch("nbtags"          ,&nbtags        ,"nbtags[nCands]/D"       );
+	outTree_->Branch("nbtagsclean"     ,&nbtagsclean   ,"nbtagsclean[nCands]/D"  );
 
 	if(triggerNames_.size()>0){
 		if(debug_)cout<<"Adding branches with trigger names"<<endl;
@@ -538,6 +540,7 @@ void AnalyzerEDBR::initDataMembers(){
 		VBFTag[i]=-999;
 		VBFmJJ[i]=-999.0; VBFdeltaEta[i]=-999.0; VBFptjet1[i]=-999.0; VBFptjet2[i]=-999.0; VBFetajet1[i]=-999.0; VBFetajet2[i]=-999.0; VBFphijet1[i]=-999.0; VBFphijet2[i]=-999.0;
 		mt[i]=-99.;
+		nbtags[i]=-99.; nbtagsclean[i]=-99.;
 	}
 
 
