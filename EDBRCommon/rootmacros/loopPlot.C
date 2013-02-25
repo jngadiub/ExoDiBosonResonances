@@ -20,17 +20,17 @@ void loopPlot(){
   
  //#####################EDIT THE OPTIONS##############################
   /// Boolean flags to steer the histogram making
-  bool wantElectrons = false; // Will make histograms for electrons
-  bool wantMuons     = true; // Will make histograms for muons
+  bool wantElectrons = true; // Will make histograms for electrons
+  bool wantMuons     = false; // Will make histograms for muons
   bool wantSideband  = true; // Will make histograms for sideband region
   bool wantSignal    = false; // Will make histograms for signal region
   int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
-  int  isZZchannel   = true; //plot lable for zz or ww
+  int  isZZchannel   = false; //plot lable for zz or ww
   int  flavour = 0; 
   if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
   
   /// Luminosity value in pb^-1
-  double lumiValue = 19477.6;//19538.85 for SingleMu2012
+  double lumiValue = 16081.26;//19538.85 for SingleMu2012
   /// k-factor for LO to NNLO
   double kFactor = 1.2;
   /// Should we scale the histograms to data?
@@ -39,9 +39,9 @@ void loopPlot(){
   bool redoHistograms = true;
 
   /// Path to wherever the files with the trees are. 
-  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv4/test/presel/";
+  std::string pathToTrees="/afs/cern.ch/user/q/qili/workspace/EXOTree/CMGTools/CMSSW_5_3_3_patch3/src/ExoDiBosonResonances/EDBRCommon/test/full/";
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./pre_mu_sideband_1j_v4test_wl80_lep50_noscale_k1_veto1";
+  std::string outputDir = "./full_mu_sideband_1j_v4test_wl200_lep100_noscale_k1_veto1";
 
   /// Setup names of data files for trees.
   const int nDATA=6;//set to zero if you don't want to plot
@@ -60,12 +60,12 @@ void loopPlot(){
 				 "DoublePhotonHighPt_Run2012C_PRv2",
 				 "DoublePhotonHighPt_Run2012D_PRv1"};
   */
- std::string dataLabels[nDATA]={"SingleMu_Run2012A_13Jul2012_xww",
-                 "SingleMu_Run2012A_recover_xww",
-                 "SingleMu_Run2012B_13Jul2012_xww",
-                 "SingleMu_Run2012C_24Aug2012_xww",
-                 "SingleMu_Run2012C_PromptReco_xww",
-                 "SingleMu_Run2012D_PromptReco_xww"};
+ std::string dataLabels[nDATA]={"SingleElectron_Run2012A_13Jul2012_xww",
+                 "SingleElectron_Run2012A_recover_xww",
+                 "SingleElectron_Run2012B_13Jul2012_xww",
+                 "SingleElectron_Run2012C_24Aug2012_xww",
+                 "SingleElectron_Run2012C_PromptReco_xww",
+                 "SingleElectron_Run2012D_PromptReco_xww"};
 
 
   std::vector<std::string> fData;
@@ -133,7 +133,9 @@ void loopPlot(){
     fHistosData.push_back(buffer);
     
     if(redoHistograms) {
+
       TFile *fileData = TFile::Open(fData.at(i).c_str());
+
       TTree *treeData = (TTree*)fileData->Get("SelectedCandidates");
       EDBRHistoMaker* maker = new EDBRHistoMaker(treeData, 
 						 wantElectrons,

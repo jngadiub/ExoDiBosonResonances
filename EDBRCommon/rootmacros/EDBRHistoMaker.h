@@ -519,7 +519,6 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 	wantSignal_ = wantSignal;
 	wantNXJets_ = wantNXJets;
 	isZZchannel_ =isZZchannel;
-
 	debug_ = true;
 	Init(tree);
 	createAllHistos();
@@ -743,7 +742,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 	
 		for(int ivec=0;ivec<nCands;ivec++){
 
-			if(eventPassesCut(ivec, 80, 20)){
+			if(eventPassesCut(ivec, 200, 100)){
 
 			if(isZZchannel_==0)//WW channel, veto second loose lepton
 			{

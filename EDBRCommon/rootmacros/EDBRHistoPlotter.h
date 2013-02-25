@@ -150,7 +150,18 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   std::cout<<"\rMaking histo "<<histoName.c_str() << std::endl;
 
   TCanvas* cv = new TCanvas(("cv_"+histoName).c_str(),("cv_"+histoName).c_str(),600,600);
-
+  cv->cd();
+  TPad* pad1 = new TPad("pad1"," ",0.00,0.25,1.00,0.97);
+  TPad* pad2 = new TPad("pad2"," ",0.00,0.00,1.00,0.25);
+  pad1->SetFillColor(0);
+  pad2->SetFillColor(0);
+  pad1->Draw();
+  pad2->Draw();
+  pad1->SetTicks(1,1);
+  pad2->SetTicks(1,1);
+  pad2->SetGridx();
+  pad2->SetGridy();
+  pad1->cd(); 
   ///--------------------
   /// Make the DATA stack
   ///--------------------
@@ -260,7 +271,18 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   sumMC->SetFillStyle(0);
   sumMC->SetLineColor(kBlack);
   sumMC->SetLineWidth(1);
-  
+
+  TH1D * hDATAMC = (TH1D*)(sumDATA->Clone(""));
+  hDATAMC->Add(sumMC,-1);
+  hDATAMC->Divide(sumMC);
+  hDATAMC->SetStats(kFALSE);
+  hDATAMC->GetXaxis()->SetTitle(histoName.c_str());
+  hDATAMC->GetYaxis()->SetTitle("(DATA-MC)/MC");
+  hDATAMC->SetMarkerStyle(20);
+  hDATAMC->SetMarkerSize(1);
+  hDATAMC->GetYaxis()->SetTitleOffset(1.15);
+  hDATAMC->GetYaxis()->CenterTitle();
+  hDATAMC->GetYaxis()->SetRangeUser(-5,5);
   ///-----------------------------------
   /// Draw both MC and DATA in the stack
   ///-----------------------------------
@@ -299,14 +321,20 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 
   // Save the picture
   char buffer[256];
-  cv->SetLogy(false);
+
+  pad2->cd();
+  hDATAMC->Draw();
+
+
+  pad1->SetLogy(false);
   sprintf(buffer,"%s/pdf/can_%s.pdf",nameOutDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
   sprintf(buffer,"%s/png/can_%s.png",nameOutDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
   sprintf(buffer,"%s/root/can_%s.root",nameOutDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
-  cv->SetLogy(true);
+
+  pad1->SetLogy(true);
   sprintf(buffer,"%s/pdf/LOG_can_%s.pdf",nameOutDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
   sprintf(buffer,"%s/png/LOG_can_%s.png",nameOutDir_.c_str(),histoName.c_str());
