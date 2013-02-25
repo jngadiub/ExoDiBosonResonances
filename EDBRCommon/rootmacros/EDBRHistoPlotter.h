@@ -6,10 +6,13 @@
 #include "THStack.h"
 #include "TCanvas.h"
 #include "TLegend.h"
+#include "TLine.h"
 #include "TString.h"
 #include "TObjString.h"
 #include "TSystem.h"
 #include "CMSLabels.h"
+#include "TVectorD.h"
+#include "TGraph.h"
 
 class EDBRHistoPlotter {
 public:
@@ -17,23 +20,35 @@ public:
   EDBRHistoPlotter(std::string nameInDir,
 		   std::vector<std::string> nameFileDATA,
 		   std::vector<std::string> nameFileMC, 
+		   std::vector<std::string> nameFileMCSig, 
 		   double targetLumi,
 		   double kFactor,
 		   int wantNXJets,
 		   int flavour,
-		   bool scaleToData)
+		   bool isZZchannel,
+		   bool scaleToData,
+		   bool makeRatio)
   {
-    nameInDir_    = nameInDir;
-    fileNamesMC   = nameFileMC;
-    fileNamesDATA = nameFileDATA;
-    kFactor_      = kFactor;
-    targetLumi_   = targetLumi;
-    wantNXJets_   = wantNXJets;
-    flavour_      = flavour;
-    scaleToData_  = scaleToData;
-    debug_        = false;
+    nameInDir_     = nameInDir;
+    fileNamesMC    = nameFileMC;
+    fileNamesMCSig = nameFileMCSig;
+    fileNamesDATA  = nameFileDATA;
+    kFactor_       = kFactor;
+    targetLumi_    = targetLumi;
+    wantNXJets_    = wantNXJets;
+    flavour_       = flavour;
+    isZZchannel_   = isZZchannel;
+    scaleToData_   = scaleToData;
+    makeRatio_     = makeRatio;
+    debug_         = true;
+    if(fileNamesDATA.size() != 0)
+      isDataPresent_ = true;
+    else
+      isDataPresent_ = false;
     EDBRColors.resize(20,kWhite);
+    EDBRLineColors.resize(20,kWhite);
     labels.resize(0);
+    labelsSig.resize(0);
     makeLabels();
     printf("Target lumi is %g pb-1\n",targetLumi);
     printf("k factor is %g\n",kFactor);
@@ -44,13 +59,18 @@ public:
   
   /// Members
   std::vector<std::string> fileNamesMC;
+  std::vector<std::string> fileNamesMCSig;
   std::vector<std::string> fileNamesDATA;
   std::vector<std::string> labels;
+  std::vector<std::string> labelsSig;
   std::vector<TFile*>      filesMC;
+  std::vector<TFile*>      filesMCSig;
   std::vector<TFile*>      filesDATA;
   std::vector<TH1D*>       histosMC;
+  std::vector<TH1D*>       histosMCSig;
   std::vector<TH1D*>       histosDATA;
   std::vector<int>         EDBRColors;
+  std::vector<int>         EDBRLineColors;
 
   std::string nameInDir_;
   std::string nameOutDir_;
@@ -59,11 +79,15 @@ public:
   double kFactor_;
   int    wantNXJets_;
   int    flavour_;
+  bool   isZZchannel_;
   bool   scaleToData_;
+  bool   makeRatio_;
+  bool   isDataPresent_;
   bool   debug_;
 
   /// Functions
   void cleanupMC();
+  void cleanupMCSig();
   void cleanupDATA();
   void makeLabels();
   void makeStackPlots(std::string histoName);
@@ -87,6 +111,21 @@ public:
     }
   }
 
+  /// get reasonable colors for stacks.
+  int getLineColor(int index){
+    if(index < 20)return EDBRLineColors[index];
+    return kWhite;
+  }
+  
+  /// set reasonable colors for stacks.
+  void setLineColor(std::vector<int> colorList){
+    unsigned int ind=0;
+    while (ind < 20 && ind < colorList.size()){
+      EDBRLineColors.at(ind)=colorList.at(ind);
+      ind++;
+    }
+  }
+
 };
 
 void EDBRHistoPlotter::cleanupMC() {
@@ -99,6 +138,18 @@ void EDBRHistoPlotter::cleanupMC() {
     histosMC.at(i)->Delete();
   }
   histosMC.clear();
+}
+
+void EDBRHistoPlotter::cleanupMCSig() {
+  for(size_t i=0; i!= filesMCSig.size(); ++i) {
+    filesMCSig.at(i)->Close();
+  }
+  filesMCSig.clear();  
+
+  for(size_t i=0; i!= histosMCSig.size(); ++i) {
+    histosMCSig.at(i)->Delete();
+  }
+  histosMCSig.clear();
 }
 
 void EDBRHistoPlotter::cleanupDATA() {
@@ -120,6 +171,16 @@ void EDBRHistoPlotter::makeLabels() {
     TObjArray* tokens = s1.Tokenize(s2);
     std::string aLabel = ((TObjString*)(tokens->At(1)))->String().Data();
     labels.push_back(aLabel);
+  }
+  for(size_t i = 0; i != fileNamesMCSig.size(); i++){
+    TString s1 = fileNamesMCSig.at(i);
+    TString s2 = "_.";
+    TObjArray* tokens = s1.Tokenize(s2);
+    std::string aLabelType = ((TObjString*)(tokens->At(1)))->String().Data();
+    std::string aLabelCoupling = ((TObjString*)(tokens->At(4)))->String().Data();
+    std::string aLabelMass = ((TObjString*)(tokens->At(5)))->String().Data();
+    std::string aLabel = aLabelType + aLabelCoupling + aLabelMass; 
+    labelsSig.push_back(aLabel);
   }
 }
 
@@ -144,24 +205,42 @@ void EDBRHistoPlotter::setOutDir(std::string outDirNew){
 void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   
   cleanupMC();
+  cleanupMCSig();
   cleanupDATA();
-  
+
   //printf("Making histo %s\n",histoName.c_str());
   std::cout<<"\rMaking histo "<<histoName.c_str() << std::endl;
 
   TCanvas* cv = new TCanvas(("cv_"+histoName).c_str(),("cv_"+histoName).c_str(),600,600);
-  cv->cd();
-  TPad* pad1 = new TPad("pad1"," ",0.00,0.25,1.00,0.97);
-  TPad* pad2 = new TPad("pad2"," ",0.00,0.00,1.00,0.25);
-  pad1->SetFillColor(0);
-  pad2->SetFillColor(0);
-  pad1->Draw();
-  pad2->Draw();
-  pad1->SetTicks(1,1);
-  pad2->SetTicks(1,1);
-  pad2->SetGridx();
-  pad2->SetGridy();
-  pad1->cd(); 
+
+  //create 3 pads in the canvas
+  TPad* fPads1 = NULL;
+  TPad* fPads2 = NULL;
+  TPad* fPads3 = NULL;
+
+  if(makeRatio_ && isDataPresent_)
+    {
+      fPads1 = new TPad("pad1", "", 0.00, 0.40, 0.99, 0.99);
+      fPads2 = new TPad("pad2", "", 0.00, 0.20, 0.99, 0.40);
+      fPads3 = new TPad("pad3", "", 0.00, 0.00, 0.99, 0.20);
+      fPads1->SetFillColor(0);
+      fPads1->SetLineColor(0);
+      fPads2->SetFillColor(0);
+      fPads2->SetLineColor(0);
+      fPads3->SetFillColor(0);
+      fPads3->SetLineColor(0);
+      fPads1->Draw();
+      fPads2->Draw();
+      fPads3->Draw();
+    }
+
+  //============ Data vs MC plots ==============
+
+  if(makeRatio_ && isDataPresent_)
+    {      
+      fPads1->cd();
+    }
+
   ///--------------------
   /// Make the DATA stack
   ///--------------------
@@ -178,7 +257,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     histo->SetDirectory(0);
     histosDATA.push_back(histo);
   }
-  
+ 
   if(histosDATA.size() !=0) {
     sumDATA = (TH1D*)(histosDATA.at(0)->Clone("master"));
     sumDATA->Reset();
@@ -189,11 +268,14 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     sumDATA->Add(histosDATA.at(i));
   }
   
-  double sumDataIntegral = sumDATA->Integral();
+  double sumDataIntegral = 0;
+  if(isDataPresent_)
+    sumDataIntegral = sumDATA->Integral();
 
   if(debug_) {
     printf("sumDataIntegral = %g\n",sumDataIntegral);
   }
+
   ///------------------
   /// Make the MC stack
   ///------------------
@@ -224,7 +306,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     sumBkgAtTargetLumi += (histo->Integral() * targetLumi_);
     histosMC.push_back(histo);
   }
-  
+
   if(debug_) {
     printf("sumBkgAtTargetLumi = %g\n",sumBkgAtTargetLumi);
     printf("sumDataIntegral = %g\n",sumDataIntegral);
@@ -243,7 +325,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   for(size_t is=0; is!=histosMC.size(); is++){
     if(debug_)
       printf("This histogram has integral %g\n",histosMC.at(is)->Integral());
-    if(scaleToData_) {
+    if(scaleToData_ && isDataPresent_) {
       histosMC.at(is)->Scale(targetLumi_*
 			     sumDataIntegral/sumBkgAtTargetLumi);
     }
@@ -270,43 +352,91 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   
   sumMC->SetFillStyle(0);
   sumMC->SetLineColor(kBlack);
-  sumMC->SetLineWidth(1);
+  sumMC->SetLineWidth(2);
 
-  TH1D * hDATAMC = (TH1D*)(sumDATA->Clone(""));
-  hDATAMC->Add(sumMC,-1);
-  hDATAMC->Divide(sumMC);
-  hDATAMC->SetStats(kFALSE);
-  hDATAMC->GetXaxis()->SetTitle(histoName.c_str());
-  hDATAMC->GetYaxis()->SetTitle("(DATA-MC)/MC");
-  hDATAMC->SetMarkerStyle(20);
-  hDATAMC->SetMarkerSize(1);
-  hDATAMC->GetYaxis()->SetTitleOffset(1.15);
-  hDATAMC->GetYaxis()->CenterTitle();
-  hDATAMC->GetYaxis()->SetRangeUser(-5,5);
+  ///-------------------------------
+  /// Add the MC signal to the stack
+  ///-------------------------------
+  
+  for(size_t i=0; i!= fileNamesMCSig.size(); ++i) {
+    filesMCSig.push_back(TFile::Open((nameInDir_+
+				      fileNamesMCSig.at(i)).c_str()));
+  }
+  
+  for(size_t i=0; i!= filesMCSig.size(); ++i) {
+    TH1D* histo = (TH1D*)(filesMCSig.at(i)->Get(histoName.c_str())->Clone(labelsSig.at(i).c_str()));
+    histo->SetDirectory(0);
+    histo->SetLineColor(getLineColor(i)); 
+    
+    /// This is important. If the user has given a k-factor, it means
+    /// they INCONDITIONALLY want to multiply all MC histograms by
+    /// this number. So we just do it here.
+    /// Although, it shold be a different kFactor for EACH bacground.
+    /// TODO: implement different kFactors for each MC.
+    //histo->Scale(kFactor_); //============= SCALA FACTORS FOR SIGNAL? ==== FIXME
+    
+    if(debug_) {
+      histo->Print();
+    }
+    histosMCSig.push_back(histo);
+  }
+
+  //scale the MC signal histogram
+  for(size_t is=0; is!=histosMCSig.size(); is++){
+    if(debug_)
+      printf("This histogram has integral %g\n",histosMCSig.at(is)->Integral());
+    
+    histosMCSig.at(is)->Scale(targetLumi_);
+    
+    if(debug_)
+      printf("After scaling this histogram has integral %g\n",histosMCSig.at(is)->Integral());
+    
+    //add the signal to the total background
+    histosMCSig.at(is)->Add(sumMC);
+  }
+  
   ///-----------------------------------
   /// Draw both MC and DATA in the stack
   ///-----------------------------------
+
   hs->Draw("HIST");
   hs->GetXaxis()->SetTitle(histoName.c_str());
-  hs->GetYaxis()->SetTitle("Number of Events");
+  hs->GetYaxis()->SetTitle("Number of Entries");
   hs->GetYaxis()->SetTitleOffset(1.15);
   hs->GetYaxis()->CenterTitle();
   double maximumMC = 1.15*sumMC->GetMaximum();
-  double maximumDATA = 1.15*sumDATA->GetMaximum();
-  double maximumForStack = (maximumMC>maximumDATA?maximumMC:maximumDATA);
+  double maximumDATA = -100;
+  if(isDataPresent_)
+    maximumDATA = 1.15*sumDATA->GetMaximum();
+  double maximumForStack = -100;
+  if(isDataPresent_)
+    maximumForStack = (maximumMC>maximumDATA?maximumMC:maximumDATA);
+  else
+    maximumForStack = maximumMC;
   hs->SetMaximum(maximumForStack);
   hs->SetMinimum(0.1);
   hs->Draw("HIST");
-  sumMC->Draw("HISTO SAME");    
-  sumDATA->Draw("SAME E1");
+  sumMC->Draw("HISTO SAME");
+  if(isDataPresent_)
+    sumDATA->Draw("SAME E1");
+  for(size_t is=0; is!=histosMCSig.size(); is++){
+    histosMCSig.at(is)->Draw("HISTO SAME");
+  }
+  sumMC->Draw("HISTO SAME");      
 
-  
+
   // For the legend, we have to tokenize the name "histos_XXX.root"
-  TLegend* leg = new TLegend(0.7,0.7,0.9,0.9);
-  if( histosDATA.size() > 0)
+  TLegend* leg = new TLegend(0.716,0.61,0.93,0.9);
+  leg->SetMargin(0.4);
+  if(isDataPresent_)
     leg->AddEntry(sumDATA,"Data","p");
   for(size_t i = 0; i!= histosMC.size(); ++i)
     leg->AddEntry(histosMC.at(i),labels.at(i).c_str(),"f");
+  if( histosMCSig.size() > 0)
+    {
+      for(size_t i = 0; i!= histosMCSig.size(); ++i)
+	leg->AddEntry(histosMCSig.at(i),labelsSig.at(i).c_str(),"lf");
+    }
 
   leg->SetFillColor(kWhite);
   leg->Draw();
@@ -316,25 +446,129 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   l->Draw();
   l = makeCMSLumi(19.6,0.5,0.935);
   l->Draw();
-  l = makeChannelLabel(wantNXJets_,flavour_);
+  l = makeChannelLabel(wantNXJets_,flavour_,isZZchannel_);
   l->Draw();
+
+  //============ Data/MC ratio ==============
+
+  if(makeRatio_ && isDataPresent_)
+    {
+      fPads2->cd();
+
+      fPads2->SetGridx();
+      fPads2->SetGridy();
+
+      TH1D* histoRatio = (TH1D*)sumDATA->Clone("ratio");  
+      histoRatio->SetDirectory(0);
+      histoRatio->SetTitle("");
+      histoRatio->Divide(sumMC);
+      histoRatio->GetYaxis()->SetRangeUser(0.5,1.5);
+      histoRatio->GetYaxis()->SetTitle("Data/Bkg");
+      histoRatio->GetYaxis()->SetTitleOffset(0.43);
+      histoRatio->GetYaxis()->SetTitleSize(0.15);
+      histoRatio->GetYaxis()->SetLabelSize(0.07);
+      histoRatio->GetXaxis()->SetTitle("");
+      histoRatio->GetXaxis()->SetTitleOffset(0.01);
+      histoRatio->GetXaxis()->SetLabelSize(0.09);
+      histoRatio->SetMarkerStyle(1);
+      histoRatio->Draw("p");
+
+      TLine lineAtOne (histoRatio->GetXaxis()->GetXmin(),1,histoRatio->GetXaxis()->GetXmax(),1);
+      lineAtOne.SetLineColor(2);
+      lineAtOne.Draw();
+    }
+
+  //============ Data-MC/Error ==============
+
+  if(makeRatio_ && isDataPresent_)
+    {      
+      fPads3->cd();
+
+      fPads3->SetGridx();
+      fPads3->SetGridy();
+      
+      double thisYmin=-5;
+      double thisYmax=5;
+      
+      TVectorD nsigma_x( sumDATA->GetNbinsX() ); 
+      TVectorD nsigma_y( sumDATA->GetNbinsX() ); 
+      
+      for(int ibin = 0; ibin!= sumDATA->GetNbinsX(); ++ibin)
+	{
+	  
+	  double Data = sumDATA->GetBinContent(ibin+1);
+	  double Bkg = sumMC->GetBinContent(ibin+1);
+	  double eData = sumDATA->GetBinError(ibin+1);
+	  double eBkg = sumMC->GetBinError(ibin+1);
+	  double x = sumDATA->GetBinCenter(ibin+1);
+	  
+	  double diff = Data - Bkg;
+	  double sigma = sqrt( (eData * eData) + (eBkg * eBkg) );
+	  
+	  if( sigma != 0.0 && Data != 0.0 )
+	    {
+	      nsigma_x[ibin] = x;
+	      nsigma_y[ibin] = diff / sigma;
+	    }	
+	  else
+	    {
+	      nsigma_x[ibin] = +999999;
+	      nsigma_y[ibin] = 0;
+	    }		
+	}
+    
+
+      if( nsigma_x.GetNoElements() != 0 )
+	{
+	  TGraph *nsigmaGraph = new TGraph(nsigma_x,nsigma_y);
+	  nsigmaGraph->SetTitle("");
+	  nsigmaGraph->GetYaxis()->SetRangeUser(thisYmin,thisYmax);
+	  nsigmaGraph->GetYaxis()->SetTitle("(Data-Bkg)/#sigma");
+	  nsigmaGraph->GetYaxis()->SetTitleOffset(0.43);
+	  nsigmaGraph->GetYaxis()->SetTitleSize(0.15);
+	  nsigmaGraph->GetYaxis()->SetLabelSize(0.07);
+	  nsigmaGraph->GetXaxis()->SetTitle("");
+	  nsigmaGraph->GetXaxis()->SetLimits( sumMC->GetXaxis()->GetXmin() , sumMC->GetXaxis()->GetXmax() );
+	  nsigmaGraph->GetXaxis()->SetRangeUser( sumMC->GetXaxis()->GetXmin() , sumMC->GetXaxis()->GetXmax() );
+	  nsigmaGraph->GetXaxis()->SetTitleOffset(0.01);
+	  nsigmaGraph->GetXaxis()->SetLabelSize(0.09);
+	  nsigmaGraph->SetMarkerStyle(8);
+	  nsigmaGraph->SetMarkerSize(0.8);
+	  nsigmaGraph->Draw("ap");
+	}
+      
+      TLine lineAtZero (sumMC->GetXaxis()->GetXmin(),0,sumMC->GetXaxis()->GetXmax(),0);
+      lineAtZero.SetLineColor(2);
+      lineAtZero.Draw();
+      TLine lineAtPlusTwo (sumMC->GetXaxis()->GetXmin(),2,sumMC->GetXaxis()->GetXmax(),2);
+      lineAtPlusTwo.SetLineColor(2);
+      lineAtPlusTwo.Draw();
+      TLine lineAtMinusTwo (sumMC->GetXaxis()->GetXmin(),-2,sumMC->GetXaxis()->GetXmax(),-2);
+      lineAtMinusTwo.SetLineColor(2);
+      lineAtMinusTwo.Draw();
+    }
 
   // Save the picture
   char buffer[256];
-
-  pad2->cd();
-  hDATAMC->Draw();
-
-
-  pad1->SetLogy(false);
+  cv->SetLogy(false);
   sprintf(buffer,"%s/pdf/can_%s.pdf",nameOutDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
   sprintf(buffer,"%s/png/can_%s.png",nameOutDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
   sprintf(buffer,"%s/root/can_%s.root",nameOutDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
-
-  pad1->SetLogy(true);
+  if(makeRatio_ && isDataPresent_)
+    {      
+      fPads1->cd();
+      fPads1->SetLogy(true);
+    }
+  else
+    {
+      cv->SetLogy(true);
+    }
+  //-- resize y axis --
+  hs->SetMaximum(10*maximumForStack);
+  //
   sprintf(buffer,"%s/pdf/LOG_can_%s.pdf",nameOutDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
   sprintf(buffer,"%s/png/LOG_can_%s.png",nameOutDir_.c_str(),histoName.c_str());

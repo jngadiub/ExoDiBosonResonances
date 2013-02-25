@@ -20,53 +20,67 @@ void loopPlot(){
   
  //#####################EDIT THE OPTIONS##############################
   /// Boolean flags to steer the histogram making
-  bool wantElectrons = true; // Will make histograms for electrons
-  bool wantMuons     = false; // Will make histograms for muons
+  bool wantElectrons = false; // Will make histograms for electrons
+  bool wantMuons     = true; // Will make histograms for muons
   bool wantSideband  = true; // Will make histograms for sideband region
   bool wantSignal    = false; // Will make histograms for signal region
   int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
-  int  isZZchannel   = false; //plot lable for zz or ww
+  int  isZZchannel   = false; //plot label for zz (true) or ww (false)
   int  flavour = 0; 
   if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
   
   /// Luminosity value in pb^-1
-  double lumiValue = 16081.26;//19538.85 for SingleMu2012
+  //double lumiValue = 19477.6;// for DoubleEle2012?
+  double lumiValue = 19538.85;// for SingleMu2012
   /// k-factor for LO to NNLO
-  double kFactor = 1.2;
+  double kFactor = 1.;
   /// Should we scale the histograms to data?
   bool scaleToData = true;
+  /// Should we plot the Data/Bkg and Data-Bkg/Error ratios?
+  bool makeRatio = true;
   /// Should we REDO histograms?
-  bool redoHistograms = true;
+  bool redoHistograms = false;
 
   /// Path to wherever the files with the trees are. 
-  std::string pathToTrees="/afs/cern.ch/user/q/qili/workspace/EXOTree/CMGTools/CMSSW_5_3_3_patch3/src/ExoDiBosonResonances/EDBRCommon/test/full/";
+  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv4/test/presel/";
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./full_mu_sideband_1j_v4test_wl200_lep100_noscale_k1_veto1";
+  std::string outputDir = "./pre_mu_sideband_1j_wl80_lep50_scale_veto1";
 
   /// Setup names of data files for trees.
+
+  /*
   const int nDATA=6;//set to zero if you don't want to plot
-  /*std::string dataLabels[nDATA]={"DoubleMu_Run2012A_13Jul2012",
+  std::string dataLabels[nDATA]={"DoubleMu_Run2012A_13Jul2012",
 				 "DoubleMu_Run2012A_recover",
   				 "DoubleMu_Run2012B_13Jul2012",
 				 "DoubleMu_Run2012C_24Aug2012",
   				 "DoubleMu_Run2012C_PRv2",
   				 "DoubleMu_Run2012D_PRv1"};
   */
+
   /*
+  const int nDATA=6;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"Photon_Run2012A_13Jul2012",
   				 "Photon_Run2012A_recover",
   				 "DoublePhotonHighPt_Run2012B_13Jul2012",
 				 "DoublePhotonHighPt_Run2012C_24Aug2012",
 				 "DoublePhotonHighPt_Run2012C_PRv2",
 				 "DoublePhotonHighPt_Run2012D_PRv1"};
-  */
- std::string dataLabels[nDATA]={"SingleElectron_Run2012A_13Jul2012_xww",
-                 "SingleElectron_Run2012A_recover_xww",
-                 "SingleElectron_Run2012B_13Jul2012_xww",
-                 "SingleElectron_Run2012C_24Aug2012_xww",
-                 "SingleElectron_Run2012C_PromptReco_xww",
-                 "SingleElectron_Run2012D_PromptReco_xww"};
+  */ 
 
+  
+  const int nDATA=6;//set to zero if you don't want to plot
+  std::string dataLabels[nDATA]={"SingleMu_Run2012A_13Jul2012_xww",
+				 "SingleMu_Run2012A_recover_xww",
+				 "SingleMu_Run2012B_13Jul2012_xww",
+				 "SingleMu_Run2012C_24Aug2012_xww",
+				 "SingleMu_Run2012C_PromptReco_xww",
+				 "SingleMu_Run2012D_PromptReco_xww"};  
+  
+  /*  
+  const int nDATA=0;//set to zero if you don't want to plot
+  std::string dataLabels[nDATA]={};
+  */    
 
   std::vector<std::string> fData;
   for(int ii=0;ii<nDATA;ii++){
@@ -83,27 +97,45 @@ void loopPlot(){
 			     "DYJetsPt50To70",
 			     "DYJetsPt70To100",
 			     "DYJetsPt100"};
-  */
+  */  
   std::string mcLabels[nMC]={"TTBAR_xww",
-                 "WW_xww",
-                 "WZ_xww",
-                 "ZZ_xww",
-                 "DYJetsPt50To70_xww",
-                 "DYJetsPt70To100_xww",
-                 "DYJetsPt100_xww",
-                 "WJetsPt50To70_xww",
-                 "WJetsPt70To100_xww",
-                 "WJetsPt100_xww",
-                 };
-
+			     "WW_xww",
+			     "WZ_xww",
+			     "ZZ_xww",
+			     "DYJetsPt50To70_xww",
+			     "DYJetsPt70To100_xww",
+			     "DYJetsPt100_xww",
+			     "WJetsPt50To70_xww",
+			     "WJetsPt70To100_xww",
+			     "WJetsPt100_xww",
+  };
+		 
   std::vector<std::string> fMC;
   for(int ii=0;ii<nMC;ii++){
     fMC.push_back(pathToTrees+"treeEDBR_"+mcLabels[ii]+".root");
   }
 
+  /// Setup names of MC signal files for trees.
+  const int nMCSig=3;//set to zero if you don't want to plot
+  std::string mcLabelsSig[nMCSig]={"BulkG_WW_lvjj_c1p0_M600_xww",
+				   "BulkG_WW_lvjj_c1p0_M1000_xww",
+				   "BulkG_WW_lvjj_c1p0_M1500_xww",
+                                  };
+
+  /*
+  const int nMCSig=0;//set to zero if you don't want to plot
+  std::string mcLabelsSig[nMCSig]={};
+  */
+  
+  std::vector<std::string> fMCSig;
+  for(int ii=0;ii<nMCSig;ii++){
+    fMCSig.push_back(pathToTrees+"treeEDBR_"+mcLabelsSig[ii]+".root");
+  }
+
   /// Setup names of files for histograms (data and MC)
   std::vector<std::string> fHistosData;
   std::vector<std::string> fHistosMC;
+  std::vector<std::string> fHistosMCSig;
  
   char buffer[256];
   printf("All strings set\n");
@@ -133,9 +165,7 @@ void loopPlot(){
     fHistosData.push_back(buffer);
     
     if(redoHistograms) {
-
       TFile *fileData = TFile::Open(fData.at(i).c_str());
-
       TTree *treeData = (TTree*)fileData->Get("SelectedCandidates");
       EDBRHistoMaker* maker = new EDBRHistoMaker(treeData, 
 						 wantElectrons,
@@ -177,9 +207,36 @@ void loopPlot(){
       fileMC->Close();
     }
     
-  }//end loop on data files
+  }//end loop on MC files
 
   printf("Loop over MC done\n");
+
+  //loop over MC signal files and make histograms individually for each of them
+  for(int i=0;i<nMCSig;i++){
+    std::cout<<"\n-------\nRunning over "<<mcLabelsSig[i].c_str()<<std::endl;
+    std::cout<<"The file is " <<fMCSig.at(i)<<std::endl;    
+    sprintf(buffer,"histos_%s.root",mcLabelsSig[i].c_str());
+    fHistosMCSig.push_back(buffer);
+    
+    if(redoHistograms){
+      TFile *fileMCSig = TFile::Open(fMCSig.at(i).c_str());
+      TTree *treeMCSig = (TTree*)fileMCSig->Get("SelectedCandidates");
+      EDBRHistoMaker* maker = new EDBRHistoMaker(treeMCSig, 
+						 wantElectrons, 
+						 wantMuons, 
+						 wantSideband, 
+						 wantSignal, 
+						 wantNXJets,
+						 isZZchannel);
+      maker->setUnitaryWeights(false);
+      maker->Loop(buffer);
+      //delete maker; // This class is badly written and deleting it isn't safe!
+      fileMCSig->Close();
+    }
+    
+  }//end loop on MC files
+
+  printf("Loop over MC signal done\n");
 
   /// ------------------------------------------------------------------
   /// This second part is the loop over histograms to create stack plots
@@ -220,11 +277,14 @@ void loopPlot(){
   EDBRHistoPlotter *plotter=new EDBRHistoPlotter("./",
 						 fHistosData,
 						 fHistosMC,
+						 fHistosMCSig,
 						 lumiValue,
 						 kFactor,
 						 wantNXJets,
 						 flavour,
-						 scaleToData);
+						 isZZchannel,
+						 scaleToData,
+						 makeRatio);
   std::cout<<"Set output dir"<<std::endl;
   plotter->setOutDir(outputDir);
   plotter->setDebug(false);
@@ -243,8 +303,15 @@ void loopPlot(){
   fColorsMC.push_back(kRed);
   fColorsMC.push_back(kRed+3);
 
+  ////// {"BulkG_WW_lvjj_c1p0_M600_xww","BulkG_WW_lvjj_c1p0_M1000_xww","BulkG_WW_lvjj_c1p0_M1500_xww"};
+  std::vector<int> fColorsMCSig;
+  fColorsMCSig.push_back(kBlack);
+  fColorsMCSig.push_back(kMagenta);
+  fColorsMCSig.push_back(kGreen-3);
+  fColorsMCSig.push_back(kGreen+3);
 
   plotter->setFillColor(fColorsMC);
+  plotter->setLineColor(fColorsMCSig);
 
   int numOfHistos = listOfHistos.size();
   for(int i = 0; i != numOfHistos; ++i) 

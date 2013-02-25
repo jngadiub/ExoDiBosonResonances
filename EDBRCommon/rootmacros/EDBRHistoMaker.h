@@ -519,6 +519,7 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 	wantSignal_ = wantSignal;
 	wantNXJets_ = wantNXJets;
 	isZZchannel_ =isZZchannel;
+
 	debug_ = true;
 	Init(tree);
 	createAllHistos();
@@ -742,86 +743,89 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 	
 		for(int ivec=0;ivec<nCands;ivec++){
 
-			if(eventPassesCut(ivec, 200, 100)){
+		  if(eventPassesCut(ivec, 80, 20)){
 
-			if(isZZchannel_==0)//WW channel, veto second loose lepton
-			{
-				if((nLooseEle+nLooseMu==1)&&met>40);//global selection
-        		else continue;	
-			}
-                if(filled==0)
-                {   
-                    (theHistograms["nVL"])->Fill(wnum,actualWeight);
-                    (theHistograms["nCands"])->Fill(nCands,actualWeight);
+		    if(isZZchannel_==0)//WW channel, veto second loose lepton
+		      {
+			if((nLooseEle+nLooseMu==1)&&met>40);//global selection
+			else continue;	
 
-                    (theHistograms["PUweight"])->Fill(PUweight);
-                    (theHistograms["LumiWeight"])->Fill(LumiWeight);
-                    (theHistograms["GenWeight"])->Fill(GenWeight);
+			if(eventPassesCut(ivec, 80, 50));
+			else continue;
+		      }
+		    if(filled==0)
+		      {   
+			(theHistograms["nVL"])->Fill(wnum,actualWeight);
+			(theHistograms["nCands"])->Fill(nCands,actualWeight);
 
-                    (theHistograms["nLooseEle"])->Fill(nLooseEle,actualWeight);
-                    (theHistograms["nLooseMu"])->Fill(nLooseMu,actualWeight);
+			(theHistograms["PUweight"])->Fill(PUweight);
+			(theHistograms["LumiWeight"])->Fill(LumiWeight);
+			(theHistograms["GenWeight"])->Fill(GenWeight);
 
-                    filled =1; 
-                } 
+			(theHistograms["nLooseEle"])->Fill(nLooseEle,actualWeight);
+			(theHistograms["nLooseMu"])->Fill(nLooseMu,actualWeight);
 
-              	(theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-                (theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["ptjet1"])->Fill(ptjet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["ptjet2"])->Fill(ptjet2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["ptZll"])->Fill(ptZll[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["ptZjj"])->Fill(ptZjj[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["yZll"])->Fill(yZll[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["yZjj"])->Fill(yZjj[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["mLL"])->Fill(mLL[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["mJJ"])->Fill(mJJ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["mZZ"])->Fill(mZZ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["prunedmass"])->Fill(prunedmass[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nVtx"])->Fill(nVtx,actualWeight);//printf("line number %i\n",__LINE__);
+			filled =1; 
+		      } 
+
+		    (theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["ptjet1"])->Fill(ptjet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["ptjet2"])->Fill(ptjet2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["ptZll"])->Fill(ptZll[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["ptZjj"])->Fill(ptZjj[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["yZll"])->Fill(yZll[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["yZjj"])->Fill(yZjj[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["mLL"])->Fill(mLL[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["mJJ"])->Fill(mJJ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["mZZ"])->Fill(mZZ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["prunedmass"])->Fill(prunedmass[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["nVtx"])->Fill(nVtx,actualWeight);//printf("line number %i\n",__LINE__);
 		
-				(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["isomu1mod"])->Fill(isomu1mod[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["isomu2mod"])->Fill(isomu2mod[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["isoele1trk"])->Fill(isoele1trk[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["isoele2trk"])->Fill(isoele2trk[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["isoele1calo"])->Fill(isoele1calo[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["isoele2calo"])->Fill(isoele2calo[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nJets"])->Fill(nJets,actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["met"])->Fill(met,actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["metSign"])->Fill(metSign,actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["etalep1"])->Fill(etalep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["etalep2"])->Fill(etalep2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["etajet1"])->Fill(etajet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["etajet2"])->Fill(etajet2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["deltaREDBR"])->Fill(deltaREDBR[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["deltaRleplep"])->Fill(deltaRleplep[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["deltaRjetjet"])->Fill(deltaRjetjet[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["VBFTag"])->Fill(VBFTag[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["VBFmJJ"])->Fill(VBFmJJ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["VBFdeltaEta"])->Fill(VBFdeltaEta[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["mt"])->Fill(mt[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["lep"])->Fill(lep[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-		// (theHistograms[""])->Fill([ivec],actualWeight);
+		    (theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["isomu1mod"])->Fill(isomu1mod[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["isomu2mod"])->Fill(isomu2mod[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["isoele1trk"])->Fill(isoele1trk[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["isoele2trk"])->Fill(isoele2trk[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["isoele1calo"])->Fill(isoele1calo[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["isoele2calo"])->Fill(isoele2calo[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["nJets"])->Fill(nJets,actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["met"])->Fill(met,actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["metSign"])->Fill(metSign,actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["etalep1"])->Fill(etalep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["etalep2"])->Fill(etalep2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["etajet1"])->Fill(etajet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["etajet2"])->Fill(etajet2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["deltaREDBR"])->Fill(deltaREDBR[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["deltaRleplep"])->Fill(deltaRleplep[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["deltaRjetjet"])->Fill(deltaRjetjet[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["VBFTag"])->Fill(VBFTag[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["VBFmJJ"])->Fill(VBFmJJ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["VBFdeltaEta"])->Fill(VBFdeltaEta[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["mt"])->Fill(mt[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    (theHistograms["lep"])->Fill(lep[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    // (theHistograms[""])->Fill([ivec],actualWeight);
 
-			}//end if eventPassesCut
+		  }//end if eventPassesCut
 		}//end loop over nCands
 	}//end loop over entries
 
 	if(isZZchannel_==0)//WW channel, change the names, which will be the plot lable
 	{
-		(theHistograms["ptlep1"])->SetName("ptlepton");
-		(theHistograms["ptlep2"])->SetName("ptneutrino");
-		(theHistograms["ptZll"])->SetName("ptWL");
-		(theHistograms["ptZjj"])->SetName("ptWjj");
-		(theHistograms["yZll"])->SetName("yWL");
-		(theHistograms["yZjj"])->SetName("yWjj");
-		(theHistograms["mLL"])->SetName("mWL");
-		(theHistograms["mZZ"])->SetName("mWW");
-		(theHistograms["etalep1"])->SetName("etalep");
-		(theHistograms["etalep2"])->SetName("etaneu");
+		(theHistograms["ptlep1"])->SetName("h_ptlepton");
+		(theHistograms["ptlep2"])->SetName("h_ptneutrino");
+		(theHistograms["ptZll"])->SetName("h_ptWL");
+		(theHistograms["ptZjj"])->SetName("h_ptWjj");
+		(theHistograms["yZll"])->SetName("h_yWL");
+		(theHistograms["yZjj"])->SetName("h_yWjj");
+		(theHistograms["mLL"])->SetName("h_mWL");
+		(theHistograms["mZZ"])->SetName("h_mWW");
+		(theHistograms["etalep1"])->SetName("h_etalep");
+		(theHistograms["etalep2"])->SetName("h_etaneu");
 	}
 
 	std::cout<<"From makeHisto: the histo with #vtx has "<<(theHistograms["nVtx"])->GetEntries()<<" entries"<<std::endl;
