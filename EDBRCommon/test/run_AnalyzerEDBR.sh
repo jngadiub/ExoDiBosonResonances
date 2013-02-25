@@ -2,7 +2,7 @@
 
 MYWORKAREA=$CMSSW_BASE/src/
 cd $MYWORKAREA
-#eval `scram runtime -sh`
+eval `scram runtime -sh`
 #cd /tmp/${USER}/
 
 
@@ -24,7 +24,7 @@ CFGAREA=${MYWORKAREA}/ExoDiBosonResonances/EDBRCommon/test/tmp_cfg/
 mkdir -p $CFGAREA
 
 type="presel" #### could be full or presel or fullsig, denpends on analyzerEDBR_zz2l2j_tpl.py
-OUTDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/test/$type/
+OUTDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv5/$type/
 mkdir -p $OUTDIR/logs
 
 # ok, now do the job:
