@@ -36,17 +36,17 @@ process.ANEDBR = AnalyzerXZZ.clone(
 ### if false, use the default collections
 ### in ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi
 ### (i.e. all the cands passing pre-selection cuts)
-processFullSel=True 
+processFullSel=False
 
 if processFullSel :
-    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
-    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
-    process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
-    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
-    # process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
-    # process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
-    # process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
-    # process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
+    #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
+    #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
+    #process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
+    #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
+    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
+    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
+    process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
+    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
 
 
 
@@ -166,7 +166,7 @@ elif "<SAMPLE>"=="DoublePhotonHighPt_Run2012D_PRv1" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
-#ww
+#ww--singlemu
 elif "<SAMPLE>"=="SingleMu_Run2012A_13Jul2012_xww" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
@@ -191,6 +191,32 @@ elif "<SAMPLE>"=="SingleMu_Run2012D_PromptReco_xww" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
+#ww---singleEle
+elif "<SAMPLE>"=="SingleElectron_Run2012A_13Jul2012_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)  
+elif "<SAMPLE>"=="SingleElectron_Run2012A_recover_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)   
+elif "<SAMPLE>"=="SingleElectron_Run2012B_13Jul2012_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+elif "<SAMPLE>"=="SingleElectron_Run2012C_24Aug2012_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+elif "<SAMPLE>"=="SingleElectron_Run2012C_PromptReco_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+elif "<SAMPLE>"=="SingleElectron_Run2012D_PromptReco_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+   
     
 else :
     print 'ERROR !!! Sample named <SAMPLE> was not recognized !'
