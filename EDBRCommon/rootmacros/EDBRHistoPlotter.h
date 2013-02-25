@@ -451,6 +451,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 
   //============ Data/MC ratio ==============
 
+  TLine* lineAtOne = NULL; 
   if(makeRatio_ && isDataPresent_)
     {
       fPads2->cd();
@@ -473,13 +474,16 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
       histoRatio->SetMarkerStyle(1);
       histoRatio->Draw("p");
 
-      TLine lineAtOne (histoRatio->GetXaxis()->GetXmin(),1,histoRatio->GetXaxis()->GetXmax(),1);
-      lineAtOne.SetLineColor(2);
-      lineAtOne.Draw();
+      lineAtOne = new TLine (histoRatio->GetXaxis()->GetXmin(),1,histoRatio->GetXaxis()->GetXmax(),1);
+      lineAtOne->SetLineColor(2);
+      lineAtOne->Draw();
     }
 
   //============ Data-MC/Error ==============
 
+  TLine* lineAtZero = NULL; 
+  TLine* lineAtPlusTwo = NULL; 
+  TLine* lineAtMinusTwo = NULL; 
   if(makeRatio_ && isDataPresent_)
     {      
       fPads3->cd();
@@ -537,15 +541,19 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	  nsigmaGraph->Draw("ap");
 	}
       
-      TLine lineAtZero (sumMC->GetXaxis()->GetXmin(),0,sumMC->GetXaxis()->GetXmax(),0);
-      lineAtZero.SetLineColor(2);
-      lineAtZero.Draw();
-      TLine lineAtPlusTwo (sumMC->GetXaxis()->GetXmin(),2,sumMC->GetXaxis()->GetXmax(),2);
-      lineAtPlusTwo.SetLineColor(2);
-      lineAtPlusTwo.Draw();
-      TLine lineAtMinusTwo (sumMC->GetXaxis()->GetXmin(),-2,sumMC->GetXaxis()->GetXmax(),-2);
-      lineAtMinusTwo.SetLineColor(2);
-      lineAtMinusTwo.Draw();
+      fPads3->Update();
+
+      lineAtZero = new TLine(sumMC->GetXaxis()->GetXmin(),0,sumMC->GetXaxis()->GetXmax(),0);
+      lineAtZero->SetLineColor(2);
+      lineAtZero->Draw();
+      lineAtPlusTwo = new TLine(sumMC->GetXaxis()->GetXmin(),2,sumMC->GetXaxis()->GetXmax(),2);
+      lineAtPlusTwo->SetLineColor(2);
+      lineAtPlusTwo->SetLineStyle(2);
+      lineAtPlusTwo->Draw();
+      lineAtMinusTwo = new TLine(sumMC->GetXaxis()->GetXmin(),-2,sumMC->GetXaxis()->GetXmax(),-2);
+      lineAtMinusTwo->SetLineColor(2);
+      lineAtMinusTwo->SetLineStyle(2);
+      lineAtMinusTwo->Draw();
     }
 
   // Save the picture
