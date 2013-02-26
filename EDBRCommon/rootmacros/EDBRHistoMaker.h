@@ -774,6 +774,11 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 					if(eventPassesCut(ivec, 200, 50));
 					else continue;
+					
+					//b veto cut
+					if(nbtagsT[ivec]==0) ;
+					else continue;
+
 				}
 				if(filled==0)
 				{   
