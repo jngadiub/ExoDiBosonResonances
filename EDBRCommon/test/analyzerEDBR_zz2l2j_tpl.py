@@ -20,7 +20,10 @@ process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTuple_<SAMPLE>_cff")
 ##     '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1/Summer12/presel/TTBAR/test_0.root')
 ##                     )
 
-
+### it's useful to have the summary
+process.options = cms.untracked.PSet(
+    wantSummary = cms.untracked.bool(True)
+    )
 
 from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
 process.ANEDBR = AnalyzerXZZ.clone(
