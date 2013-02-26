@@ -32,7 +32,7 @@ const int nBins[86] =
    100, 100, 100, 100, 100, 50,  50,
    35,  35,  50,  80,  75,  100, 20,
    100, 100, 100, 100, 100, 100, 100,
-   100, 100, 100, 100, 3,   22,  100,
+   100, 100, 100, 100, 4,   22,  100,
    40,  100, 100, 100, 100, 100, 100,
    100, 100, 100, 100, 100, 4,   4,   100, 43,
    10,  2,   100, 100, 100, 100, 100,
@@ -60,7 +60,7 @@ const double maxBin[86] =
    3.7,   3.7,   3.7,   1.0,    1.0,     2000,  2000,
    350.0, 350.0, 110.0, 140.0,  190.0,   500.0, 10.0,
    0.,    4.0,   4.0,   4.0,    -97.8,   -97.8, -97.8 ,
-   1.1,   1.2,   1000., 1000.,  3.,      105.,  100.,
+   1.1,   1.2,   1000., 1000.,  4.,      105.,  100.,
    1.,    100.,  100.,  100.,   100.,    0.20,  0.20,
    1.0,   1.0,   10.0,  10.0,   -97.,    -97.,  -97., 1.2, 42.5,
    10.5,  1.0,   10.0,  10.0,   10.,      10.,  0.1,
@@ -315,6 +315,7 @@ class EDBRHistoMaker {
 		Long64_t LoadTree(Long64_t entry);
 		void     Init(TTree *tree);
 		void     Loop(std::string outFileName);
+		double   FastLoop(double lumiValue, double kFactor, double nsubjetinessCut);
 
 		// Our added functions
 		void createAllHistos();
@@ -679,6 +680,10 @@ bool EDBRHistoMaker::eventPassesCut(int i, double ptZll_threshold, double ptlep1
 	bool passesLeptonicZPt = eventPassesLeptonicZPtCut(i, ptZll_threshold);
 	bool passesLep1Pt  = eventPassesLep1PtCut(i, ptlep1_threshold);
 	bool passesVBF     = eventPassesVBFCut(i);
+	//printf("passesFlavour: %i\n",passesFlavour);
+	//printf("passesRegion: %i\n",passesRegion);
+	//printf("passesNXJet: %i\n",passesNXJet);
+	//printf("passesLeptonicZPt: %i\n",passesLeptonicZPt);
 	bool result = 
 		passesFlavour and
 		passesRegion and
@@ -830,4 +835,55 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 	std::cout<<"From makeHisto: the histo with #vtx has "<<(theHistograms["nVtx"])->GetEntries()<<" entries"<<std::endl;
 	this->saveAllHistos(outFileName);
+}
+
+double EDBRHistoMaker::FastLoop(double lumiValue, double kFactor, double nsubjetinessCut){
+
+	if (fChain == 0) return -1;
+
+	Long64_t nentries = fChain->GetEntriesFast();
+
+	Long64_t nbytes = 0, nb = 0;
+	
+	double totalWeight = 0.0;
+			
+	for (Long64_t jentry=0; jentry<nentries;jentry++) {
+		Long64_t ientry = LoadTree(jentry);
+		if (ientry < 0) break;
+		nb = fChain->GetEntry(jentry);   nbytes += nb;
+		if(jentry==0){
+			float genLumi=1.0/LumiWeight;
+			if(genLumi==1.0)genLumi=-1.0;
+			if(genLumi!=-1.0) std::cout<<"Lumi of this sample: "<<genLumi <<"  /pb"<<std::endl;
+			else std::cout<<"Lumi of this sample: xxx  /pb (dummy for data)"<<std::endl;
+
+		}
+
+		// We calculate a weight here.
+		//double actualWeight = weight;//*HLTweight*PUweight*LumiWeight*GenWeight;
+		double actualWeight = PUweight*LumiWeight*GenWeight;
+		if(setUnitaryWeights_) {
+			if(jentry==0)printf("Unitary weights set!\n");
+			actualWeight=1.0;
+		}
+		//printf("jentry is %i\n",(int)jentry);
+				
+		for(int ivec=0;ivec<nCands;ivec++){
+		  if(eventPassesCut(ivec, 80)){
+		    double nsubjetiness = 1.0/nsubj12[ivec];
+		    double thisMZZ = mZZ[ivec];
+		    double minMass = 1000.0 - 1000*0.15;
+		    double maxMass = 1000.0 + 1000*0.15;
+		    
+		    if(nsubjetiness < nsubjetinessCut and
+		       thisMZZ > minMass and
+		       thisMZZ < maxMass) {
+		      totalWeight += actualWeight;
+		    }
+		  }
+		
+		}//end loop over nCands
+	}//end loop over entries
+	
+	return totalWeight*lumiValue*kFactor;
 }
