@@ -39,12 +39,12 @@ void loopPlot(){
   /// Should we plot the Data/Bkg and Data-Bkg/Error ratios?
   bool makeRatio = true;
   /// Should we REDO histograms?
-  bool redoHistograms = false;
+  bool redoHistograms = true;
 
   /// Path to wherever the files with the trees are. 
-  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv4/test/presel/";
+  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv5/fullsideband/";
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./pre_mu_sideband_1j_wl80_lep50_scale_veto1";
+  std::string outputDir = "./full_mu_sideband_1j_v5_wl200_lep50_scale";
 
   /// Setup names of data files for trees.
 
@@ -80,8 +80,8 @@ void loopPlot(){
   /*  
   const int nDATA=0;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={};
-  */    
-
+   */  
+  
   std::vector<std::string> fData;
   for(int ii=0;ii<nDATA;ii++){
     fData.push_back(pathToTrees+"treeEDBR_"+dataLabels[ii]+".root");
@@ -299,9 +299,9 @@ void loopPlot(){
   fColorsMC.push_back(kBlue-3);
   fColorsMC.push_back(kBlue-6);
   fColorsMC.push_back(kBlue-9);
-  fColorsMC.push_back(kRed-9);
-  fColorsMC.push_back(kRed);
   fColorsMC.push_back(kRed+3);
+  fColorsMC.push_back(kRed);
+  fColorsMC.push_back(kRed-9);
 
   ////// {"BulkG_WW_lvjj_c1p0_M600_xww","BulkG_WW_lvjj_c1p0_M1000_xww","BulkG_WW_lvjj_c1p0_M1500_xww"};
   std::vector<int> fColorsMCSig;
