@@ -869,7 +869,7 @@ double EDBRHistoMaker::FastLoop(double lumiValue, double kFactor, double nsubjet
 		//printf("jentry is %i\n",(int)jentry);
 				
 		for(int ivec=0;ivec<nCands;ivec++){
-		  if(eventPassesCut(ivec, 80)){
+		  if(eventPassesCut(ivec, 80, 20)){
 		    double nsubjetiness = 1.0/nsubj12[ivec];
 		    double thisMZZ = mZZ[ivec];
 		    double minMass = 1000.0 - 1000*0.15;
