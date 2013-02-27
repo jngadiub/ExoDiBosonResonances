@@ -53,7 +53,7 @@ if processFullSel :
 
 
 
-##### set Ngen and xsect values ofr MC samples
+##### set Ngen and xsect values ofr MC samples; xsect in pb !!! 
 if "TTBAR" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(6540800)
     process.ANEDBR.xsec=cms.double(225.197)
@@ -95,52 +95,63 @@ elif "WJetsPt100" in "<SAMPLE>" :
 #zz
 elif "BulkG_ZZ_lljj_c1p0_M600" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(41965)
-    process.ANEDBR.xsec=cms.double(652000.0)
+    process.ANEDBR.xsec=cms.double(0.652)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c1p0_M1000" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(40964)
+    process.ANEDBR.xsec=cms.double(0.0862)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_ZZ_lljj_c1p0_M1500" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40938)
-    process.ANEDBR.xsec=cms.double(17700.0)
+    process.ANEDBR.xsec=cms.double(0.0177)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M600" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(40789)
+    process.ANEDBR.xsec=cms.double(0.00104)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_ZZ_lljj_c0p2_M1000" in "<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(40964)
-    process.ANEDBR.xsec=cms.double(86200.0)
+    process.ANEDBR.Ngen=cms.uint32(41997)
+    process.ANEDBR.xsec=cms.double(0.000138)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "RSG_ZZ_lljj_c0p05_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(38022)
-    process.ANEDBR.xsec=cms.double(3122.0)
+    process.ANEDBR.xsec=cms.double(0.003122)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "RSG_ZZ_lljj_c0p2_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(37410)
-    process.ANEDBR.xsec=cms.double(48240.0)
+    process.ANEDBR.xsec=cms.double(0.048240)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "RSG_ZZ_lljj_c0p2_M1500" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(24996)
-    process.ANEDBR.xsec=cms.double(3877.0)
+    process.ANEDBR.xsec=cms.double(0.003877)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 #ww
 elif "RSG_WW_lvjj_c0p2_M600" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(31785)
-    process.ANEDBR.xsec=cms.double(6780000.0)
+    process.ANEDBR.xsec=cms.double(6.780)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "RSG_WW_lvjj_c0p2_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(34541)
-    process.ANEDBR.xsec=cms.double(402400.0)
+    process.ANEDBR.xsec=cms.double(0.4024)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "RSG_WW_lvjj_c0p2_M1500" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(23879)
-    process.ANEDBR.xsec=cms.double(31890)
+    process.ANEDBR.xsec=cms.double(0.03189)
+elif "RSG_WW_lvjj_c0p05_M1000" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(35421)
+    process.ANEDBR.xsec=cms.double(0.02599)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_WW_lvjj_c1p0_M600" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40371)
-    process.ANEDBR.xsec=cms.double(1300000)
+    process.ANEDBR.xsec=cms.double(1.300)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_WW_lvjj_c1p0_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40761)
-    process.ANEDBR.xsec=cms.double(172000)
+    process.ANEDBR.xsec=cms.double(0.172)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_WW_lvjj_c1p0_M1500" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(41136)
-    process.ANEDBR.xsec=cms.double(35400)
+    process.ANEDBR.xsec=cms.double(0.0354)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 
 ### Data Ele
