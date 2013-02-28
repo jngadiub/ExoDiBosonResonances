@@ -555,6 +555,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double nbtagsM[nMaxCand], nbtagscleanM[nMaxCand];
   double nbtagsT[nMaxCand], nbtagscleanT[nMaxCand];
 
+  //index of events in the cmgtuple, begin from 1
+  int nEvt;
+
 };//end class AnalyzerEDBR 
 
 

@@ -86,7 +86,10 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	typedef  cmg::WmunuSingleJetEDBR     cmgMuSingleJetEDBR  ; 
 	typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
 	typedef  cmg::WmunuDiJetEDBR     cmgMuDiJetEDBR  ;
+
 	
+	nEvt++;
+
 	if(debug_) cout<<"\n\nAnalyzing event"<<endl;
 	initDataMembers();
 
@@ -364,6 +367,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 void AnalyzerEDBR::init(){
 
 	initTree();
+	nEvt=0;
 
 
 
@@ -374,6 +378,7 @@ void AnalyzerEDBR::initTree(){
 
 	if(debug_)cout<<"creating the output TTree"<<endl;
 	outTree_ = new TTree("SelectedCandidates","angles etc.");
+	outTree_->Branch("nEvt"            ,&nEvt          ,"nEvt/I"                 );
 	outTree_->Branch("nCands"          ,&nCands        ,"nCands/I"               );
 	outTree_->Branch("event"           ,&nevent        ,"event/i"                );
 	outTree_->Branch("run"             ,&run           ,"run/i"                  );
