@@ -1,7 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 from PhysicsTools.PatAlgos.tools.helpers import *
 process = cms.Process("EDBR")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.load("Configuration.Geometry.GeometryIdeal_cff")
@@ -12,6 +11,7 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 
 ### input cmgTuples
 process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTuple_<SAMPLE>_cff")
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
 
 ## process.source = cms.Source("PoolSource",
 ##                     noEventSort = cms.untracked.bool(True),
@@ -29,7 +29,7 @@ from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
 process.ANEDBR = AnalyzerXZZ.clone(
     debug=cms.bool(False),
     outFileName=cms.string("treeEDBR_<SAMPLE>.root"),
-	VType=cms.string("Z"),
+	VType=cms.string("W"),
     Ngen=cms.uint32(1),
     xsec=cms.double(1.0) ###in pb
     )
@@ -39,7 +39,7 @@ process.ANEDBR = AnalyzerXZZ.clone(
 ### if false, use the default collections
 ### in ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi
 ### (i.e. all the cands passing pre-selection cuts)
-processFullSel=False
+processFullSel=True
 
 if processFullSel :
     #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
@@ -69,13 +69,13 @@ elif "DYJetsPt100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(2500000)
     process.ANEDBR.xsec=cms.double(39.1)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
-elif "WW" in "<SAMPLE>" :
+elif "WW"=="<SAMPLE>" or "WW_xww" == "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(3870000)
     process.ANEDBR.xsec=cms.double(57.1097)
 elif "WZ" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(1910000)
     process.ANEDBR.xsec=cms.double(22.88)
-elif "ZZ" in "<SAMPLE>" :
+elif "ZZ"=="<SAMPLE>" or "ZZ_xww"=="<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(485716)
     process.ANEDBR.xsec=cms.double(5.196)
     process.ANEDBR.FillGenLevelCode=cms.uint32(3)
@@ -241,7 +241,7 @@ print '---> Ngen=',process.ANEDBR.Ngen,'  Xsect=',process.ANEDBR.xsec
 
 process.filterFinalSelPath = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
-                                       HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
+                                       HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu"),
                                        eventSetupPathsKey = cms.string(''),
                                        andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
                                        throw = cms.bool(True)    # throw exception on unknown path names
