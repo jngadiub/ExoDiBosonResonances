@@ -5,13 +5,11 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 
 	debug_    = ps.getParameter<bool>("debug");
 	if(debug_)    cout << "AnalyzerEDBR constructor 555..." << endl;
-	cout<<"pippo1"<<endl;
 	isMC_       = ps.getParameter<bool>("isMC");
 	treatVBFAsMultiple_    = ps.getParameter<bool>("treatVBFAsMultiple");
 	saveVBFCands_   = ps.getParameter<bool>("saveVBFTaggedCands");
 	Ngen_     = ps.getParameter<unsigned int>("Ngen");
 	xsec_     = ps.getParameter<double>("xsec"); // in fb
-	cout<<"pippo2"<<endl;
 	cat_             = ps.getParameter<std::string>("EventCategory");
 	XEEColl_         = ps.getParameter<edm::InputTag>("EDBREEJJColl");
 	XEELDMap_        = ps.getParameter<edm::InputTag>("EDBREEJJLDValueMap");
