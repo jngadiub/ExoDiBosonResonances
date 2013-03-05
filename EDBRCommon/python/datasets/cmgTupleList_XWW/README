@@ -5,3 +5,5 @@ cmgTuple0219/ : trees used for with CA8 used for Shuai's talk on Wednesday 20th 
 cmgTuple0225/ : update with btagging information. Algorithm is CSV. Six more userfloat are added to each candidate, in ExoDiBosonResonances/EDBRCommon/plugins/KineVarsAdder.h
 			    change loose mu id to be traker muon without isolation.
 
+cmgTuple0304/ : update since 0225, change only CA8 - > AK7 in EDBRCommon/python/jet_cff.py
+
