@@ -11,6 +11,11 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 
 ### input cmgTuples
 process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTuple_<SAMPLE>_cff")
+#CA8
+#process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTupleList_XWW.cmgTuple0225.cmgTuple_<SAMPLE>_cff")
+#AK7
+#process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTupleList_XWW.cmgTuple0304.cmgTuple_<SAMPLE>_cff")
+#
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
 
 ## process.source = cms.Source("PoolSource",
@@ -91,6 +96,30 @@ elif "WJetsPt100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(12106534)
     process.ANEDBR.xsec=cms.double(282.5)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
+elif "SingleTopBarSchannel" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(139974)
+    process.ANEDBR.xsec=cms.double(1.76)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(1)
+elif "SingleTopBarTWchannel" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(493460)
+    process.ANEDBR.xsec=cms.double(11.1)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(1)
+elif "SingleTopBarTchannel" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(1904234)
+    process.ANEDBR.xsec=cms.double(30.7)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(1)    
+elif "SingleTopSchannel" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(209237)
+    process.ANEDBR.xsec=cms.double(3.79)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(1)    
+elif "SingleTopTWchannel" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(497658)
+    process.ANEDBR.xsec=cms.double(11.1)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(1)    
+elif "SingleTopTchannel" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(3750740)
+    process.ANEDBR.xsec=cms.double(56.4)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(1)    
 ### MC signal
 #zz
 elif "BulkG_ZZ_lljj_c1p0_M600" in "<SAMPLE>" :
