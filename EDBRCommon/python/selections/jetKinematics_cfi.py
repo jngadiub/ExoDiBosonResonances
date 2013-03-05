@@ -25,6 +25,7 @@ mergedJetKinematics = cms.PSet(
     eta = cms.string('abs(eta()) < 2.4'),
     phi = cms.string('abs(phi()) < 3.2'),
     prunedMass = cms.string('prunedMass()>50.0&&prunedMass()<130.0')
+###    prunedMass = cms.string('prunedMass()>0.0&&prunedMass()<999.0')
     )
 
 mergedJetVTagging = cms.PSet(

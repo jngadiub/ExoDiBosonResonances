@@ -49,32 +49,38 @@ void fitPseudo( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* initalv
 void pseudoMassge(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* initalvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2);
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::string t2Name,int nxjCut=-1);
 
-const string inDir="/afs/cern.ch/work/t/tomei/public/EXOVV_2012/analyzer_trees/productionv1_round2/fullselCA8/";
-const string outDir="FitSidebandsMJJ/";
+const string inDirSB="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1b/fullCA8XCheck_SB/";
+const string outDir="FitSidebandsMJJ_CA8XCheck/";
 const string leptType="ALL";
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 250;
 
 //binning for merged Jet topology 
-const int nBins1=21;
+const int nBins1=22;
 const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1400,1600,1800,2000,2200,2400};
+			    1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
 
 //binning for double Jet topology 
-const int nBins2=21;
+const int nBins2=22;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1400,1600,1800,2000,2200,2400};
+			    1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
 
 
 int main(){
   RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR) ;
   //DEBUG=0, INFO=1, PROGRESS=2, WARNING=3, ERROR=4, FATAL=5
-  ofstream logf("./log_fitBackground.log",ios::out);
+  ofstream logf( (outDir+"./log_fitBackground.log").c_str(),ios::out);
 
   TChain* chainData = new TChain("SelectedCandidates");
-  chainData->Add( (inDir+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
-  //  chainData->Add( (inDir+"treeEDBR_DoublePhoton_Run2012*.root").c_str()  );
-  //  chainData->Add( (inDir+"treeEDBR_Photon_Run2012*.root").c_str()  );
+  if( leptType=="MU" || leptType=="ALL"){
+    logf<<"Loading MU-chan trees in DATA Sideband"<<endl;
+    chainData->Add( (inDirSB+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
+  }
+  if( leptType=="ELE" || leptType=="ALL"){
+    logf<<"Loading ELE-chan trees in DATA Sideband"<<endl;
+    chainData->Add( (inDirSB+"treeEDBR_DoublePhoton_Run2012*.root").c_str()  );
+    chainData->Add( (inDirSB+"treeEDBR_Photon_Run2012*.root").c_str()  );
+  }
 
   logf<<"In the data chain there are "<<chainData->GetEntries()<<" events"<<endl;
 
@@ -394,7 +400,8 @@ int main(){
     xf->Draw();
     can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+leptType+".root").c_str());
     can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+leptType+".eps").c_str());
-    xf->SetMinimum(0.06);
+    xf->SetMinimum(0.0006);
+    xf->SetMaximum(250.0);
     gPad->SetLogy();
     xf->Draw();
     can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+leptType+"_log.root").c_str());
@@ -727,7 +734,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   double leptType;
   int mynxj[35];
   double mZZd[35],region[35],mZqq[35];
-
+  double nsubj[35];
 
   t1->SetBranchAddress("nCands",&ncands);
   t1->SetBranchAddress("run",&nrun);
@@ -738,7 +745,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   t1->SetBranchAddress("nXjets",mynxj);
   t1->SetBranchAddress("mJJ",mZqq);
   t1->SetBranchAddress("region",region);
-
+  t1->SetBranchAddress("nsubj12",nsubj);
 
   TFile *fOut=new TFile(f2Name.c_str(),"RECREATE");
   fOut->cd();
@@ -783,7 +790,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
       }
 
       if(mynxj_2==nxjCut||nxjCut<0) {
-	int nb=t2->Fill();
+	t2->Fill();
 	//	if(i%1000==1)cout<<"Filled "<<nb<<" bytes"<<endl;
 	//	if(nb<0)cout<<"====>  Event"<<nevt_2 <<"  Filled "<<nb<<" bytes"<<endl;
       }
@@ -804,6 +811,4 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
  
 
   //  cout<<"returning"<<endl;
-  // return t2;
 }
-
