@@ -196,13 +196,13 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 			etajjNKF  = nokinfitCand->leg2().eta();
 			phijjNKF  = nokinfitCand->leg2().phi();
 
-			if(nokinfitCand->leg2().getSelection("cuts_isSignal")){
+			if(nokinfitCand->leg2().getSelection("cuts_isWSignal") || nokinfitCand->leg2().getSelection("cuts_isZSignal")){
 				isMJJSigReg=1.0;
 			}
-			else if(nokinfitCand->leg2().getSelection("cuts_isSideband")) isMJJSigReg=0.0;
+			else if(nokinfitCand->leg2().getSelection("cuts_isWSideband") || nokinfitCand->leg2().getSelection("cuts_isZSideband")) isMJJSigReg=0.0;
 			else {
 				throw cms::Exception("Value out of range")<<"Error, NoKinFit Z->jj is neither signal or sideband region. MJJ-NoKinFit="<<mjjNKF<<std::endl;
-			}
+			}			
 		}
 
 		newCand.addUserFloat("isomu1mod",iso1 );

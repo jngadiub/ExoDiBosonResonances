@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 ### these VPset are dummy for now, to be updated for 2012
 doubleMuLeg1Eff_Run2011A= cms.VPSet(
+   #etabin-low   etabin-high   ptbin-low   ptbin-high   eff
     cms.PSet(bin = cms.vdouble(0.0,0.8,10.,20. ,0.975)),
     cms.PSet(bin = cms.vdouble(0.0,0.8,20.,40. ,0.975)),
     cms.PSet(bin = cms.vdouble(0.0,0.8,40.,150.,0.973)),

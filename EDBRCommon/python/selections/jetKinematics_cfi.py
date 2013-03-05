@@ -18,6 +18,13 @@ isSignal = cms.PSet(
 isSideband = cms.PSet(
     mass = cms.string('(mass() >= 60 && mass() < 75) || ( mass() >= 105 && mass() < 130 )'),
 )
+isWSignal = cms.PSet(
+    mass = cms.string('mass() >= 70 && mass() < 100'),
+)
+isWSideband = cms.PSet(
+    mass = cms.string('(mass() >= 60 && mass() < 70) || ( mass() >= 100 && mass() < 130 )'),
+)
+
 
 ### used for merged jet topology
 mergedJetKinematics = cms.PSet(
@@ -40,4 +47,12 @@ isMergedSignal = cms.PSet(
 
 isMergedSideband = cms.PSet(
     prunedMass = cms.string('prunedMass()<75.0 || prunedMass()>105.0')
+    )
+
+isMergedWSignal = cms.PSet(
+    prunedMass = cms.string('prunedMass()>70.0 && prunedMass()<100.0')
+    )
+
+isMergedWSideband = cms.PSet(
+    prunedMass = cms.string('prunedMass()<70.0 || prunedMass()>100.0')
     )

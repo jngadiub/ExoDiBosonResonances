@@ -118,7 +118,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
 
    // if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric "<<ih<<" "<<flush;
-   reg[ih]=(edbr->leg2().getSelection("cuts_isSignal")? 1.0 : 0.0 );
+   if(VType_=="W")reg[ih]=(edbr->leg2().getSelection("cuts_isWSignal")? 1.0 : 0.0 );
+   if(VType_=="Z")reg[ih]=(edbr->leg2().getSelection("cuts_isZSignal")? 1.0 : 0.0 );
    mzz[ih]=edbr->mass();
    ptmzz[ih]=edbr->pt();
   

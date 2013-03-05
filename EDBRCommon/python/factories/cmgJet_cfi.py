@@ -42,10 +42,9 @@ cmgJet = cms.EDFilter(
 )
 
 
-from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import mergedJetKinematics
-from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import mergedJetVTagging
-from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import isMergedSideband
-from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import isMergedSignal
+from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import mergedJetKinematics, mergedJetVTagging
+from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import isMergedSideband, isMergedSignal
+from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import isMergedWSideband, isMergedWSignal
 
 structJetFactory = cms.PSet(
        inputCollection = cms.InputTag("selectedPatJets"),
@@ -78,8 +77,10 @@ cmgStructuredJet = cms.EDFilter(
     mergedJetKinematics = mergedJetKinematics.clone(),
     looseJetId = looseJetId.clone(),
     mergedJetVTagging = mergedJetVTagging.clone(),
-    isSignal = isMergedSignal.clone(),
-    isSideband = isMergedSideband.clone(),
+    isZSignal = isMergedSignal.clone(),
+    isZSideband = isMergedSideband.clone(),
+    isWSignal = isMergedWSignal.clone(),
+    isWSideband = isMergedWSideband.clone(),
     genP = cms.PSet( genLepton = cms.string("sourcePtr().get().hasOverlaps('genJets')"))
  #      recoLepton = cms.PSet( recoLepton = cms.string("sourcePtr().get().hasOverlaps('recoLeptons')")),
        )

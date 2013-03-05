@@ -8,14 +8,16 @@ diJetFactory = cms.PSet(
 
 
 #from CMGTools.Common.selections.kinematics_cfi import dijetKinematics
-from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import zjj,isSignal,isSideband
+from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import zjj,isSignal,isSideband, isWSignal,isWSideband
 cmgDiJet = cms.EDFilter(
     "DiPFJetPOProducer",
     cfg = diJetFactory.clone(),
     cuts = cms.PSet(
        zjj  = zjj.clone(),
-       isSignal = isSignal.clone(),
-       isSideband = isSideband.clone(),
+       isZSignal = isSignal.clone(),
+       isZSideband = isSideband.clone(),
+       isWSignal = isWSignal.clone(),
+       isWSideband = isWSideband.clone(),
        genP = cms.PSet(genP = cms.string("leg1.getSelection(\"cuts_genParton\") && leg2.getSelection(\"cuts_genParton\")")),
 ##        btags= cms.PSet(btag0= cms.string("!leg1.getSelection(\"cuts_JP_loose\") "
 ##                                          +"&& !leg2.getSelection(\"cuts_JP_loose\") "
