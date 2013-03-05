@@ -9,13 +9,13 @@
 
 void absolute_eff()
 {
-	TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv5/fullsig/";
+	TString inputpath = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/fullsig";
 	TString cut = "absolute_efficiency";
 	vector<TString> dataSamples;
 	vector<TString> bkgSamples;
 	vector<TString> sigSamples;
 
-	bool weightedeff = false;
+	bool weightedeff = true;
 
 	double lumi = 19538.85;
 /*
