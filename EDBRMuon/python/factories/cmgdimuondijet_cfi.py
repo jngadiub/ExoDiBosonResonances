@@ -14,10 +14,10 @@ dimuondijetKinFitFactory.leg2Collection = cms.InputTag("cmgDiJetKinFit")
 cmgDiMuonDiJet = cms.EDFilter(
     "DiMuonDiJetPOProducer",
     cfg = dimuondijetFactory.clone(),
-    cuts = cms.PSet(preSel = cms.PSet( noOverlap = cms.string(" deltaR(leg1.leg1.eta,leg1.leg1.phi,leg2.leg1.sourcePtr.eta,leg2.leg1.sourcePtr.phi) > 0.5 &&"
-                                                             +"deltaR(leg1.leg2.eta,leg1.leg2.phi,leg2.leg1.sourcePtr.eta,leg2.leg1.sourcePtr.phi) > 0.5 &&"
-                                                             +"deltaR(leg1.leg1.eta,leg1.leg1.phi,leg2.leg2.sourcePtr.eta,leg2.leg2.sourcePtr.phi) > 0.5 &&"
-                                                             +"deltaR(leg1.leg2.eta,leg1.leg2.phi,leg2.leg2.sourcePtr.eta,leg2.leg2.sourcePtr.phi) > 0.5 "),
+    cuts = cms.PSet(preSel = cms.PSet( noOverlap = cms.string(" deltaR(leg1.leg1.eta,leg1.leg1.phi,leg2.leg1.sourcePtr.eta,leg2.leg1.sourcePtr.phi) > 0.8 &&"
+                                                             +"deltaR(leg1.leg2.eta,leg1.leg2.phi,leg2.leg1.sourcePtr.eta,leg2.leg1.sourcePtr.phi) > 0.8 &&"
+                                                             +"deltaR(leg1.leg1.eta,leg1.leg1.phi,leg2.leg2.sourcePtr.eta,leg2.leg2.sourcePtr.phi) > 0.8 &&"
+                                                             +"deltaR(leg1.leg2.eta,leg1.leg2.phi,leg2.leg2.sourcePtr.eta,leg2.leg2.sourcePtr.phi) > 0.8 "),
                                         kinematics = cms.PSet( mass = cms.string("mass > 180"))#XXXX
                                         )
                    
