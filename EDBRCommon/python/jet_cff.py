@@ -149,8 +149,8 @@ customJets  = cms.EDProducer("PATJetCleaner",
                                         )
 
 jetSequence = cms.Sequence(
-    highPtJets*jetCountFilter
-    + genSelectorZDaughter*genSelectorZQDaughter
+#    highPtJets*jetCountFilter
+    genSelectorZDaughter*genSelectorZQDaughter
 #    + kt6PFJetsForIso*ak5PFJetsL1FastL2L3*qglAK5PF
     #+customJets
     + puJetIdSequence
@@ -162,8 +162,8 @@ jetSequence = cms.Sequence(
     )
 
 mergedJetSequence = cms.Sequence(
-    highPtJets*jetCountFilter
-    + genSelectorZQQ
+    # highPtJets*jetCountFilter
+    genSelectorZQQ
     + genSelectorZRQDaughter
     + genSelectorZAQDaughter
     + puJetIdSequence

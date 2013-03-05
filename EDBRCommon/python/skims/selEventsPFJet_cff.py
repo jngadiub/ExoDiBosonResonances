@@ -4,7 +4,7 @@ jetIDJet = cms.EDFilter(
 #    "CmgBaseJetSelector",
     "CmgPFJetSelector",
     src = cms.InputTag("cmgJet"),
-    cut = cms.string( " getSelection(\"cuts_jetKinematics\") && getSelection(\"cuts_looseJetId\")")
+    cut = cms.string( "getSelection(\"cuts_jetKinematics\") && getSelection(\"cuts_looseJetId\")")
     )
 
 selectedJetCandFilter = cms.EDFilter("CandViewCountFilter",

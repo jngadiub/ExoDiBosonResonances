@@ -366,7 +366,9 @@ massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","WelenuNJe
 cloneProcessingSnippet(process,process.analysisSequenceEVJJ, "FullE")
 cloneProcessingSnippet(process,process.analysisSequenceMVJJ, "FullM")
 cloneProcessingSnippet(process,process.analysisSequenceMergedJets, "FullJ")
+process.analysisSequenceEVJJFullE.remove(process.selectedJetCandFilterFullE)
 process.analysisSequenceEVJJFullE.remove(process.selectedZjjCandFilterFullE)
+process.analysisSequenceMVJJFullM.remove(process.selectedJetCandFilterFullM)
 process.analysisSequenceMVJJFullM.remove(process.selectedZjjCandFilterFullM)
 process.analysisSequenceMergedJetsFullJ.remove(process.selectedVJetCandFilterFullJ)
 
