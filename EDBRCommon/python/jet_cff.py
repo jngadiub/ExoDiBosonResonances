@@ -56,7 +56,8 @@ puJetIdSequence = cms.Sequence(puJetMvaCustom)
 # PF base jets (light PF jets, do not store constituents) -------
 # must make cmgJet as first  PFJetFactory needs the  puMVA VM
 # and they are done with the PAT-jets in PAT-tuples.
-from ExoDiBosonResonances.EDBRCommon.factories.cmgJet_cfi import cmgJet as cmgJetRaw
+from ExoDiBosonResonances.EDBRCommon.factories.cmgJet_cfi import cmgJet as cmgJetDummyName
+cmgJetRaw = cmgJetDummyName.clone()
 cmgJetRaw.cfg.inputCollection=cms.InputTag('selectedPatJetsCA8CHSwithQjets')#"selectedPatJets")
 cmgJetRaw.cfg.puVariables=cms.InputTag("puJetIdCA8CHS")
 #cmgJet = cmgJetRaw.clone()

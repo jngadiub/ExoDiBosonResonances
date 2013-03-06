@@ -52,13 +52,18 @@ cmgEDBRMergedWeighted = cms.EDProducer("WelenuSingleJetEDBRWeightAdder",
 
 #### add extra-kinematic variables to EDBR candidate (only the one with kin-fit)
 cmgEDBRExtra = cms.EDProducer("WelenuDiJetEDBRKineAdder",
-                                   src=cms.InputTag("cmgEDBRKinFitWeighted"),
-                                   noKinFitSrc=cms.InputTag("cmgEDBRWeighted") #leave empty if SingleJet EDBR
+                              src=cms.InputTag("cmgEDBRKinFitWeighted"),
+                              noKinFitSrc=cms.InputTag("cmgEDBRWeighted"), #leave empty if SingleJet EDBR
+                              BTagJets=cms.InputTag("jetAK5"),
+                              BTagCleaningTarget=cms.InputTag("jetIDJet")                                
+            
                                    )
 
 cmgEDBRMergedExtra = cms.EDProducer("WelenuSingleJetEDBRKineAdder",
                                    src=cms.InputTag("cmgEDBRMergedWeighted"),
-                                   noKinFitSrc=cms.InputTag("") #leave empty if SingleJet EDBR
+                                   noKinFitSrc=cms.InputTag(""), #leave empty if SingleJet EDBR
+                                    BTagJets=cms.InputTag("jetAK5"),
+                                    BTagCleaningTarget=cms.InputTag("jetIDJet")    
                                    )
 
 edbrSequenceEVJJ = cms.Sequence(

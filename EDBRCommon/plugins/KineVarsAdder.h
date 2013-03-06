@@ -12,8 +12,10 @@ template<class edbrtype>
 class KineVarsAdder : public edm::EDProducer {
 	public:
 		explicit KineVarsAdder(const edm::ParameterSet& iConfig) :
-			src_(iConfig.getParameter<edm::InputTag>("src")),
-			nokinfitSrc_(iConfig.getParameter<edm::InputTag>("noKinFitSrc"))
+		  src_(iConfig.getParameter<edm::InputTag>("src")),
+		  nokinfitSrc_(iConfig.getParameter<edm::InputTag>("noKinFitSrc")),
+		  bjetSrc_(iConfig.getParameter<edm::InputTag>("BTagJets")),
+		  jetSrc_(iConfig.getParameter<edm::InputTag>("BTagCleaningTarget"))
 																			//    METSrc_(iConfig.getParameter<edm::InputTag>("METsrc"))
 	{
 		produces<std::vector<edbrtype> >(); // the actual filtered collection
@@ -33,6 +35,8 @@ class KineVarsAdder : public edm::EDProducer {
 		edm::InputTag src_ ;
 		edm::InputTag nokinfitSrc_ ;
 
+		edm::InputTag bjetSrc_ ;
+		edm::InputTag jetSrc_ ;
 		//  edm::InputTag METSrc_;
 		//  StringCutObjectSelector<pat::MET> METcut_;
 		bool isDoubleJet_;
@@ -64,45 +68,51 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 
 
 	//for b tagging: get AK5 jet and CA8 jet
-	edm::Handle<pat::JetCollection> ak5jetCands;
-	iEvent.getByLabel("selectedPatJets",ak5jetCands);
-    edm::Handle<pat::JetCollection> ca8jetCands;
-    iEvent.getByLabel("selectedPatJetsCA8CHSpruned",ca8jetCands);
-
 	float nbtagsL=0.;
 	float nbtagsM=0.;
 	float nbtagsT=0.;
 	float nbtagscleanL=0.;
 	float nbtagscleanM=0.;
 	float nbtagscleanT=0.;
-	bool isclean=0;
+	bool isclean=false;
+
+	if(bjetSrc_.encode().size()){//if input tag is not null
+	  edm::Handle<std::vector<cmg::PFJet> > ak5jetCands;
+	  iEvent.getByLabel(bjetSrc_,ak5jetCands);
+	  edm::Handle<std::vector<cmg::PFJet> > ca8jetCands;
+	  iEvent.getByLabel(jetSrc_,ca8jetCands);
+	  
 	
-	//std::cout<<"################################"<<std::endl;
-	for(pat::JetCollection::const_iterator ak5 = ak5jetCands->begin(); ak5 != ak5jetCands->end(); ++ak5 ){
-		double discCSV = ak5->bDiscriminator( "combinedSecondaryVertexBJetTags" );
-		//double discJP  = ak5->bDiscriminator( "JetProbabilityBJetTags" );
-		//double   discSSVHE=ak5->bDiscriminator( "SimpleSecondaryVertexHighEffBJetTags");
-		//std::cout<<discCSV<<" "<<discSSVHE<<std::endl;
-		//std::cout<<discCSV<<std::endl;
-		if(discCSV>0.244) nbtagsL++;// loose working point
+	  //	pat::JetCollection::const_iterator ak5;
+	  //	pat::JetCollection::const_iterator ca8;
+	  std::vector<cmg::PFJet>::const_iterator ak5;
+	  std::vector<cmg::PFJet>::const_iterator ca8;
+	  
+	  //std::cout<<"################################"<<std::endl;
+	  for(ak5 = ak5jetCands->begin(); ak5 != ak5jetCands->end(); ++ak5 ){
+	    double discCSV = ak5->bDiscriminator( "combinedSecondaryVertexBJetTags" );
+	    
+	    //double discJP  = ak5->bDiscriminator( "JetProbabilityBJetTags" );
+	    //double   discSSVHE=ak5->bDiscriminator( "SimpleSecondaryVertexHighEffBJetTags");
+	    //std::cout<<discCSV<<" "<<discSSVHE<<std::endl;
+	    //std::cout<<discCSV<<std::endl;
+	    if(discCSV>0.244) nbtagsL++;// loose working point
 		if(discCSV>0.679) nbtagsM++;// medium working point
 		if(discCSV>0.898) nbtagsT++;// tight working point
-
+		
 		//check if the btagged ak5 is overlapped with ca8(mass>50)
 		isclean=1;
-		for(pat::JetCollection::const_iterator ca8 = ca8jetCands->begin(); ca8 != ca8jetCands->end(); ++ca8){
-			//std::cout<<ca8->mass()<<" "<<deltaR(  ak5->eta(),ak5->phi(),ca8->eta(),ca8->phi()  )<<std::endl;
-			if(ca8->mass()>50&&deltaR(  ak5->eta(),ak5->phi(),ca8->eta(),ca8->phi()  )<0.8) { isclean=0; break; }
+		for(ca8 = ca8jetCands->begin(); ca8 != ca8jetCands->end(); ++ca8){
+		  //std::cout<<ca8->mass()<<" "<<deltaR(  ak5->eta(),ak5->phi(),ca8->eta(),ca8->phi()  )<<std::endl;
+		  if(ca8->mass()>50&&deltaR(  ak5->eta(),ak5->phi(),ca8->eta(),ca8->phi()  )<0.8) { isclean=0; break; }
 		}
 		if(discCSV>0.244&&isclean==1) nbtagscleanL++;
 		if(discCSV>0.679&&isclean==1) nbtagscleanM++;
 		if(discCSV>0.898&&isclean==1) nbtagscleanT++;
-	}
+	  }
+	}//end if intput ag is not empty
 	//std::cout<<nbtags<<" "<<nbtagsclean<<std::endl;
 	//std::cout<<"################################"<<std::endl;
-
-
-
 
 	for (unsigned int i=0 ; i<edbrcandidates->size() ; ++i ) {
 		edm::RefToBase<edbrtype>  edbrCand = edbrcandidates->refAt(i);

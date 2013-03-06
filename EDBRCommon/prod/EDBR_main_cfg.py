@@ -222,18 +222,23 @@ process.load('ExoDiBosonResonances.EDBRCommon.factories.cmgDiJet_cfi')
 process.load('ExoDiBosonResonances.EDBRCommon.factories.cmgDiJetKinFit_cfi')
 process.load('ExoDiBosonResonances.EDBRCommon.skims.selEventsPFJet_cff')
 process.load('ExoDiBosonResonances.EDBRCommon.skims.selEventsZjj_cff')
+#process.load('ExoDiBosonResonances.EDBRCommon.jetAK5_cff')
 
-process.analysisSequenceJets = cms.Sequence(
+process.analysisSequenceJets1 = cms.Sequence(
     process.jetSequence +
     process.selectedJetSequence +
-    process.diJetSequence +
-    process.selectedZjjSequence+
-    process.cmgDiJetKinFit
+    process.diJetSequence)
+
+##    process.selectedZjjSequence+
+process.analysisSequenceJets2 = cms.Sequence(
+    process.cmgDiJetKinFit 
+#   + process.jetAK5Sequence
     )
 
 process.analysisSequenceMergedJets = cms.Sequence(
     process.mergedJetSequence +
     process.selectedMergedJetSequence 
+#    process.jetAK5Sequence
     )
 
 ###########################################################
@@ -245,9 +250,9 @@ process.load('ExoDiBosonResonances.EDBRElectron.resonanceEle_cff')
 cloneProcessingSnippet(process,process.edbrSequenceEEJJ, "Ele")
 process.analysisSequenceEEJJ = cms.Sequence(
     process.analysisSequenceElectrons +
-
-    process.analysisSequenceJets +
-    
+    process.analysisSequenceJets1 +
+    process.selectedZjjSequence +
+    process.analysisSequenceJets2 +    
     process.edbrSequenceEEJJEle
     )
 
@@ -265,7 +270,9 @@ process.load('ExoDiBosonResonances.EDBRMuon.resonanceMu_cff')
 ##cloneProcessingSnippet(process,process.edbrSequenceMMJJ, "Mu")
 process.analysisSequenceMMJJ = cms.Sequence(
     process.analysisSequenceMuons +
-    process.analysisSequenceJets +
+    process.analysisSequenceJets1 +
+    process.selectedZjjSequence +
+    process.analysisSequenceJets2 +
     process.edbrSequenceMMJJ
     )
 
@@ -318,40 +325,30 @@ massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectro
 massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronDiJetEDBRTagger","DiMuonDiJetEDBRTagger")
 massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronSingleJetEDBRTagger","DiMuonSingleJetEDBRTagger")
 massSearchReplaceParam(process.cmgSeqMu,"_TypedParameterizable__type","DiElectronNJetEDBRBestCandidateSelector","DiMuonNJetEDBRBestCandidateSelector")
-
-
-
-### some magic with python because we want to re-use
-### the Sequences used for the preSel path, but removing the filters
-### on number of Z->1j or Z->2j because when running the full analysis chain
-### we want to merge them in the end by means of the BestCandidateSelector
-cloneProcessingSnippet(process,process.analysisSequenceEEJJ, "FullE")
-cloneProcessingSnippet(process,process.analysisSequenceMMJJ, "FullM")
-cloneProcessingSnippet(process,process.analysisSequenceMergedJets, "FullJ")
-process.analysisSequenceEEJJFullE.remove(process.selectedJetCandFilterFullE)
-process.analysisSequenceEEJJFullE.remove(process.selectedZjjCandFilterFullE)
-process.analysisSequenceMMJJFullM.remove(process.selectedJetCandFilterFullM)
-process.analysisSequenceMMJJFullM.remove(process.selectedZjjCandFilterFullM)
-process.analysisSequenceMergedJetsFullJ.remove(process.selectedVJetCandFilterFullJ)
-
-massSearchReplaceAnyInputTag(process.cmgSeqEle,cms.InputTag("cmgEDBRSelKinFitEle"),cms.InputTag("cmgEDBRSelKinFitEleFullE"))
-massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRSelKinFitEle"),cms.InputTag("cmgEDBRSelKinFitMuFullM"))
+massSearchReplaceAnyInputTag(process.cmgSeqEle,cms.InputTag("cmgEDBRSelKinFitEle"),cms.InputTag("cmgEDBRSelKinFitEle"))
+massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRSelKinFitEle"),cms.InputTag("cmgEDBRSelKinFitMu"))
+massSearchReplaceAnyInputTag(process.cmgSeqEle,cms.InputTag("cmgEDBRMergedSelEle"),cms.InputTag("cmgEDBRMergedSelEle"))
 massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRMergedSelEle"),cms.InputTag("cmgEDBRMergedSelMu"))
-
-
-
 
 #collect adjusted sequences into paths
 if options.lepton == "both" or options.lepton == "ele":
-     process.cmgEDBRZZEle = cms.Path(process.eventFilterSequence+
-                                    process.analysisSequenceEEJJFullE +
-                                    process.analysisSequenceMergedJetsFullJ + process.edbrSequenceMergedEle +
-                                    process.cmgSeqEle )
+     process.cmgEDBRWWEle = cms.Path(process.eventFilterSequence+
+                                     process.analysisSequenceElectrons +
+                                     process.analysisSequenceJets1 +
+                                     process.analysisSequenceJets2 +
+                                     process.edbrSequenceEEJJEle+
+                                     process.mergedJetSequence +
+                                     process.edbrSequenceMergedEle +
+                                     process.cmgSeqEle )
 
 if options.lepton == "both" or options.lepton == "mu":
-     process.cmgEDBRZZMu = cms.Path(process.eventFilterSequence+
-                                    process.analysisSequenceMMJJFullM +
-                                    process.analysisSequenceMergedJetsFullJ + process.edbrSequenceMergedMMJ +
+     process.cmgEDBRWWMu = cms.Path(process.eventFilterSequence+
+                                    process.analysisSequenceMuons +
+                                    process.analysisSequenceJets1 +
+                                    process.analysisSequenceJets2 +
+                                    process.edbrSequenceMMJJ +                                    
+                                    process.mergedJetSequence +
+                                    process.edbrSequenceMergedMMJ +
                                     process.cmgSeqMu )
 
 
