@@ -134,3 +134,7 @@ running the script
 If some job is listed of having being failed, look for more informations
 in the corresponding log file. The script simply parses the log file and
 greps for the workd 'exception' . 
+
+You can use the option 
+RESUB=1
+to resubmit problematic jobs.
