@@ -24,14 +24,14 @@ void loopPlot(){
   bool wantMuons     = true; // Will make histograms for muons
   bool wantSideband  = true; // Will make histograms for sideband region
   bool wantSignal    = false; // Will make histograms for signal region
-  int  wantNXJets    = 2; // Will make histograms for 1 or 2 jet topology
-  int  isZZchannel   = true; //plot label for zz (true) or ww (false)
+  int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
+  int  isZZchannel   = false; //plot label for zz (true) or ww (false)
   int  flavour = 0; 
   if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
   
   /// Luminosity value in pb^-1
-  double lumiValue = 19477.6;// for DoubleEle2012?
-  //double lumiValue = 19538.85;// for SingleMu2012
+  //double lumiValue = 19477.6;// for DoubleEle2012?
+  double lumiValue = 19538.85;// for SingleMu2012
   /// k-factor for LO to NNLO
   double kFactor = 1.;
   /// Should we scale the histograms to data?
@@ -42,12 +42,14 @@ void loopPlot(){
   bool redoHistograms = true;
 
   /// Path to wherever the files with the trees are. 
-  //std::string pathToTrees="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv2/fullsel/";
-  std::string pathToTrees="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1b/fullCA8XCheck_SIG/";
+  std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/full/";
+  //std::string pathToTrees="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1b/fullCA8XCheck_SIG/";
+  
+
   ///afs/cern.ch/work/s/shuai/public/diboson/trees/productionv4/test/presel/";
 
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./figures_CA8";
+  std::string outputDir = "./WW_full_mu_signal_1j_wl200_lep50_met40_leptonVeto_btagVeto_CA8";
 
   /// Setup names of data files for trees.
 
@@ -70,9 +72,7 @@ void loopPlot(){
 				 "DoublePhotonHighPt_Run2012C_PRv2",
 				 "DoublePhotonHighPt_Run2012D_PRv1"};
   */ 
-
-  
-  /*
+ 
   const int nDATA=6;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"SingleMu_Run2012A_13Jul2012_xww",
 				 "SingleMu_Run2012A_recover_xww",
@@ -80,10 +80,11 @@ void loopPlot(){
 				 "SingleMu_Run2012C_24Aug2012_xww",
 				 "SingleMu_Run2012C_PromptReco_xww",
 				 "SingleMu_Run2012D_PromptReco_xww"};  
-  
-  */  
+    
+  /*  
   const int nDATA=0;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={};
+  */
 
   std::vector<std::string> fData;
   for(int ii=0;ii<nDATA;ii++){
@@ -91,8 +92,9 @@ void loopPlot(){
   }
 
   /// Setup names of MC files for trees.
+
+  /*  
   const int nMC=7;//set to zero if you don't want to plot
-  
   std::string mcLabels[nMC]={"TTBAR",
 			     "WW",
 			     "WZ",
@@ -100,7 +102,8 @@ void loopPlot(){
 			     "DYJetsPt50To70",
 			     "DYJetsPt70To100",
 			     "DYJetsPt100"};
-  /*
+  */
+  const int nMC=10;//set to zero if you don't want to plot
   std::string mcLabels[nMC]={"TTBAR_xww",
 			     "WW_xww",
 			     "WZ_xww",
@@ -112,7 +115,6 @@ void loopPlot(){
 			     "WJetsPt70To100_xww",
 			     "WJetsPt100_xww",
 			     };
-  */
 		 
   std::vector<std::string> fMC;
   for(int ii=0;ii<nMC;ii++){
@@ -120,16 +122,16 @@ void loopPlot(){
   }
 
   /// Setup names of MC signal files for trees.
-  /*const int nMCSig=1;//set to zero if you don't want to plot
+  const int nMCSig=3;//set to zero if you don't want to plot
   std::string mcLabelsSig[nMCSig]={"BulkG_WW_lvjj_c1p0_M600_xww",
 				   "BulkG_WW_lvjj_c1p0_M1000_xww",
 				   "BulkG_WW_lvjj_c1p0_M1500_xww",
                                   };
-
-  */
+  
+  /*
   const int nMCSig=1;//set to zero if you don't want to plot
   std::string mcLabelsSig[nMCSig]={"BulkG_ZZ_lljj_c1p0_M1500"};
-  
+  */
   
   std::vector<std::string> fMCSig;
   for(int ii=0;ii<nMCSig;ii++){
