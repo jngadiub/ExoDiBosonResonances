@@ -2,9 +2,9 @@
 
 ####EDIT THIS PART#####
 
-TREEDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsideband/
+TREEDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsig/
 
-RESUB=0
+RESUB=0 ##use 1 to resubmit, 0 not to resubmit
 
 QUEUE=2nd
 
@@ -31,7 +31,9 @@ do
 				echo resub this job
 				cd ${TREEDIR}/logs/$sample
 				bsub -q $QUEUE  run_new.sh  ${TREEDIR}/logs/$sample
-			fi
+			fi	
+		#else 
+		#	echo good file!
 		fi
 	else
 		echo '##########################'
