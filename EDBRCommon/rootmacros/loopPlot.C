@@ -39,7 +39,7 @@ void loopPlot(){
   /// Should we plot the Data/Bkg and Data-Bkg/Error ratios?
   bool makeRatio = true;
   /// Should we REDO histograms?
-  bool redoHistograms = true;
+  bool redoHistograms = false;
 
   /// Path to wherever the files with the trees are. 
   std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/full/";
@@ -307,7 +307,7 @@ void loopPlot(){
   fColorsMC.push_back(kBlue-9);
   fColorsMC.push_back(kRed+3);
   fColorsMC.push_back(kRed);
-  fColorsMC.push_back(kRed-9);
+  fColorsMC.push_back(kRed-4);
 
   ////// {"BulkG_WW_lvjj_c1p0_M600_xww","BulkG_WW_lvjj_c1p0_M1000_xww","BulkG_WW_lvjj_c1p0_M1500_xww"};
   std::vector<int> fColorsMCSig;
