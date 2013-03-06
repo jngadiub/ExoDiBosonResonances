@@ -7,3 +7,4 @@ cmgTuple0225/ : update with btagging information. Algorithm is CSV. Six more use
 
 cmgTuple0304/ : update since 0225, change only CA8 - > AK7 in EDBRCommon/python/jet_cff.py
 
+cmgTuple_07032013_CA8/ : new code edbr_vv_20130313 (many fixes: btag, pT cuts, etc..) - CA8
