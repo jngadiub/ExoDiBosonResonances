@@ -117,6 +117,28 @@ This script will look for "1 fileAction           -s file_close  " in the logs.
 If not found, it will give out a warnig.
 
 
+10) NEW SCRIPT to submit and check trees
 
+TO RUN:
+Modify in submit_new_xww.sh, the SampleList, type, outdir and queue.
+For ZZ the only difference is the samplelist.
+Then
+./submit_new_xww.sh
+
+Then in yourtreepath/logs, there will be a folder for each sample.
+In the folder there will be
+1. cfg file
+2. shell to be submitted
+3. outputlog
+4. LSF output
+
+
+TO CHECK:
+Modify in check_new.sh the TREEDIR. Keep RESUB=0 in the first check.
+then ./check_new.sh
+For each sample dir in the log, it will first search for the corresponding root file in the tree folder.
+If found , it will check the log. If not found, it will tell you.
+Then you can check the logs to find the problem.
+At last you change RESUB=1 to resubmit them.
 
 
