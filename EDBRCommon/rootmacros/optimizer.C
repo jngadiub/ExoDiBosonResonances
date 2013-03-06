@@ -24,7 +24,7 @@ double getPunzi(double nSubjetinessCut){
   bool wantMuons     = true; // Will make histograms for muons
   bool wantSideband  = false; // Will make histograms for sideband region
   bool wantSignal    = true; // Will make histograms for signal region
-  int  wantNXJets    = -1; // Will make histograms for 1 or 2 jet topology
+  int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
   int  flavour = 0; 
   if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
   
@@ -34,9 +34,9 @@ double getPunzi(double nSubjetinessCut){
   double kFactor = 1.2;
   
   /// Path to wherever the files with the trees are. 
-  std::string pathToTrees="/afs/cern.ch/work/t/tomei/public/EXOVV_2012/analyzer_trees/productionv1_round2/fullselSIGNALCA8/";
+  std::string pathToTrees="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/trees_presel_AB_20130227_AK7/";
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./allMuons_fullsel";
+  std::string outputDir = "./test";
 
   /// Setup names of data files for trees.
   const int nDATA=0;
@@ -98,7 +98,7 @@ double getPunzi(double nSubjetinessCut){
 					       wantSignal, 
 					       wantNXJets);
       maker->setUnitaryWeights(false);
-      double eventsPassing = maker->FastLoop(lumiValue,kFactor,nSubjetinessCut);
+      double eventsPassing = maker->FastLoop(lumiValue,kFactor,nSubjetinessCut,1000,0.15);
       printf("This sample has %g events passing\n",eventsPassing);
       //delete maker; // This class is badly written and deleting it isn't safe!
       fileMC->Close();
@@ -114,8 +114,8 @@ double getPunzi(double nSubjetinessCut){
   // The signal:
   double totalSignal = 0.0;
   {
-    //std::string pathToSignal = pathToTrees+"treeEDBR_BulkG_ZZ_lljj_c0p2_M1000.root";
-    std::string pathToSignal = pathToTrees+"treeEDBR_RSG_ZZ_lljj_c0p2_M1000.root";
+    std::string pathToSignal = pathToTrees+"treeEDBR_BulkG_ZZ_lljj_c0p2_M1000.root";
+    //std::string pathToSignal = pathToTrees+"treeEDBR_RSG_ZZ_lljj_c0p2_M1000.root";
     printf("Running over %s\n",pathToSignal.c_str());
     TFile *fileMC = TFile::Open(pathToSignal.c_str());
     TTree *treeMC = (TTree*)fileMC->Get("SelectedCandidates");    
@@ -126,7 +126,7 @@ double getPunzi(double nSubjetinessCut){
 					       wantSignal, 
 					       wantNXJets);
     maker->setUnitaryWeights(false);
-    double eventsPassing = maker->FastLoop(lumiValue,1.0,nSubjetinessCut);
+    double eventsPassing = maker->FastLoop(lumiValue,1.0,nSubjetinessCut,1000,0.15);
     printf("This sample has %g events passing\n",eventsPassing);
     totalSignal = eventsPassing;
   }

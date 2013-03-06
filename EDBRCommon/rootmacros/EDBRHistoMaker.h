@@ -326,7 +326,7 @@ class EDBRHistoMaker {
 		Long64_t LoadTree(Long64_t entry);
 		void     Init(TTree *tree);
 		void     Loop(std::string outFileName);
-		double   FastLoop(double lumiValue, double kFactor, double nsubjetinessCut);
+		double   FastLoop(double lumiValue, double kFactor, double nsubjetinessCut, double massPoint, double percentageWindow);
 
 		// Our added functions
 		void createAllHistos();
@@ -809,7 +809,18 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["prunedmass"])->Fill(prunedmass[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				
+				/// Thiago: This is temporarily here for the optimization.
+				/// Should probably be made better.
+				double thisMZZ = mZZ[ivec];
+				double minMass = 1500.0 * 0.85;
+				double maxMass = 1500.0 * 1.15;
+				
+				if(thisMZZ > minMass and
+				   thisMZZ < maxMass) {
+				  (theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				}
+				
 				(theHistograms["nVtx"])->Fill(nVtx,actualWeight);//printf("line number %i\n",__LINE__);
 
 				(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);//printf("line number %i\n",__LINE__);
@@ -866,7 +877,13 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 	this->saveAllHistos(outFileName);
 }
 
-double EDBRHistoMaker::FastLoop(double lumiValue, double kFactor, double nsubjetinessCut){
+///
+/// This function loops over the entries and
+/// calculates the number of events passing the cut.
+/// It doesn't fill histograms. Useful for calculating
+/// figures of merit and optimization
+///
+double EDBRHistoMaker::FastLoop(double lumiValue, double kFactor, double nsubjetinessCut, double massPoint, double percentageWindow){
 
 	if (fChain == 0) return -1;
 
@@ -898,19 +915,20 @@ double EDBRHistoMaker::FastLoop(double lumiValue, double kFactor, double nsubjet
 		//printf("jentry is %i\n",(int)jentry);
 
 		for(int ivec=0;ivec<nCands;ivec++){
-			if(eventPassesCut(ivec, 80, 20)){
-				double nsubjetiness = 1.0/nsubj12[ivec];
-				double thisMZZ = mZZ[ivec];
-				double minMass = 1000.0 - 1000*0.15;
-				double maxMass = 1000.0 + 1000*0.15;
-
-				if(nsubjetiness < nsubjetinessCut and
-						thisMZZ > minMass and
-						thisMZZ < maxMass) {
-					totalWeight += actualWeight;
-				}
-			}
-
+		
+		  if(eventPassesCut(ivec, 80, 20)){
+		    double nsubjetiness = 1.0/nsubj12[ivec];
+		    double thisMZZ = mZZ[ivec];
+		    double minMass = massPoint*(1.0-percentageWindow);
+		    double maxMass = massPoint*(1.0+percentageWindow);
+		    
+		    if(nsubjetiness < nsubjetinessCut and
+		       thisMZZ > minMass and
+		       thisMZZ < maxMass) {
+		      totalWeight += actualWeight;
+		    }
+		  }
+		
 		}//end loop over nCands
 	}//end loop over entries
 

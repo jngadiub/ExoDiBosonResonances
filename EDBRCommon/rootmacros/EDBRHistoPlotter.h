@@ -68,6 +68,7 @@ public:
   std::vector<TFile*>      filesDATA;
   std::vector<TH1D*>       histosMC;
   std::vector<TH1D*>       histosMCSig;
+  std::vector<TH1D*>       histosMCSigOrig;
   std::vector<TH1D*>       histosDATA;
   std::vector<int>         EDBRColors;
   std::vector<int>         EDBRLineColors;
@@ -145,11 +146,13 @@ void EDBRHistoPlotter::cleanupMCSig() {
     filesMCSig.at(i)->Close();
   }
   filesMCSig.clear();  
-
+  
   for(size_t i=0; i!= histosMCSig.size(); ++i) {
     histosMCSig.at(i)->Delete();
+    histosMCSigOrig.at(i)->Delete();
   }
   histosMCSig.clear();
+  histosMCSigOrig.clear();
 }
 
 void EDBRHistoPlotter::cleanupDATA() {
@@ -365,8 +368,11 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   
   for(size_t i=0; i!= filesMCSig.size(); ++i) {
     TH1D* histo = (TH1D*)(filesMCSig.at(i)->Get(histoName.c_str())->Clone(labelsSig.at(i).c_str()));
+    TH1D* histoOrig = (TH1D*)(filesMCSig.at(i)->Get(histoName.c_str())->Clone(labelsSig.at(i).c_str()));
     histo->SetDirectory(0);
     histo->SetLineColor(getLineColor(i)); 
+    histoOrig->SetDirectory(0);
+    histoOrig->SetLineColor(getLineColor(i)); 
     
     /// This is important. If the user has given a k-factor, it means
     /// they INCONDITIONALLY want to multiply all MC histograms by
@@ -379,6 +385,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
       histo->Print();
     }
     histosMCSig.push_back(histo);
+    histosMCSigOrig.push_back(histoOrig);
   }
 
   //scale the MC signal histogram
@@ -387,6 +394,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
       printf("This histogram has integral %g\n",histosMCSig.at(is)->Integral());
     
     histosMCSig.at(is)->Scale(targetLumi_);
+    histosMCSigOrig.at(is)->Scale(targetLumi_);
     
     if(debug_)
       printf("After scaling this histogram has integral %g\n",histosMCSig.at(is)->Integral());
@@ -448,6 +456,17 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   l->Draw();
   l = makeChannelLabel(wantNXJets_,flavour_,isZZchannel_);
   l->Draw();
+
+  //============ Save the full background histogram ============
+
+  //printf("%s\n",histoName.c_str());
+  if(histoName == "h_nsubj21") {
+    printf("Saving the full background histogram...\n");
+    TFile* fullBkg = TFile::Open("forOptimization.root","RECREATE");
+    sumMC->Write();
+    histosMCSigOrig.at(0)->Write();
+    fullBkg->Close();    
+  }
 
   //============ Data/MC ratio ==============
 
