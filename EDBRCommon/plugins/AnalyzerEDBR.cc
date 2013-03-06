@@ -418,6 +418,8 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("met"             ,&met           ,"met/D"                  );
 	outTree_->Branch("metSign"         ,&metSign       ,"metSign/D"              );
 	//outTree_->Branch("nBTags"          ,&btag          ,"nBTags[nCands]/D"       );
+	outTree_->Branch("btagjet1"         ,&btagjet1       ,"btagjet1/D"              );
+	outTree_->Branch("btagjet2"         ,&btagjet2       ,"btagjet2/D"              );
 	outTree_->Branch("deltaREDBR"     ,&deltaREDBR   ,"deltaREDBR[nCands]/D"  );
 	outTree_->Branch("deltaRleplep"    ,&deltaRleplep  ,"deltaRleplep[nCands]/D" );
 	outTree_->Branch("deltaRjetjet"    ,&deltaRjetjet  ,"deltaRjetjet[nCands]/D" );
@@ -540,7 +542,7 @@ void AnalyzerEDBR::initDataMembers(){
 		ptZll[i]=-99.; ptZjj[i]=-99.; yZll[i]=-99.; yZjj[i]=-99.; deltaRleplep[i]=-99.; deltaRjetjet[i]=-99.;
 		phiZll[i]=-99.;
 		phiZjj[i]=-99.;
-		btag[i]=-99.; lep[i]=-99.; reg[i]=-99.;  
+		btagjet1[i]=-99.;btagjet2[i]=-99.; lep[i]=-99.; reg[i]=-99.;  
 		qgjet1[i]=-99.; qgjet2[i]=-99.; qgProduct[i]=-99.;   
 		betajet1[i]=-99.;betajet2[i]=-99.;puMvajet1[i]=-99.;puMvajet2[i]=-99.;
 		isolep1[i]=-99.; isolep2[i]=-99.; eleMVAId1[i]=-99.; eleMVAId2[i]=-99.;

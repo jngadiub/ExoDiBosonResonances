@@ -271,8 +271,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     tau2[ih]=edbr->leg2().tau2();
 
 
-    // dummy jet vars
-    btag[ih]=-1;
+    btagjet1[ih]=edbr->leg2().bDiscriminator( "combinedSecondaryVertexBJetTags" );
+    // these are dummy
+    btagjet2[ih]=-99.0;
     q1fl[ih]=-99.0;
     q2fl[ih]=-99.0;
     qgjet1[ih]=-99.0;
@@ -323,6 +324,10 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       betajet2[ih] = edbr->leg2().leg2().beta(); 
       puMvajet1[ih] = edbr->leg2().leg1().puMva("full"); 
       puMvajet2[ih] = edbr->leg2().leg2().puMva("full"); 
+
+      btagjet1[ih]=edbr->leg2().leg1().bDiscriminator( "combinedSecondaryVertexBJetTags" );
+      btagjet2[ih]=edbr->leg2().leg2().bDiscriminator( "combinedSecondaryVertexBJetTags" );
+
     }
     else{
       ptjet2[ih]=edbr->leg2().leg1().pt();
@@ -336,6 +341,10 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       betajet1[ih] = edbr->leg2().leg2().beta(); 
       puMvajet2[ih] = edbr->leg2().leg1().puMva("full"); 
       puMvajet1[ih] = edbr->leg2().leg2().puMva("full");
+
+      btagjet2[ih]=edbr->leg2().leg1().bDiscriminator( "combinedSecondaryVertexBJetTags" );
+      btagjet1[ih]=edbr->leg2().leg2().bDiscriminator( "combinedSecondaryVertexBJetTags" );
+
     }
 
     deltaRjetjet[ih]=deltaR(edbr->leg2().leg1().phi(),
@@ -353,8 +362,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     tau1[ih]=-999.0;
     tau2[ih]=-999.0;
 
-    //#btags is dummy
-    btag[ih]=-1;
+    //these are dummy
+
     q1fl[ih]=-99.0;
     q2fl[ih]=-99.0;
     qgjet1[ih]=-99.0;
@@ -513,7 +522,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double phiZll[nMaxCand];//={init};
   double phiZjj[nMaxCand];//={init};
   double met, metSign;            // MET and its significance
-  double btag[nMaxCand], lep[nMaxCand], reg[nMaxCand];    // b-tags, lep category, region (sig, sideband)
+  double btagjet1[nMaxCand],btagjet2[nMaxCand], lep[nMaxCand], reg[nMaxCand];    // b-tags, lep category, region (sig, sideband)
   double qgjet1[nMaxCand], qgjet2[nMaxCand], qgProduct[nMaxCand];    // QG likelihoods
   double betajet1[nMaxCand],betajet2[nMaxCand],puMvajet1[nMaxCand],puMvajet2[nMaxCand];//jet ID 
   double isolep1[nMaxCand], isolep2[nMaxCand], eleMVAId1[nMaxCand], eleMVAId2[nMaxCand];//lepton ID 
