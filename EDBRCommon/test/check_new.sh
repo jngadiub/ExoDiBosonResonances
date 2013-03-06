@@ -4,7 +4,7 @@
 
 TREEDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh_ca8/fullsideband/
 
-RESUB=1 ##use 1 to resubmit, 0 not to resubmit
+RESUB=0 ##use 1 to resubmit, 0 not to resubmit
 
 QUEUE=2nd
 
