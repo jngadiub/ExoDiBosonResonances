@@ -27,7 +27,8 @@ public:
 		   int flavour,
 		   bool isZZchannel,
 		   bool scaleToData,
-		   bool makeRatio)
+		   bool makeRatio,
+		   bool isSignalStackOnBkg)
   {
     nameInDir_     = nameInDir;
     fileNamesMC    = nameFileMC;
@@ -40,6 +41,7 @@ public:
     isZZchannel_   = isZZchannel;
     scaleToData_   = scaleToData;
     makeRatio_     = makeRatio;
+    isSignalStackOnBkg_ = isSignalStackOnBkg;
     debug_         = true;
     if(fileNamesDATA.size() != 0)
       isDataPresent_ = true;
@@ -83,6 +85,7 @@ public:
   bool   isZZchannel_;
   bool   scaleToData_;
   bool   makeRatio_;
+  bool   isSignalStackOnBkg_;
   bool   isDataPresent_;
   bool   debug_;
 
@@ -428,7 +431,10 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   if(isDataPresent_)
     sumDATA->Draw("SAME E1");
   for(size_t is=0; is!=histosMCSig.size(); is++){
-    histosMCSig.at(is)->Draw("HISTO SAME");
+    if( isSignalStackOnBkg_ == true )
+      histosMCSig.at(is)->Draw("HISTO SAME");
+    else
+      histosMCSigOrig.at(is)->Draw("HISTO SAME");
   }
   sumMC->Draw("HISTO SAME");      
 

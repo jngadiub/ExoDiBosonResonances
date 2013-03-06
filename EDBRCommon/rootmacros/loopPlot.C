@@ -22,8 +22,8 @@ void loopPlot(){
   /// Boolean flags to steer the histogram making
   bool wantElectrons = false; // Will make histograms for electrons
   bool wantMuons     = true; // Will make histograms for muons
-  bool wantSideband  = true; // Will make histograms for sideband region
-  bool wantSignal    = false; // Will make histograms for signal region
+  bool wantSideband  = false; // Will make histograms for sideband region
+  bool wantSignal    = true; // Will make histograms for signal region
   int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
   int  isZZchannel   = false; //plot label for zz (true) or ww (false)
   int  flavour = 0; 
@@ -39,17 +39,22 @@ void loopPlot(){
   /// Should we plot the Data/Bkg and Data-Bkg/Error ratios?
   bool makeRatio = true;
   /// Should we REDO histograms?
-  bool redoHistograms = false;
+  bool redoHistograms = true;
+  /// Should we put the signal MC stacked on top of the background (or just plot the signal alone)?
+  bool isSignalStackOnBkg = false;
 
   /// Path to wherever the files with the trees are. 
-  std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/full/";
-  //std::string pathToTrees="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1b/fullCA8XCheck_SIG/";
-  
+  //CA8 (cmgTuple0219 no btag info)
+  //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/full/";
+  //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/fullsig/";
 
-  ///afs/cern.ch/work/s/shuai/public/diboson/trees/productionv4/test/presel/";
+  //AK7 (cmgTuple0304 with btag info)
+  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsideband/";
+  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsig/";
 
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./WW_full_mu_signal_1j_wl200_lep50_met40_leptonVeto_btagVeto_CA8";
+  //std::string outputDir = "./WW_full_mu_sideband_1j_wl200_lep50_met40_leptonVeto_nobtagVeto_CA8_old";
+  std::string outputDir = "./WW_full_mu_signal_1j_wl200_lep50_met40_leptonVeto_nobtagVeto_AK7_old";
 
   /// Setup names of data files for trees.
 
@@ -73,6 +78,7 @@ void loopPlot(){
 				 "DoublePhotonHighPt_Run2012D_PRv1"};
   */ 
  
+  /*
   const int nDATA=6;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"SingleMu_Run2012A_13Jul2012_xww",
 				 "SingleMu_Run2012A_recover_xww",
@@ -80,11 +86,10 @@ void loopPlot(){
 				 "SingleMu_Run2012C_24Aug2012_xww",
 				 "SingleMu_Run2012C_PromptReco_xww",
 				 "SingleMu_Run2012D_PromptReco_xww"};  
+  */
     
-  /*  
   const int nDATA=0;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={};
-  */
 
   std::vector<std::string> fData;
   for(int ii=0;ii<nDATA;ii++){
@@ -290,7 +295,8 @@ void loopPlot(){
 						 flavour,
 						 isZZchannel,
 						 scaleToData,
-						 makeRatio);
+						 makeRatio,
+						 isSignalStackOnBkg);
   std::cout<<"Set output dir"<<std::endl;
   plotter->setOutDir(outputDir);
   plotter->setDebug(false);
@@ -313,8 +319,8 @@ void loopPlot(){
   std::vector<int> fColorsMCSig;
   fColorsMCSig.push_back(kBlack);
   fColorsMCSig.push_back(kMagenta);
-  fColorsMCSig.push_back(kGreen-3);
-  fColorsMCSig.push_back(kGreen+3);
+  fColorsMCSig.push_back(kBlue);
+  fColorsMCSig.push_back(kBlue+3);
 
   plotter->setFillColor(fColorsMC);
   plotter->setLineColor(fColorsMCSig);
