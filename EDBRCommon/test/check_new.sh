@@ -2,9 +2,9 @@
 
 ####EDIT THIS PART#####
 
-TREEDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsideband/
+TREEDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh_ca8/fullsideband/
 
-RESUB=0 ##use 1 to resubmit, 0 not to resubmit
+RESUB=1 ##use 1 to resubmit, 0 not to resubmit
 
 QUEUE=2nd
 
@@ -30,9 +30,9 @@ do
 			echo $log bad log! Please check the log.
 			if test $RESUB -eq 1
 				then
-				echo resub this job
+				echo Resub this job
 				cd ${TREEDIR}/logs/$sample
-				bsub -q $QUEUE  run_new.sh  ${TREEDIR}/logs/$sample
+				bsub -q $QUEUE  run_new.sh  ${TREEDIR}
 			fi	
 		#else 
 		#	echo good file!
@@ -43,9 +43,9 @@ do
 		echo Output root file not found!
 		if test $RESUB -eq 1
 			then
-			echo resub this job
+			echo Resub this job
 			cd ${TREEDIR}/logs/$sample
-			bsub -q $QUEUE  run_new.sh  ${TREEDIR}/logs/$sample
+			bsub -q $QUEUE  run_new.sh  ${TREEDIR}
 		fi
 	fi
 
