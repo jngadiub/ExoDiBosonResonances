@@ -4,8 +4,8 @@
 
 SampleName=( SingleMu_Run2012A_13Jul2012_xww  SingleMu_Run2012A_recover_xww SingleMu_Run2012B_13Jul2012_xww SingleMu_Run2012C_24Aug2012_xww SingleMu_Run2012C_PromptReco_xww SingleMu_Run2012D_PromptReco_xww TTBAR_xww WZ_xww ZZ_xww  WW_xww WJetsPt50To70_xww WJetsPt70To100_xww WJetsPt100_xww  DYJetsPt50To70_xww DYJetsPt70To100_xww  DYJetsPt100_xww BulkG_WW_lvjj_c1p0_M1000_xww BulkG_WW_lvjj_c1p0_M1500_xww BulkG_WW_lvjj_c1p0_M600_xww RSG_WW_lvjj_c0p2_M1000_xww RSG_WW_lvjj_c0p2_M1500_xww RSG_WW_lvjj_c0p2_M600_xww  SingleElectron_Run2012A_13Jul2012_xww  SingleElectron_Run2012A_recover_xww SingleElectron_Run2012B_13Jul2012_xww SingleElectron_Run2012C_24Aug2012_xww SingleElectron_Run2012C_PromptReco_xww SingleElectron_Run2012D_PromptReco_xww)
 
-type="fullsig" #### 'type' could be fullsideband or fullsig or presel, denpending on analyzerEDBR_zz2l2j_tpl.py
-OUTDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewscript/$type/
+type="fullsideband" #### 'type' could be fullsideband or fullsig or presel, denpending on analyzerEDBR_zz2l2j_tpl.py
+OUTDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/test/ca8/$type/
 
 QUEUE=2nd
 
@@ -40,7 +40,7 @@ do
 	sed -e s%'<type>'%${type}%g  < run_new_temp.sh > run_new.sh
 	rm run_new_temp.sh
 	chmod 755 run_new.sh	
-	bsub -q $QUEUE  -J "treeEDBR_${type}_${sample}"  run_new.sh  $OUTDIR/logs/$sample
+	bsub -q $QUEUE  -J "treeEDBR_${type}_${sample}"  run_new.sh  $OUTDIR
 	#./run_new.sh
 done
 

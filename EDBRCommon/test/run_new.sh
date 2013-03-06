@@ -4,10 +4,15 @@ MYWORKAREA=$CMSSW_BASE/src/
 cd $MYWORKAREA
 eval `scram runtime -sh`
 
-LOGDIR=$1
-cd $LOGDIR
+TREEDIR=$1
 
-cmsRun analyzerEDBR_<type>_<sample>_cfg.py  &> log_analyzerEDBR_<type>_<sample>.out
+date=$(date +"%y%m%d_%k%M%S")
+mkdir -p /tmp/${USER}/treeEDBR_<type>_<sample>_${date}
+cd /tmp/${USER}/treeEDBR_<type>_<sample>_${date}
 
-mv treeEDBR_<sample>.root ../../
+cmsRun $TREEDIR/logs/<sample>/analyzerEDBR_<type>_<sample>_cfg.py  &> log_analyzerEDBR_<type>_<sample>.out
+
+mv treeEDBR_<sample>.root  $TREEDIR
+mv log_analyzerEDBR_<type>_<sample>.out $TREEDIR/logs/<sample>
+
 
