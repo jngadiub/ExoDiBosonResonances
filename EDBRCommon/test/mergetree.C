@@ -27,27 +27,31 @@ void mergetree(TString file1 = "/afs/cern.ch/work/s/shuai/public/diboson/trees/t
     chain->SetBranchAddress("nCands",&nCands);
     //chain->SetBranchAddress("nEvt",&nEvt);
 
+	vector <int> sideEvent;
+
 	//save events with signal region candidate for filesig
 	for(int i =0; i<nsig; i++)
 	{
-		if(i%100==0)cout<<i<<endl;
-		//if(i>1000)break;
+		//if(i%10000==0)cout<<i<<endl;
+		//if(i>200000)break;
 		chain->GetEntry(i);
 		//cout<<nEvt<<endl;
 		//chain->GetEntry(nsig+i);
 		//cout<<nEvt<<endl;
 		
 		if(nCands>0)outTree->Fill();//this event have signal region candidate ( 2 means there are Wmunu and Welenu. This will be filtered by loose lepton veto  )
-		else
-		{
-			int j = nsig+i;//corresponding sideband event
-			chain->GetEntry(j);
-			if(nCands>0)outTree->Fill();
-		}
-		
+		else sideEvent.push_back(nsig+i);	
 	}
-
-
+	
+	for(int j=0; j<sideEvent.size(); j++ )
+	{
+		//if(j%10000==0)cout<<j<<endl;
+		//if(j>200000)break;
+		int n = sideEvent.at(j);
+		chain->GetEntry(n);
+		if(nCands>0)outTree->Fill();
+	}
+	
 	cout<<"outTree entries: "<<outTree->GetEntries()<<endl;
 	
 	outputfile->cd();
