@@ -769,15 +769,15 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 				if(isZZchannel_==0)//WW channel, veto second loose lepton
 				{
-					if((nLooseEle+nLooseMu==1)&&met>40);//global selection
+				  if( (nLooseEle+nLooseMu==1) && met>40 && fabs(etalep1[ivec])<2.1 && ptZjj[ivec]>200 );//global selection
 					else continue;	
 
 					if(eventPassesCut(ivec, 200, 50));
 					else continue;
 					
 					//b veto cut
-					if(nbtagsT[ivec]==0) ;
-					else continue;
+					//if(nbtagsT[ivec]==0) ;
+					//else continue;
 
 				}
 				if(filled==0)
