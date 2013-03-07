@@ -249,6 +249,13 @@ process.analysisSequenceJets1 = cms.Sequence(
     process.selectedJetSequence +
     process.diJetSequence)
 
+process.analysisSequenceJets1NoFilter = cms.Sequence(
+    process.jetSequence +
+    process.selectedJetSequence +
+    process.diJetSequence)
+process.analysisSequenceJets1NoFilter.remove(process.selectedJetCandFilter)
+
+
 ##    process.selectedZjjSequence+
 process.analysisSequenceJets2 = cms.Sequence(
     process.cmgDiJetKinFit +
@@ -364,7 +371,7 @@ massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRMergedSelEle"
 if options.lepton == "both" or options.lepton == "ele":
      process.cmgEDBRWWEle = cms.Path(process.eventFilterSequence+
                                      process.analysisSequenceElectrons +
-                                     process.analysisSequenceJets1 +
+                                     process.analysisSequenceJets1NoFilter +
                                      process.analysisSequenceJets2 +
                                      process.edbrSequenceEVJJEle+
                                      process.mergedJetSequence +
@@ -375,7 +382,7 @@ if options.lepton == "both" or options.lepton == "ele":
 if options.lepton == "both" or options.lepton == "mu":
      process.cmgEDBRWWMu = cms.Path(process.eventFilterSequence+
                                     process.analysisSequenceMuons +
-                                    process.analysisSequenceJets1 +
+                                    process.analysisSequenceJets1NoFilter +
                                     process.analysisSequenceJets2 +
                                     process.edbrSequenceMVJJ +                                    
                                     process.mergedJetSequence +
