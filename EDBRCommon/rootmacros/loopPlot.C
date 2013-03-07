@@ -22,8 +22,8 @@ void loopPlot(){
   /// Boolean flags to steer the histogram making
   bool wantElectrons = false; // Will make histograms for electrons
   bool wantMuons     = true; // Will make histograms for muons
-  bool wantSideband  = false; // Will make histograms for sideband region
-  bool wantSignal    = true; // Will make histograms for signal region
+  bool wantSideband  = true; // Will make histograms for sideband region
+  bool wantSignal    = false; // Will make histograms for signal region
   int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
   int  isZZchannel   = false; //plot label for zz (true) or ww (false)
   int  flavour = 0; 
@@ -32,10 +32,8 @@ void loopPlot(){
   /// Luminosity value in pb^-1
   //double lumiValue = 19477.6;// for DoubleEle2012?
   double lumiValue = 19538.85;// for SingleMu2012
-  /// k-factor for LO to NNLO
-  double kFactor = 1.;
   /// Should we scale the histograms to data?
-  bool scaleToData = true;
+  bool scaleToData = false;
   /// Should we plot the Data/Bkg and Data-Bkg/Error ratios?
   bool makeRatio = true;
   /// Should we REDO histograms?
@@ -49,15 +47,15 @@ void loopPlot(){
   //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/fullsig/";
 
   //AK7 (cmgTuple0304 with btag info)
-  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsideband/";
-  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsig/";
+  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsideband/";
+  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsig/";
 
   /// Path to wherever you want to put the histograms (figures) in.
-  //std::string outputDir = "./WW_full_mu_sideband_1j_wl200_lep50_met40_leptonVeto_nobtagVeto_CA8_old";
-  std::string outputDir = "./WW_full_mu_signal_1j_wl200_lep50_met40_leptonVeto_nobtagVeto_AK7_old";
+  std::string outputDir = "./WW_full_mu_sideband_1j_wl200_wh200_lep50_met40_eta2p1_leptonVeto_nobtagVeto_AK7_old";
+  //std::string outputDir = "./WW_full_mu_signal_1j_wl200_lep50_met40_leptonVeto_nobtagVeto_AK7_old";
 
   /// Setup names of data files for trees.
-
+ 
   /*
   const int nDATA=6;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"DoubleMu_Run2012A_13Jul2012",
@@ -78,7 +76,7 @@ void loopPlot(){
 				 "DoublePhotonHighPt_Run2012D_PRv1"};
   */ 
  
-  /*
+ 
   const int nDATA=6;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"SingleMu_Run2012A_13Jul2012_xww",
 				 "SingleMu_Run2012A_recover_xww",
@@ -86,10 +84,11 @@ void loopPlot(){
 				 "SingleMu_Run2012C_24Aug2012_xww",
 				 "SingleMu_Run2012C_PromptReco_xww",
 				 "SingleMu_Run2012D_PromptReco_xww"};  
-  */
-    
+
+  /*    
   const int nDATA=0;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={};
+  */
 
   std::vector<std::string> fData;
   for(int ii=0;ii<nDATA;ii++){
@@ -107,7 +106,9 @@ void loopPlot(){
 			     "DYJetsPt50To70",
 			     "DYJetsPt70To100",
 			     "DYJetsPt100"};
+  double kFactorsMC_array[nMC] = {1., 1., 1., 1., 1., 1., 1.};
   */
+
   const int nMC=10;//set to zero if you don't want to plot
   std::string mcLabels[nMC]={"TTBAR_xww",
 			     "WW_xww",
@@ -120,11 +121,20 @@ void loopPlot(){
 			     "WJetsPt70To100_xww",
 			     "WJetsPt100_xww",
 			     };
-		 
+  double kFactorsMC_array[nMC] = {1., 1., 1., 1., 1., 1., 1., 1.3, 1.3, 1.3};
+  
   std::vector<std::string> fMC;
   for(int ii=0;ii<nMC;ii++){
     fMC.push_back(pathToTrees+"treeEDBR_"+mcLabels[ii]+".root");
   }
+
+  std::vector<double> kFactorsMC;
+  //std::cout << "The contents of kFactorsMC are:" << std::endl;
+  for (int index=0; index<nMC; index++)
+    {
+      //std::cout << kFactorsMC_array[index] << std::endl;
+      kFactorsMC.push_back( kFactorsMC_array[index] );	
+    }
 
   /// Setup names of MC signal files for trees.
   const int nMCSig=3;//set to zero if you don't want to plot
@@ -150,6 +160,7 @@ void loopPlot(){
  
   char buffer[256];
   printf("All strings set\n");
+
 
   /// ----------------------------------------------------------------
   /// This first part is the loop over trees to create histogram files 
@@ -290,13 +301,13 @@ void loopPlot(){
 						 fHistosMC,
 						 fHistosMCSig,
 						 lumiValue,
-						 kFactor,
 						 wantNXJets,
 						 flavour,
 						 isZZchannel,
 						 scaleToData,
 						 makeRatio,
-						 isSignalStackOnBkg);
+						 isSignalStackOnBkg,
+						 kFactorsMC);
   std::cout<<"Set output dir"<<std::endl;
   plotter->setOutDir(outputDir);
   plotter->setDebug(false);

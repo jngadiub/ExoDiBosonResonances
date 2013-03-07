@@ -22,19 +22,19 @@ public:
 		   std::vector<std::string> nameFileMC, 
 		   std::vector<std::string> nameFileMCSig, 
 		   double targetLumi,
-		   double kFactor,
 		   int wantNXJets,
 		   int flavour,
 		   bool isZZchannel,
 		   bool scaleToData,
 		   bool makeRatio,
-		   bool isSignalStackOnBkg)
+		   bool isSignalStackOnBkg,
+		   std::vector<double> kFactorsMC)
   {
     nameInDir_     = nameInDir;
     fileNamesMC    = nameFileMC;
     fileNamesMCSig = nameFileMCSig;
     fileNamesDATA  = nameFileDATA;
-    kFactor_       = kFactor;
+    kFactorsMC_    = kFactorsMC;
     targetLumi_    = targetLumi;
     wantNXJets_    = wantNXJets;
     flavour_       = flavour;
@@ -53,7 +53,14 @@ public:
     labelsSig.resize(0);
     makeLabels();
     printf("Target lumi is %g pb-1\n",targetLumi);
-    printf("k factor is %g\n",kFactor);
+    std::cout << "k factors for MC backgrounds are: " << std::endl;    
+    int myKindex=0;
+    for (std::vector<double>::iterator it = kFactorsMC_.begin(); it != kFactorsMC_.end(); ++it)
+      {
+	std::cout << *it << " for " << fileNamesMC.at(myKindex) << std::endl ; 
+	myKindex++;
+      }
+    std::cout << std::endl;
   }//end constructor
   
   virtual ~EDBRHistoPlotter(){
@@ -74,12 +81,12 @@ public:
   std::vector<TH1D*>       histosDATA;
   std::vector<int>         EDBRColors;
   std::vector<int>         EDBRLineColors;
+  std::vector<double>      kFactorsMC_;
 
   std::string nameInDir_;
   std::string nameOutDir_;
   double dataIntegral_;
   double targetLumi_;
-  double kFactor_;
   int    wantNXJets_;
   int    flavour_;
   bool   isZZchannel_;
@@ -299,12 +306,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     histo->SetDirectory(0);
     histo->SetFillColor(getFillColor(i));
 
-    /// This is important. If the user has given a k-factor, it means
-    /// they INCONDITIONALLY want to multiply all MC histograms by
-    /// this number. So we just do it here.
-    /// Although, it shold be a different kFactor for EACH bacground.
-    /// TODO: implement different kFactors for each MC.
-    histo->Scale(kFactor_);
+    histo->Scale(kFactorsMC_.at(i));
     
     if(debug_) {
       histo->Print();
@@ -360,6 +362,10 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   sumMC->SetLineColor(kBlack);
   sumMC->SetLineWidth(2);
 
+  if(scaleToData_ && isDataPresent_) {
+    std::cout << "===> Residual DATA/MC Scale Factor is: " << sumDataIntegral/sumBkgAtTargetLumi << std::endl; 
+  }
+
   ///-------------------------------
   /// Add the MC signal to the stack
   ///-------------------------------
@@ -377,11 +383,6 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     histoOrig->SetDirectory(0);
     histoOrig->SetLineColor(getLineColor(i)); 
     
-    /// This is important. If the user has given a k-factor, it means
-    /// they INCONDITIONALLY want to multiply all MC histograms by
-    /// this number. So we just do it here.
-    /// Although, it shold be a different kFactor for EACH bacground.
-    /// TODO: implement different kFactors for each MC.
     //histo->Scale(kFactor_); //============= SCALA FACTORS FOR SIGNAL? ==== FIXME
     
     if(debug_) {
