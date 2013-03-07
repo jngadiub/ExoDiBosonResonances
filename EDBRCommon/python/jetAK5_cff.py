@@ -52,7 +52,7 @@ cmgJetAK5Clean = cms.EDProducer("cmgPFJetCleaner",
 jetAK5 = cms.EDFilter(
     "CmgPFJetSelector",
     src = cms.InputTag("cmgJetAK5Clean"),
-    cut = cms.string( "getSelection(\"cuts_jetKinematics\") && getSelection(\"cuts_looseJetId\")&& getSelection(\"cuts_muonIso\")&& getSelection(\"cuts_eleIso\")")  ###&& getSelection(\"cuts_muonIso\") ###&& getSelection(\"checkOverlaps_muonIso\")
+    cut = cms.string( "getSelection(\"cuts_jetKinematics\") && getSelection(\"cuts_looseJetId\") ")##  &&  !getSelection(\"cuts_muonIso\") && !getSelection(\"cuts_eleIso\")  " )  
     )
 
 
