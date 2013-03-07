@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 Wmunu_kinematics = cms.PSet(
     mass = cms.string('mass() >= 77.4 && mass() < 83.4'),
     pt = cms.string('leg1().pt() > 50 && leg2().pt() > 40 '),
+	eta = cms.string('leg1().eta()<2.1&&leg1().eta()>-2.1')
 )
 
 Wmunu_quality = cms.PSet(
