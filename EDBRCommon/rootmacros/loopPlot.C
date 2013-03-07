@@ -45,14 +45,15 @@ void loopPlot(){
   //CA8 (cmgTuple0219 no btag info)
   //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/full/";
   //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/fullsig/";
+  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/fullsideband/";
 
   //AK7 (cmgTuple0304 with btag info)
-  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsideband/";
-  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsig/";
+  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsideband/";
+  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/AK7/fullsideband/";
 
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./WW_full_mu_sideband_1j_wl200_wh200_lep50_met40_eta2p1_leptonVeto_nobtagVeto_AK7_old";
-  //std::string outputDir = "./WW_full_mu_signal_1j_wl200_lep50_met40_leptonVeto_nobtagVeto_AK7_old";
+  std::string outputDir = "./WW_full_mu_sideband_1j_wl200_wh200_lep50_met40_eta2p1_leptonVeto_nobtagVeto_singleTop_AK7_wrong";
+  //std::string outputDir = "./WW_full_mu_sideband_1j_wl200_wh200_lep50_met40_eta2p1_leptonVeto_nobtagVeto_AK7_old";
 
   /// Setup names of data files for trees.
  
@@ -109,8 +110,14 @@ void loopPlot(){
   double kFactorsMC_array[nMC] = {1., 1., 1., 1., 1., 1., 1.};
   */
 
-  const int nMC=10;//set to zero if you don't want to plot
+  const int nMC=16;//set to zero if you don't want to plot
   std::string mcLabels[nMC]={"TTBAR_xww",
+			     "SingleTopBarTWchannel_xww",
+			     "SingleTopTWchannel_xww",
+			     "SingleTopBarSchannel_xww", 
+			     "SingleTopSchannel_xww",
+			     "SingleTopBarTchannel_xww",
+			     "SingleTopTchannel_xww",
 			     "WW_xww",
 			     "WZ_xww",
 			     "ZZ_xww",
@@ -121,7 +128,7 @@ void loopPlot(){
 			     "WJetsPt70To100_xww",
 			     "WJetsPt100_xww",
 			     };
-  double kFactorsMC_array[nMC] = {1., 1., 1., 1., 1., 1., 1., 1.3, 1.3, 1.3};
+  double kFactorsMC_array[nMC] = {1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.3, 1.3, 1.3};
   
   std::vector<std::string> fMC;
   for(int ii=0;ii<nMC;ii++){
@@ -316,6 +323,12 @@ void loopPlot(){
   ////// {"TTBAR","WW","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100","WJetsPt50To70","WJetsPt70To100","WJetsPt100"};
   std::vector<int> fColorsMC;
   fColorsMC.push_back(kGreen-3);
+  fColorsMC.push_back(kYellow-9);
+  fColorsMC.push_back(kYellow-6);
+  fColorsMC.push_back(kYellow-3);
+  fColorsMC.push_back(kYellow+3);
+  fColorsMC.push_back(kYellow+6);
+  fColorsMC.push_back(kYellow+9);
   fColorsMC.push_back(kMagenta-9);
   fColorsMC.push_back(kMagenta-6);
   fColorsMC.push_back(kMagenta-3);
