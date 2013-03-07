@@ -10,4 +10,7 @@ For WW:
 				   *) lepton-jet cleaning radius cut corrected from 0.5 to 0.8
 				   *) kinematic cuts for WW better tuned with respect to the HLT trigger thresholds.
 				   *) sequence of the main cfg re-structured
-
+/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/AK7:
+	date         : 20130307
+	cmgtuple     : cmgTuple_07032013_AK7
+	updates      : (from previous) change only CA8 to AK7 in jet_cff.py
