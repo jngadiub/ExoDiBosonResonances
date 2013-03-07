@@ -1,0 +1,13 @@
+Where are the trees?
+
+For WW:
+
+/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6: 
+	date         : 20130307
+	cmgtuple list: cmgTuple_07032013_CA8/
+	EDBR tag     : edbr_vv_20130313
+	updates      : *) use properly selected and cleaned AK5 jets for b-tagging veto (WW only)
+				   *) lepton-jet cleaning radius cut corrected from 0.5 to 0.8
+				   *) kinematic cuts for WW better tuned with respect to the HLT trigger thresholds.
+				   *) sequence of the main cfg re-structured
+
