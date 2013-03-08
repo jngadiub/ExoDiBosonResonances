@@ -9,7 +9,7 @@
 
 void absolute_eff()
 {
-	TString inputpath = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/fullsig";
+	TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/goodbtag/AK7/fullsig/";
 	TString cut = "absolute_efficiency";
 	vector<TString> dataSamples;
 	vector<TString> bkgSamples;
@@ -28,6 +28,12 @@ void absolute_eff()
 */
 
 	bkgSamples.push_back("TTBAR_xww");
+	bkgSamples.push_back("SingleTopBarTWchannel_xww");
+	bkgSamples.push_back("SingleTopTWchannel_xww");
+	bkgSamples.push_back("SingleTopBarSchannel_xww" );
+	bkgSamples.push_back("SingleTopSchannel_xww");
+	bkgSamples.push_back("SingleTopBarTchannel_xww");
+	bkgSamples.push_back("SingleTopTchannel_xww");			     
 	bkgSamples.push_back("WW_xww");
 	bkgSamples.push_back("WZ_xww");
 	bkgSamples.push_back("ZZ_xww");
@@ -110,18 +116,19 @@ void absolute_eff()
 		//to make cuts
 		double met;
 		double ptlep1[99];
+		double etalep1[99];
 		double ptZll[99];
+		double ptZjj[99];
 		double lep[99];
 		int    nCands;
 		int    nXjets[99];
-        int nLooseEle;
-        int nLooseMu;
+		int nLooseEle;
+		int nLooseMu;
 		//per event weight
 		double PUweight=-1;
 		double LumiWeight=-1;
 		double GenWeight=-1;
 		double region[99];
-
 
 		tree->SetBranchAddress("Ngen", &Ngen);
 		tree->SetBranchAddress("xsec", &xsec);
@@ -135,7 +142,9 @@ void absolute_eff()
 		tree->SetBranchAddress("nbtagscleanT",nbtagscleanT);
 
 		tree->SetBranchAddress("ptlep1", ptlep1); 
+		tree->SetBranchAddress("etalep1", etalep1); 
 		tree->SetBranchAddress("ptZll", ptZll);
+		tree->SetBranchAddress("ptZjj", ptZjj);
 		tree->SetBranchAddress("met", &met);
 		tree->SetBranchAddress("nXjets", nXjets);
 		tree->SetBranchAddress("lep", lep);
@@ -173,14 +182,17 @@ void absolute_eff()
 				if(filled==0)//cout the event as pass if any candidate pass all the cuts
 				{
 					//make cuts
+					if(lep[ivec]!=1.)continue;// 1 is for mu
+					if(region[ivec]!=1)continue;// 1 is mjj signal region
 					if((nLooseEle+nLooseMu)!=1)continue;
 					if(met<40)continue;
-					if(lep[ivec]!=1.)continue;// 1 is for mu
 					if(ptlep1[ivec]<50)continue;
+					if(etalep1[ivec]<-2.1)continue;
+					if(etalep1[ivec]>2.1)continue;
 					if(ptZll[ivec]<200)continue;
-					if(nXjets[ivec]!=1)continue;// 1 jet candidate
-					if(nbtagsT[ivec]!=0)continue;
-					if(region[ivec]!=1)continue;// 1 is mjj signal region
+					if(ptZjj[ivec]<200)continue;
+					if(nXjets[ivec]!=2)continue;// 1 jet candidate
+					if(nbtagsM[ivec]!=0)continue;
 
 					pass=pass+actualWeight;
 
