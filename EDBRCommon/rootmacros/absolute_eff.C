@@ -191,7 +191,7 @@ void absolute_eff()
 					if(etalep1[ivec]>2.1)continue;
 					if(ptZll[ivec]<200)continue;
 					if(ptZjj[ivec]<200)continue;
-					if(nXjets[ivec]!=2)continue;// 1 jet candidate
+					if(nXjets[ivec]!=1)continue;// 1 jet candidate
 					if(nbtagsM[ivec]!=0)continue;
 
 					pass=pass+actualWeight;
