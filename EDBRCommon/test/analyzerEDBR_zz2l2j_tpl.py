@@ -12,9 +12,9 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 ### input cmgTuples
 process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTuple_<SAMPLE>_cff")
 #CA8
-#process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTupleList_XWW.cmgTuple0225.cmgTuple_<SAMPLE>_cff")
+#process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTupleList_XWW.cmgTuple_08032013_CA8.cmgTuple_<SAMPLE>_cff")
 #AK7
-#process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTupleList_XWW.cmgTuple0304.cmgTuple_<SAMPLE>_cff")
+#process.load("ExoDiBosonResonances.EDBRCommon.datasets.cmgTupleList_XWW.cmgTuple_08032013_AK7.cmgTuple_<SAMPLE>_cff")
 #
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
 
@@ -35,6 +35,7 @@ process.ANEDBR = AnalyzerXZZ.clone(
     debug=cms.bool(False),
     outFileName=cms.string("treeEDBR_<SAMPLE>.root"),
 	VType=cms.string("W"),
+    	#VType=cms.string("Z"),
     Ngen=cms.uint32(1),
     xsec=cms.double(1.0) ###in pb
     )
@@ -124,23 +125,23 @@ elif "SingleTopTchannel" in "<SAMPLE>" :
 #zz
 elif "BulkG_ZZ_lljj_c1p0_M600" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(41965)
-    process.ANEDBR.xsec=cms.double(0.652)
+    process.ANEDBR.xsec=cms.double(0.0627)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_ZZ_lljj_c1p0_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40964)
-    process.ANEDBR.xsec=cms.double(0.0862)
+    process.ANEDBR.xsec=cms.double(0.00206)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_ZZ_lljj_c1p0_M1500" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40938)
-    process.ANEDBR.xsec=cms.double(0.0177)
+    process.ANEDBR.xsec=cms.double(0.000106)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_ZZ_lljj_c0p2_M600" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40789)
-    process.ANEDBR.xsec=cms.double(0.00104)
+    process.ANEDBR.xsec=cms.double(0.00257)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_ZZ_lljj_c0p2_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(41997)
-    process.ANEDBR.xsec=cms.double(0.000138)
+    process.ANEDBR.xsec=cms.double(0.0000851)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "RSG_ZZ_lljj_c0p05_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(38022)
@@ -172,15 +173,15 @@ elif "RSG_WW_lvjj_c0p05_M1000" in "<SAMPLE>" :
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_WW_lvjj_c1p0_M600" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40371)
-    process.ANEDBR.xsec=cms.double(1.300)
+    process.ANEDBR.xsec=cms.double(0.3675)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_WW_lvjj_c1p0_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40761)
-    process.ANEDBR.xsec=cms.double(0.172)
+    process.ANEDBR.xsec=cms.double(0.01235)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_WW_lvjj_c1p0_M1500" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(41136)
-    process.ANEDBR.xsec=cms.double(0.0354)
+    process.ANEDBR.xsec=cms.double(0.000646)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 
 ### Data Ele
@@ -271,6 +272,7 @@ print '---> Ngen=',process.ANEDBR.Ngen,'  Xsect=',process.ANEDBR.xsec
 process.filterFinalSelPath = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
                                        HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu"),
+                                       #HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
                                        eventSetupPathsKey = cms.string(''),
                                        andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
                                        throw = cms.bool(True)    # throw exception on unknown path names
