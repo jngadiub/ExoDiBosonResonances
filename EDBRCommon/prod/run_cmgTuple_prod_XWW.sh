@@ -1,17 +1,17 @@
 #! /bin/bash
 
-
 SAMPLE_Run2012MU=( SingleMu_Run2012A_13Jul2012  SingleMu_Run2012A_recover SingleMu_Run2012B_13Jul2012 SingleMu_Run2012C_24Aug2012 SingleMu_Run2012C_PromptReco SingleMu_Run2012D_PromptReco  ) 
-SAMPLE_Run2012ELE=()
-# SingleElectron_Run2012A_13Jul2012 SingleElectron_Run2012A_recover SingleElectron_Run2012B_13Jul2012 SingleElectron_Run2012C_24Aug2012 SingleElectron_Run2012C_PromptReco SingleElectron_Run2012D_PromptReco  )
+SAMPLE_Run2012ELE=() 
+#SingleElectron_Run2012A_13Jul2012 SingleElectron_Run2012A_recover SingleElectron_Run2012B_13Jul2012 SingleElectron_Run2012C_24Aug2012 SingleElectron_Run2012C_PromptReco SingleElectron_Run2012D_PromptReco  )
 
 
 SAMPLE_MC1=( TTBAR WW WZ ZZ WJetsPt50To70 WJetsPt70To100 WJetsPt100 DYJetsPt50To70 DYJetsPt70To100  DYJetsPt100 SingleTopBarSchannel SingleTopBarTWchannel SingleTopBarTchannel SingleTopSchannel SingleTopTWchannel SingleTopTchannel )  # MC background
 SAMPLE_MC2=( BulkG_WW_lvjj_c1p0_M1000  BulkG_WW_lvjj_c1p0_M600 BulkG_WW_lvjj_c1p0_M1500   RSG_WW_lvjj_c0p2_M1000  RSG_WW_lvjj_c0p2_M600 RSG_WW_lvjj_c0p2_M1500   ) #MC signal: JHUGrav300 
-OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0307_AK7/"
-OUTPATHDATA=${OUTPATHBASE}/Run2012/preselAK7/
-OUTPATHMC=${OUTPATHBASE}/Summer12/preselAK7/
-OUTLOGPATH="$(pwd)/logs"
+OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/santanas/production07032013_edbr_vv_20130313_plusBtagFix/"
+OUTPATHDATA=${OUTPATHBASE}/Run2012/CA8/
+OUTLOGPATHDATA=production07032013_edbr_vv_20130313_plusBtagFix/Run2012/CA8/
+OUTPATHMC=${OUTPATHBASE}/Summer12/CA8/
+OUTLOGPATHMC=production07032013_edbr_vv_20130313_plusBtagFix/Summer12/CA8/
 
 cmsMkdir $OUTPATHMC
 cmsMkdir $OUTPATHDATA
@@ -21,16 +21,22 @@ cd $MYCMSSW_AREA
 eval `scram runtime -sh`
 cd -
 
-sub_ind=0
 
+##############################
+############# MC #############
+##############################
+
+
+sub_ind=0
 for sample in "${SAMPLE_MC1[@]}"
   do
 
-  LOGDIR=logs/Summer12/
+  LOGDIR=logs/${OUTLOGPATHMC}
   OUTDIR=${OUTPATHMC}/${sample}_xww
   NFILES=10
 #  cmsMkdir  $OUTDIR
   QUEUE="8nh"
+
 
 #for MC
    ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py $NFILES XWW_main_cfg.py  --notagCVS -o ${LOGDIR}/${sample}_xww -r ${OUTDIR} -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=summer12_${sample}_cff lepton=both selection=presel mcordata=MC"
@@ -39,10 +45,13 @@ for sample in "${SAMPLE_MC1[@]}"
 
 done
 
+
+#-------------------------------------------
+
 sub_ind=0
 for sample in "${SAMPLE_MC2[@]}"
   do
-  LOGDIR=logs/Summer12/
+  LOGDIR=logs/${OUTLOGPATHMC}
   OUTDIR=${OUTPATHMC}/${sample}_xww
   QUEUE="8nh"
  # cmsMkdir  $OUTDIR
@@ -53,10 +62,15 @@ for sample in "${SAMPLE_MC2[@]}"
    let sub_ind=$sub_ind +1
 done
 
+
+################################
+############# DATA #############
+################################
+
 sub_ind=0
 for sample in "${SAMPLE_Run2012ELE[@]}"
   do
-  LOGDIR=logs/data12/
+  LOGDIR=logs/${OUTLOGPATHDATA}
   OUTDIR=${OUTPATHDATA}/${sample}_xww
   QUEUE="8nh"
  # cmsMkdir  $OUTDIR
@@ -90,10 +104,13 @@ for sample in "${SAMPLE_Run2012ELE[@]}"
    let sub_ind=$sub_ind +1
 done
 
+
+#-------------------------------------------
+
 sub_ind=0
 for sample in "${SAMPLE_Run2012MU[@]}"
   do
-  LOGDIR=logs/data12/
+  LOGDIR=logs/${OUTLOGPATHDATA}
   OUTDIR=${OUTPATHDATA}/${sample}_xww
   QUEUE="8nh"
  # cmsMkdir  $OUTDIR
