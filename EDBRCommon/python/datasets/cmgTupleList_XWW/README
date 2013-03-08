@@ -11,4 +11,8 @@ cmgTuple_07032013_CA8/ : new code edbr_vv_20130313 (many fixes: btag, pT cuts, e
 
 cmgTuple_07032013_AK7/ : new code edbr_vv_20130313 (many fixes: btag, pT cuts, etc..) - AK7 --------- btag wrong
 
+cmgTuple_08032013_CA8/ : update from cmgTuple_07032013_CA8, with corrected cleaning lepton from ak5 jets. Change also mu eta <2.1.
+
 cmgTuple_08032013_AK7/ : update from cmgTuple_07032013_AK7, with corrected cleaning lepton from ak5 jets. Change also mu eta <2.1.
+
+
