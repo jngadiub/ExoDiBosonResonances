@@ -10,6 +10,7 @@ For WW:
 				   *) lepton-jet cleaning radius cut corrected from 0.5 to 0.8
 				   *) kinematic cuts for WW better tuned with respect to the HLT trigger thresholds.
 				   *) sequence of the main cfg re-structured
+
 /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/AK7:
 	date         : 20130307
 	cmgtuple     : cmgTuple_07032013_AK7
@@ -19,3 +20,9 @@ For WW:
 	data         : 20130308
 	cmgtuple     : cmgTuple_08032013_AK7
 	updates      : (from previous) corrected lepton cleaning, so the b tagging is right. Change mu eta<2.1
+
+/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/:
+	data         : 20130308
+	cmgtuple     : cmgTuple_08032013_CA8
+	updates      : (same as previous but CA8) 
+
