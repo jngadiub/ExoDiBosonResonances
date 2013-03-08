@@ -232,8 +232,10 @@ process.analysisSequenceJets1 = cms.Sequence(
 process.analysisSequenceJets1NoFilter = cms.Sequence(
     process.jetSequence +
     process.selectedJetSequence +
-    process.diJetSequence)
- process.analysisSequenceJets1NoFilter.remove(process.selectedJetCandFilter)
+    process.diJetSequence +
+    process.selectedZjjSequence)
+process.analysisSequenceJets1NoFilter.remove(process.selectedJetCandFilter)
+process.analysisSequenceJets1NoFilter.remove(process.selectedZjjCandFilter)
 
 ##    process.selectedZjjSequence+
 process.analysisSequenceJets2 = cms.Sequence(

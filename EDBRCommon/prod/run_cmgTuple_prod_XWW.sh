@@ -2,14 +2,15 @@
 
 
 SAMPLE_Run2012MU=( SingleMu_Run2012A_13Jul2012  SingleMu_Run2012A_recover SingleMu_Run2012B_13Jul2012 SingleMu_Run2012C_24Aug2012 SingleMu_Run2012C_PromptReco SingleMu_Run2012D_PromptReco  ) 
-SAMPLE_Run2012ELE=( SingleElectron_Run2012A_13Jul2012 SingleElectron_Run2012A_recover SingleElectron_Run2012B_13Jul2012 SingleElectron_Run2012C_24Aug2012 SingleElectron_Run2012C_PromptReco SingleElectron_Run2012D_PromptReco  )
+SAMPLE_Run2012ELE=()
+# SingleElectron_Run2012A_13Jul2012 SingleElectron_Run2012A_recover SingleElectron_Run2012B_13Jul2012 SingleElectron_Run2012C_24Aug2012 SingleElectron_Run2012C_PromptReco SingleElectron_Run2012D_PromptReco  )
 
 
 SAMPLE_MC1=( TTBAR WW WZ ZZ WJetsPt50To70 WJetsPt70To100 WJetsPt100 DYJetsPt50To70 DYJetsPt70To100  DYJetsPt100 SingleTopBarSchannel SingleTopBarTWchannel SingleTopBarTchannel SingleTopSchannel SingleTopTWchannel SingleTopTchannel )  # MC background
 SAMPLE_MC2=( BulkG_WW_lvjj_c1p0_M1000  BulkG_WW_lvjj_c1p0_M600 BulkG_WW_lvjj_c1p0_M1500   RSG_WW_lvjj_c0p2_M1000  RSG_WW_lvjj_c0p2_M600 RSG_WW_lvjj_c0p2_M1500   ) #MC signal: JHUGrav300 
-OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0224/"
-OUTPATHDATA=${OUTPATHBASE}/Run2012/preselCA8/
-OUTPATHMC=${OUTPATHBASE}/Summer12/preselCA8/
+OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0307_AK7/"
+OUTPATHDATA=${OUTPATHBASE}/Run2012/preselAK7/
+OUTPATHMC=${OUTPATHBASE}/Summer12/preselAK7/
 OUTLOGPATH="$(pwd)/logs"
 
 cmsMkdir $OUTPATHMC
