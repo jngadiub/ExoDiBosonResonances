@@ -4,8 +4,8 @@ import sys
 # Make the tmp.txt with cmsLs $PATHWITHFILES | grep root | awk '{print $5}' > tmp.txt
 # Run this with makeCffInputFiles.py <name_of_outputfile.py>
 
-f = open("tmp.txt","r")
-o = open(sys.argv[1],"w")
+f = open(sys.argv[1],"r")
+o = open(sys.argv[2],"w")
 
 o.write("import FWCore.ParameterSet.Config as cms\n\n")
 o.write("cmgFiles = cms.untracked.vstring()\n")
