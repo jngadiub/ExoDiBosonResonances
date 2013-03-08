@@ -7,6 +7,8 @@ cmgTuple0225/ : update with btagging information. Algorithm is CSV. Six more use
 
 cmgTuple0304/ : update since 0225, change only CA8 - > AK7 in EDBRCommon/python/jet_cff.py
 
-cmgTuple_07032013_CA8/ : new code edbr_vv_20130313 (many fixes: btag, pT cuts, etc..) - CA8
+cmgTuple_07032013_CA8/ : new code edbr_vv_20130313 (many fixes: btag, pT cuts, etc..) - CA8 ----------btag wrong
 
-cmgTuple_07032013_AK7/ : new code edbr_vv_20130313 (many fixes: btag, pT cuts, etc..) - AK7
+cmgTuple_07032013_AK7/ : new code edbr_vv_20130313 (many fixes: btag, pT cuts, etc..) - AK7 --------- btag wrong
+
+cmgTuple_08032013_AK7/ : update from cmgTuple_07032013_AK7, with corrected cleaning lepton from ak5 jets. Change also mu eta <2.1.
