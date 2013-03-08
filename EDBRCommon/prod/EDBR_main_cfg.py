@@ -340,7 +340,7 @@ massSearchReplaceAnyInputTag(process.cmgSeqMu,cms.InputTag("cmgEDBRMergedSelEle"
 
 #collect adjusted sequences into paths
 if options.lepton == "both" or options.lepton == "ele":
-     process.cmgEDBRWWEle = cms.Path(process.eventFilterSequence+
+     process.cmgEDBRZZEle = cms.Path(process.eventFilterSequence+
                                      process.analysisSequenceElectrons +
                                      process.analysisSequenceJets1NoFilter +
                                      process.analysisSequenceJets2 +
@@ -350,7 +350,7 @@ if options.lepton == "both" or options.lepton == "ele":
                                      process.cmgSeqEle )
 
 if options.lepton == "both" or options.lepton == "mu":
-     process.cmgEDBRWWMu = cms.Path(process.eventFilterSequence+
+     process.cmgEDBRZZMu = cms.Path(process.eventFilterSequence+
                                     process.analysisSequenceMuons +
                                     process.analysisSequenceJets1NoFilter +
                                     process.analysisSequenceJets2 +
