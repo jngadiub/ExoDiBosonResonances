@@ -31,7 +31,7 @@ const int nBins[92] =
 	100, 100, 100, 92,  100, 28,  28,
 	100, 100, 26,  26,  26,  26,  100,
 	100, 100, 100, 100, 100, 50,  50,
-	35,  35,  50,  80,  75,  100, 20,
+	35,  35,  50,  20,  75,  100, 20,
 	100, 100, 100, 100, 100, 100, 100,
 	100, 100, 100, 100, 4,   22,  100,
 	40,  100, 100, 100, 100, 100, 100,
@@ -776,7 +776,11 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					else continue;
 					
 					//b veto cut
-					//if(nbtagsT[ivec]==0) ;
+					if(nbtagsM[ivec]==0) ;
+					else continue;
+
+					//b cut - ttbar control region
+					//if(nbtagscleanT[ivec]>=1) ;
 					//else continue;
 
 				}
