@@ -272,7 +272,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   }
  
   if(histosDATA.size() !=0) {
-    sumDATA = (TH1D*)(histosDATA.at(0)->Clone("master"));
+    sumDATA = (TH1D*)(histosDATA.at(0)->Clone("masterDATA"));
     sumDATA->Reset();
     sumDATA->SetDirectory(0);
   }
@@ -322,7 +322,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   }
   
   if(histosMC.size() !=0) {
-    sumMC = (TH1D*)(histosMC.at(0)->Clone("master"));
+    sumMC = (TH1D*)(histosMC.at(0)->Clone("masterMC"));
     sumMC->Reset();
     sumMC->SetDirectory(0);
   }
