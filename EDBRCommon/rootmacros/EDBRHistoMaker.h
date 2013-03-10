@@ -11,7 +11,7 @@
 // to be part of the class... possibly if I change
 // them to be std::vectors, eventually?
 
-const std::string vars[92] = 
+const std::string vars[95] = 
 {"nCands", "cosThetaStar", "cosTheta1", "cosTheta2", "phi", "phiStar1", "ptlep1",
 	"ptlep2", "ptjet1", "ptjet2", "ptZll", "ptZjj", "yZll", "yZjj",
 	"phiZll", "phiZjj", "etalep1", "etalep2", "etajet1", "etajet2", "philep1",
@@ -24,9 +24,10 @@ const std::string vars[92] =
 	"nJets", "nPU", "HLTweight", "PUweight", "PUweight2012A", "PUweight2012B", "LumiWeight",
 	"GenWeight", "weight", "weight2012A", "weight2012B", "event", "run", "ls",
 	"nVL","VBFTag","VBFmJJ","VBFdeltaEta","nLooseEle","nLooseMu","mt",
-	"nbtagsL","nbtagsM","nbtagsT","nbtagscleanL","nbtagscleanM","nbtagscleanT"};
+	"nbtagsL","nbtagsM","nbtagsT","nbtagscleanL","nbtagscleanM","nbtagscleanT","deltaR_LJ",
+	"deltaPhi_JMET","deltaPhi_JWL"};
 
-const int nBins[92] = 
+const int nBins[95] = 
 {30,  100, 100, 100, 100, 100, 100,
 	100, 100, 100, 92,  100, 28,  28,
 	100, 100, 26,  26,  26,  26,  100,
@@ -39,9 +40,10 @@ const int nBins[92] =
 	10,  2,   100, 100, 100, 100, 100,
 	100, 100, 100, 100, 100, 100, 100,
 	10,  2,   100, 100, 10,  10,  80,
-	10,  10,  10,  10,  10,  10};
+	10,  10,  10,  10,  10,  10,  40,
+	40,  40};
 
-const double minBin[92] = 
+const double minBin[95] = 
 {0.0,   -1.15,  -1.15,  -1.15,  -3.7,   -3.7,    0.0,
 	0.0,    0.0,    0.0,    80.0,   0.0,   -2.8,   -2.8,
 	-3.7,   -3.7,   -2.6,   -2.6,   -2.6,   -2.6,   -3.7,
@@ -54,9 +56,10 @@ const double minBin[92] =
 	0.5,    0.,     0.99,   0.,     0.,     0.,     0.,
 	0.,     0.,     0.,     0.,     0.,     190000, 0,
 	0.,     0.,     0.,     0.,     0.,     0.,     0.,
-	0.,     0.,     0.,     0.,     0.,     0.};
+	0.,     0.,     0.,     0.,     0.,     0.,     0.,
+	0.,     0.};
 
-const double maxBin[92] = 
+const double maxBin[95] = 
 {30.0,  1.15,  1.15, 1.15,   3.7,     3.7,   500.0,
 	500.0, 500.0, 500.0, 1000.0, 1000.0,  2.8,   2.8,
 	3.7,   3.7,   2.6,   2.6,    2.6,     2.6,   3.7,
@@ -69,7 +72,8 @@ const double maxBin[92] =
 	10.5,  1.0,   10.0,  10.0,   10.,      10.,  0.1,
 	10,    10,    10,    10,     1.0E9,   210000,10000,
 	10,    2.0,   1000., 10.0,   10.0,    10.0,  130.0,
-	10,    10,    10,    10,     10,      10};
+	10,    10,    10,    10,     10,      10,    10,
+	4,     4};
 
 /// EDBRHistoMaker is the class that analyzes the flat
 /// TTree that comes out from the NTuple dumper module.
@@ -350,6 +354,32 @@ class EDBRHistoMaker {
 		bool eventPassesCut(int i, double ptZll_threshold, double ptlep1_threshold );
 		bool eventPassesVBFCut(int i);
 
+		double deltaPhi(const double& phi1, const double& phi2)
+		{ 
+			double deltaphi = fabs(phi1 - phi2);
+			if (deltaphi > 3.141592654) deltaphi = 6.283185308 - deltaphi;
+			return deltaphi;
+		}
+
+		//  ------------------------------------------------------------
+
+		double deltaEta(const double& eta1, const double& eta2)
+		{ 
+			double deltaeta = fabs(eta1 - eta2);
+			return deltaeta;
+		}
+
+		//  ------------------------------------------------------------
+
+		double deltaR(const double& eta1, const double& phi1,
+				const double& eta2, const double& phi2)
+		{ 
+			double deltaphi = deltaPhi(phi1, phi2);
+			double deltaeta = deltaEta(eta1, eta2);
+			double deltar = sqrt(deltaphi*deltaphi + deltaeta*deltaeta);
+			return deltar;
+		}
+
 		int check ( double pt, vector<double> * ptZ  )
 		{
 			int goodw=1;
@@ -522,7 +552,7 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 		int  wantNXJets,
 		bool isZZchannel){
 	fChain = 0;
-	nVars = 92;
+	nVars = 95;
 
 	// Definition of regions
 	sidebandVHMassLow_  =  0.0;  // GeV
@@ -758,23 +788,20 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				ptZ.push_back(ptZll[iptz]);
 			}   
 		}
+		int wnum = ptZ.size();
 
-		int wnum = ptZ.size();;
 
 		bool filled = 0;
-
 		for(int ivec=0;ivec<nCands;ivec++){
-
 			if(eventPassesCut(ivec, 80, 20)){
-
 				if(isZZchannel_==0)//WW channel, veto second loose lepton
 				{
-				  if( (nLooseEle+nLooseMu==1) && met>40 && fabs(etalep1[ivec])<2.1 && ptZjj[ivec]>200 );//global selection
+					if( (nLooseEle+nLooseMu==1) && met>40 && fabs(etalep1[ivec])<2.1 && ptZjj[ivec]>200 );//global selection
 					else continue;	
 
 					if(eventPassesCut(ivec, 200, 50));
 					else continue;
-					
+
 					//b veto cut
 					if(nbtagsM[ivec]==0) ;
 					else continue;
@@ -782,7 +809,6 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//b cut - ttbar control region
 					//if(nbtagscleanT[ivec]>=1) ;
 					//else continue;
-
 				}
 				if(filled==0)
 				{   
@@ -797,7 +823,15 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					(theHistograms["nLooseMu"])->Fill(nLooseMu,actualWeight);
 
 					filled =1; 
-				} 
+				}
+				//calculate "deltaPhi_JMET","deltaPhi_JWL","deltaR_LJ"
+				double deltaR_LJ = deltaR(etalep1[ivec],philep1[ivec],etajet1[ivec],phijet1[ivec]);
+				double deltaPhi_JMET = deltaPhi(phijet1[ivec],philep2[ivec]);
+				double deltaPhi_JWL  = deltaPhi(phijet1[ivec],phiZll[ivec]); 
+
+				(theHistograms["deltaR_LJ"])->Fill(deltaR_LJ,actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["deltaPhi_JMET"])->Fill(deltaPhi_JMET,actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["deltaPhi_JWL"])->Fill(deltaPhi_JWL,actualWeight);//printf("line number %i\n",__LINE__);
 
 				(theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
@@ -813,18 +847,18 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["prunedmass"])->Fill(prunedmass[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				
+
 				/// Thiago: This is temporarily here for the optimization.
 				/// Should probably be made better.
 				double thisMZZ = mZZ[ivec];
 				double minMass = 1500.0 * 0.85;
 				double maxMass = 1500.0 * 1.15;
-				
+
 				if(thisMZZ > minMass and
-				   thisMZZ < maxMass) {
-				  (theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+						thisMZZ < maxMass) {
+					(theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				}
-				
+
 				(theHistograms["nVtx"])->Fill(nVtx,actualWeight);//printf("line number %i\n",__LINE__);
 
 				(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);//printf("line number %i\n",__LINE__);
@@ -919,20 +953,20 @@ double EDBRHistoMaker::FastLoop(double lumiValue, double kFactor, double nsubjet
 		//printf("jentry is %i\n",(int)jentry);
 
 		for(int ivec=0;ivec<nCands;ivec++){
-		
-		  if(eventPassesCut(ivec, 80, 20)){
-		    double nsubjetiness = 1.0/nsubj12[ivec];
-		    double thisMZZ = mZZ[ivec];
-		    double minMass = massPoint*(1.0-percentageWindow);
-		    double maxMass = massPoint*(1.0+percentageWindow);
-		    
-		    if(nsubjetiness < nsubjetinessCut and
-		       thisMZZ > minMass and
-		       thisMZZ < maxMass) {
-		      totalWeight += actualWeight;
-		    }
-		  }
-		
+
+			if(eventPassesCut(ivec, 80, 20)){
+				double nsubjetiness = 1.0/nsubj12[ivec];
+				double thisMZZ = mZZ[ivec];
+				double minMass = massPoint*(1.0-percentageWindow);
+				double maxMass = massPoint*(1.0+percentageWindow);
+
+				if(nsubjetiness < nsubjetinessCut and
+						thisMZZ > minMass and
+						thisMZZ < maxMass) {
+					totalWeight += actualWeight;
+				}
+			}
+
 		}//end loop over nCands
 	}//end loop over entries
 
