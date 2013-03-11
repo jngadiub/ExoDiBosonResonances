@@ -809,6 +809,11 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//b cut - ttbar control region
 					//if(nbtagscleanT[ivec]>=1) ;
 					//else continue;
+
+					//nsubjettiness cut
+					//double nsubjett = 1.0/nsubj12[ivec];
+					//if(nsubjett<0.4) ;
+					//else continue;
 				}
 				if(filled==0)
 				{   
