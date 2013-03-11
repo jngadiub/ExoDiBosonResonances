@@ -109,7 +109,19 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	//total number of pre-selected jets in the event
 	edm::Handle<std::vector<cmg::PFJet> > allJets;
 	iEvent.getByLabel("jetIDJet", allJets);
-	njets = allJets->size();
+	//cout<<allJets->size()<<endl;
+	std::vector<cmg::PFJet>::const_iterator idjet;
+	njets=0;
+	//make cut on "jetIDJet", requiring pt>50 GeV, and then count the number
+	for(idjet = allJets->begin(); idjet != allJets->end(); ++idjet ){
+		if(idjet->pt()>50)njets++;
+	}
+	//cout<<njets<<endl;
+
+	//total number of AK5 jets (cleaned) used for btagging
+	edm::Handle<std::vector<cmg::PFJet> > ak5jets;
+	iEvent.getByLabel("jetAK5", ak5jets);
+	nak5jets=ak5jets->size();
 
 	// GET MISSING ET
 	edm::Handle<edm::View<pat::MET> > metHandle;
@@ -457,6 +469,7 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("MCmatch"         ,&MCmatch       ,"MCmatch[nCands]/D"      );
 	outTree_->Branch("nVtx"            ,&nvtx          ,"nVtx/i"                 );
 	outTree_->Branch("nJets"           ,&njets         ,"nJets/i"                );
+	outTree_->Branch("nAK5jets"        ,&nak5jets      ,"nAK5jets/i"             );
 	outTree_->Branch("nPU"             ,&npu           ,"nPU/i"                  );
 	outTree_->Branch("HLTweight"       ,&HLTSF         ,"HLTweight/D"            ); 
 	outTree_->Branch("PUweight"        ,&PU            ,"PUweight/D"             ); 
