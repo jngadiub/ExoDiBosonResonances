@@ -11,7 +11,7 @@
 // to be part of the class... possibly if I change
 // them to be std::vectors, eventually?
 
-const std::string vars[95] = 
+const std::string vars[96] = 
 {"nCands", "cosThetaStar", "cosTheta1", "cosTheta2", "phi", "phiStar1", "ptlep1",
 	"ptlep2", "ptjet1", "ptjet2", "ptZll", "ptZjj", "yZll", "yZjj",
 	"phiZll", "phiZjj", "etalep1", "etalep2", "etajet1", "etajet2", "philep1",
@@ -25,9 +25,9 @@ const std::string vars[95] =
 	"GenWeight", "weight", "weight2012A", "weight2012B", "event", "run", "ls",
 	"nVL","VBFTag","VBFmJJ","VBFdeltaEta","nLooseEle","nLooseMu","mt",
 	"nbtagsL","nbtagsM","nbtagsT","nbtagscleanL","nbtagscleanM","nbtagscleanT","deltaR_LJ",
-	"deltaPhi_JMET","deltaPhi_JWL"};
+	"deltaPhi_JMET","deltaPhi_JWL","nAK5jets"};
 
-const int nBins[95] = 
+const int nBins[96] = 
 {30,  100, 100, 100, 100, 100, 100,
 	100, 100, 100, 92,  100, 28,  28,
 	100, 100, 26,  26,  26,  26,  100,
@@ -41,9 +41,9 @@ const int nBins[95] =
 	100, 100, 100, 100, 100, 100, 100,
 	10,  2,   100, 100, 10,  10,  80,
 	10,  10,  10,  10,  10,  10,  40,
-	40,  40};
+	40,  40,  10};
 
-const double minBin[95] = 
+const double minBin[96] = 
 {0.0,   -1.15,  -1.15,  -1.15,  -3.7,   -3.7,    0.0,
 	0.0,    0.0,    0.0,    80.0,   0.0,   -2.8,   -2.8,
 	-3.7,   -3.7,   -2.6,   -2.6,   -2.6,   -2.6,   -3.7,
@@ -57,9 +57,9 @@ const double minBin[95] =
 	0.,     0.,     0.,     0.,     0.,     190000, 0,
 	0.,     0.,     0.,     0.,     0.,     0.,     0.,
 	0.,     0.,     0.,     0.,     0.,     0.,     0.,
-	0.,     0.};
+	0.,     0.,     0.};
 
-const double maxBin[95] = 
+const double maxBin[96] = 
 {30.0,  1.15,  1.15, 1.15,   3.7,     3.7,   500.0,
 	500.0, 500.0, 500.0, 1000.0, 1000.0,  2.8,   2.8,
 	3.7,   3.7,   2.6,   2.6,    2.6,     2.6,   3.7,
@@ -73,7 +73,7 @@ const double maxBin[95] =
 	10,    10,    10,    10,     1.0E9,   210000,10000,
 	10,    2.0,   1000., 10.0,   10.0,    10.0,  130.0,
 	10,    10,    10,    10,     10,      10,    10,
-	4,     4};
+	4,     4,     10};
 
 /// EDBRHistoMaker is the class that analyzes the flat
 /// TTree that comes out from the NTuple dumper module.
@@ -172,6 +172,7 @@ class EDBRHistoMaker {
 		Double_t        MCmatch[99];   //[nCands]
 		UInt_t          nVtx;
 		UInt_t          nJets;
+		UInt_t          nAK5jets;
 		UInt_t          nPU;
 		Double_t        HLTweight;
 		Double_t        PUweight;
@@ -213,7 +214,6 @@ class EDBRHistoMaker {
 		Double_t        nbtagscleanL[99];  //[nCands]
 		Double_t        nbtagscleanM[99];  //[nCands]
 		Double_t        nbtagscleanT[99];  //[nCands]
-
 
 		// List of branches
 		TBranch        *b_nCands;   //!
@@ -501,6 +501,7 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("MCmatch", MCmatch, &b_MCmatch);
 	fChain->SetBranchAddress("nVtx", &nVtx, &b_nVtx);
 	fChain->SetBranchAddress("nJets", &nJets, &b_nJets);
+	fChain->SetBranchAddress("nAK5jets", &nAK5jets);
 	fChain->SetBranchAddress("nPU", &nPU, &b_nPU);
 	fChain->SetBranchAddress("HLTweight", &HLTweight, &b_HLTweight);
 	fChain->SetBranchAddress("PUweight", &PUweight, &b_PUweight);
@@ -552,7 +553,7 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 		int  wantNXJets,
 		bool isZZchannel){
 	fChain = 0;
-	nVars = 95;
+	nVars = 96;
 
 	// Definition of regions
 	sidebandVHMassLow_  =  0.0;  // GeV
@@ -875,6 +876,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["isoele1calo"])->Fill(isoele1calo[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["isoele2calo"])->Fill(isoele2calo[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["nJets"])->Fill(nJets,actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["nAK5jets"])->Fill(nAK5jets,actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["met"])->Fill(met,actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["metSign"])->Fill(metSign,actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["etalep1"])->Fill(etalep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
