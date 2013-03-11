@@ -1,6 +1,7 @@
 #include <Riostream.h>
 #include <vector>
 #include <string>
+#include <sstream>
 
 #include "TROOT.h"
 #include "TError.h"
@@ -9,12 +10,11 @@
 #include "TKey.h"
 #include "TGraph.h"
 #include "TF1.h"
-#include "EDBRHistoMaker.h"
-#include "EDBRHistoPlotter.h"
+#include "OptimizationMaker.h"
 
 #include "CMSTDRStyle.h"
 
-double getPunzi(double nSubjetinessCut){
+double optimizer(){
 
   gErrorIgnoreLevel=kFatal;//suppresses all info messages
   setTDRStyle();//TDR style
@@ -30,11 +30,9 @@ double getPunzi(double nSubjetinessCut){
   
   /// Luminosity value in pb^-1
   double lumiValue = 19477.6;
-  /// k-factor for LO to NNLO
-  double kFactor = 1.2;
-  
+
   /// Path to wherever the files with the trees are. 
-  std::string pathToTrees="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/trees_presel_AB_20130227_AK7/";
+  std::string pathToTrees="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsigAK7/";
   /// Path to wherever you want to put the histograms (figures) in.
   std::string outputDir = "./test";
 
@@ -44,10 +42,10 @@ double getPunzi(double nSubjetinessCut){
   fData.clear();
 
   /// Setup names of MC files for trees.
-  const int nMC=7;//set to zero if you don't want to plot
+  const int nMC=6;//set to zero if you don't want to plot
   std::string mcLabels[nMC]={"TTBAR",
 			     "WW",
-			     "WZ",
+			     //			     "WZ",
 			     "ZZ",
 			     "DYJetsPt50To70",
 			     "DYJetsPt70To100",
@@ -80,94 +78,68 @@ double getPunzi(double nSubjetinessCut){
 
 
   //loop over MC files and make histograms individually for each of them
-  
-  double totalBackground = 0;
   for(int i=0;i<nMC;i++){
     std::cout<<"\n-------\nRunning over "<<mcLabels[i].c_str()<<std::endl;
     std::cout<<"The file is " <<fMC.at(i)<<std::endl;    
-    sprintf(buffer,"histos_%s.root",mcLabels[i].c_str());
+    sprintf(buffer,"background_%s.root",mcLabels[i].c_str());
     fHistosMC.push_back(buffer);
     
    
     TFile *fileMC = TFile::Open(fMC.at(i).c_str());
     TTree *treeMC = (TTree*)fileMC->Get("SelectedCandidates");
-    EDBRHistoMaker* maker = new EDBRHistoMaker(treeMC, 
+    OptimizationMaker* maker = new OptimizationMaker(treeMC, 
 					       wantElectrons, 
 					       wantMuons, 
 					       wantSideband, 
 					       wantSignal, 
-					       wantNXJets);
+					       wantNXJets,
+					       true);
       maker->setUnitaryWeights(false);
-      double eventsPassing = maker->FastLoop(lumiValue,kFactor,nSubjetinessCut,1000,0.15);
-      printf("This sample has %g events passing\n",eventsPassing);
+      maker->setLumi(lumiValue);
+      maker->Loop(buffer,1000,0.15);
       //delete maker; // This class is badly written and deleting it isn't safe!
       fileMC->Close();
 
-      totalBackground += eventsPassing;
-    
   }//end loop on MC files
 
-  printf("\n+++++++++++++++++++++++\n");
-  printf("Total passing background = %g\n",totalBackground);
-  printf("+++++++++++++++++++++++\n");
-
   // The signal:
-  double totalSignal = 0.0;
+  std::vector<int> massPoints;
+  massPoints.push_back(600); 
+  massPoints.push_back(700); 
+  massPoints.push_back(800);
+  massPoints.push_back(900); 
+  massPoints.push_back(1000); 
+  massPoints.push_back(1100); 
+  massPoints.push_back(1300); 
+  massPoints.push_back(1400); 
+  massPoints.push_back(1500); 
+  massPoints.push_back(1700); 
+  massPoints.push_back(1800); 
+  massPoints.push_back(1900);
+  
+  for(size_t i=0; i!=massPoints.size(); ++i)
   {
-    std::string pathToSignal = pathToTrees+"treeEDBR_BulkG_ZZ_lljj_c0p2_M1000.root";
+    std::stringstream pathToSignal;
+    pathToSignal << pathToTrees << "treeEDBR_BulkG_ZZ_lljj_c0p2_M"
+		 << massPoints.at(i) << ".root";
     //std::string pathToSignal = pathToTrees+"treeEDBR_RSG_ZZ_lljj_c0p2_M1000.root";
-    printf("Running over %s\n",pathToSignal.c_str());
-    TFile *fileMC = TFile::Open(pathToSignal.c_str());
+    printf("Running over %s\n",pathToSignal.str().c_str());
+    sprintf(buffer,"signal_%i.root",massPoints.at(i));
+    fHistosMC.push_back(buffer);
+
+    TFile *fileMC = TFile::Open(pathToSignal.str().c_str());
     TTree *treeMC = (TTree*)fileMC->Get("SelectedCandidates");    
-    EDBRHistoMaker* maker = new EDBRHistoMaker(treeMC, 
+    OptimizationMaker* maker = new OptimizationMaker(treeMC, 
 					       wantElectrons, 
 					       wantMuons, 
 					       wantSideband, 
 					       wantSignal, 
-					       wantNXJets);
+					       wantNXJets,
+					       true);
     maker->setUnitaryWeights(false);
-    double eventsPassing = maker->FastLoop(lumiValue,1.0,nSubjetinessCut,1000,0.15);
-    printf("This sample has %g events passing\n",eventsPassing);
-    totalSignal = eventsPassing;
+    maker->setLumi(lumiValue);
+    maker->Loop(buffer,1000,0.15);
   }
 
-  double punzi = totalSignal/(1.0+sqrt(totalBackground));
-  
-  printf("\n+++++++++++++++++++++++\n");
-  printf("PUNZI SIGNIFICANCE = %g\n",punzi);
-  printf("+++++++++++++++++++++++\n");
-
-  return punzi;
-  
+  return 0.0;
 }//end main
-
-void optimizer() {
-
-  TCanvas* cv = new TCanvas("punzi","",600,600);
-
-  int nPoints = 20;
-  double step = 0.05;
-
-  TGraph* g = new TGraph(nPoints);
-  
-  for(int i=0; i!=20; ++i) {
-    double nsubjcut = 0.0+step*i;
-    double punzi = getPunzi(nsubjcut);
-    g->SetPoint(i,nsubjcut,punzi);
-  }
-
-  g->Draw("A*");
-  g->GetXaxis()->SetTitle("#tau_{21} cut");
-  g->GetYaxis()->SetTitle("Arbitrary units");
-  g->GetYaxis()->CenterTitle();
-  g->SetTitle("");
-
-  TF1* f = new TF1("f","[0]+[1]*(0.5+0.5*tanh([2]*(x-[3])))",0,1);
-  f->SetParameter(0,0.1);
-  f->SetParameter(1,10);
-  f->SetParameter(2,10);
-  f->SetParameter(3,0.3);
-  f->SetLineWidth(2);
- 
-  g->Fit(f);
-}
