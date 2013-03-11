@@ -9,7 +9,8 @@
 
 void absolute_eff()
 {
-	TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/goodbtag/AK7/fullsig/";
+  //TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/goodbtag/AK7/fullsig/";
+	TString inputpath = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/fullsig/";
 	TString cut = "absolute_efficiency";
 	vector<TString> dataSamples;
 	vector<TString> bkgSamples;
@@ -191,8 +192,8 @@ void absolute_eff()
 					if(etalep1[ivec]>2.1)continue;
 					if(ptZll[ivec]<200)continue;
 					if(ptZjj[ivec]<200)continue;
-					if(nXjets[ivec]!=1)continue;// 1 jet candidate
-					if(nbtagsM[ivec]!=0)continue;
+					if(nXjets[ivec]!=2)continue;// 1 jet candidate
+					if(nbtagsM[ivec]!=0)continue; //b-tag veto
 
 					pass=pass+actualWeight;
 
