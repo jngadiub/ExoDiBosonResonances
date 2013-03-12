@@ -448,12 +448,14 @@ OptimizationMaker::OptimizationMaker(TTree* tree,
 		bool isZZchannel){
 	fChain = 0;
 	nVars = 92;
-
+	
+	/*
 	// Definition of regions
 	sidebandVHMassLow_  =  0.0;  // GeV
 	sidebandVHMassHigh_ =  70.0; // GeV
 	signalVHMassLow_    =  70.0; // GeV
 	signalVHMassHigh_   = 105.0; // GeV
+	*/
 
 	// Which category do we want to analyze?
 	wantElectrons_ = wantElectrons;
@@ -633,7 +635,12 @@ void OptimizationMaker::Loop(std::string outFileName, double massPoint, double p
 		}
 		// We calculate a weight here.
 		//double actualWeight = weight;//*HLTweight*PUweight*LumiWeight*GenWeight;
-		double actualWeight = PUweight*LumiWeight*GenWeight*lumi_;
+		double sampleWeight=1;
+		TString sample = outFileName;
+		if(isZZchannel_==false&&sample.Contains("WJetsPt"))sampleWeight=1.3;
+		//cout<<"sample weight "<<sampleWeight<<endl;
+		
+		double actualWeight = PUweight*LumiWeight*GenWeight*lumi_*sampleWeight;
 		if(setUnitaryWeights_) {
 			if(jentry==0)printf("Unitary weights set!\n");
 			actualWeight=1.0;
@@ -648,9 +655,26 @@ void OptimizationMaker::Loop(std::string outFileName, double massPoint, double p
 		for(int ivec=0;ivec<nCands;ivec++){
 		  
 		  if(eventPassesCut(ivec, 80, 20)){
+                if(isZZchannel_==false)//WW channel, veto second loose lepton
+                {   
+                    if( (nLooseEle+nLooseMu==1) && ptZjj[ivec]>200 );//global selection
+                    else continue;  
 
+                    //b veto cut
+                    if(nbtagsM[ivec]==0) ;
+                    else continue;
+
+                    //b cut - ttbar control region
+                    //if(nbtagscleanT[ivec]>=1) ;
+                    //else continue;
+
+                    //nsubjettiness cut
+                    //double nsubjett = 1.0/nsubj12[ivec];
+                    //if(nsubjett<0.4) ;
+                    //else continue;
+                }   			
 		    histo->Fill(1.0/nsubj12[ivec],mZZ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-  
+  			//histo->Fill(qjet[ivec],mZZ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 		  }//end if eventPassesCut
 		}//end loop over nCands
 	

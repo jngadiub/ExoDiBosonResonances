@@ -11,7 +11,6 @@
 #include "TGraph.h"
 #include "TF1.h"
 #include "OptimizationMaker.h"
-#include "TSystem.h"
 #include "CMSTDRStyle.h"
 
 double optimizer(){
@@ -25,18 +24,20 @@ double optimizer(){
 	bool wantSideband  = false; // Will make histograms for sideband region
 	bool wantSignal    = true; // Will make histograms for signal region
 	int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
-	bool isZZchannel   = false; 
+	bool isZZchannel   = true; 
 	int  flavour = 0; 
 	if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
 
 	/// Luminosity value in pb^-1
 	double lumiValue = 19477.6;
+	//double lumiValue = 19538.85;// for SingleMu2012
 
 	/// Path to wherever the files with the trees are. 
 	std::string pathToTrees="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsigAK7/";
-	/// Path to wherever you want to put the histograms (figures) in.
+	//std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/goodbtag/AK7/fullsig/";
 
-	gSystem->mkdir("CA8optimization",true);
+    system("rm -rf CA8optimization");	
+	system("mkdir CA8optimization");
 
 	/*
 	/// Setup names of data files for trees.
@@ -46,6 +47,7 @@ double optimizer(){
 	 */
 
 	/// Setup names of MC files for trees.
+	
 	const int nMC=6;//set to zero if you don't want to plot
 	std::string mcLabels[nMC]={"TTBAR",
 		"WW",
@@ -54,7 +56,28 @@ double optimizer(){
 		"DYJetsPt50To70",
 		"DYJetsPt70To100",
 		"DYJetsPt100"};
-
+	
+	/*
+  const int nMC=16;//set to zero if you don't want to plot
+  std::string mcLabels[nMC]={
+	  			 "TTBAR_xww",
+                 "SingleTopBarTWchannel_xww",
+                 "SingleTopTWchannel_xww",
+                 "SingleTopBarSchannel_xww", 
+                 "SingleTopSchannel_xww",
+                 "SingleTopBarTchannel_xww",
+                 "SingleTopTchannel_xww",
+                 "WW_xww",
+                 "WZ_xww",
+                 "ZZ_xww",
+                 "DYJetsPt50To70_xww",
+                 "DYJetsPt70To100_xww",
+                 "DYJetsPt100_xww",
+                 "WJetsPt50To70_xww",
+                 "WJetsPt70To100_xww",
+                 "WJetsPt100_xww",
+                 };
+	*/
 	std::vector<std::string> fMC;
 	for(int ii=0;ii<nMC;ii++){
 		fMC.push_back(pathToTrees+"treeEDBR_"+mcLabels[ii]+".root");
@@ -121,8 +144,9 @@ double optimizer(){
 	{
 		std::stringstream pathToSignal;
 		pathToSignal << pathToTrees << "treeEDBR_BulkG_ZZ_lljj_c0p2_M"
-			<< massPoints.at(i) << ".root";
-		//std::string pathToSignal = pathToTrees+"treeEDBR_RSG_ZZ_lljj_c0p2_M1000.root";
+		//pathToSignal << pathToTrees << "treeEDBR_BulkG_WW_lvjj_c1p0_M"
+			//<< massPoints.at(i) << "_xww.root";
+				<< massPoints.at(i) << ".root";
 		printf("Running over %s\n",pathToSignal.str().c_str());
 		sprintf(buffer,"CA8optimization/signal_%i.root",massPoints.at(i));
 
