@@ -34,8 +34,7 @@ from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
 process.ANEDBR = AnalyzerXZZ.clone(
     debug=cms.bool(False),
     outFileName=cms.string("treeEDBR_<SAMPLE>.root"),
-	VType=cms.string("W"),
-    	#VType=cms.string("Z"),
+    VType=cms.string("Z"),
     Ngen=cms.uint32(1),
     xsec=cms.double(1.0) ###in pb
     )
@@ -65,15 +64,15 @@ if "TTBAR" in "<SAMPLE>" :
     process.ANEDBR.xsec=cms.double(225.197)
 elif "DYJetsPt50To70" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(4823000)
-    process.ANEDBR.xsec=cms.double(105.7)
+    process.ANEDBR.xsec=cms.double(105.7) # 105.7 = 89.0 (from PREP) times 1.188
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "DYJetsPt70To100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(4000000)
-    process.ANEDBR.xsec=cms.double(62.9)
+    process.ANEDBR.xsec=cms.double(62.9) # 62.9 = 53.0 (from PREP) times 1.187
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "DYJetsPt100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(2500000)
-    process.ANEDBR.xsec=cms.double(39.1)
+    process.ANEDBR.xsec=cms.double(39.1) # 39.1 = 32.9 (from PREP) times 1.188
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "WW"=="<SAMPLE>" or "WW_xww" == "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(3870000)
