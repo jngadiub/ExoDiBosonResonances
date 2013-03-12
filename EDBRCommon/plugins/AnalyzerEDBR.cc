@@ -444,8 +444,8 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("puMvajet2"       ,&puMvajet2     ,"puMvajet2[nCands]/D"    ); 
 	outTree_->Branch("prunedmass"       ,&prunedmass    ,"prunedmass[nCands]/D"    ); 
 	outTree_->Branch("mdrop"       ,&mdrop     ,"mdrop[nCands]/D"    ); 
-	outTree_->Branch("nsubj12"       ,&nsubj12    ,"nsubj12[nCands]/D"    ); 
-	outTree_->Branch("nsubj23"       ,&nsubj23     ,"nsubj23[nCands]/D"    ); 
+	outTree_->Branch("nsubj21"       ,&nsubj21    ,"nsubj21[nCands]/D"    ); 
+	outTree_->Branch("nsubj32"       ,&nsubj32     ,"nsubj32[nCands]/D"    ); 
 	outTree_->Branch("tau1"       ,&tau1     ,"tau1[nCands]/D"    ); 
 	outTree_->Branch("tau2"       ,&tau2    ,"tau2[nCands]/D"    ); 
 	outTree_->Branch("qjet"       ,&qjet    ,"qjet[nCands]/D"    ); 
@@ -560,7 +560,7 @@ void AnalyzerEDBR::initDataMembers(){
 		betajet1[i]=-99.;betajet2[i]=-99.;puMvajet1[i]=-99.;puMvajet2[i]=-99.;
 		isolep1[i]=-99.; isolep2[i]=-99.; eleMVAId1[i]=-99.; eleMVAId2[i]=-99.;
 		MCmatch[i]=-99.;           
-		qjet[i]=-99.;tau1[i]=-99.;tau2[i]=-99.;nsubj12[i]=-99.;nsubj23[i]=-99.;
+		qjet[i]=-99.;tau1[i]=-99.;tau2[i]=-99.;nsubj21[i]=-99.;nsubj32[i]=-99.;
 		mdrop[i]=-99.;prunedmass[i]=-99.;
 		VBFTag[i]=-999;
 		VBFmJJ[i]=-999.0; VBFdeltaEta[i]=-999.0; VBFptjet1[i]=-999.0; VBFptjet2[i]=-999.0; VBFetajet1[i]=-999.0; VBFetajet2[i]=-999.0; VBFphijet1[i]=-999.0; VBFphijet2[i]=-999.0;

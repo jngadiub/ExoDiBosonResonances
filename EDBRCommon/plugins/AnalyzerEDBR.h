@@ -265,8 +265,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     prunedmass[ih]=edbr->leg2().prunedMass();
     mdrop[ih]=edbr->leg2().mdrop();
     qjet[ih]= edbr->leg2().qjet();
-    nsubj12[ih]=edbr->leg2().ntau12();
-    nsubj23[ih]=edbr->leg2().ntau23();
+    nsubj21[ih]=edbr->leg2().ntau21();
+    nsubj32[ih]=edbr->leg2().ntau32();
     tau1[ih]=edbr->leg2().tau1();
     tau2[ih]=edbr->leg2().tau2();
 
@@ -357,8 +357,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     prunedmass[ih]=-99.0;
     mdrop[ih]=-999.0;
     qjet[ih]=-999.0;
-    nsubj12[ih]=-999.0;
-    nsubj23[ih]=-999.0;
+    nsubj21[ih]=-999.0;
+    nsubj32[ih]=-999.0;
     tau1[ih]=-999.0;
     tau2[ih]=-999.0;
 
@@ -531,7 +531,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double HLTSF,PU,PUA,PUB,lumiw,genw,w,wA,wB;          // weight
   double MCmatch[nMaxCand];            // mc matching flag
  
-  double qjet[nMaxCand],tau1[nMaxCand],tau2[nMaxCand],nsubj12[nMaxCand],nsubj23[nMaxCand];
+  double qjet[nMaxCand],tau1[nMaxCand],tau2[nMaxCand],nsubj21[nMaxCand],nsubj32[nMaxCand];
   double mdrop[nMaxCand],prunedmass[nMaxCand];
 
   int VBFTag[nMaxCand];
