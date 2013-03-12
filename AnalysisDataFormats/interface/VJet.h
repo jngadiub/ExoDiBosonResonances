@@ -44,9 +44,9 @@ namespace cmg {
     float tau1() const {return tau1_;}
     float tau2() const {return tau2_;}
     float tau3() const {return tau3_;}
-    float ntau12() const {return tau1_/tau2_;}
-    float ntau23() const {return tau2_/tau3_;}
-    float ntau13() const {return tau1_/tau3_;}
+    float ntau21() const {return tau2_/tau1_;}
+    float ntau32() const {return tau3_/tau2_;}
+    float ntau31() const {return tau3_/tau1_;}
     float mdrop() const {return mdrop_;}
     float prunedMass() const {return prunedMass_;}
 
