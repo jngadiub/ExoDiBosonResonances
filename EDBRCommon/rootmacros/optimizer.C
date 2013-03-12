@@ -11,135 +11,135 @@
 #include "TGraph.h"
 #include "TF1.h"
 #include "OptimizationMaker.h"
-
+#include "TSystem.h"
 #include "CMSTDRStyle.h"
 
 double optimizer(){
 
-  gErrorIgnoreLevel=kFatal;//suppresses all info messages
-  setTDRStyle();//TDR style
-   
-  /// Boolean flags to steer the histogram making
-  bool wantElectrons = false; // Will make histograms for electrons
-  bool wantMuons     = true; // Will make histograms for muons
-  bool wantSideband  = false; // Will make histograms for sideband region
-  bool wantSignal    = true; // Will make histograms for signal region
-  int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
-  int  flavour = 0; 
-  if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
-  
-  /// Luminosity value in pb^-1
-  double lumiValue = 19477.6;
+	gErrorIgnoreLevel=kFatal;//suppresses all info messages
+	setTDRStyle();//TDR style
 
-  /// Path to wherever the files with the trees are. 
-  std::string pathToTrees="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsigAK7/";
-  /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./test";
+	/// Boolean flags to steer the histogram making
+	bool wantElectrons = false; // Will make histograms for electrons
+	bool wantMuons     = true; // Will make histograms for muons
+	bool wantSideband  = false; // Will make histograms for sideband region
+	bool wantSignal    = true; // Will make histograms for signal region
+	int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
+	bool isZZchannel   = false; 
+	int  flavour = 0; 
+	if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
 
-  /// Setup names of data files for trees.
-  const int nDATA=0;
-  std::vector<std::string> fData;
-  fData.clear();
+	/// Luminosity value in pb^-1
+	double lumiValue = 19477.6;
 
-  /// Setup names of MC files for trees.
-  const int nMC=6;//set to zero if you don't want to plot
-  std::string mcLabels[nMC]={"TTBAR",
-			     "WW",
-			     //			     "WZ",
-			     "ZZ",
-			     "DYJetsPt50To70",
-			     "DYJetsPt70To100",
-			     "DYJetsPt100"};
+	/// Path to wherever the files with the trees are. 
+	std::string pathToTrees="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsigAK7/";
+	/// Path to wherever you want to put the histograms (figures) in.
 
-  std::vector<std::string> fMC;
-  for(int ii=0;ii<nMC;ii++){
-    fMC.push_back(pathToTrees+"treeEDBR_"+mcLabels[ii]+".root");
-  }
+	gSystem->mkdir("CA8optimization",true);
 
-  /// Setup names of files for histograms (data and MC)
-  std::vector<std::string> fHistosData;
-  std::vector<std::string> fHistosMC;
- 
-  char buffer[256];
-  printf("All strings set\n");
+	/*
+	/// Setup names of data files for trees.
+	const int nDATA=0;
+	std::vector<std::string> fData;
+	fData.clear();
+	 */
 
-  /// ----------------------------------------------------------------
-  /// This first part is the loop over trees to create histogram files 
-  /// ----------------------------------------------------------------
+	/// Setup names of MC files for trees.
+	const int nMC=6;//set to zero if you don't want to plot
+	std::string mcLabels[nMC]={"TTBAR",
+		"WW",
+		//			     "WZ",
+		"ZZ",
+		"DYJetsPt50To70",
+		"DYJetsPt70To100",
+		"DYJetsPt100"};
 
-  /// The EDBRHistoMaker, for reference
-  ///
-  ///EDBRHistoMaker::EDBRHistoMaker(TTree* tree, 
-  ///		       bool wantElectrons,
-  ///		       bool wantMuons,
-  ///		       bool wantSideband,
-  ///		       bool wantSignal,
-  ///		       int wantNXJets)
+	std::vector<std::string> fMC;
+	for(int ii=0;ii<nMC;ii++){
+		fMC.push_back(pathToTrees+"treeEDBR_"+mcLabels[ii]+".root");
+	}
 
 
-  //loop over MC files and make histograms individually for each of them
-  for(int i=0;i<nMC;i++){
-    std::cout<<"\n-------\nRunning over "<<mcLabels[i].c_str()<<std::endl;
-    std::cout<<"The file is " <<fMC.at(i)<<std::endl;    
-    sprintf(buffer,"background_%s.root",mcLabels[i].c_str());
-    fHistosMC.push_back(buffer);
-    
-   
-    TFile *fileMC = TFile::Open(fMC.at(i).c_str());
-    TTree *treeMC = (TTree*)fileMC->Get("SelectedCandidates");
-    OptimizationMaker* maker = new OptimizationMaker(treeMC, 
-					       wantElectrons, 
-					       wantMuons, 
-					       wantSideband, 
-					       wantSignal, 
-					       wantNXJets,
-					       true);
-      maker->setUnitaryWeights(false);
-      maker->setLumi(lumiValue);
-      maker->Loop(buffer,1000,0.15);
-      //delete maker; // This class is badly written and deleting it isn't safe!
-      fileMC->Close();
+	char buffer[256];
+	printf("All strings set\n");
 
-  }//end loop on MC files
+	/// ----------------------------------------------------------------
+	/// This first part is the loop over trees to create histogram files 
+	/// ----------------------------------------------------------------
 
-  // The signal:
-  std::vector<int> massPoints;
-  massPoints.push_back(600); 
-  massPoints.push_back(700); 
-  massPoints.push_back(800);
-  massPoints.push_back(900); 
-  massPoints.push_back(1000); 
-  massPoints.push_back(1100); 
-  massPoints.push_back(1300); 
-  massPoints.push_back(1400); 
-  massPoints.push_back(1500); 
-  massPoints.push_back(1700); 
-  massPoints.push_back(1800); 
-  massPoints.push_back(1900);
-  
-  for(size_t i=0; i!=massPoints.size(); ++i)
-  {
-    std::stringstream pathToSignal;
-    pathToSignal << pathToTrees << "treeEDBR_BulkG_ZZ_lljj_c0p2_M"
-		 << massPoints.at(i) << ".root";
-    //std::string pathToSignal = pathToTrees+"treeEDBR_RSG_ZZ_lljj_c0p2_M1000.root";
-    printf("Running over %s\n",pathToSignal.str().c_str());
-    sprintf(buffer,"signal_%i.root",massPoints.at(i));
-    fHistosMC.push_back(buffer);
+	/// The EDBRHistoMaker, for reference
+	///
+	///EDBRHistoMaker::EDBRHistoMaker(TTree* tree, 
+	///		       bool wantElectrons,
+	///		       bool wantMuons,
+	///		       bool wantSideband,
+	///		       bool wantSignal,
+	///		       int wantNXJets)
 
-    TFile *fileMC = TFile::Open(pathToSignal.str().c_str());
-    TTree *treeMC = (TTree*)fileMC->Get("SelectedCandidates");    
-    OptimizationMaker* maker = new OptimizationMaker(treeMC, 
-					       wantElectrons, 
-					       wantMuons, 
-					       wantSideband, 
-					       wantSignal, 
-					       wantNXJets,
-					       true);
-    maker->setUnitaryWeights(false);
-    maker->setLumi(lumiValue);
-    maker->Loop(buffer,1000,0.15);
-  }
 
-  return 0.0;
+	//loop over MC files and make histograms individually for each of them
+	for(int i=0;i<nMC;i++){
+		std::cout<<"\n-------\nRunning over "<<mcLabels[i].c_str()<<std::endl;
+		std::cout<<"The file is " <<fMC.at(i)<<std::endl;    
+		sprintf(buffer,"CA8optimization/background_%s.root",mcLabels[i].c_str());
+
+
+		TFile *fileMC = TFile::Open(fMC.at(i).c_str());
+		TTree *treeMC = (TTree*)fileMC->Get("SelectedCandidates");
+		OptimizationMaker* maker = new OptimizationMaker(treeMC, 
+				wantElectrons, 
+				wantMuons, 
+				wantSideband, 
+				wantSignal, 
+				wantNXJets,
+				true);
+		maker->setUnitaryWeights(false);
+		maker->setLumi(lumiValue);
+		maker->Loop(buffer,1000,0.15);
+		//delete maker; // This class is badly written and deleting it isn't safe!
+		fileMC->Close();
+
+	}//end loop on MC files
+
+	// The signal:
+	std::vector<int> massPoints;
+	massPoints.push_back(600); 
+	massPoints.push_back(700); 
+	massPoints.push_back(800);
+	massPoints.push_back(900); 
+	massPoints.push_back(1000); 
+	massPoints.push_back(1100); 
+	massPoints.push_back(1300); 
+	massPoints.push_back(1400); 
+	massPoints.push_back(1500); 
+	massPoints.push_back(1700); 
+	massPoints.push_back(1800); 
+	massPoints.push_back(1900);
+
+	for(size_t i=0; i!=massPoints.size(); ++i)
+	{
+		std::stringstream pathToSignal;
+		pathToSignal << pathToTrees << "treeEDBR_BulkG_ZZ_lljj_c0p2_M"
+			<< massPoints.at(i) << ".root";
+		//std::string pathToSignal = pathToTrees+"treeEDBR_RSG_ZZ_lljj_c0p2_M1000.root";
+		printf("Running over %s\n",pathToSignal.str().c_str());
+		sprintf(buffer,"CA8optimization/signal_%i.root",massPoints.at(i));
+
+		TFile *fileMC = TFile::Open(pathToSignal.str().c_str());
+		TTree *treeMC = (TTree*)fileMC->Get("SelectedCandidates");    
+		OptimizationMaker* maker = new OptimizationMaker(treeMC, 
+				wantElectrons, 
+				wantMuons, 
+				wantSideband, 
+				wantSignal, 
+				wantNXJets,
+				isZZchannel);
+		maker->setUnitaryWeights(false);
+		maker->setLumi(lumiValue);
+		maker->Loop(buffer,1000,0.15);
+	}
+
+	system("hadd CA8optimization/allBackgrounds.root CA8optimization/background_*");
+	return 0.0;
 }//end main
