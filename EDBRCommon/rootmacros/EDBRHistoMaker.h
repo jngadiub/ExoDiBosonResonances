@@ -1,5 +1,7 @@
 #include <map>
+#include <vector>
 #include <string>
+#include <iostream>
 
 #include "TH1D.h"
 #include "TH2D.h"
@@ -8,73 +10,24 @@
 #include "TTree.h"
 #include "TChain.h"
 
-// Sadly, CINT will not allow these large arrays
-// to be part of the class... possibly if I change
-// them to be std::vectors, eventually?
 
-const std::string vars[96] = 
-{"nCands", "cosThetaStar", "cosTheta1", "cosTheta2", "phi", "phiStar1", "ptlep1",
-	"ptlep2", "ptjet1", "ptjet2", "ptZll", "ptZjj", "yZll", "yZjj",
-	"phiZll", "phiZjj", "etalep1", "etalep2", "etajet1", "etajet2", "philep1",
-	"philep2", "phijet1", "phijet2", "lep", "region", "mZZ", "mZZNoKinFit",
-	"ptmzz", "ptmzzNoKinFit", "mLL", "mJJ", "mJJNoKinFit", "met", "metSign",
-	"nBTags", "deltaREDBR", "deltaRleplep", "deltaRjetjet", "qgProduct", "qgjet1", "qgjet2",
-	"betajet1", "betajet2", "puMvajet1", "puMvajet2", "nXjets", "prunedmass", "mdrop",
-	"nsubj21", "nsubj23", "tau1", "tau2", "qjet", "isomu1mod", "isomu2mod",
-	"isoele1calo", "isoele2calo", "isoele1trk", "isoele2trk", "LD", "q1fl", "q2fl", "MCmatch", "nVtx",
-	"nJets", "nPU", "HLTweight", "PUweight", "PUweight2012A", "PUweight2012B", "LumiWeight",
-	"GenWeight", "weight", "weight2012A", "weight2012B", "event", "run", "ls",
-	"nVL","VBFTag","VBFmJJ","VBFdeltaEta","nLooseEle","nLooseMu","mt",
-	"nbtagsL","nbtagsM","nbtagsT","nbtagscleanL","nbtagscleanM","nbtagscleanT","deltaR_LJ",
-	"deltaPhi_JMET","deltaPhi_JWL","nAK5jets"};
+/// The large arrays that were here are now GONE.
+/// Instead, we have this helper that holds the
+/// information of all our histograms.
 
-const int nBins[96] = 
-{30,  100, 100, 100, 100, 100, 100,
-	100, 100, 100, 92,  100, 28,  28,
-	100, 100, 26,  26,  26,  26,  100,
-	100, 100, 100, 100, 100, 50,  50,
-	35,  35,  50,  20,  75,  100, 20,
-	100, 100, 100, 100, 100, 100, 100,
-	100, 100, 100, 100, 4,   22,  100,
-	40,  100, 100, 100, 100, 100, 100,
-	100, 100, 100, 100, 100, 4,   4,   100, 43,
-	10,  2,   100, 100, 100, 100, 100,
-	100, 100, 100, 100, 100, 100, 100,
-	10,  2,   100, 100, 10,  10,  80,
-	10,  10,  10,  10,  10,  10,  40,
-	40,  40,  10};
-
-const double minBin[96] = 
-{0.0,   -1.15,  -1.15,  -1.15,  -3.7,   -3.7,    0.0,
-	0.0,    0.0,    0.0,    80.0,   0.0,   -2.8,   -2.8,
-	-3.7,   -3.7,   -2.6,   -2.6,   -2.6,   -2.6,   -3.7,
-	-3.7,   -3.7,   -3.7,    0.0,    0.0,    0.0,    0.0,
-	0.0,    0.0,    70.0,   40.0,   40.0,   0.0,    0.0,
-	-2.2,    0.0,    0.0,    0.0,   -100.2, -100.2, -100.2,
-	0.,    -1.2,   -1080., -1080.,  0.,     50.,   -1080.,
-	0.,    -1080., -1080., -1080., -1080.,  0.,     0.,
-	0.0,    0.0,    0.0,    0.0,   -101.,  -101.,  -101., -1.2, -0.5,
-	0.5,    0.,     0.99,   0.,     0.,     0.,     0.,
-	0.,     0.,     0.,     0.,     0.,     190000, 0,
-	0.,     0.,     0.,     0.,     0.,     0.,     0.,
-	0.,     0.,     0.,     0.,     0.,     0.,     0.,
-	0.,     0.,     0.};
-
-const double maxBin[96] = 
-{30.0,  1.15,  1.15, 1.15,   3.7,     3.7,   500.0,
-	500.0, 500.0, 500.0, 1000.0, 1000.0,  2.8,   2.8,
-	3.7,   3.7,   2.6,   2.6,    2.6,     2.6,   3.7,
-	3.7,   3.7,   3.7,   1.0,    1.0,     2000,  2000,
-	350.0, 350.0, 110.0, 140.0,  190.0,   500.0, 10.0,
-	0.,    4.0,   4.0,   4.0,    -97.8,   -97.8, -97.8 ,
-	1.1,   1.2,   1000., 1000.,  4.,      105.,  100.,
-	1.,    100.,  100.,  100.,   100.,    0.20,  0.20,
-	1.0,   1.0,   10.0,  10.0,   -97.,    -97.,  -97., 1.2, 42.5,
-	10.5,  1.0,   10.0,  10.0,   10.,      10.,  0.1,
-	10,    10,    10,    10,     1.0E9,   210000,10000,
-	10,    2.0,   1000., 10.0,   10.0,    10.0,  130.0,
-	10,    10,    10,    10,     10,      10,    10,
-	4,     4,     10};
+class HistoFactory{
+ public:
+  std::vector<std::string> vars;
+  std::vector<int> nBins;
+  std::vector<double> minBin;
+  std::vector<double> maxBin;
+  void setHisto(std::string s, int n, double min, double max) {
+    vars.push_back(s);
+    nBins.push_back(n);
+    minBin.push_back(min);
+    maxBin.push_back(max);
+  }
+};
 
 /// EDBRHistoMaker is the class that analyzes the flat
 /// TTree that comes out from the NTuple dumper module.
@@ -331,7 +284,6 @@ class EDBRHistoMaker {
 		Long64_t LoadTree(Long64_t entry);
 		void     Init(TTree *tree);
 		void     Loop(std::string outFileName);
-		//double   FastLoop(double lumiValue, double kFactor, double nsubjetinessCut, double massPoint, double percentageWindow);
 
 		// Our added functions
 		void createAllHistos();
@@ -410,6 +362,7 @@ class EDBRHistoMaker {
 		bool isZZchannel_;
 
 		// The histograms
+		HistoFactory hs;
 		std::map<std::string,TH1D*> theHistograms;
 		TH2D *hmjmzz;
 };
@@ -555,8 +508,7 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 		int  wantNXJets,
 		bool isZZchannel){
 	fChain = 0;
-	nVars = 96;
-
+	
 	// Definition of regions
 	sidebandVHMassLow_  =  0.0;  // GeV
 	sidebandVHMassHigh_ =  70.0; // GeV
@@ -604,20 +556,124 @@ Long64_t EDBRHistoMaker::LoadTree(Long64_t entry) {
 //-------------------------
 
 void EDBRHistoMaker::createAllHistos() {
+
+        /// This part substitutes the big arrays that used to be 
+        /// in the beginning of this file.
+        /// Much simpler to create histos now: just add them to
+        /// hs with hs.setHisto(name,nbins,min,max);
+	hs.setHisto("nCands",30,-0.5,29.5);
+	hs.setHisto("cosThetaStar",100,-1.15,1.15);
+	hs.setHisto("cosTheta1",100,-1.15,1.15);
+	hs.setHisto("cosTheta2",100,-1.15,1.15);
+	hs.setHisto("phi",100,-3.7,3.7);
+	hs.setHisto("phiStar1",100,-3.7,3.7);
+	hs.setHisto("ptlep1",100,0,500);
+	hs.setHisto("ptlep2",100,0,500);
+	hs.setHisto("ptjet1",100,0,500);
+	hs.setHisto("ptjet2",100,0,500);
+	hs.setHisto("ptZll",92,80,1000);
+	hs.setHisto("ptZjj",100,0,1000);
+	hs.setHisto("yZll",28,-2.8,2.8);
+	hs.setHisto("yZjj",28,-2.8,2.8);
+	hs.setHisto("phiZll",100,-3.7,3.7);
+	hs.setHisto("phiZjj",100,-3.7,3.7);
+	hs.setHisto("etalep1",26,-2.6,2.6);
+	hs.setHisto("etalep2",26,-2.6,2.6);
+	hs.setHisto("etajet1",26,-2.6,2.6);
+	hs.setHisto("etajet2",26,-2.6,2.6);
+	hs.setHisto("philep1",100,-3.7,3.7);
+	hs.setHisto("philep2",100,-3.7,3.7);
+	hs.setHisto("phijet1",100,-3.7,3.7);
+	hs.setHisto("phijet2",100,-3.7,3.7);
+	hs.setHisto("lep",100,0,1);
+	hs.setHisto("region",100,0,1);
+	hs.setHisto("mZZ",50,0,2000);
+	hs.setHisto("mZZNoKinFit",50,0,2000);
+	hs.setHisto("ptmzz",35,0,350);
+	hs.setHisto("ptmzzNoKinFit",35,0,350);
+	hs.setHisto("mLL",40,70,110);
+	hs.setHisto("mJJ",22,50,105);
+	hs.setHisto("prunedmass",22,50,105);
+	hs.setHisto("mJJNoKinFit",22,50,105);
+	hs.setHisto("met",100,0,500);
+	hs.setHisto("metSign",20,0,10);
+	//hs.setHisto("nBTags",100,-2.2,0);
+	hs.setHisto("deltaREDBR",100,0,4);
+	hs.setHisto("deltaRleplep",100,0,4);
+	hs.setHisto("deltaRjetjet",100,0,4);
+	//hs.setHisto("qgProduct",100,-100.2,-97.8);
+	//hs.setHisto("qgjet1",100,-100.2,-97.8);
+	//hs.setHisto("qgjet2",100,-100.2,-97.8);
+	hs.setHisto("betajet1",100,0,1.1);
+	//hs.setHisto("betajet2",100,0,1.1);
+	//hs.setHisto("puMvajet1",100,-1080,1000);
+	//hs.setHisto("puMvajet2",100,-1080,1000);
+	hs.setHisto("nXjets",6,-0.5,5.5);
+	hs.setHisto("mdrop",100,0,1);
+	hs.setHisto("nsubj21",40,0,1);
+	//hs.setHisto("nsubj23",100,-1080,100);
+	//hs.setHisto("tau1",100,-1080,100);
+	//hs.setHisto("tau2",100,-1080,100);
+	//hs.setHisto("qjet",100,-1080,100);
+	hs.setHisto("isomu1mod",100,0,0.2);
+	hs.setHisto("isomu2mod",100,0,0.2);
+	hs.setHisto("isoele1calo",100,0,1);
+	hs.setHisto("isoele2calo",100,0,1);
+	hs.setHisto("isoele1trk",100,0,10);
+	hs.setHisto("isoele2trk",100,0,10);
+	//hs.setHisto("LD",100,-101,-97);
+	//hs.setHisto("q1fl",4,-101,-97);
+	//hs.setHisto("q2fl",4,-101,-97);
+	hs.setHisto("MCmatch",100,-1.2,1.2);
+	hs.setHisto("nVtx",43,-0.5,42.5);
+	hs.setHisto("nJets",10,0.5,10.5);
+	//hs.setHisto("nPU",2,0,1);
+	//hs.setHisto("HLTweight",100,0.99,10);
+	hs.setHisto("PUweight",100,0,10);
+	//hs.setHisto("PUweight2012A",100,0,10);
+	//hs.setHisto("PUweight2012B",100,0,10);
+	hs.setHisto("LumiWeight",100,0,0.1);
+	hs.setHisto("GenWeight",100,0,10);
+	//hs.setHisto("weight",100,0,10);
+	//hs.setHisto("weight2012A",100,0,10);
+	//hs.setHisto("weight2012B",100,0,10);
+	hs.setHisto("event",100,0,1e+09);
+	hs.setHisto("run",100,190000,210000);
+	hs.setHisto("ls",100,0,10000);
+	hs.setHisto("nVL",10,0,10);
+	hs.setHisto("VBFTag",2,0,2);
+	hs.setHisto("VBFmJJ",100,0,1000);
+	hs.setHisto("VBFdeltaEta",100,0,10);
+	hs.setHisto("nLooseEle",10,0,10);
+	hs.setHisto("nLooseMu",10,0,10);
+	hs.setHisto("mt",80,0,130);
+	hs.setHisto("nbtagsL",10,0,10);
+	hs.setHisto("nbtagsM",10,0,10);
+	hs.setHisto("nbtagsT",10,0,10);
+	hs.setHisto("nbtagscleanL",10,0,10);
+	hs.setHisto("nbtagscleanM",10,0,10);
+	hs.setHisto("nbtagscleanT",10,0,10);
+	hs.setHisto("deltaR_LJ",40,0,10);
+	hs.setHisto("deltaPhi_JMET",40,0,4);
+	hs.setHisto("deltaPhi_JWL",40,0,4);
+	hs.setHisto("nAK5jets",10,0,10);
+	
 	char buffer[256];
 	char buffer2[256];
 
+	nVars = hs.vars.size();
+
 	for(int i = 0; i!= nVars; ++i) {
-		sprintf(buffer,"h_%s",vars[i].c_str());
-		sprintf(buffer2,"%s;%s;Number of events;",vars[i].c_str(),vars[i].c_str());
+		sprintf(buffer,"h_%s",hs.vars[i].c_str());
+		sprintf(buffer2,"%s;%s;Number of events;",hs.vars[i].c_str(),hs.vars[i].c_str());
 		TH1D* histogram = new TH1D(buffer,
 				buffer2,
-				nBins[i],
-				minBin[i],
-				maxBin[i]);
+				hs.nBins[i],
+				hs.minBin[i],
+				hs.maxBin[i]);
 		histogram->SetDirectory(0);
 		histogram->Sumw2();
-		theHistograms[vars[i]] = histogram;
+		theHistograms[hs.vars[i]] = histogram;
 	}
 
 	hmjmzz=new TH2D("h_mj_vs_mzz","Correlation plot M_{J} vs M_{ZZ}; M_{ZZ} [GeV]; M_{J} [GeV]",220,200,2400,20,35.0,135.0);
@@ -638,7 +694,7 @@ void EDBRHistoMaker::saveAllHistos(std::string outFileName) {
 	TFile* outFile = TFile::Open(outFileName.c_str(),"RECREATE");
 
 	for(int i = 0; i!=nVars; ++i) {
-		std::string name = vars[i];
+		std::string name = hs.vars[i];
 		const TH1D* thisHisto = this->theHistograms[name];
 		thisHisto->Write();
 	}
@@ -798,6 +854,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 		bool filled = 0;
 		for(int ivec=0;ivec<nCands;ivec++){
+		        // Remember: bool eventPassesCut(int i, double ptZll_threshold, double ptlep1_threshold );
 			if(eventPassesCut(ivec, 80, 20)){
 
 				//calculate "deltaPhi_JMET","deltaPhi_JWL","deltaR_LJ"
@@ -826,6 +883,8 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//if(nsubjett<0.4) ;
 					//else continue;
 				}
+
+				/// Here go the histograms that must be filled only once per event.
 				if(filled==0)
 				{   
 					(theHistograms["nVL"])->Fill(wnum,actualWeight);
@@ -894,6 +953,18 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["mt"])->Fill(mt[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["lep"])->Fill(lep[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 
+				
+				/// Also, once per event we check if the event is interesting...
+				/// What's interesting?
+				/// * nCands > 10
+				/// * mZZ in the [1900,2100] range
+				if(false) {
+				  if(nCands>9)
+				    printf("High nCands events: nCands = %i, Run = %i, Lumi = %i, Event = %i\n",nCands,run,ls,event);
+				  if(mZZ[ivec] > 1900 and mZZ[ivec] < 2100)
+				    printf("Event around 2TeV: mZZ = %g, Run = %i, Lumi = %i, Event = %i\n",mZZ[ivec],run,ls,event);
+				}
+				
 				// (theHistograms[""])->Fill([ivec],actualWeight);
 				hmjmzz->Fill(mZZ[ivec],mJJ[ivec],actualWeight);
 
