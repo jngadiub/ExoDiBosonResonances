@@ -140,6 +140,6 @@ double optimizer(){
 		maker->Loop(buffer,1000,0.15);
 	}
 
-	system("hadd CA8optimization/allBackgrounds.root CA8optimization/background_*");
+	system("hadd -f CA8optimization/allBackgrounds.root CA8optimization/background_*");
 	return 0.0;
 }//end main
