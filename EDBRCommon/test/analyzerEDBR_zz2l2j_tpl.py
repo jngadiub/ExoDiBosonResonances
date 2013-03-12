@@ -55,7 +55,10 @@ if processFullSel :
     process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
     process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
     process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
-
+    #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
+    #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
+    #process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
+    #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
 
 
 ##### set Ngen and xsect values ofr MC samples; xsect in pb !!! 
