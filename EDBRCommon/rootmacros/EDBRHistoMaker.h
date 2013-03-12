@@ -795,6 +795,12 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 		bool filled = 0;
 		for(int ivec=0;ivec<nCands;ivec++){
 			if(eventPassesCut(ivec, 80, 20)){
+
+				//calculate "deltaPhi_JMET","deltaPhi_JWL","deltaR_LJ"
+				double deltaR_LJ = deltaR(etalep1[ivec],philep1[ivec],etajet1[ivec],phijet1[ivec]);
+				double deltaPhi_JMET = deltaPhi(phijet1[ivec],philep2[ivec]);
+				double deltaPhi_JWL  = deltaPhi(phijet1[ivec],phiZll[ivec]); 
+
 				if(isZZchannel_==0)//WW channel, veto second loose lepton
 				{
 					if( (nLooseEle+nLooseMu==1) && met>40 && fabs(etalep1[ivec])<2.1 && ptZjj[ivec]>200 );//global selection
@@ -828,12 +834,21 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					(theHistograms["nLooseEle"])->Fill(nLooseEle,actualWeight);
 					(theHistograms["nLooseMu"])->Fill(nLooseMu,actualWeight);
 
+					(theHistograms["nVtx"])->Fill(nVtx,actualWeight);//printf("line number %i\n",__LINE__);
+					(theHistograms["nJets"])->Fill(nJets,actualWeight);//printf("line number %i\n",__LINE__);
+					(theHistograms["nAK5jets"])->Fill(nAK5jets,actualWeight);//printf("line number %i\n",__LINE__);
+					(theHistograms["met"])->Fill(met,actualWeight);//printf("line number %i\n",__LINE__);
+					(theHistograms["metSign"])->Fill(metSign,actualWeight);//printf("line number %i\n",__LINE__);
+
+					(theHistograms["nbtagsL"])->Fill(nbtagsL[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+					(theHistograms["nbtagsM"])->Fill(nbtagsM[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+					(theHistograms["nbtagsT"])->Fill(nbtagsT[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+					(theHistograms["nbtagscleanL"])->Fill(nbtagscleanL[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+					(theHistograms["nbtagscleanM"])->Fill(nbtagscleanM[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+					(theHistograms["nbtagscleanT"])->Fill(nbtagscleanT[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+
 					filled =1; 
 				}
-				//calculate "deltaPhi_JMET","deltaPhi_JWL","deltaR_LJ"
-				double deltaR_LJ = deltaR(etalep1[ivec],philep1[ivec],etajet1[ivec],phijet1[ivec]);
-				double deltaPhi_JMET = deltaPhi(phijet1[ivec],philep2[ivec]);
-				double deltaPhi_JWL  = deltaPhi(phijet1[ivec],phiZll[ivec]); 
 
 				(theHistograms["deltaR_LJ"])->Fill(deltaR_LJ,actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["deltaPhi_JMET"])->Fill(deltaPhi_JMET,actualWeight);//printf("line number %i\n",__LINE__);
@@ -865,8 +880,6 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					(theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				}
 
-				(theHistograms["nVtx"])->Fill(nVtx,actualWeight);//printf("line number %i\n",__LINE__);
-
 				(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["isomu1mod"])->Fill(isomu1mod[ivec],actualWeight);//printf("line number %i\n",__LINE__);
@@ -875,10 +888,6 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["isoele2trk"])->Fill(isoele2trk[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["isoele1calo"])->Fill(isoele1calo[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["isoele2calo"])->Fill(isoele2calo[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nJets"])->Fill(nJets,actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nAK5jets"])->Fill(nAK5jets,actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["met"])->Fill(met,actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["metSign"])->Fill(metSign,actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["etalep1"])->Fill(etalep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["etalep2"])->Fill(etalep2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["etajet1"])->Fill(etajet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
@@ -891,12 +900,6 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["VBFdeltaEta"])->Fill(VBFdeltaEta[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["mt"])->Fill(mt[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["lep"])->Fill(lep[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nbtagsL"])->Fill(nbtagsL[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nbtagsM"])->Fill(nbtagsM[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nbtagsT"])->Fill(nbtagsT[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nbtagscleanL"])->Fill(nbtagscleanL[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nbtagscleanM"])->Fill(nbtagscleanM[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nbtagscleanT"])->Fill(nbtagscleanT[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 
 				// (theHistograms[""])->Fill([ivec],actualWeight);
 
