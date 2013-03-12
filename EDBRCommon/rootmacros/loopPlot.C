@@ -297,7 +297,8 @@ void loopPlot(){
       if (!cl->InheritsFrom("TH1")) continue;
       TH1 *hTMP = (TH1*)key->ReadObj();
       std::string hName=hTMP->GetName();
-         printf("Histogram found: %s\n",hName.c_str());
+      printf("Histogram found: %s\n",hName.c_str());
+      if(hName=="h_mj_vs_mzz")continue;//skip 2D histos
       listOfHistos.push_back(hName);
     }//end while loop
     oneFile->Close();

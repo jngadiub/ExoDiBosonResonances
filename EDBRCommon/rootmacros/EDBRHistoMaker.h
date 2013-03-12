@@ -2,6 +2,7 @@
 #include <string>
 
 #include "TH1D.h"
+#include "TH2D.h"
 #include "TFile.h"
 #include "TROOT.h"
 #include "TTree.h"
@@ -410,6 +411,7 @@ class EDBRHistoMaker {
 
 		// The histograms
 		std::map<std::string,TH1D*> theHistograms;
+		TH2D *hmjmzz;
 };
 
 void EDBRHistoMaker::Init(TTree *tree)
@@ -618,6 +620,8 @@ void EDBRHistoMaker::createAllHistos() {
 		theHistograms[vars[i]] = histogram;
 	}
 
+	hmjmzz=new TH2D("h_mj_vs_mzz","Correlation plot M_{J} vs M_{ZZ}; M_{ZZ} [GeV]; M_{J} [GeV]",220,200,2400,20,35.0,135.0);
+
 }
 
 void EDBRHistoMaker::printAllHistos() {
@@ -638,6 +642,7 @@ void EDBRHistoMaker::saveAllHistos(std::string outFileName) {
 		const TH1D* thisHisto = this->theHistograms[name];
 		thisHisto->Write();
 	}
+	hmjmzz->Write();
 	outFile->Close();
 }
 
@@ -902,6 +907,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["lep"])->Fill(lep[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 
 				// (theHistograms[""])->Fill([ivec],actualWeight);
+				hmjmzz->Fill(mZZ[ivec],mJJ[ivec],actualWeight);
 
 			}//end if eventPassesCut
 		}//end loop over nCands
