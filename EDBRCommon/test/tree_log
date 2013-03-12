@@ -26,3 +26,18 @@ For WW:
 	cmgtuple     : cmgTuple_08032013_CA8
 	updates      : (same as previous but CA8) 
 
+
+###################################################################################################################
+
+For ZZ:
+
+/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/preselCA8
+	date	:	20130312
+	cmgtuple:	cmgTuple_cff/
+	EDBR tag:	edbr_vv_20130313
+
+/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsidebandCA8
+	date	:	20130312
+	cmgtuple:	cmgTuple_cff/
+	EDBR tag:	edbr_vv_20130313
+	
