@@ -330,7 +330,7 @@ class EDBRHistoMaker {
 		Long64_t LoadTree(Long64_t entry);
 		void     Init(TTree *tree);
 		void     Loop(std::string outFileName);
-		double   FastLoop(double lumiValue, double kFactor, double nsubjetinessCut, double massPoint, double percentageWindow);
+		//double   FastLoop(double lumiValue, double kFactor, double nsubjetinessCut, double massPoint, double percentageWindow);
 
 		// Our added functions
 		void createAllHistos();
@@ -871,14 +871,14 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 				/// Thiago: This is temporarily here for the optimization.
 				/// Should probably be made better.
-				double thisMZZ = mZZ[ivec];
-				double minMass = 1500.0 * 0.85;
-				double maxMass = 1500.0 * 1.15;
+				/* 				double thisMZZ = mZZ[ivec]; */
+				/* 				double minMass = 1500.0 * 0.85; */
+				/* 				double maxMass = 1500.0 * 1.15; */
 
-				if(thisMZZ > minMass and
-						thisMZZ < maxMass) {
-					(theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				}
+				/* 				if(thisMZZ > minMass and */
+				/* 						thisMZZ < maxMass) { */
+				(theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				//				}
 
 				(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
@@ -931,6 +931,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 /// It doesn't fill histograms. Useful for calculating
 /// figures of merit and optimization
 ///
+/*
 double EDBRHistoMaker::FastLoop(double lumiValue, double kFactor, double nsubjetinessCut, double massPoint, double percentageWindow){
 
 	if (fChain == 0) return -1;
@@ -982,3 +983,4 @@ double EDBRHistoMaker::FastLoop(double lumiValue, double kFactor, double nsubjet
 
 	return totalWeight*lumiValue*kFactor;
 }
+*/

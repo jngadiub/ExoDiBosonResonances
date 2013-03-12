@@ -464,6 +464,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   l = makeChannelLabel(wantNXJets_,flavour_,isZZchannel_);
   l->Draw();
 
+  /*
   //============ Save the full background histogram ============
 
   //printf("%s\n",histoName.c_str());
@@ -474,6 +475,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     histosMCSigOrig.at(0)->Write();
     fullBkg->Close();    
   }
+  */
 
   //============ Data/MC ratio ==============
 
