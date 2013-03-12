@@ -10,10 +10,15 @@ import FWCore.ParameterSet.Config as cms
 ## Add VBF tag to two collections (single- and double-jet)
 vbfString = cms.string("vbfptr.isAvailable")
 #nXJets was added as userfloat by KineVarsAdder
-kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && userFloat(\"nXJets\") == 1.0") # && leg2.pt()>80.0
+kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>200.0 && leg2.pt()>200.0 && userFloat(\"nXJets\") == 1.0") 
 kineString2Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && userFloat(\"nXJets\") == 2.0") # && leg2.pt()>80.0
+
+kineString1JetTTBar=cms.string("mass > 180.0 && leg1.pt()>160.0 && leg2.pt()>200.0 && userFloat(\"nXJets\") == 1.0") 
+kineString2JetTTBar=cms.string("mass > 180.0 && leg1.pt()>80.0 && userFloat(\"nXJets\") == 2.0")
+
 sigreg=cms.string("leg2.getSelection(\"cuts_isWSignal\")")
 sbreg=cms.string("leg2.getSelection(\"cuts_isWSideband\")")
+fullreg=cms.string("leg2.getSelection(\"cuts_isFullRange\")")
 
 
 ### unused, in just for reference
@@ -55,7 +60,14 @@ edbrtags =  cms.PSet( vbfDoubleJet = cms.PSet( vbf = vbfString,
                                                       ),
                            SingleJetSB = cms.PSet( kine = kineString1Jet,
                                                    sbRegion = sbreg
-                                                   )                           
+                                                   ) ,  
+						   #############################full range for ttbar control
+                           SingleJetFull  = cms.PSet( kine = kineString1JetTTBar,
+                                                   fullRegion = fullreg
+                                                   ),
+                           DoubleJetFull  = cms.PSet( kine = kineString2JetTTBar,
+                                                   fullRegion = fullreg
+                                                   )                        
                            )#end edbrtags
 
 
@@ -95,9 +107,17 @@ BestSidebandSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
                                     VMass            =cms.double(80.4)
                                     )
 
+BestFullRangeSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
+                                    srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
+                                    srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
+                                    tagSelectionList =cms.vstring("tag_SingleJetFull","tag_DoubleJetFull"),#highest priority to lowest priority
+                                    VMass            =cms.double(80.4)
+									)
+                                    
+
 allSelectedEDBR = cms.EDProducer("CandViewMerger",
-       src = cms.VInputTag( "BestCandSelector:singleJet", "BestCandSelector:doubleJet", "BestSidebandSelector:singleJet", "BestSidebandSelector:doubleJet")
-  ) 
+       src = cms.VInputTag( "BestCandSelector:singleJet", "BestCandSelector:doubleJet", "BestSidebandSelector:singleJet", "BestSidebandSelector:doubleJet","BestFullRangeSelector:singleJet", "BestFullRangeSelector:doubleJet")
+  )
 
 
 FinalFilter = cms.EDFilter("CandViewCountFilter",
@@ -107,6 +127,6 @@ FinalFilter = cms.EDFilter("CandViewCountFilter",
 
 
 cmgSeq = cms.Sequence( DiJetVBFTagger+SingleJetVBFTagger+
-                       BestCandSelector + BestSidebandSelector +
+                       BestCandSelector + BestSidebandSelector +  BestFullRangeSelector +
                        allSelectedEDBR + FinalFilter
                        )

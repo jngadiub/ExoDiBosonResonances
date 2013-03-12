@@ -45,6 +45,7 @@ cmgJet = cms.EDFilter(
 from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import mergedJetKinematics, mergedJetVTagging
 from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import isMergedSideband, isMergedSignal
 from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import isMergedWSideband, isMergedWSignal
+from ExoDiBosonResonances.EDBRCommon.selections.jetKinematics_cfi import isMergedFullRange
 
 structJetFactory = cms.PSet(
        inputCollection = cms.InputTag("selectedPatJets"),
@@ -81,6 +82,7 @@ cmgStructuredJet = cms.EDFilter(
     isZSideband = isMergedSideband.clone(),
     isWSignal = isMergedWSignal.clone(),
     isWSideband = isMergedWSideband.clone(),
+	isFullRange = isMergedFullRange.clone(),
     genP = cms.PSet( genLepton = cms.string("sourcePtr().get().hasOverlaps('genJets')"))
  #      recoLepton = cms.PSet( recoLepton = cms.string("sourcePtr().get().hasOverlaps('recoLeptons')")),
        )
