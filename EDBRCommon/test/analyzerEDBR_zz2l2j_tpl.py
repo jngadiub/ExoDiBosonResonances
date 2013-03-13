@@ -202,6 +202,7 @@ elif "RSG_ZZ_lljj_c0p2_M1500" in "<SAMPLE>" :
     process.ANEDBR.FillGenLevelCode=cms.uint32(7) ### Checked
     
 #ww
+##RSG WW, c=0.2
 elif "RSG_WW_lvjj_c0p2_M600" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(31785)
     process.ANEDBR.xsec=cms.double(2.75) ### Checked
@@ -217,6 +218,7 @@ elif "RSG_WW_lvjj_c0p05_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(35421)
     process.ANEDBR.xsec=cms.double(0.01014) ### Checked
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+##Bulk WW, c=1.0
 elif "BulkG_WW_lvjj_c1p0_M600" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40371) ### Checked
     process.ANEDBR.xsec=cms.double(0.3675)
@@ -228,6 +230,87 @@ elif "BulkG_WW_lvjj_c1p0_M1000" in "<SAMPLE>" :
 elif "BulkG_WW_lvjj_c1p0_M1500" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(41136) ### Checked
     process.ANEDBR.xsec=cms.double(0.000646)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+##Bulk WW, c=0.2
+elif "BulkG_WW_lvjj_c0p2_M600" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(48949) ### Checked
+    process.ANEDBR.xsec=cms.double(0.015)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M700" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9832) ### Checked
+    process.ANEDBR.xsec=cms.double(0.005478)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M800" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9506) ### Checked
+    process.ANEDBR.xsec=cms.double(0.00228)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M900" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9506) ### Checked
+    process.ANEDBR.xsec=cms.double(0.001048)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M1000" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(48796) ### Checked
+    process.ANEDBR.xsec=cms.double(0.0005114)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M1100" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9833) ### Checked
+    process.ANEDBR.xsec=cms.double(0.0002646)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M1200" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(44952) ### Checked
+    process.ANEDBR.xsec=cms.double(0.00014120)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M1300" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9767) ### Checked
+    process.ANEDBR.xsec=cms.double(7.9031e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M1400" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9831) ### Checked
+    process.ANEDBR.xsec=cms.double(4.5246e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M1500" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49996) ### Checked
+    process.ANEDBR.xsec=cms.double(2.654e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M1600" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(45994) ### Checked
+    process.ANEDBR.xsec=cms.double(1.5771-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M1700" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9899) ### Checked
+    process.ANEDBR.xsec=cms.double(9.5695e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M1800" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9833) ### Checked
+    process.ANEDBR.xsec=cms.double(5.871e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M1900" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9897) ### Checked
+    process.ANEDBR.xsec=cms.double(3.6674e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M2000" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49360) ### Checked
+    process.ANEDBR.xsec=cms.double(2.3073e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M2100" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9900) ### Checked
+    process.ANEDBR.xsec=cms.double(1.458e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M2200" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9702) ### Checked
+    process.ANEDBR.xsec=cms.double(9.399e-07)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M2300" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9899) ### Checked
+    process.ANEDBR.xsec=cms.double(6.0353e-07)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M2400" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9899) ### Checked
+    process.ANEDBR.xsec=cms.double(3.91e-07)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_lvjj_c0p2_M2500" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9898) ### Checked
+    process.ANEDBR.xsec=cms.double(2.5515e-07)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 
 ### Data
@@ -302,6 +385,10 @@ elif "<SAMPLE>"=="SingleMu_Run2012C_PromptReco_xww" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
+elif "<SAMPLE>"=="SingleMu_Run2012C_EcalRecove_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
 elif "<SAMPLE>"=="SingleMu_Run2012D_PromptReco_xww" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
@@ -324,6 +411,10 @@ elif "<SAMPLE>"=="SingleElectron_Run2012C_24Aug2012_xww" :
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
 elif "<SAMPLE>"=="SingleElectron_Run2012C_PromptReco_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+elif "<SAMPLE>"=="SingleElectron_Run2012C_EcalRecove_xww" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
