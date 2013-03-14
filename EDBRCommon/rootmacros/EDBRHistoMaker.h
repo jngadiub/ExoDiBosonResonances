@@ -43,6 +43,7 @@ class EDBRHistoMaker {
 				bool wantMuons=true,
 				bool wantSideband=true, 
 				bool wantSignal=false,
+				bool wantFullRange=false,
 				int  wantNXJets=1,
 				bool isZZchannel=1);
 		virtual ~EDBRHistoMaker();
@@ -105,8 +106,8 @@ class EDBRHistoMaker {
 		Double_t        puMvajet2[99];   //[nCands]
 		Double_t        prunedmass[99];   //[nCands]
 		Double_t        mdrop[99];   //[nCands]
-		Double_t        nsubj12[99];   //[nCands]
-		Double_t        nsubj23[99];   //[nCands]
+		Double_t        nsubj21[99];   //[nCands]
+		Double_t        nsubj32[99];   //[nCands]
 		Double_t        tau1[99];   //[nCands]
 		Double_t        tau2[99];   //[nCands]
 		Double_t        qjet[99];   //[nCands]
@@ -222,8 +223,8 @@ class EDBRHistoMaker {
 		TBranch        *b_puMvajet2;   //!
 		TBranch        *b_prunedmass;   //!
 		TBranch        *b_mdrop;   //!
-		TBranch        *b_nsubj12;   //!
-		TBranch        *b_nsubj23;   //!
+		TBranch        *b_nsubj21;   //!
+		TBranch        *b_nsubj32;   //!
 		TBranch        *b_tau1;   //!
 		TBranch        *b_tau2;   //!
 		TBranch        *b_qjet;   //!
@@ -352,6 +353,7 @@ class EDBRHistoMaker {
 		bool wantMuons_;
 		bool wantSideband_;
 		bool wantSignal_;
+		bool wantFullRange_;
 		bool setUnitaryWeights_;
 		bool debug_;
 		int wantNXJets_;
@@ -435,8 +437,8 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("puMvajet2", puMvajet2, &b_puMvajet2);
 	fChain->SetBranchAddress("prunedmass", prunedmass, &b_prunedmass);
 	fChain->SetBranchAddress("mdrop", mdrop, &b_mdrop);
-	fChain->SetBranchAddress("nsubj12", nsubj12, &b_nsubj12);
-	fChain->SetBranchAddress("nsubj23", nsubj23, &b_nsubj23);
+	fChain->SetBranchAddress("nsubj21", nsubj21, &b_nsubj21);
+	fChain->SetBranchAddress("nsubj32", nsubj32, &b_nsubj32);
 	fChain->SetBranchAddress("tau1", tau1, &b_tau1);
 	fChain->SetBranchAddress("tau2", tau2, &b_tau2);
 	fChain->SetBranchAddress("qjet", qjet, &b_qjet);
@@ -505,21 +507,25 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 		bool wantMuons,
 		bool wantSideband,
 		bool wantSignal,
+		bool wantFullRange,
 		int  wantNXJets,
 		bool isZZchannel){
 	fChain = 0;
 	
+	/*
 	// Definition of regions
 	sidebandVHMassLow_  =  0.0;  // GeV
 	sidebandVHMassHigh_ =  70.0; // GeV
 	signalVHMassLow_    =  70.0; // GeV
 	signalVHMassHigh_   = 105.0; // GeV
+	*/
 
 	// Which category do we want to analyze?
 	wantElectrons_ = wantElectrons;
 	wantMuons_ = wantMuons;
 	wantSideband_ = wantSideband;
 	wantSignal_ = wantSignal;
+	wantFullRange_ = wantFullRange;
 	wantNXJets_ = wantNXJets;
 	isZZchannel_ =isZZchannel;
 
@@ -611,7 +617,7 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("nXjets",6,-0.5,5.5);
 	hs.setHisto("mdrop",40,0,1);
 	hs.setHisto("nsubj21",40,0,1);
-	//hs.setHisto("nsubj23",100,-1080,100);
+	//hs.setHisto("nsubj32",100,-1080,100);
 	//hs.setHisto("tau1",100,-1080,100);
 	//hs.setHisto("tau2",100,-1080,100);
 	//hs.setHisto("qjet",100,-1080,100);
@@ -657,7 +663,8 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("deltaPhi_JMET",40,0,4);
 	hs.setHisto("deltaPhi_JWL",40,0,4);
 	hs.setHisto("nAK5jets",10,0,10);
-	
+	hs.setHisto("deltaPhi_LMET",40,0,4);
+
 	char buffer[256];
 	char buffer2[256];
 
@@ -757,8 +764,8 @@ bool EDBRHistoMaker::eventPassesRegionCut(int i){
 	bool isInSideband = eventInSidebandRegion(i);
 	bool isInSignal   = eventInSignalRegion(i);
 	bool passesRegion = ((isInSideband and wantSideband_) or
-			(isInSignal and wantSignal_));
-
+			(isInSignal and wantSignal_)) ;
+    if(wantFullRange_) passesRegion=1;
 	return passesRegion;
 }
 
@@ -861,25 +868,28 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				double deltaR_LJ = deltaR(etalep1[ivec],philep1[ivec],etajet1[ivec],phijet1[ivec]);
 				double deltaPhi_JMET = deltaPhi(phijet1[ivec],philep2[ivec]);
 				double deltaPhi_JWL  = deltaPhi(phijet1[ivec],phiZll[ivec]); 
+				double deltaPhi_LMET = deltaPhi(philep1[ivec],philep2[ivec]);
 
 				if(isZZchannel_==0)//WW channel, veto second loose lepton
 				{
-					if( (nLooseEle+nLooseMu==1) && met>40 && fabs(etalep1[ivec])<2.1 && ptZjj[ivec]>200 );//global selection
+					if( nLooseEle+nLooseMu==1 );//global selection
 					else continue;	
 
-					if(eventPassesCut(ivec, 200, 50));
+					if(eventPassesCut(ivec, 200, 20));
 					else continue;
-
+					
+					//if(mJJNoKinFit[ivec]>50);
+					//else continue;
 					//b veto cut
-					if(nbtagsM[ivec]==0) ;
-					else continue;
+					//if(nbtagsM[ivec]==0) ;
+					//else continue;
 
 					//b cut - ttbar control region
 					//if(nbtagscleanT[ivec]>=1) ;
 					//else continue;
 
 					//nsubjettiness cut
-					//double nsubjett = 1.0/nsubj12[ivec];
+					//double nsubjett = 1.0/nsubj21[ivec];
 					//if(nsubjett<0.4) ;
 					//else continue;
 				}
@@ -915,6 +925,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 				(theHistograms["deltaR_LJ"])->Fill(deltaR_LJ,actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["deltaPhi_JMET"])->Fill(deltaPhi_JMET,actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["deltaPhi_LMET"])->Fill(deltaPhi_LMET,actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["deltaPhi_JWL"])->Fill(deltaPhi_JWL,actualWeight);//printf("line number %i\n",__LINE__);
 
 				(theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
@@ -931,7 +942,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["prunedmass"])->Fill(prunedmass[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-				(theHistograms["nsubj21"])->Fill(1.0/nsubj12[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["nsubj21"])->Fill(nsubj21[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["betajet1"])->Fill(betajet1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["isomu1mod"])->Fill(isomu1mod[ivec],actualWeight);//printf("line number %i\n",__LINE__);
