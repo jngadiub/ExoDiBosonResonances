@@ -674,8 +674,8 @@ double get_signalParameter(int nxj, double massH, std::string varname) {
 
   //which files to read?
   for(int i =0 ; i <nMasses ; i++){
-    if(masses[i]==massH){//direct Match
-      sprintf(filename,"signalFitResults/out-%d-%s-btag%d.config",masses[i],"EM",nxj);
+    if(masses[i]==massH){//direct Match outpars_BulkG_ZZ_lljj_c0p2_M1800_1.config
+      sprintf(filename,"signalFitResults/outpars_BulkG_ZZ_lljj_c0p2_M%d_%d.config",masses[i],nxj);
       paramsup.readFromFile(filename, "READ", "Parameters");
       return var.getVal();
     }
@@ -703,10 +703,10 @@ double get_signalParameter(int nxj, double massH, std::string varname) {
 
   //std::cout << indexlow << " " << indexhigh <<std::endl;
 
-  sprintf(filename,"signalFitResults/out-%d-%s-btag%d.config",masses[indexlow],"EM",btag);
+  sprintf(filename,"signalFitResults/outpars_BulkG_ZZ_lljj_c0p2_M%d_%d.config",masses[i],nxj);
   paramsup.readFromFile(filename, "READ", "Parameters");
   double low = var.getVal();
-  sprintf(filename,"signalFitResults/out-%d-%s-btag%d.config",masses[indexhigh],"EM",btag);
+  sprintf(filename,"signalFitResults/outpars_BulkG_ZZ_lljj_c0p2_M%d_%d.config",masses[i],nxj);
   paramsup.readFromFile(filename, "READ", "Parameters");
   double high = var.getVal();
   
