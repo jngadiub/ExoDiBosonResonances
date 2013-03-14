@@ -131,9 +131,9 @@ int main( int argc, char* argv[] ) {
     system(mkdir_command);
 
     create_singleDatacard( mass, lumi_ELE, "ELE", 1, f1_eff_vs_mass_ELE_1J);
-    create_singleDatacard( mass, lumi_ELE, "ELE", 2, f1_eff_vs_mass_ELE_2J);
+    //    create_singleDatacard( mass, lumi_ELE, "ELE", 2, f1_eff_vs_mass_ELE_2J);
     create_singleDatacard( mass, lumi_MU,   "MU", 1, f1_eff_vs_mass_MU_1J);
-    create_singleDatacard( mass, lumi_MU,   "MU", 2, f1_eff_vs_mass_MU_2J);
+    //create_singleDatacard( mass, lumi_MU,   "MU", 2, f1_eff_vs_mass_MU_2J);
 
   } //while masses
 
