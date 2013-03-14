@@ -53,7 +53,7 @@ def ConstructPdf(workspace):
 
 # set up the variables to be used in the fit. Will need ot be extended if we use different funcional forms for different channels
 def defineVars(descriptor,njets,workspace,plotonly):
-    mzz    = root.RooRealVar("mZZ","mZZ",400,2000) ## IMPORTANT: Master fit range must be the same as for the datacards
+    mzz    = root.RooRealVar("mZZ","mZZ",400,2500) ## IMPORTANT: Master fit range must be the same as for the datacards
     weight = root.RooRealVar("weight","weight",0,100000)
     match  = root.RooCategory("match","match")
     match.defineType("unmatched",0)
@@ -117,16 +117,19 @@ def readTree(filename, njet, workspace):
     for event in tree:
         for i in range(event.nCands):
             if event.nXjets[i]==njet and event.region[i]==1 \
-            and event.mZZ[i]> mzz.getMin() and event.mZZ[i]< mzz.getMax() : # select events in signal region with corect jet number
+            and event.mZZ[i]> mzz.getMin() and event.mZZ[i]< mzz.getMax(): # select events in signal region with corect jet number, with njettiness cut
                 mzz.setVal(event.mZZ[i])
                 weight.setVal(event.weight)
-                if njet==2 or njet==1 : # mc matching active only for 2-jets right now
+                if njet==2 : # mc matching active only for 2-jets right now
                     if event.MCmatch[i]!=0:
                         match.setIndex(1)
                     else:
                         match.setIndex(0)
-                else:
+                else:                     
+                    if 1./(event.nsubj12[i]) > 0.45: #nsubjettiness cut
+                        break                    
                     match.setIndex(1) #assume all 1-jet events to be matched for now
+                    
                     
                 dataset.add(root.RooArgSet(mzz,match,weight))
     
