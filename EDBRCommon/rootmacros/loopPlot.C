@@ -20,10 +20,11 @@ void loopPlot(){
   
   //#####################EDIT THE OPTIONS##############################
   /// Boolean flags to steer the histogram making
-  bool wantElectrons = false; // Will make histograms for electrons
-  bool wantMuons     = true; // Will make histograms for muons
+  bool wantElectrons = true; // Will make histograms for electrons
+  bool wantMuons     = false; // Will make histograms for muons
   bool wantSideband  = true; // Will make histograms for sideband region
   bool wantSignal    = false; // Will make histograms for signal region
+  bool wantFullRange = false; // Will not check signal or sideband, ie, pick all jet mass range
   int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
   int  isZZchannel   = false; //plot label for zz (true) or ww (false)
   int  flavour = 0; 
@@ -31,7 +32,8 @@ void loopPlot(){
   
   /// Luminosity value in pb^-1
   //double lumiValue = 19477.6;// for DoubleEle2012?
-  double lumiValue = 19538.85;// for SingleMu2012
+  //double lumiValue = 19538.85;// for SingleMu2012
+  double lumiValue = 19531.85;// for singleEle2012
   /// Should we scale the histograms to data?
   bool scaleToData = false;
   /// Should we plot the Data/Bkg and Data-Bkg/Error ratios?
@@ -43,12 +45,12 @@ void loopPlot(){
 
   /// Path to wherever the files with the trees are. 
   //CA8 (cmgTuple_08032013_CA8)
-  std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/fullsideband/";
+  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7/fullallrange/";
   //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/fullsig/";
   //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/merged/";
 
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./WW_mu_sideband_CA8";
+  std::string outputDir = "./WW_ele_sideband_CA8";
 
   /// Setup names of data files for trees.
  
@@ -73,14 +75,24 @@ void loopPlot(){
   */ 
  
  
-  const int nDATA=6;//set to zero if you don't want to plot
+  const int nDATA=7;//set to zero if you don't want to plot
+  std::string dataLabels[nDATA]={"SingleElectron_Run2012A_13Jul2012_xww",
+				 "SingleElectron_Run2012A_recover_xww",
+				 "SingleElectron_Run2012B_13Jul2012_xww",
+				 "SingleElectron_Run2012C_24Aug2012_xww",
+				 "SingleElectron_Run2012C_PromptReco_xww",
+				 "SingleElectron_Run2012C_EcalRecove_xww",
+				 "SingleElectron_Run2012D_PromptReco_xww"};  
+/*
+  const int nDATA=7;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"SingleMu_Run2012A_13Jul2012_xww",
-				 "SingleMu_Run2012A_recover_xww",
-				 "SingleMu_Run2012B_13Jul2012_xww",
-				 "SingleMu_Run2012C_24Aug2012_xww",
-				 "SingleMu_Run2012C_PromptReco_xww",
-				 "SingleMu_Run2012D_PromptReco_xww"};  
-
+                 "SingleMu_Run2012A_recover_xww",
+                 "SingleMu_Run2012B_13Jul2012_xww",
+                 "SingleMu_Run2012C_24Aug2012_xww",
+                 "SingleMu_Run2012C_PromptReco_xww",
+                 "SingleMu_Run2012C_EcalRecove_xww",
+                 "SingleMu_Run2012D_PromptReco_xww"};
+*/
   /*    
   const int nDATA=0;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={};
@@ -196,6 +208,7 @@ void loopPlot(){
 						 wantMuons,
 						 wantSideband,
 						 wantSignal,
+						 wantFullRange,
 						 wantNXJets,
 						 isZZchannel);
       maker->setUnitaryWeights(true);
@@ -223,6 +236,7 @@ void loopPlot(){
 						 wantMuons, 
 						 wantSideband, 
 						 wantSignal, 
+						 wantFullRange,
 						 wantNXJets,
 						 isZZchannel);
       maker->setUnitaryWeights(false);
@@ -250,6 +264,7 @@ void loopPlot(){
 						 wantMuons, 
 						 wantSideband, 
 						 wantSignal, 
+						 wantFullRange,
 						 wantNXJets,
 						 isZZchannel);
       maker->setUnitaryWeights(false);
