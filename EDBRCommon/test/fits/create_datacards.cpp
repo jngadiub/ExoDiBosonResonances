@@ -194,7 +194,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   }
 
   //get global alpha uncertainty
-  double globalAlphaErr =  bgws->var("alphaNormErr")->getVal();
+  //the +1.0 effectively leaves the bkgd normalization free to float when profiling the nuisances
+  double globalAlphaErr =  bgws->var("alphaNormErr")->getVal()+1.0;
   //std::cout << globalAlphaErr << std::endl;
   //exit(0);
 
