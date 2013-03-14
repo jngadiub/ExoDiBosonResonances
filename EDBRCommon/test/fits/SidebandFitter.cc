@@ -55,6 +55,11 @@ const int nBins1=22;
 const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
 			    1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
 
+//const int nBins1=15;
+//const double bins1[nBins1]={480,560,640,720,800,920,
+//			    1100,1250,1400,1600,1800,2000,2200,2400,2600};
+
+
 //binning for double Jet topology 
 const int nBins2=22;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
@@ -152,7 +157,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
     h1_jj.Fill(mZqq, eventWeight);
     //std::cout << "Entry (2): " << iEntry << "/" << treeMC->GetEntries() << std::endl;
   }
-  cout<<"SidebandFitter::getAlphaFit histograms filled"<<endl;
+  cout<<"SidebandFitter::getAlphaFit histograms filled. Integrals are: "<<h1_mZZ_signalRegion.Integral()<<"  "<<h1_mZZ_sidebands.Integral() <<endl;
   //the alpha ratio used for extrapolating data distribtuion in sideband region
   TH1D *h1_alpha=new TH1D(h1_mZZ_signalRegion);
   h1_alpha->SetName("h_alpha");
@@ -163,10 +168,11 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
   h1_alpha_smooth->SetName(newAlphaname);
  
   h1_alpha->SetMinimum(0);
-  h1_alpha->SetMaximum((nxjCategory==2?2.25 : 1.5));
+  h1_alpha->SetMaximum((nxjCategory==2?2.25 : 2.75));
   h1_alpha_smooth->SetMinimum(0);
-  h1_alpha_smooth->SetMaximum((nxjCategory==2?2.25 : 1.5));
-
+  h1_alpha_smooth->SetMaximum((nxjCategory==2?2.25 : 2.75));
+  gStyle->SetOptStat(0);
+	
   std::vector<double> myFitPars;
   std::vector<double> myFitErrs;
   alphaFit(h1_alpha_smooth, myFitPars,myFitErrs);
@@ -189,7 +195,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
   h1_alpha_smooth->SetMarkerStyle(20);
   h1_alpha->SetMarkerStyle(20);
   h1_alpha->SetMarkerColor(kGreen);
-  gStyle->SetOptFit(1111);
+ // gStyle->SetOptFit(1111);
   h1_alpha->Draw("F");
   h1_alpha_smooth->Draw("Fsames");
   fpol0->SetLineColor(kMagenta);
@@ -330,7 +336,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
     // mcSigDSet->plotOn(xf,Binning(RooBinning(nBins-1,bins1)),MarkerStyle(21),MarkerColor(kBlue));
     c2a->cd();
     xf->SetMinimum(0.0);
-    xf->SetMaximum((nxjCategory==2?0.15:  0.15) );
+    xf->SetMaximum((nxjCategory==2?0.5:  0.15) );
     xf->Draw();
 
     c2->cd(1);
@@ -349,7 +355,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
     // mcSBDSet->plotOn(xf2,Binning(RooBinning(nBins-1,bins1)),MarkerStyle(21),MarkerColor(kRed));
     c2b->cd();
     xf2->SetMinimum(0.0);
-    xf2->SetMaximum((nxjCategory==2?0.2:0.1) );
+    xf2->SetMaximum((nxjCategory==2?0.5:0.15) );
     xf2->Draw();
 
 

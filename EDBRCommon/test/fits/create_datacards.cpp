@@ -31,9 +31,9 @@
 
 #include "DataCardUtils.h"
 
-const std::string wsDir="FitSidebandsMJJ/";
-const std::string datacardDir("DataCards_XZZ_20130307");
-float mZZmin_ = 600.;
+const std::string wsDir="FitSidebandsMJJ_CA8_0314/";
+const std::string datacardDir("DataCards_XZZ_20130314");
+float mZZmin_ = 1000.;
 
 
 struct TheorSigParameters {
@@ -562,7 +562,7 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj,  float mZZmin ) 
 
 TheorSigParameters get_thParameters( float mass ) {
 
-  std::string nameXsecFile = "../../doc/RSGravXSectTimesBRToZZ_Pythia_c05.txt";
+  std::string nameXsecFile = "../../data/xsect_BulkG_ZZ_lljj_c0p2_xsect_in_pb.txt";
   std::ifstream xsect_file(nameXsecFile.c_str());
 
   if (! xsect_file.is_open()) { 
@@ -593,14 +593,13 @@ TheorSigParameters get_thParameters( float mass ) {
     BRZZto2l2q_old = BRZZto2l2q;
 
     xsect_file >> mH >> XSgg;
-    XSgg/=1000.;// lumi is in pb xse is in fb
     BRXtoZZ=0.0;//unknown to me in this moment
     BRZZto2l2q=0.0941;
 
     if( mH == mass ) {
 
       hp.mH = mH;
-      hp.XSgg = XSgg;
+      hp.XSgg = XSgg;//XSgg must be in pb !!!
       hp.XSgg_p = XSgg_p;
       hp.XSgg_m = XSgg_m;
       hp.XSpdfgg_p = XSpdfgg_p;
@@ -660,9 +659,10 @@ double expo_interp(double s2, double s1,  double newM,double m2,double m1){
 
 
 
-double get_signalParameter(int btag, double massH, std::string varname) {
+double get_signalParameter(int nxj, double massH, std::string varname) {
 
-  int masses[6] = {300,500,600,700,800,1000};
+  const int nMasses=10;
+  int masses[nMasses] = {800,900,1000,1100,1300,1400,1500,1700,1800,1900};
 
   RooRealVar var(varname.c_str(),varname.c_str(),0.);
   RooArgSet paramsup, paramslow;
@@ -673,9 +673,9 @@ double get_signalParameter(int btag, double massH, std::string varname) {
   char filename[200];
 
   //which files to read?
-  for(int i =0 ; i <6 ; i++){
+  for(int i =0 ; i <nMasses ; i++){
     if(masses[i]==massH){//direct Match
-      sprintf(filename,"signalFitResults/out-%d-%s-btag%d.config",masses[i],"EM",btag);
+      sprintf(filename,"signalFitResults/out-%d-%s-btag%d.config",masses[i],"EM",nxj);
       paramsup.readFromFile(filename, "READ", "Parameters");
       return var.getVal();
     }
@@ -684,13 +684,13 @@ double get_signalParameter(int btag, double massH, std::string varname) {
   //no direct match => interpolation
   int indexlow = -1;
   int indexhigh= -1;
-  for(int i =0 ; i <6 ; i++){
+  for(int i =0 ; i <nMasses ; i++){
     if(masses[i]>massH){
       indexhigh=i;
       break;
     }
   }
-  for(int i =5 ; i >-1 ; i--){
+  for(int i =nMasses-1 ; i >-1 ; i--){
     if(masses[i]<massH){
       indexlow=i;
       break;

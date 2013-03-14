@@ -52,50 +52,67 @@ void pseudoMassgeOnePar(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char
 void pseudoMassgeTwoPars(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2);
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::string t2Name,int nxjCut=-1);
 
-const string inDir="/afs/cern.ch/work/t/tomei/public/EXOVV_2012/analyzer_trees/productionv1_round2/fullselCA8/";
-const string outDir="FitSidebandsMJJ/";
-const string leptType="ALL";
-const bool doPseudoExp=true; //if true, for for different psuedo-alpha 
+const string inDirSig="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsigCA8/";
+const string inDir="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsidebandCA8/";
+const string outDir="FitSidebandsMJJ_CA8_0314/";
+const string leptType="ALL";//"ALL" //"MU" //"ELE"
+const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 500;
-
+const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
-
 //binning for merged Jet topology 
-const int nBins1=21;
+const int nBins1=22;
 const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1400,1600,1800,2000,2200,2400};
+			    1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
 
 //binning for double Jet topology 
-const int nBins2=21;
+const int nBins2=22;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1400,1600,1800,2000,2200,2400};
+			    1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
 
 
 int main(){
   RooMsgService::instance().setGlobalKillBelow(RooFit::INFO) ;
   //DEBUG=0, INFO=1, PROGRESS=2, WARNING=3, ERROR=4, FATAL=5
-  ofstream logf("./log_fitBackground.log",ios::out);
+  ofstream logf((outDir+"./log_fitBackground.log").c_str(),ios::out);
 
   TChain* chainData = new TChain("SelectedCandidates");
   chainData->Add( (inDir+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
-  //  chainData->Add( (inDir+"treeEDBR_DoublePhoton_Run2012*.root").c_str()  );
-  //  chainData->Add( (inDir+"treeEDBR_Photon_Run2012*.root").c_str()  );
+  chainData->Add( (inDir+"treeEDBR_DoublePhoton*_Run2012*.root").c_str()  );
+  chainData->Add( (inDir+"treeEDBR_Photon_Run2012*.root").c_str()  );
 
   logf<<"In the data chain there are "<<chainData->GetEntries()<<" events"<<endl;
+
+  TChain* chainDataSig = new TChain("SelectedCandidates");
+  chainDataSig->Add( (inDirSig+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
+  chainDataSig->Add( (inDirSig+"treeEDBR_DoublePhoton*_Run2012*.root").c_str()  );
+  chainDataSig->Add( (inDirSig+"treeEDBR_Photon_Run2012*.root").c_str()  );
+
 
   //write in a plain tree because RooFit does not like trees with branches storing vectors 
   const int nxjCut=-1;//if negative: no cut
   const std::string tmpTreeName="SelectedCandidatesV2";
   char foutn[64];
-  if(nxjCut>=0)  sprintf(foutn,"EXOVVTree_DATA_%d.root",nxjCut);
-  else   sprintf(foutn,"EXOVVTree_DATA_NOcut.root");
+  if(nxjCut>=0)  sprintf(foutn,"EXOVVTree_DATASB_%d.root",nxjCut);
+  else   sprintf(foutn,"EXOVVTree_DATASB_NOcut.root");
   std::string tmpFileName=foutn;
   std::string weighting = "weight";
   CopyTreeVecToPlain(chainData,weighting,tmpFileName,tmpTreeName);//(TTree*)
   delete chainData;
 
+  const std::string tmpSigTreeName="SelectedCandidatesSIG";
+  char foutSig[64];
+  if(nxjCut>=0)  sprintf(foutSig,"EXOVVTree_DATASIG_%d.root",nxjCut);
+  else   sprintf(foutSig,"EXOVVTree_DATASIG_NOcut.root");
+  std::string tmpSigFileName=foutSig;
+  CopyTreeVecToPlain(chainDataSig,weighting,tmpSigFileName,tmpSigTreeName);//(TTree*)
+  delete chainDataSig;
+
   TFile *ftree=new TFile(foutn,"READ");
   TTree *treeDATA_tmp=(TTree*)ftree->Get(tmpTreeName.c_str());
+
+  TFile *ftreeSig=new TFile(foutSig,"READ");
+  TTree *treeDATA_sig=(TTree*)ftreeSig->Get(tmpSigTreeName.c_str());
 
   // gROOT->cd(); //magic!
  
@@ -171,12 +188,16 @@ int main(){
     RooRealVar *c0=(RooRealVar*)ws->var("c0");
     RooPolynomial *pol0_new=new RooPolynomial("newpol0_func","Polynomial 0th (constant) for fit",*mZZ,*c0,0);
     RooFormulaVar *alpha_formula=new RooFormulaVar("alpha_formula","alpha_formula","@0",RooArgList(*c0));
-    
+
+    string lepCutStr="";
+    if(leptType=="ELE")lepCutStr=" &&lep==0";
+    if(leptType=="MU")lepCutStr=" &&lep==1";
+
     //select the data in the sidebands, convert it in a RooDataSet
     //weight events by the alpha function
-    string cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>"+strmcut.str();
-    string cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>"+ strmcut.str();
-    string cutDum="nXjets=="+ssnxj.str()+" && mZZ>"+ strmcut.str();
+    string cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>"+strmcut.str()+lepCutStr;
+    string cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>"+ strmcut.str()+lepCutStr;
+    string cutDum="nXjets=="+ssnxj.str()+" && mZZ>"+ strmcut.str()+lepCutStr;
  
     
     logf<<"Applying the following cuts: "<<cutSIG.c_str()<<std::endl;
@@ -193,7 +214,9 @@ int main(){
     logf<<"=================================\n"<<std::endl;
 
     RooDataSet *dsDataSB2=new RooDataSet("dsDataSB2","dsDataSB2",weightedData,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
-    RooDataSet *dsDataSIG=new RooDataSet("dsDataSIG","dsDataSIG",(TTree*)treeDATA_tmp,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep),cutSIG.c_str()) ;//real data in signal region; cuts on mjj and nXjets
+    RooDataSet *dsDataSIG=dsDataSIG=new RooDataSet("dsDataSIG","dsDataSIG",(TTree*)treeDATA_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep),cutSIG.c_str()) ;//real data in signal region; cuts on mjj and nXjets
+    
+
     // dsDataSB->Print();
   
     if(dsDataSB2->numEntries()<5){
@@ -409,19 +432,30 @@ int main(){
     xf->SetTitle(frameTitle.c_str());
     //DO NOT CHANGE THE ORDER !!!!!!! DATA AS FIRST ONES !!!!
     dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));
+    if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
+
     //plot error bands of fit
-    background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kRed));
-    background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
-    background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
+    // background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kRed));
+    //background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
+    // background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
+    expo_fit->plotOn(xf, Normalization(1.2*NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig2,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
+    expo_fit->plotOn(xf, Normalization(1.2*NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig2,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
+
     //plot fits
-    expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
-    expLev_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kOrange+3));//RooAbsPdf::NumEvent
+    expLev_fit->plotOn(xf, Normalization(1.2*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kOrange+5), LineStyle(kDashed));//RooAbsPdf::NumEvent
+
+    expo_fit->plotOn(xf, Normalization(1.2*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kSolid));
+    expo_fit->plotOn(xf, Normalization(1.2*NbkgRange->getVal()+Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
+    expo_fit->plotOn(xf, Normalization(1.2*NbkgRange->getVal()-Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
+
+
     //plot fit with decorrelated parameters (should superimpose the previous)
-    background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2));
-    background_decorr_->plotOn(xf, Normalization((NbkgRange->getVal()+Nerr->getVal()*NbkgRange->getVal()),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2), LineStyle(kDashed));
-    background_decorr_->plotOn(xf, Normalization((NbkgRange->getVal()-Nerr->getVal()*NbkgRange->getVal()),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2), LineStyle(kDashed));
+    // background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2), LineStyle(kDashed));
+    //    background_decorr_->plotOn(xf, Normalization((NbkgRange->getVal()+Nerr->getVal()*NbkgRange->getVal()),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2), LineStyle(kDashed));
+    //  background_decorr_->plotOn(xf, Normalization((NbkgRange->getVal()-Nerr->getVal()*NbkgRange->getVal()),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2), LineStyle(kDashed));
 
     dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));//,Normalization(dsDataSB2->numEntries(),RooAbsPdf::NumEvent)
+    if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
     logf<<"Check nromalization: NumEntries of dsDataSIG= "<<dsDataSIG->numEntries() <<"("<<dsDataSIG->sumEntries() <<")    SumEntries of dsDataSB2="<<dsDataSB2->sumEntries()<<"   numEntries="<<dsDataSB2->numEntries()<<"    Nbkg (NORM)="<<NbkgRange->getVal()<<"   Nent="<<Nent->getVal()<<"     Nerr="<<Nerr->getVal() <<std::endl;
     xf->Draw();
     can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+leptType+".root").c_str());
@@ -995,7 +1029,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   double leptType;
   int mynxj[35];
   double mZZd[35],region[35],mZqq[35];
-
+  double nsubj12[35];
 
   t1->SetBranchAddress("nCands",&ncands);
   t1->SetBranchAddress("run",&nrun);
@@ -1006,7 +1040,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   t1->SetBranchAddress("nXjets",mynxj);
   t1->SetBranchAddress("mJJ",mZqq);
   t1->SetBranchAddress("region",region);
-
+  t1->SetBranchAddress("nsubj12",nsubj12);
 
   TFile *fOut=new TFile(f2Name.c_str(),"RECREATE");
   fOut->cd();
@@ -1015,7 +1049,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   double eventWeight_2;
   unsigned int nrun_2,nevt_2;
   double leptType_2;
-  double mZZd_2,region_2,mZqq_2;
+  double mZZd_2,region_2,mZqq_2, nsubj12_2;
 
   TTree *t2=new TTree(t2Name.c_str(),t2Name.c_str());
  
@@ -1028,7 +1062,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   t2->Branch("mZZ",&mZZd_2 , "mZZ/D");
   t2->Branch("mJJ",&mZqq_2 , "mJJ/D");
   t2->Branch("region",&region_2 , "region/D");
-
+  t2->Branch("nsubj21",&nsubj12_2, "nsubj21/D");
 
   for(int i=0;i<t1->GetEntries();i++){
 
@@ -1044,14 +1078,17 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
       region_2=region[j];
       mZqq_2=mZqq[j];
       mynxj_2=int(mynxj[j]);
- 
+      nsubj12_2=1.0/nsubj12[j]; 
+
+      if(nsubj12_2>0.45)continue;
+
       if(region[j]<0||mZZd_2>9999.0||mynxj_2>10||mZqq_2>999.0){
 	//cout<<"Event="<<nevt<<" cand="<<j<<" has reg="<<region[j]<<" mZZ="<<mZZd_2<<endl;
 	continue;
       }
 
       if(mynxj_2==nxjCut||nxjCut<0) {
-	int nb=t2->Fill();
+	t2->Fill();
 	//	if(i%1000==1)cout<<"Filled "<<nb<<" bytes"<<endl;
 	//	if(nb<0)cout<<"====>  Event"<<nevt_2 <<"  Filled "<<nb<<" bytes"<<endl;
       }
@@ -1072,6 +1109,4 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
  
 
   //  cout<<"returning"<<endl;
-  // return t2;
 }
-
