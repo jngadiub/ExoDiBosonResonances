@@ -79,7 +79,7 @@ double expo_interp(double s2, double s1,  double newM,double m2,double m1);
 TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, float mZZmin );
 
 
-double get_signalParameter(int btag, double massH, std::string varname);
+double get_signalParameter(int nxj, double massH, std::string varname);
 
 std::string systString( std::pair<double,double> systPair, double maxDiff=0.01 );
 std::pair<double,double> theorSyst( double errMinus, double errPlus, double addMinus=0., double addPlus=0. );
@@ -90,7 +90,8 @@ std::pair<double,double> leptScaleSyst( const std::string& leptType_str);
 
 std::pair<double,double> jetScaleSyst( double mass );
 std::pair<double,double> puSyst( double mass );
-std::pair<double,double> bTagEffSyst( const std::string& leptType_str, int nxj, double mass );
+std::pair<double,double> VTagEffSyst( const std::string& leptType_str, int nxj, double mass );
+std::pair<double,double> bTagEffSyst( const std::string& leptType_str, int nbtag, double mass );
 
 //double backgroundNorm( const std::string& dataset, const std::string& leptType_str, int nxj );
 
@@ -161,20 +162,24 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   std::cout << "reading results from: "<< fitResultsFileName.c_str() << std::endl;
   TFile* fitResultsFile = TFile::Open(fitResultsFileName.c_str());
 
-  //fitResultsFile->ls();
+  fitResultsFile->ls();
 
   // get fit result:
   char fitResultName[200]; 
   //  sprintf( fitResultName, "resultsExpLevelledFit_%dJ_ALL_decorr", nxj );
-   sprintf( fitResultName, "resultsExpoFit_%dJ_%s",nxj , leptType_str.c_str() );
+  //  sprintf( fitResultName, "resultsExpoFit_%dJ_%s",nxj , leptType_str.c_str() );
+  sprintf( fitResultName, "resultsExpoFit_%dJ_ALL",nxj );
+  cout<<"Trying to pick RooFitResult :"<<fitResultName<<endl;
   RooFitResult* bgFitResult = (RooFitResult*)fitResultsFile->Get(fitResultName);
   bgFitResult->Print("v");
 
+ 
   // get workspace:
   char workspaceName[200];
   sprintf( workspaceName, "ws_alpha_%dJALL", nxj );
   RooWorkspace* bgws = (RooWorkspace*)fitResultsFile->Get(workspaceName);
-  // bgws->Print("v");
+  cout<<"\n\nPrinting contents of the WorkSpace: "<<endl;
+    bgws->Print("v");
 
   //get vars containing syst unc on alpha
   std::vector<RooRealVar*>alphaErr;
@@ -265,7 +270,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
   ofs << "CMS_scale_j\t\tlnN\t" << systString(jetScaleSyst(hp.mH)) <<  "\t1.0" << std::endl;
 
-  ofs << "CMS_eff_vtag\t\tlnN\t" << systString(bTagEffSyst(leptType_str, nxj, hp.mH)) << "\t1.0" << std::endl;
+  ofs << "CMS_eff_vtag\t\tlnN\t" << systString(VTagEffSyst(leptType_str, nxj, hp.mH)) << "\t1.0" << std::endl;
 
   ofs << "CMS_xzz_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
   std::cout << "CMS_xzz_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
@@ -294,14 +299,20 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
   //  RooArgList bgPars = bgFitResult->floatParsFinal();
 
+  cout<<"Looping on "<<bgPars.getSize()<<" params"<<endl;
   for( int iVar=0; iVar<bgPars.getSize(); ++iVar ) {
     RooRealVar* thisVar = dynamic_cast<RooRealVar*>(bgPars.at(iVar));
+    cout<<"Var -> "<<thisVar->GetName()<<flush;
     double varValue=thisVar->getVal();
+    cout<<"="<<varValue<<flush;
     double varError=thisVar->getError();
-    varError=sqrt(varError*varError+  alphaErr.at(iVar)->getVal()*alphaErr.at(iVar)->getVal());
+    cout<<" +/- "<<varError<<endl; 
+    varError=sqrt(varError*varError);//+  alphaErr.at(iVar)->getVal()*alphaErr.at(iVar)->getVal());
+ 
     ofs << thisVar->GetName() << "\tparam\t\t" <<varValue  << "\t" << varError << std::endl;
 
-    std::cout << thisVar->GetName() << "\tparam\t\t" << varValue << "\t" << thisVar->getError()  <<" & "<<alphaErr.at(iVar)->getVal()<<" -> "<<varError<< std::endl;
+    //    std::cout << thisVar->GetName() << "\tparam\t\t" << varValue << "\t" << thisVar->getError()  <<" & "<<alphaErr.at(iVar)->getVal()<<" -> "<<varError<< std::endl;
+    std::cout << thisVar->GetName() << "\tparam\t\t" << varValue << "\t" << thisVar->getError() <<" -> "<<varError<< std::endl;
   }
 
   ofs.close();
@@ -349,27 +360,29 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   // now define signal shape (didn manage to do use get_signalShape without a crash):
 
   // ------------------- Crystal Ball (matched) -------------------------------
+  cout<<"Starting Signal Shape part"<<endl;
   CMS_xzz_mZZ->setBins(10000.0,"cache");
   float massH = hp.mH;
   char sigp1name[200];
   char sigp2name[200];
   sprintf( sigp1name, "CMS_xzz_sig%dbp1", nxj ); //m
   sprintf( sigp2name, "CMS_xzz_sig%dbp2", nxj ); //width
-  RooRealVar CB_mean(sigp1name,sigp1name, get_signalParameter(nxj,massH,"matched_MassCBmean"));
-  RooRealVar CB_sigma(sigp2name,sigp2name,get_signalParameter(nxj,massH,"matched_MassCBsigma"));
-  RooRealVar CB_alpha1("CB_alpha1","param 3 of CB",get_signalParameter(nxj,massH,"matched_MassCBalpha1"));
-  RooRealVar CB_n1("CB_n1","param 4 of CB",get_signalParameter(nxj,massH,"matched_MassCBn1"));
-  RooRealVar CB_alpha2("CB_alpha2","param 3 of CB",get_signalParameter(nxj,massH,"matched_MassCBalpha2"));
-  RooRealVar CB_n2("CB_n2","param 5 of CB",get_signalParameter(nxj,massH,"matched_MassCBn2"));
+  RooRealVar CB_mean(sigp1name,sigp1name, get_signalParameter(nxj,massH,"mean_match"));
+  RooRealVar CB_sigma(sigp2name,sigp2name,get_signalParameter(nxj,massH,"sigma_match"));
+  RooRealVar CB_alpha1("CB_alpha1","param 3 of CB",get_signalParameter(nxj,massH,"alpha1_match"));
+  RooRealVar CB_n1("CB_n1","param 4 of CB",get_signalParameter(nxj,massH,"n1_match"));
+  RooRealVar CB_alpha2("CB_alpha2","param 3 of CB",get_signalParameter(nxj,massH,"alpha2_match"));
+  RooRealVar CB_n2("CB_n2","param 5 of CB",get_signalParameter(nxj,massH,"n2_match"));
 
   RooDoubleCB* CB_SIG = new RooDoubleCB("CB_SIG","Crystal Ball",*CMS_xzz_mZZ,CB_mean,CB_sigma,CB_alpha1,CB_n1,CB_alpha2,CB_n2);
 
+  cout<<"List of params of DoubleCB: CB_mean="<<CB_mean.getVal()<<"  CB_sigma="<<CB_sigma.getVal()<<"  CB_alpha1="<<CB_alpha1.getVal()<<"  CB_n1="<<CB_n1.getVal()<<"  CB_alpha2="<<CB_alpha2.getVal()<<"   CB_n2="<<CB_n2.getVal()<<endl;
 
   // ------------------- SmearedTriangle (un-matched) -------------------------------
-  RooRealVar CB_UMmean( "CB_UMmean"," CB_UMmean", get_signalParameter(nxj,massH,"unmatched_MassCBmean"));
-  RooRealVar CB_UMsigma("CB_UMsigma","CB_UMsigma",get_signalParameter(nxj,massH,"unmatched_MassCBsigma"));
-  RooRealVar CB_UMalpha("CB_UMalpha","CB_UMalpha",get_signalParameter(nxj,massH,"unmatched_MassCBalpha"));
-  RooRealVar CB_UMn("CB_UMn","CB_UMn",get_signalParameter(nxj,massH,"unmatched_MassCBn"));
+  RooRealVar CB_UMmean( "CB_UMmean"," CB_UMmean", get_signalParameter(nxj,massH,"mean_unmatch"));
+  RooRealVar CB_UMsigma("CB_UMsigma","CB_UMsigma",get_signalParameter(nxj,massH,"sigma_unmatch"));
+  RooRealVar CB_UMalpha("CB_UMalpha","CB_UMalpha",get_signalParameter(nxj,massH,"alpha_unmatch"));
+  RooRealVar CB_UMn("CB_UMn","CB_UMn",get_signalParameter(nxj,massH,"n_unmatch"));
   RooCBShape* CB_UM = new RooCBShape("CB_UM","Crystal Ball unmacthed",*CMS_xzz_mZZ,CB_UMmean,CB_UMsigma ,CB_UMalpha,CB_UMn);
 
   RooRealVar TRI_start("TRI_start","TRI_start", get_signalParameter(nxj,massH,"unmatched_Mass_start"));
@@ -403,6 +416,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 
   // done. now save:
+  cout<<"Saving Signal shape"<<endl;
   outfile->cd();
   w->Write();
   outfile->Close();
@@ -411,21 +425,16 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   double sigWindowLow=CB_mean.getVal()-3.0*CB_sigma.getVal();
   double sigWindowHigh=CB_mean.getVal()+3.0*CB_sigma.getVal();
   CMS_xzz_mZZ->setRange("signalWindow",sigWindowLow,sigWindowHigh);
-  double signalFrac= signal2J->createIntegral(*CMS_xzz_mZZ,RooFit::Range("signalWindow"),RooFit::NormSet(*CMS_xzz_mZZ))->getVal();
+  double signalFrac= CB_SIG->createIntegral(*CMS_xzz_mZZ,RooFit::Range("signalWindow"),RooFit::NormSet(*CMS_xzz_mZZ))->getVal();
   std::cout<<"FRACTION of signal inside the +/-3 sigma window ["<<sigWindowLow<<" , "<< sigWindowHigh<<"]: "<<signalFrac<<std::endl;
 
   bool doPlot=false;
-  if(mass==400||mass==450||mass==700||mass==800)doPlot=true;
+  //  if(mass==1000||mass==1500)doPlot=true;
   if(doPlot){
     const int nBinsTMP=22;
-    const double binsTMP[nBinsTMP]={375.0,400,420,435,450,465,480,500,520,540,560,580,600,625,650,675,700,750,800,900,1000,1250};
-   
-    //    const int nBinsTMP=4;
-    // const double binsTMP[nBinsTMP]={400,500,580,1250};
-   
- //    const int nBinsTMP=19; 
-    //  double binsTMP[nBinsTMP]={270,290,310,330,350,370,400,420,450,480,500,520,560,600,650,700,800,1000,1250};
-    
+    const double binsTMP[nBinsTMP]={480,500,520,560,600,640,680,720,760,800,840,920,
+			    1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
+  
     TCanvas *can1=new TCanvas("canvasCardsMZZ1", "MZZ-cards-CANVAS1",800,800);
     can1->cd();
     RooPlot *xf=CMS_xzz_mZZ->frame();
@@ -482,17 +491,17 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj,  float mZZmin ) 
 
   TH1F::AddDirectory(kTRUE);
 
-  ifstream ifsMC("massesMC.txt"); //the points at which we have MC samples
+  ifstream ifsMC("efficiencies_MCSig.txt"); //the points at which we have MC samples
 
   TGraph* gr_eff_vs_mass = new TGraph(0);
 
   int iPoint=0;
   while( ifsMC.good() ) {
 
-    double mass,efficiency[6];
-    ifsMC >> mass >> efficiency[0] >> efficiency[1] >> efficiency[2] >>efficiency[3] >>efficiency[4] >>  efficiency[5]     ; 
+    double mass,efficiency[4];//one for each category: EE1J, MM1J , EE2J ,MM2J
+    ifsMC >> mass >> efficiency[0] >> efficiency[1] >> efficiency[2] >>efficiency[3] ; 
 
-    int index = 3*DataCardUtils::convert_leptType(leptType_str) + nxj;
+    int index = DataCardUtils::convert_leptType(leptType_str) + (nxj-1);
 
     gr_eff_vs_mass->SetPoint( iPoint++, mass, efficiency[index] );
 
@@ -502,8 +511,8 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj,  float mZZmin ) 
 
 
   char functName[200];
-  sprintf( functName, "eff_vs_mass_%s_%dbtag", leptType_str.c_str(), nxj );
-  TF1* f1_eff_vs_mass = new TF1(functName, "[0] + [1]*x + [2]*x*x + [3]*x*x*x", 250., 1050.);
+  sprintf( functName, "eff_vs_mass_%s_%dJ", leptType_str.c_str(), nxj );
+  TF1* f1_eff_vs_mass = new TF1(functName, "[0] + [1]*x + [2]*x*x + [3]*x*x*x", 550., 2050.);
   gr_eff_vs_mass->Fit(f1_eff_vs_mass, "RQN");
   f1_eff_vs_mass->SetLineStyle(2);
   f1_eff_vs_mass->SetLineColor(38);
@@ -512,7 +521,7 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj,  float mZZmin ) 
   TCanvas* c1 = new TCanvas("c1", "", 600, 600);
   c1->cd();
 
-  TH2D* axes = new TH2D("axes", "", 10, 250., 1050., 10, 0., 0.06);
+  TH2D* axes = new TH2D("axes", "", 10, 550., 2250., 10, 0., 0.40);
   axes->SetXTitle("m_{H} [GeV]");
   axes->SetYTitle("Efficiency");
   axes->Draw();
@@ -661,8 +670,8 @@ double expo_interp(double s2, double s1,  double newM,double m2,double m1){
 
 double get_signalParameter(int nxj, double massH, std::string varname) {
 
-  const int nMasses=10;
-  int masses[nMasses] = {800,900,1000,1100,1300,1400,1500,1700,1800,1900};
+  const int nMasses=8;
+  int masses[nMasses] = {1000,1100,1300,1400,1500,1700,1800,1900};
 
   RooRealVar var(varname.c_str(),varname.c_str(),0.);
   RooArgSet paramsup, paramslow;
@@ -675,12 +684,13 @@ double get_signalParameter(int nxj, double massH, std::string varname) {
   //which files to read
   for(int i =0 ; i <nMasses ; i++){
     if(masses[i]==massH){//direct Match outpars_BulkG_ZZ_lljj_c0p2_M1800_1.config
-      sprintf(filename,"shapes/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%d.config",masses[i],nxj);
+      sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%d.config",masses[i],nxj);
       paramsup.readFromFile(filename, "READ", "Parameters");
+      cout<<"For MH="<<massH<<" "<<varname.c_str()<<" = "<<var.getVal()<<endl;
       return var.getVal();
     }
   }
-
+  cout<<"get_signalParameter -> interpolate signal shape param "<<varname.c_str()<<endl;
   //no direct match => interpolation
   int indexlow = -1;
   int indexhigh= -1;
@@ -703,10 +713,10 @@ double get_signalParameter(int nxj, double massH, std::string varname) {
 
   //std::cout << indexlow << " " << indexhigh <<std::endl;
 
-  sprintf(filename,"shapes/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%d.config",masses[i],nxj);
+  sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%d.config",masses[indexlow],nxj);
   paramsup.readFromFile(filename, "READ", "Parameters");
   double low = var.getVal();
-  sprintf(filename,"shapes/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%d.config",masses[i],nxj);
+  sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%d.config",masses[indexhigh],nxj);
   paramsup.readFromFile(filename, "READ", "Parameters");
   double high = var.getVal();
   
@@ -844,6 +854,18 @@ std::pair<double,double> puSyst( double mass ) {
   return returnPair;
 
 }
+
+
+std::pair<double,double> VTagEffSyst( const std::string& leptType_str, int nxj, double mass ) {
+
+ std::pair<double,double> returnPair;
+ returnPair.first  = 1.1;
+ returnPair.second = 0.9; 
+
+  return returnPair;
+
+}
+
 
 
 std::pair<double,double> bTagEffSyst( const std::string& leptType_str, int nxj, double mass ) {
