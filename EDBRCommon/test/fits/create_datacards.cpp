@@ -400,7 +400,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   }
 
   //------------------------ add matched and unmatched -------------------------
-  RooRealVar MATCH("MATCH","MATCH", get_signalParameter(nxj,massH,"N_matched"));
+  RooRealVar MATCH("MATCH","MATCH", get_signalParameter(nxj,massH,"machfrac"));
   RooAddPdf* signal2J=0;
   if(nxj==2) signal2J= new RooAddPdf("sumCBTriangle_2J","sumCBTriangle_2J",*CB_SIG,*TRI_SMEAR,MATCH);
 
@@ -429,7 +429,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   std::cout<<"FRACTION of signal inside the +/-3 sigma window ["<<sigWindowLow<<" , "<< sigWindowHigh<<"]: "<<signalFrac<<std::endl;
 
   bool doPlot=false;
-  //  if(mass==1000||mass==1500)doPlot=true;
+  if(mass==1000||mass==1500||mass==2000)doPlot=true;
   if(doPlot){
     const int nBinsTMP=22;
     const double binsTMP[nBinsTMP]={480,500,520,560,600,640,680,720,760,800,840,920,
@@ -442,21 +442,21 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
     ssbtag << nxj;
     std::stringstream ssM;
     ssM << mass;
-    CMS_xzz_mZZ->setRange("sidebandRange",375,1250) ;
+    CMS_xzz_mZZ->setRange("sidebandRange",480,2600) ;
     //  std::cout<<"\nNorm range of background_decorr (2): "<<background_decorr->normRange()<<std::endl;
-    xf->SetTitle(("Sideband fit ("+ ssbtag.str() +"btag, "+leptType_str+" leptons) - M="+ssM.str()+")").c_str());
-    dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlue));
+    xf->SetTitle(("Sideband fit ("+ ssbtag.str() +"Jet, "+leptType_str+" leptons) - M="+ssM.str()+")").c_str());
+    dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
     std::cout<<" 1 "<<std::flush;
     expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
     std::cout<<" 2 "<<std::flush;
     expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
     expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
       std::cout<<" 3 "<<std::flush;
-    CB_SIG->plotOn(xf,RooFit::Normalization(MATCH.getVal()*rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
+    CB_SIG->plotOn(xf,RooFit::Normalization(MATCH.getVal()*rate_gg*1000.0,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
     //  TRI_SMEAR->plotOn(xf,RooFit::Normalization((1-MATCH.getVal())*rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kOrange+3),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
     // signal2J->plotOn(xf,RooFit::Normalization(rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kRed),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
     std::cout<<" 4 "<<std::flush;
-    dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlue));
+    dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
     std::cout<<" 5 "<<std::flush;
 
     char mkdir_command[100];
@@ -466,8 +466,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
     std::cout<<canvasname.c_str()<<std::endl;
     xf->Draw();
     can1->SaveAs((canvasname+"_M"+ssM.str()+".eps").c_str());
-    double mymax=nxj==2?100:2500.0;
-    double mymin=nxj==2?0.0008:0.03;
+    double mymax=nxj==2?100:250.0;
+    double mymin=nxj==2?0.0008:0.003;
     xf->SetMinimum(mymin);
     xf->SetMaximum(mymax);
     gPad->SetLogy();
@@ -686,11 +686,11 @@ double get_signalParameter(int nxj, double massH, std::string varname) {
     if(masses[i]==massH){//direct Match outpars_BulkG_ZZ_lljj_c0p2_M1800_1.config
       sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%d.config",masses[i],nxj);
       paramsup.readFromFile(filename, "READ", "Parameters");
-      cout<<"For MH="<<massH<<" "<<varname.c_str()<<" = "<<var.getVal()<<endl;
+      //  cout<<"For MH="<<massH<<" "<<varname.c_str()<<" = "<<var.getVal()<<endl;
       return var.getVal();
     }
   }
-  cout<<"get_signalParameter -> interpolate signal shape param "<<varname.c_str()<<endl;
+  //  cout<<"get_signalParameter -> interpolate signal shape param "<<varname.c_str()<<endl;
   //no direct match => interpolation
   int indexlow = -1;
   int indexhigh= -1;
