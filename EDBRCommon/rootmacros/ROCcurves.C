@@ -7,6 +7,7 @@ TH1D* getNSubjHisto(TFile* targetFile, double mass){
 	double widthMassBin = 50.0;
 	int mainBin = (int)mass/widthMassBin;
 	TH1D* projection = histogram->ProjectionX(buffer,mainBin-1,mainBin+2);
+	//cout<<histogram->GetYaxis()->GetBinLowEdge(mainBin)<<endl;
 	projection->SetDirectory(0);
 	return projection;
 }
@@ -140,15 +141,15 @@ void makeROCcurves(int massValue) {
 
 void ROCcurves(){
 	makeROCcurves(600);
-	makeROCcurves(700);
-	makeROCcurves(800);
-	makeROCcurves(900);
+	//makeROCcurves(700);
+//	makeROCcurves(800);
+//	makeROCcurves(900);
 	makeROCcurves(1000);
-	makeROCcurves(1100);
-	makeROCcurves(1300);
-	makeROCcurves(1400);
+//	makeROCcurves(1100);
+//	makeROCcurves(1300);
+//	makeROCcurves(1400);
 	makeROCcurves(1500);
-	makeROCcurves(1700);
-	makeROCcurves(1800);
-	makeROCcurves(1900);
+//	makeROCcurves(1700);
+//	makeROCcurves(1800);
+//	makeROCcurves(1900);
 }

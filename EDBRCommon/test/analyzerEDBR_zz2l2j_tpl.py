@@ -34,7 +34,7 @@ from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
 process.ANEDBR = AnalyzerXZZ.clone(
     debug=cms.bool(False),
     outFileName=cms.string("treeEDBR_<SAMPLE>.root"),
-    VType=cms.string("Z"),
+    VType=cms.string("W"),
     Ngen=cms.uint32(1),
     xsec=cms.double(1.0) ###in pb
     )
@@ -51,14 +51,14 @@ if processFullSel :
     #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
     #process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
     #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
-    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
-    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
-    process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
-    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
-    #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
-    #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
-    #process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
-    #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
+    #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
+    #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
+    #process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
+    #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
+    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
+    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
+    process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
+    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
 
 
 ##### set Ngen and xsect values ofr MC samples; xsect in pb !!! 

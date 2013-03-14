@@ -2,13 +2,13 @@
 
 ####EDIT THIS PART#####
 
-TREEDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/batchtree/test/presel
+TREEDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7/fullallrange/
 
 RESUB=0 ##use 1 to resubmit, 0 not to resubmit
 
 QUEUE=2nd
 
-MERGE=0  ##after everything is fine you can merge the output
+MERGE=1  ##after everything is fine you can merge the output
 
 ######################
 
