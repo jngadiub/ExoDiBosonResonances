@@ -118,8 +118,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
 
    // if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric "<<ih<<" "<<flush;
-   if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSignal") reg[ih]=1;
-   if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSideband") reg[ih]=0;
+   if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSignal"))) reg[ih]=1;
+   if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSideband"))) reg[ih]=0;
 
    if(VType_=="Z")reg[ih]=(edbr->leg2().getSelection("cuts_isZSignal")? 1.0 : 0.0 );
    mzz[ih]=edbr->mass();
@@ -301,12 +301,6 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     	//  double isomu1mod[nMaxCand], isomu2mod[nMaxCand]; // modified tracker iso for muons
 	//  double isoele1trk[nMaxCand], isoele2trk[nMaxCand], isoele1calo[nMaxCand], isoele2calo[nMaxCand]; // modified isos for ele
 
-    isomu1mod[ih]=edbr->userFloat("isomu1mod");
-    isomu2mod[ih]=edbr->userFloat("isomu2mod");
-    isoele1trk[ih]=edbr->userFloat("isoele1trk");
-    isoele2trk[ih]=edbr->userFloat("isoele2trk");
-    isoele1calo[ih]=edbr->userFloat("isoele1calo");
-    isoele2calo[ih]=edbr->userFloat("isoele2calo");
     ptjjNoKinFit[ih]=edbr->userFloat("nokinfitPTJJ");
     etajjNoKinFit[ih]=edbr->userFloat("nokinfitEtaJJ");
     phijjNoKinFit[ih]=edbr->userFloat("nokinfitPhiJJ");
@@ -408,6 +402,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     if(debug_)cout<<"Inside AnalyzerEDBR::analyzeMuon"<<endl;
 
 	lep[ih]=1;
+    isomu1mod[ih]=edbr->userFloat("isomu1mod");
+    isomu2mod[ih]=edbr->userFloat("isomu2mod");
 
     //dummy for muons 
     eleMVAId1[ih] = -1.0;
@@ -423,7 +419,12 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
 	if(VType_=="W")highptLep1=true;//for ww case, we don't compare pt of lepton and neutrino
 	lep[ih]=0;    
-    
+   
+    isoele1trk[ih]=edbr->userFloat("isoele1trk");
+    isoele2trk[ih]=edbr->userFloat("isoele2trk");
+    isoele1calo[ih]=edbr->userFloat("isoele1calo");
+    isoele2calo[ih]=edbr->userFloat("isoele2calo");
+ 
     if(highptLep1){
       eleMVAId1[ih] = edbr->leg1().leg1().mvaTrigV0(); 
       eleMVAId2[ih] = edbr->leg1().leg2().mvaTrigV0();
