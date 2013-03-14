@@ -18,7 +18,7 @@ void loopPlot(){
   setTDRStyle();//TDR style
   
   
- //#####################EDIT THE OPTIONS##############################
+  //#####################EDIT THE OPTIONS##############################
   /// Boolean flags to steer the histogram making
   bool wantElectrons = false; // Will make histograms for electrons
   bool wantMuons     = true; // Will make histograms for muons
@@ -42,18 +42,13 @@ void loopPlot(){
   bool isSignalStackOnBkg = false;
 
   /// Path to wherever the files with the trees are. 
-  //CA8 (cmgTuple0219 no btag info)
-  //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/full/";
-  //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_04_03_2013_CA8/fullsig/";
-  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/fullsideband/";
-
-  //AK7 (cmgTuple0304 with btag info)
-  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/test/testnewsh/fullsideband/";
-  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/AK7/fullsideband/";
+  //CA8 (cmgTuple_08032013_CA8)
+  std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/fullsideband/";
+  //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/fullsig/";
+  //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/merged/";
 
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./WW_full_mu_sideband_1j_wl200_wh200_lep50_met40_eta2p1_leptonVeto_nobtagVeto_singleTop_AK7_wrong";
-  //std::string outputDir = "./WW_full_mu_sideband_1j_wl200_wh200_lep50_met40_eta2p1_leptonVeto_nobtagVeto_AK7_old";
+  std::string outputDir = "./WW_mu_sideband_CA8";
 
   /// Setup names of data files for trees.
  
