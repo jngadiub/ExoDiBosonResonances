@@ -253,11 +253,14 @@ int main(){
     alphaErr->setConstant(kTRUE);
     NormErr->setConstant(kTRUE);
     Nerr->setConstant(kTRUE);
-    RooRealVar *Nbkg=new RooRealVar("bkgdNormalization","Total uncertainty on background normalization",dsDataSB2->sumEntries(),0.0,10000.0);
+    RooRealVar *Nbkg=new RooRealVar("bkgdNormalization","Total uncertainty on background normalization (ELE+MU chan)",dsDataSB2->sumEntries(),0.0,10000.0);
+    RooRealVar *NbkgELE=new RooRealVar("bkgdNormalizationELE","Total uncertainty on background normalization (ELE chan)",dsDataSB2->reduce("lep==0")->sumEntries(),0.0,10000.0);
+    RooRealVar *NbkgMU=new RooRealVar("bkgdNormalizationMU","Total uncertainty on background normalization (MU chan)",dsDataSB2->reduce("lep==1")->sumEntries(),0.0,10000.0);
     Nbkg->setConstant(kTRUE);
     RooRealVar *NbkgRange=new RooRealVar("bkgdNormalizationFitRange"," background normalization in range of fit",dsDataSB2->reduce(CutRange("fitRange"))->sumEntries(),0.0,10000.0);
     NbkgRange->setConstant(kTRUE);
     // a0->setConstant(kTRUE);
+    logf<<"Normalization ELE="<<NbkgELE->getVal()<<"  MU="<<NbkgMU->getVal()<<"  ALL="<<Nbkg->getVal()<<endl;
     logf<<"Normalization errors: Nent="<<Nent->getVal()<<" NormErr="<<NormErr->getVal()<<"  Nerr="<<Nerr->getVal()<<std::endl;
     logf<<"Exp fit done: Norm In Range = "<<NbkgRange->getVal()<<"   Slope="<<a0->getVal()<<std::endl;
     
@@ -363,6 +366,8 @@ int main(){
     wsnew->SetName(("ws_alpha_"+ssnxj.str()+"J"+leptType).c_str());
     logf<<"\n\nName of new WS: "<<wsnew->GetName()<<std::endl;
     wsnew->import(*Nbkg);
+    wsnew->import(*NbkgELE);
+    wsnew->import(*NbkgMU);
     wsnew->import(*NbkgRange);
     wsnew->import(*Nent);
     wsnew->import(*alphaErr);

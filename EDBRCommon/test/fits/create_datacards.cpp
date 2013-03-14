@@ -162,7 +162,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   std::cout << "reading results from: "<< fitResultsFileName.c_str() << std::endl;
   TFile* fitResultsFile = TFile::Open(fitResultsFileName.c_str());
 
-  fitResultsFile->ls();
+  // fitResultsFile->ls();
 
   // get fit result:
   char fitResultName[200]; 
@@ -178,8 +178,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   char workspaceName[200];
   sprintf( workspaceName, "ws_alpha_%dJALL", nxj );
   RooWorkspace* bgws = (RooWorkspace*)fitResultsFile->Get(workspaceName);
-  cout<<"\n\nPrinting contents of the WorkSpace: "<<endl;
-    bgws->Print("v");
+  // cout<<"\n\nPrinting contents of the WorkSpace: "<<endl;
+  //  bgws->Print("v");
 
   //get vars containing syst unc on alpha
   std::vector<RooRealVar*>alphaErr;
@@ -241,11 +241,11 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   ofs << "process            0\t\t\t1" << std::endl;
 
   float eff = f1_eff_vs_mass->Eval(hp.mH);
-  float rate_gg   = eff*hp.XSgg*hp.BRZZto2l2q*lumi; //xsect has both ee and mm
+  float rate_gg   = eff*hp.XSgg*hp.BRZZto2l2q*lumi*10000.0; //xsect has both ee and mm
 
   // compute expected BG yield from observed sideband events:
-  Double_t rate_background = DataCardUtils::get_backgroundNormalization(bgws , leptType_str, nxj ); 
-  std::cout << rate_background << std::endl;
+  Double_t rate_background = DataCardUtils::get_backgroundNormalization(bgws , leptType_str);
+  std::cout <<"Background rate: "<< rate_background << std::endl;
 
 
   ofs << "rate               " << rate_gg << "\t\t" << rate_background << std::endl;
@@ -406,11 +406,11 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
   // and import it:
   if(nxj==1){
-    CB_SIG->SetName("signal");
+    CB_SIG->SetName(("signal"+rename_str).c_str());
     w->import(*CB_SIG, RooFit::RecycleConflictNodes());
   }
   if(nxj==2){
-    signal2J->SetName("signal");
+    signal2J->SetName(("signal"+rename_str).c_str());
     w->import(*signal2J, RooFit::RecycleConflictNodes());
   }
 
@@ -442,27 +442,27 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
     ssbtag << nxj;
     std::stringstream ssM;
     ssM << mass;
-    CMS_xzz_mZZ->setRange("sidebandRange",480,2600) ;
+    CMS_xzz_mZZ->setRange("plotRange",480,2600) ;
     //  std::cout<<"\nNorm range of background_decorr (2): "<<background_decorr->normRange()<<std::endl;
     xf->SetTitle(("Sideband fit ("+ ssbtag.str() +"Jet, "+leptType_str+" leptons) - M="+ssM.str()+")").c_str());
     dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
     std::cout<<" 1 "<<std::flush;
-    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
+    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
     std::cout<<" 2 "<<std::flush;
-    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
-    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
-      std::cout<<" 3 "<<std::flush;
-    CB_SIG->plotOn(xf,RooFit::Normalization(MATCH.getVal()*rate_gg*1000.0,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
-    //  TRI_SMEAR->plotOn(xf,RooFit::Normalization((1-MATCH.getVal())*rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kOrange+3),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
-    // signal2J->plotOn(xf,RooFit::Normalization(rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kRed),RooFit::NormRange("sidebandRange"),RooFit::Range("sidebandRange"));
+    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+    std::cout<<" 3 "<<std::flush;
+    CB_SIG->plotOn(xf,RooFit::Normalization(MATCH.getVal()*rate_gg*1000.0,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+    //  TRI_SMEAR->plotOn(xf,RooFit::Normalization((1-MATCH.getVal())*rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kOrange+3),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+    // signal2J->plotOn(xf,RooFit::Normalization(rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kRed),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
     std::cout<<" 4 "<<std::flush;
     dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
-    std::cout<<" 5 "<<std::flush;
+     std::cout<<" 5 "<<std::flush;
 
     char mkdir_command[100];
     sprintf( mkdir_command, "mkdir -p %s/fitPlotCards", datacardDir.c_str());
     system(mkdir_command);
-    string canvasname= datacardDir+"/fitPlotCards/fitPlotCards_"+ssbtag.str()+"btag"+leptType_str;
+    string canvasname= datacardDir+"/fitPlotCards/fitPlotCards_"+ssbtag.str()+"J"+leptType_str;
     std::cout<<canvasname.c_str()<<std::endl;
     xf->Draw();
     can1->SaveAs((canvasname+"_M"+ssM.str()+".eps").c_str());
