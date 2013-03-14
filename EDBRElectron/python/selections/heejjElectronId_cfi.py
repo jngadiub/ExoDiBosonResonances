@@ -61,7 +61,7 @@ HEEPelectronBstdId2012 = cms.PSet(
 
 
 HEEPelectronBstdId2012Loose = cms.PSet(  ### now it is the same as HEEPelectronBstdId2012
-    isHEEP = cms.string('sourcePtr().userInt("HEEPId") == 0'),
+    isHEEP = cms.string('(sourcePtr().userInt("HEEPId") == 0) || (sourcePtr().userInt("HEEPId") == 1)'),
     isIsolTrk = cms.string('sourcePtr().userIso(0) < 5.0'),
 #   Calorimeter Isolation is implemented in an specialized module:
 #   (ElectronDetIsoCorrector, with label electronPresel) 
