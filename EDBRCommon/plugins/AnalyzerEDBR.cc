@@ -568,7 +568,9 @@ void AnalyzerEDBR::initDataMembers(){
 		nbtagsL[i]=-99.; nbtagscleanL[i]=-99.;
 		nbtagsM[i]=-99.; nbtagscleanM[i]=-99.;
 		nbtagsT[i]=-99.; nbtagscleanT[i]=-99.;
-	}
+		isomu1mod[i]=-99.; isomu2mod[i]=-99.; 
+		isoele1trk[i]=-99.; isoele2trk[i]=-99.; isoele1calo[i]=-99.; isoele2calo[i]=-99.;
+	} 
 
 
 	massGenX=-999.0; ptGenX=-999.0;  yGenX=-999.0; phiGenX=-999.0; 
