@@ -54,7 +54,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 
 const string inDirSig="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsigCA8/";
 const string inDir="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsidebandCA8/";
-const string outDir="FitSidebandsMJJ_CA8_0314/";
+const string outDir="FitSidebandsMJJ_CA8_0315/";
 const string leptType="ALL";//"ALL" //"MU" //"ELE"
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 500;
@@ -63,7 +63,7 @@ const bool decorrLevExpo=true;
 //binning for merged Jet topology 
 const int nBins1=22;
 const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
+			    1000,1100,1200,1300,1500,1700,1900,2100,2300,2600};
 
 //binning for double Jet topology 
 const int nBins2=22;
@@ -215,7 +215,10 @@ int main(){
 
     RooDataSet *dsDataSB2=new RooDataSet("dsDataSB2","dsDataSB2",weightedData,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
     RooDataSet *dsDataSIG=dsDataSIG=new RooDataSet("dsDataSIG","dsDataSIG",(TTree*)treeDATA_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep),cutSIG.c_str()) ;//real data in signal region; cuts on mjj and nXjets
-    
+    logf<<"Number of events in OBSERVED datasets:"<<std::endl;
+    logf<<dsDataSB->GetName()<<"  -> "<<dsDataSB->numEntries()<<"  "<<dsDataSB->sumEntries()<<std::endl;
+    logf<<dsDataSB2->GetName()<<"  -> "<<dsDataSB2->numEntries()<<"  "<<dsDataSB2->sumEntries()<<std::endl;
+    if(unblind)logf<<dsDataSIG->GetName()<<"  -> "<<dsDataSIG->numEntries()<<"  "<<dsDataSIG->sumEntries()<<std::endl;
 
     // dsDataSB->Print();
   

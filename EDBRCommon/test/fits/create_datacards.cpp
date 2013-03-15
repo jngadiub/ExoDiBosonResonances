@@ -31,9 +31,9 @@
 
 #include "DataCardUtils.h"
 
-const std::string wsDir="FitSidebandsMJJ_CA8_0314/";
-const std::string datacardDir("DataCards_XZZ_20130314");
-float mZZmin_ = 1000.;
+const std::string wsDir="FitSidebandsMJJ_CA8_0315/";
+const std::string datacardDir("DataCards_XZZ_20130315b");
+float mZZmin_ = 600.;
 
 
 struct TheorSigParameters {
@@ -194,8 +194,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   }
 
   //get global alpha uncertainty
-  //the +1.0 effectively leaves the bkgd normalization free to float when profiling the nuisances
-  double globalAlphaErr =  bgws->var("alphaNormErr")->getVal()+1.0;
+  //the +0.5 effectively leaves the bkgd normalization free to float when profiling the nuisances
+  double globalAlphaErr =  bgws->var("alphaNormErr")->getVal()+0.5;
   //std::cout << globalAlphaErr << std::endl;
   //exit(0);
 
@@ -230,6 +230,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
   RooDataSet* dataset_obs = DataCardUtils::get_observedDataset( bgws , leptType_str, nxj,"dsDataSIG" );
   dataset_obs->SetName(( dataset_obs->GetName()+rename_str).c_str());
+  std::cout<<"Statistics of the observed dataset straight from the ws: "<<dataset_obs->numEntries()<<"  "<<dataset_obs->sumEntries() <<std::endl;
   RooDataSet* dataset_obs_reduced=new RooDataSet("dataset_obs","dataset_obs",dataset_obs,RooArgSet(*CMS_xzz_mZZ));
   dataset_obs_reduced->SetName(("dataset_obs"+rename_str).c_str());
   float observedYield = dataset_obs_reduced->sumEntries();
@@ -242,7 +243,10 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   ofs << "process            0\t\t\t1" << std::endl;
 
   float eff = f1_eff_vs_mass->Eval(hp.mH);
-  float rate_gg   = eff*hp.XSgg*hp.BRZZto2l2q*lumi*10000.0; //xsect has both ee and mm
+  //factor 1000 is due just to avoid tiny numbers when running the limits
+  //remember to scale it back down when pltting the limit on the xsect instead of the ratio
+  // float rate_gg   = eff*hp.XSgg*hp.BRZZto2l2q*lumi*1000.0; //xsect has both ee and mm
+  float rate_gg   = eff*hp.XSgg*hp.BRZZto2l2q*lumi; //xsect has both ee and mm
 
   // compute expected BG yield from observed sideband events:
   Double_t rate_background = DataCardUtils::get_backgroundNormalization(bgws , leptType_str);
@@ -430,7 +434,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   std::cout<<"FRACTION of signal inside the +/-3 sigma window ["<<sigWindowLow<<" , "<< sigWindowHigh<<"]: "<<signalFrac<<std::endl;
 
   bool doPlot=false;
-  if(mass==1000||mass==1500||mass==2000)doPlot=true;
+  if(mass==1000||mass==1500||mass==1900||mass==2000)doPlot=true;
   if(doPlot){
     const int nBinsTMP=22;
     const double binsTMP[nBinsTMP]={480,500,520,560,600,640,680,720,760,800,840,920,
@@ -572,7 +576,7 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj,  float mZZmin ) 
 
 TheorSigParameters get_thParameters( float mass ) {
 
-  std::string nameXsecFile = "../../data/xsect_BulkG_ZZ_lljj_c0p2_xsect_in_pb.txt";
+  std::string nameXsecFile = "../../data/xsect_BulkG_ZZ_lljj_c0p5_xsect_in_pb.txt";
   std::ifstream xsect_file(nameXsecFile.c_str());
 
   if (! xsect_file.is_open()) { 
