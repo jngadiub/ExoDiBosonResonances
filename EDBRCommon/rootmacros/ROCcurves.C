@@ -61,13 +61,14 @@ TCanvas* compareHistos(TH1* signalHisto, TH1* backgroundHisto){
 		double effBkg = thisB/bkgIntegral;
 		double thisPunzi = effSgn/(1.0+sqrt(thisB));
 		double binLowEdge = backgroundHisto->GetBinLowEdge(i);
-		printf("binLowEdge = %g, eff Bkg = %g, eff Sgn = %g\n",binLowEdge,effBkg,effSgn);
+		double binHighEdge = binLowEdge+backgroundHisto->GetBinWidth(i);
+		printf("binHighEdge = %g, eff Bkg = %g, eff Sgn = %g\n",binHighEdge,effBkg,effSgn);
 		ROC->SetPoint(i-1,effSgn,1.0-effBkg);
-		S->SetPoint(i-1,binLowEdge,effSgn);
-		B->SetPoint(i-1,binLowEdge,effBkg);
-		SoverB->SetPoint(i-1,binLowEdge,thisSOverB);
-		SoverSB->SetPoint(i-1,binLowEdge,thisSOverSB);
-		punzi->SetPoint(i-1,binLowEdge,thisPunzi);
+		S->SetPoint(i-1,binHighEdge,effSgn);
+		B->SetPoint(i-1,binHighEdge,effBkg);
+		SoverB->SetPoint(i-1,binHighEdge,thisSOverB);
+		SoverSB->SetPoint(i-1,binHighEdge,thisSOverSB);
+		punzi->SetPoint(i-1,binHighEdge,thisPunzi);
 	}
 
 	cv->cd(1);
