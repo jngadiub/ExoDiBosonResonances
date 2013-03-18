@@ -433,6 +433,15 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       eleMVAId1[ih] = edbr->leg1().leg2().mvaTrigV0(); 
       eleMVAId2[ih] = edbr->leg1().leg1().mvaTrigV0();
     }
+	sigmaIetaIeta[ih]=edbr->leg1().leg1().sigmaIetaIeta();
+	deltaPhiSuperClusterTrackAtVtx[ih]=edbr->leg1().leg1().deltaPhiSuperClusterTrackAtVtx();
+	deltaEtaSuperClusterTrackAtVtx[ih]=edbr->leg1().leg1().deltaEtaSuperClusterTrackAtVtx();
+	hadronicOverEm[ih]=edbr->leg1().leg1().hadronicOverEm();
+	numberOfHits[ih]=edbr->leg1().leg1().numberOfHits();
+	dxy[ih]=edbr->leg1().leg1().dxy();
+	dz[ih]=edbr->leg1().leg1().dz(); 
+	ecalDriven[ih]=edbr->leg1().leg1().ecalDriven();
+
     if(debug_)    std::cout<<"leg1.eleMVA="<<eleMVAId1[ih]<<"  leg2.eleMVA="<<eleMVAId2[ih]<<std::endl;
   }//end analyzeElectron
 
@@ -570,6 +579,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
   //index of events in the cmgtuple, begin from 1
   int nEvt;
+
+  //variables of electron id
+  double sigmaIetaIeta[nMaxCand], deltaPhiSuperClusterTrackAtVtx[nMaxCand], deltaEtaSuperClusterTrackAtVtx[nMaxCand], hadronicOverEm[nMaxCand], numberOfHits[nMaxCand], dxy[nMaxCand], dz[nMaxCand], ecalDriven[nMaxCand];
 
 };//end class AnalyzerEDBR 
 

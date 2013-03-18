@@ -510,7 +510,15 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("nbtagscleanL"     ,&nbtagscleanL   ,"nbtagscleanL[nCands]/D"  );
 	outTree_->Branch("nbtagscleanM"     ,&nbtagscleanM   ,"nbtagscleanM[nCands]/D"  );
 	outTree_->Branch("nbtagscleanT"     ,&nbtagscleanT   ,"nbtagscleanT[nCands]/D"  );
-	
+	outTree_->Branch("eleid_sigmaIetaIeta"     ,&sigmaIetaIeta   ,"eleid_sigmaIetaIeta[nCands]/D"  );
+	outTree_->Branch("eleid_deltaPhiSuperClusterTrackAtVtx"     ,&deltaPhiSuperClusterTrackAtVtx   ,"eleid_deltaPhiSuperClusterTrackAtVtx[nCands]/D"  );
+	outTree_->Branch("eleid_deltaEtaSuperClusterTrackAtVtx"     ,&deltaEtaSuperClusterTrackAtVtx   ,"eleid_deltaEtaSuperClusterTrackAtVtx[nCands]/D"  );
+	outTree_->Branch("eleid_hadronicOverEm"     ,&hadronicOverEm   ,"eleid_hadronicOverEm[nCands]/D"  );
+	outTree_->Branch("eleid_numberOfHits"     ,&numberOfHits   ,"eleid_numberOfHits[nCands]/D"  );
+	outTree_->Branch("eleid_dxy"     ,&dxy   ,"eleid_dxy[nCands]/D"  );
+	outTree_->Branch("eleid_dz"     ,&dz   ,"eleid_dz[nCands]/D"  );
+	outTree_->Branch("eleid_ecalDriven"     ,&ecalDriven   ,"eleid_ecalDriven[nCands]/D"  );	
+
 	outTree_->Branch("Ngen"            ,&Ngen_         ,"Ngen/I"                 );
 	outTree_->Branch("xsec"            ,&xsec_         ,"xsec/D"                 );
 
@@ -570,6 +578,8 @@ void AnalyzerEDBR::initDataMembers(){
 		nbtagsT[i]=-99.; nbtagscleanT[i]=-99.;
 		isomu1mod[i]=-99.; isomu2mod[i]=-99.; 
 		isoele1trk[i]=-99.; isoele2trk[i]=-99.; isoele1calo[i]=-99.; isoele2calo[i]=-99.;
+		sigmaIetaIeta[i]=-99., deltaPhiSuperClusterTrackAtVtx[i]=-99., deltaEtaSuperClusterTrackAtVtx[i]=-99., hadronicOverEm[i]=-99., numberOfHits[i]=-99., dxy[i]=-99., dz[i]=-99., ecalDriven[i]=-99.;
+		nXjets[i]=-99.;	
 	} 
 
 
