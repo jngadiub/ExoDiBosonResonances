@@ -4,13 +4,15 @@ SAMPLE_Run2012MU=( SingleMu_Run2012A_13Jul2012  SingleMu_Run2012A_recover Single
 SAMPLE_Run2012ELE=(SingleElectron_Run2012A_13Jul2012 SingleElectron_Run2012A_recover SingleElectron_Run2012B_13Jul2012 SingleElectron_Run2012C_24Aug2012 SingleElectron_Run2012C_EcalRecove  SingleElectron_Run2012C_PromptReco SingleElectron_Run2012D_PromptReco  )
 
 
-SAMPLE_MC1=( TTBAR WW WZ ZZ WJetsPt50To70 WJetsPt70To100 WJetsPt100 DYJetsPt50To70 DYJetsPt70To100  DYJetsPt100 SingleTopBarSchannel SingleTopBarTWchannel SingleTopBarTchannel SingleTopSchannel SingleTopTWchannel SingleTopTchannel )  # MC background
+SAMPLE_MC1=( TTBAR TTBARpowheg WW WZ ZZ WJetsPt50To70 WJetsPt70To100 WJetsPt100 DYJetsPt50To70 DYJetsPt70To100  DYJetsPt100 SingleTopBarSchannel SingleTopBarTWchannel SingleTopBarTchannel SingleTopSchannel SingleTopTWchannel SingleTopTchannel )  # MC background
 SAMPLE_MC2=( BulkG_WW_lvjj_c1p0_M1000  BulkG_WW_lvjj_c1p0_M600 BulkG_WW_lvjj_c1p0_M1500   RSG_WW_lvjj_c0p2_M1000  RSG_WW_lvjj_c0p2_M600 RSG_WW_lvjj_c0p2_M1500 BulkG_WW_lvjj_c0p2_M1000 BulkG_WW_lvjj_c0p2_M1100  BulkG_WW_lvjj_c0p2_M1200 BulkG_WW_lvjj_c0p2_M1300 BulkG_WW_lvjj_c0p2_M1400 BulkG_WW_lvjj_c0p2_M1500 BulkG_WW_lvjj_c0p2_M1600 BulkG_WW_lvjj_c0p2_M1700 BulkG_WW_lvjj_c0p2_M1800 BulkG_WW_lvjj_c0p2_M1900 BulkG_WW_lvjj_c0p2_M2000 BulkG_WW_lvjj_c0p2_M2100 BulkG_WW_lvjj_c0p2_M2200 BulkG_WW_lvjj_c0p2_M2300 BulkG_WW_lvjj_c0p2_M2400 BulkG_WW_lvjj_c0p2_M2500 BulkG_WW_lvjj_c0p2_M600 BulkG_WW_lvjj_c0p2_M700 BulkG_WW_lvjj_c0p2_M800 BulkG_WW_lvjj_c0p2_M900 ) #MC signal: JHUGrav300 
-OUTPATHBASE="/store/user/shuai/ExoDiBosonResonances/CMGtuple/production0312/"
+
+#OUTPATHBASE="/store/user/shuai/ExoDiBosonResonances/CMGtuple/production0312/"
+OUTPATHBASE="/store/cmst3/user/santanas/ExoDiBosonResonances/CMGtuple/production0312/"
 OUTPATHDATA=${OUTPATHBASE}/Run2012/CA8/
-OUTLOGPATHDATA=production0312_shuai/Run2012/CA8/
+OUTLOGPATHDATA=production0312/Run2012/CA8/
 OUTPATHMC=${OUTPATHBASE}/Summer12/CA8/
-OUTLOGPATHMC=production0312_shuai/Summer12/CA8/
+OUTLOGPATHMC=production0312/Summer12/CA8/
 
 cmsMkdir $OUTPATHMC
 cmsMkdir $OUTPATHDATA
