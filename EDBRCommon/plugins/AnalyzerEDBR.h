@@ -433,6 +433,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       eleMVAId1[ih] = edbr->leg1().leg2().mvaTrigV0(); 
       eleMVAId2[ih] = edbr->leg1().leg1().mvaTrigV0();
     }
+
+	//electron id variables
 	sigmaIetaIeta[ih]=edbr->leg1().leg1().sigmaIetaIeta();
 	deltaPhiSuperClusterTrackAtVtx[ih]=edbr->leg1().leg1().deltaPhiSuperClusterTrackAtVtx();
 	deltaEtaSuperClusterTrackAtVtx[ih]=edbr->leg1().leg1().deltaEtaSuperClusterTrackAtVtx();
@@ -441,6 +443,23 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 	dxy[ih]=edbr->leg1().leg1().dxy();
 	dz[ih]=edbr->leg1().leg1().dz(); 
 	ecalDriven[ih]=edbr->leg1().leg1().ecalDriven();
+	convDist[ih]=edbr->leg1().leg1().convDist();
+	convDcot[ih]=edbr->leg1().leg1().convDcot();
+	isConv[ih]=edbr->leg1().leg1().isConv();
+	passConversionVeto[ih]=edbr->leg1().leg1().passConversionVeto();
+	
+	/*
+	cout<<"missing hits: "<<edbr->leg1().leg1().sourcePtr()->get()->gsfTrack().get()->trackerExpectedHitsInner().numberOfLostHits()<<endl;
+	cout<<"e2x5Max: "<<edbr->leg1().leg1().sourcePtr()->get()->e2x5Max()<<endl;
+	cout<<"e5x5: "<<edbr->leg1().leg1().sourcePtr()->get()->e5x5()<<endl;
+	*/
+	
+	numberOfLostHits[ih]=edbr->leg1().leg1().sourcePtr()->get()->gsfTrack().get()->trackerExpectedHitsInner().numberOfLostHits();
+	e1x5[ih]=edbr->leg1().leg1().sourcePtr()->get()->e1x5();
+	e2x5Max[ih]=edbr->leg1().leg1().sourcePtr()->get()->e2x5Max();
+	e5x5[ih]=edbr->leg1().leg1().sourcePtr()->get()->e5x5();
+	e1x5Over5x5[ih] = (e5x5[ih]!=0 ? e1x5[ih]/e5x5[ih] : 0.);
+	e2x5MaxOver5x5[ih] = (e5x5[ih]!=0 ? e2x5Max[ih]/e5x5[ih] : 0.);
 
     if(debug_)    std::cout<<"leg1.eleMVA="<<eleMVAId1[ih]<<"  leg2.eleMVA="<<eleMVAId2[ih]<<std::endl;
   }//end analyzeElectron
@@ -581,7 +600,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   int nEvt;
 
   //variables of electron id
-  double sigmaIetaIeta[nMaxCand], deltaPhiSuperClusterTrackAtVtx[nMaxCand], deltaEtaSuperClusterTrackAtVtx[nMaxCand], hadronicOverEm[nMaxCand], numberOfHits[nMaxCand], dxy[nMaxCand], dz[nMaxCand], ecalDriven[nMaxCand];
+  double sigmaIetaIeta[nMaxCand], deltaPhiSuperClusterTrackAtVtx[nMaxCand], deltaEtaSuperClusterTrackAtVtx[nMaxCand], hadronicOverEm[nMaxCand], numberOfHits[nMaxCand], dxy[nMaxCand], dz[nMaxCand], ecalDriven[nMaxCand],convDist[nMaxCand],convDcot[nMaxCand],isConv[nMaxCand], passConversionVeto[nMaxCand];
+  double numberOfLostHits[nMaxCand],  e1x5[nMaxCand], e2x5Max[nMaxCand], e5x5[nMaxCand], e1x5Over5x5[nMaxCand], e2x5MaxOver5x5[nMaxCand];
 
 };//end class AnalyzerEDBR 
 

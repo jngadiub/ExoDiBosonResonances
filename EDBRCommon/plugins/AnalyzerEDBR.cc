@@ -518,7 +518,16 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("eleid_dxy"     ,&dxy   ,"eleid_dxy[nCands]/D"  );
 	outTree_->Branch("eleid_dz"     ,&dz   ,"eleid_dz[nCands]/D"  );
 	outTree_->Branch("eleid_ecalDriven"     ,&ecalDriven   ,"eleid_ecalDriven[nCands]/D"  );	
-
+	outTree_->Branch("eleid_convDist"     ,&convDist   ,"eleid_convDist[nCands]/D"  );	
+	outTree_->Branch("eleid_convDcot"     ,&convDcot   ,"eleid_convDcot[nCands]/D"  );	
+	outTree_->Branch("eleid_isConv"     ,&isConv   ,"eleid_isConv[nCands]/D"  );
+	outTree_->Branch("eleid_passConversionVeto"     ,&passConversionVeto   ,"eleid_passConversionVeto[nCands]/D"  );
+	outTree_->Branch("eleid_numberOfLostHits"     ,&numberOfLostHits   ,"eleid_numberOfLostHits[nCands]/D"  );
+	outTree_->Branch("eleid_e1x5"     ,&e1x5   ,"eleid_e1x5[nCands]/D"  );
+	outTree_->Branch("eleid_e2x5Max"     ,&e2x5Max   ,"eleid_e2x5Max[nCands]/D"  );
+	outTree_->Branch("eleid_e5x5"     ,&e5x5   ,"eleid_e5x5[nCands]/D"  );
+	outTree_->Branch("eleid_e1x5Over5x5"     ,&e1x5Over5x5   ,"eleid_e1x5Over5x5[nCands]/D"  );
+	outTree_->Branch("eleid_e2x5MaxOver5x5"     ,&e2x5MaxOver5x5   ,"eleid_e2x5MaxOver5x5[nCands]/D"  );
 	outTree_->Branch("Ngen"            ,&Ngen_         ,"Ngen/I"                 );
 	outTree_->Branch("xsec"            ,&xsec_         ,"xsec/D"                 );
 
@@ -578,7 +587,8 @@ void AnalyzerEDBR::initDataMembers(){
 		nbtagsT[i]=-99.; nbtagscleanT[i]=-99.;
 		isomu1mod[i]=-99.; isomu2mod[i]=-99.; 
 		isoele1trk[i]=-99.; isoele2trk[i]=-99.; isoele1calo[i]=-99.; isoele2calo[i]=-99.;
-		sigmaIetaIeta[i]=-99., deltaPhiSuperClusterTrackAtVtx[i]=-99., deltaEtaSuperClusterTrackAtVtx[i]=-99., hadronicOverEm[i]=-99., numberOfHits[i]=-99., dxy[i]=-99., dz[i]=-99., ecalDriven[i]=-99.;
+		sigmaIetaIeta[i]=-99., deltaPhiSuperClusterTrackAtVtx[i]=-99., deltaEtaSuperClusterTrackAtVtx[i]=-99., hadronicOverEm[i]=-99., numberOfHits[i]=-99., dxy[i]=-99., dz[i]=-99., ecalDriven[i]=-99.,convDist[i]=-99., convDcot[i]=-99., isConv[i]=-99.,passConversionVeto[i]=-99.;
+		numberOfLostHits[i]=-99.,  e1x5[i]=-99., e2x5Max[i]=-99., e5x5[i]=-99., e1x5Over5x5[i]=-99., e2x5MaxOver5x5[i]=-99.;
 		nXjets[i]=-99.;	
 	} 
 
