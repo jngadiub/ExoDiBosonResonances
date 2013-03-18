@@ -708,20 +708,20 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("eleid_deltaPhiSuperClusterTrackAtVtx",50,-0.07,0.07);
 	hs.setHisto("eleid_deltaEtaSuperClusterTrackAtVtx",50,-0.008,0.008);
 	hs.setHisto("eleid_hadronicOverEm",50,0,0.06);
-	hs.setHisto("eleid_numberOfHits",5,0,5);
+	hs.setHisto("eleid_numberOfHits",5,0,3);
 	hs.setHisto("eleid_dxy",50,-0.1,0.1);
 	hs.setHisto("eleid_dz",50,-0.4,0.4);
 	hs.setHisto("eleid_ecalDriven",3,0,3);
-	hs.setHisto("eleid_convDist",50,0,1);
-	hs.setHisto("eleid_convDcot",50,0,1);
+	hs.setHisto("eleid_convDist",50,-1,1);
+	hs.setHisto("eleid_convDcot",50,-1,1);
 	hs.setHisto("eleid_isConv",3,0,3);
 	hs.setHisto("eleid_passConversionVeto",3,0,3);
 	hs.setHisto("eleid_numberOfLostHits",3,0,3);  
 	hs.setHisto("eleid_e1x5",100,0,2000); 
 	hs.setHisto("eleid_e2x5Max",100,0,2000); 
 	hs.setHisto("eleid_e5x5",100,0,2000); 
-	hs.setHisto("eleid_e1x5Over5x5",50,0,2); 
-	hs.setHisto("eleid_e2x5MaxOver5x5",50,0,2);
+	hs.setHisto("eleid_e1x5Over5x5",50,0.2,1.4); 
+	hs.setHisto("eleid_e2x5MaxOver5x5",50,0.2,1.4);
 
 
 	char buffer[256];
@@ -945,12 +945,12 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					else continue;
 
 
-					//if(met<60);
+					//if(met>100);
 					//else continue;
 
 					//b veto cut
-					//if(nbtagsM[ivec]==0) ;
-					//else continue;
+					if(nbtagsM[ivec]==0) ;
+					else continue;
 
 					//b cut - ttbar control region
 					//if(nbtagscleanT[ivec]>=1) ;
