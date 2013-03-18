@@ -45,7 +45,7 @@ void loopPlot(){
 
   /// Path to wherever the files with the trees are. 
   //CA8 (cmgTuple_08032013_CA8)
-  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7/fullallrange/";
+  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/fullallrange/";
   //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/fullsig/";
   //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/merged/";
 
@@ -83,8 +83,9 @@ void loopPlot(){
 				 "SingleElectron_Run2012C_PromptReco_xww",
 				 "SingleElectron_Run2012C_EcalRecove_xww",
 				 "SingleElectron_Run2012D_PromptReco_xww"};  
+
 /*
-  const int nDATA=7;//set to zero if you don't want to plot
+   const int nDATA=7;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"SingleMu_Run2012A_13Jul2012_xww",
                  "SingleMu_Run2012A_recover_xww",
                  "SingleMu_Run2012B_13Jul2012_xww",
@@ -93,7 +94,7 @@ void loopPlot(){
                  "SingleMu_Run2012C_EcalRecove_xww",
                  "SingleMu_Run2012D_PromptReco_xww"};
 */
-  /*    
+/*    
   const int nDATA=0;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={};
   */

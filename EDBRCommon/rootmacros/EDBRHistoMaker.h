@@ -16,17 +16,17 @@
 /// information of all our histograms.
 
 class HistoFactory{
- public:
-  std::vector<std::string> vars;
-  std::vector<int> nBins;
-  std::vector<double> minBin;
-  std::vector<double> maxBin;
-  void setHisto(std::string s, int n, double min, double max) {
-    vars.push_back(s);
-    nBins.push_back(n);
-    minBin.push_back(min);
-    maxBin.push_back(max);
-  }
+	public:
+		std::vector<std::string> vars;
+		std::vector<int> nBins;
+		std::vector<double> minBin;
+		std::vector<double> maxBin;
+		void setHisto(std::string s, int n, double min, double max) {
+			vars.push_back(s);
+			nBins.push_back(n);
+			minBin.push_back(min);
+			maxBin.push_back(max);
+		}
 };
 
 /// EDBRHistoMaker is the class that analyzes the flat
@@ -169,6 +169,24 @@ class EDBRHistoMaker {
 		Double_t        nbtagscleanL[99];  //[nCands]
 		Double_t        nbtagscleanM[99];  //[nCands]
 		Double_t        nbtagscleanT[99];  //[nCands]
+		Double_t        eleid_sigmaIetaIeta[99];  //[nCands] 
+		Double_t        eleid_deltaPhiSuperClusterTrackAtVtx[99];  //[nCands] 
+		Double_t        eleid_deltaEtaSuperClusterTrackAtVtx[99];  //[nCands] 
+		Double_t        eleid_hadronicOverEm[99];  //[nCands] 
+		Double_t        eleid_numberOfHits[99];  //[nCands] 
+		Double_t        eleid_dxy[99];  //[nCands] 
+		Double_t        eleid_dz[99];  //[nCands] 
+		Double_t        eleid_ecalDriven[99];  //[nCands]
+		Double_t        eleid_convDist[99];  //[nCands]
+		Double_t        eleid_convDcot[99];  //[nCands]
+		Double_t        eleid_isConv[99];  //[nCands]
+		Double_t        eleid_passConversionVeto[99];  //[nCands]
+		Double_t        eleid_numberOfLostHits[99];  //[nCands]  
+		Double_t        eleid_e1x5[99];  //[nCands] 
+		Double_t        eleid_e2x5Max[99];  //[nCands] 
+		Double_t        eleid_e5x5[99];  //[nCands] 
+		Double_t        eleid_e1x5Over5x5[99];  //[nCands] 
+		Double_t        eleid_e2x5MaxOver5x5[99];  //[nCands]
 
 		// List of branches
 		TBranch        *b_nCands;   //!
@@ -500,6 +518,25 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("nbtagscleanL",nbtagscleanL);
 	fChain->SetBranchAddress("nbtagscleanM",nbtagscleanM);
 	fChain->SetBranchAddress("nbtagscleanT",nbtagscleanT);
+
+	fChain->SetBranchAddress("eleid_sigmaIetaIeta",eleid_sigmaIetaIeta);
+	fChain->SetBranchAddress("eleid_deltaPhiSuperClusterTrackAtVtx",eleid_deltaPhiSuperClusterTrackAtVtx);
+	fChain->SetBranchAddress("eleid_deltaEtaSuperClusterTrackAtVtx",eleid_deltaEtaSuperClusterTrackAtVtx);
+	fChain->SetBranchAddress("eleid_hadronicOverEm",eleid_hadronicOverEm);
+	fChain->SetBranchAddress("eleid_dxy",eleid_dxy);
+	fChain->SetBranchAddress("eleid_dz",eleid_dz);
+	fChain->SetBranchAddress("eleid_numberOfHits",eleid_numberOfHits);
+	fChain->SetBranchAddress("eleid_ecalDriven",eleid_ecalDriven);
+	fChain->SetBranchAddress("eleid_convDist",eleid_convDist);
+	fChain->SetBranchAddress("eleid_convDcot",eleid_convDcot);
+	fChain->SetBranchAddress("eleid_isConv",eleid_isConv);
+	fChain->SetBranchAddress("eleid_passConversionVeto",eleid_passConversionVeto);
+	fChain->SetBranchAddress("eleid_numberOfLostHits",eleid_numberOfLostHits);
+	fChain->SetBranchAddress("eleid_e1x5",eleid_e1x5);
+	fChain->SetBranchAddress("eleid_e2x5Max",eleid_e2x5Max);
+	fChain->SetBranchAddress("eleid_e5x5",eleid_e5x5);
+	fChain->SetBranchAddress("eleid_e1x5Over5x5",eleid_e1x5Over5x5);
+	fChain->SetBranchAddress("eleid_e2x5MaxOver5x5",eleid_e2x5MaxOver5x5);
 }
 
 EDBRHistoMaker::EDBRHistoMaker(TTree* tree, 
@@ -511,14 +548,14 @@ EDBRHistoMaker::EDBRHistoMaker(TTree* tree,
 		int  wantNXJets,
 		bool isZZchannel){
 	fChain = 0;
-	
+
 	/*
 	// Definition of regions
 	sidebandVHMassLow_  =  0.0;  // GeV
 	sidebandVHMassHigh_ =  70.0; // GeV
 	signalVHMassLow_    =  70.0; // GeV
 	signalVHMassHigh_   = 105.0; // GeV
-	*/
+	 */
 
 	// Which category do we want to analyze?
 	wantElectrons_ = wantElectrons;
@@ -563,10 +600,10 @@ Long64_t EDBRHistoMaker::LoadTree(Long64_t entry) {
 
 void EDBRHistoMaker::createAllHistos() {
 
-        /// This part substitutes the big arrays that used to be 
-        /// in the beginning of this file.
-        /// Much simpler to create histos now: just add them to
-        /// hs with hs.setHisto(name,nbins,min,max);
+	/// This part substitutes the big arrays that used to be 
+	/// in the beginning of this file.
+	/// Much simpler to create histos now: just add them to
+	/// hs with hs.setHisto(name,nbins,min,max);
 	hs.setHisto("nCands",30,-0.5,29.5);
 	hs.setHisto("cosThetaStar",100,-1.15,1.15);
 	hs.setHisto("cosTheta1",100,-1.15,1.15);
@@ -662,8 +699,30 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("deltaR_LJ",40,0,10);
 	hs.setHisto("deltaPhi_JMET",40,0,4);
 	hs.setHisto("deltaPhi_JWL",40,0,4);
+	hs.setHisto("deltaPhi_LJ",40,0,4);
 	hs.setHisto("nAK5jets",10,0,10);
 	hs.setHisto("deltaPhi_LMET",40,0,4);
+	hs.setHisto("ptLoverJ",50,0,1.5);
+
+	hs.setHisto("eleid_sigmaIetaIeta",50,0,0.04);
+	hs.setHisto("eleid_deltaPhiSuperClusterTrackAtVtx",50,-0.07,0.07);
+	hs.setHisto("eleid_deltaEtaSuperClusterTrackAtVtx",50,-0.008,0.008);
+	hs.setHisto("eleid_hadronicOverEm",50,0,0.06);
+	hs.setHisto("eleid_numberOfHits",5,0,5);
+	hs.setHisto("eleid_dxy",50,-0.1,0.1);
+	hs.setHisto("eleid_dz",50,-0.4,0.4);
+	hs.setHisto("eleid_ecalDriven",3,0,3);
+	hs.setHisto("eleid_convDist",50,0,1);
+	hs.setHisto("eleid_convDcot",50,0,1);
+	hs.setHisto("eleid_isConv",3,0,3);
+	hs.setHisto("eleid_passConversionVeto",3,0,3);
+	hs.setHisto("eleid_numberOfLostHits",3,0,3);  
+	hs.setHisto("eleid_e1x5",100,0,2000); 
+	hs.setHisto("eleid_e2x5Max",100,0,2000); 
+	hs.setHisto("eleid_e5x5",100,0,2000); 
+	hs.setHisto("eleid_e1x5Over5x5",50,0,2); 
+	hs.setHisto("eleid_e2x5MaxOver5x5",50,0,2);
+
 
 	char buffer[256];
 	char buffer2[256];
@@ -765,16 +824,16 @@ bool EDBRHistoMaker::eventPassesRegionCut(int i){
 	bool isInSignal   = eventInSignalRegion(i);
 	bool passesRegion = ((isInSideband and wantSideband_) or
 			(isInSignal and wantSignal_)) ;
-    if(wantFullRange_) passesRegion=1;
+	if(wantFullRange_) passesRegion=1;
 	return passesRegion;
 }
 
-bool  EDBRHistoMaker::eventPassesNXJetCut(int i){
-        if(wantNXJets_==-1)
-	  return true;
-	bool passesNXJ = (nXjets[i] == wantNXJets_);
-	return passesNXJ;
-}
+	bool  EDBRHistoMaker::eventPassesNXJetCut(int i){
+		if(wantNXJets_==-1)
+			return true;
+		bool passesNXJ = (nXjets[i] == wantNXJets_);
+		return passesNXJ;
+	}
 
 bool EDBRHistoMaker::eventPassesVBFCut(int i){
 
@@ -861,25 +920,34 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 		bool filled = 0;
 		for(int ivec=0;ivec<nCands;ivec++){
-		        // Remember: bool eventPassesCut(int i, double ptZll_threshold, double ptlep1_threshold );
+			// Remember: bool eventPassesCut(int i, double ptZll_threshold, double ptlep1_threshold );
 			if(eventPassesCut(ivec, 80, 20)){
 
 				//calculate "deltaPhi_JMET","deltaPhi_JWL","deltaR_LJ"
 				double deltaR_LJ = deltaR(etalep1[ivec],philep1[ivec],etajet1[ivec],phijet1[ivec]);
+				double deltaPhi_LJ   = deltaPhi(phijet1[ivec],philep1[ivec]);
 				double deltaPhi_JMET = deltaPhi(phijet1[ivec],philep2[ivec]);
 				double deltaPhi_JWL  = deltaPhi(phijet1[ivec],phiZll[ivec]); 
 				double deltaPhi_LMET = deltaPhi(philep1[ivec],philep2[ivec]);
+				double ptLoverJ      = ptlep1[ivec]/ptjet1[ivec];
+
 
 				if(isZZchannel_==0)//WW channel, veto second loose lepton
 				{
-					if( nLooseEle+nLooseMu==1 );//global selection
+					if( nLooseEle+nLooseMu==1 );//loose lepton veto selection
 					else continue;	
 
-					if(eventPassesCut(ivec, 200, 20));
+					if(eventPassesCut(ivec, 200, 20));//cut on WL pt
 					else continue;
-					
-					//if(mJJNoKinFit[ivec]>50);
+
+					//cut from fermilab
+					if(deltaR_LJ>1.57 && deltaPhi_JMET>2. && deltaPhi_JWL>2.);
+					else continue;
+
+
+					//if(met<60);
 					//else continue;
+
 					//b veto cut
 					//if(nbtagsM[ivec]==0) ;
 					//else continue;
@@ -927,6 +995,8 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["deltaPhi_JMET"])->Fill(deltaPhi_JMET,actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["deltaPhi_LMET"])->Fill(deltaPhi_LMET,actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["deltaPhi_JWL"])->Fill(deltaPhi_JWL,actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["deltaPhi_LJ"])->Fill(deltaPhi_LJ,actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["ptLoverJ"])->Fill(ptLoverJ,actualWeight);//printf("line number %i\n",__LINE__);
 
 				(theHistograms["ptlep1"])->Fill(ptlep1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["ptlep2"])->Fill(ptlep2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
@@ -963,19 +1033,36 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["VBFdeltaEta"])->Fill(VBFdeltaEta[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["mt"])->Fill(mt[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["lep"])->Fill(lep[ivec],actualWeight);//printf("line number %i\n",__LINE__);
-
+				(theHistograms["eleid_sigmaIetaIeta"])->Fill(eleid_sigmaIetaIeta[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_deltaPhiSuperClusterTrackAtVtx"])->Fill(eleid_deltaPhiSuperClusterTrackAtVtx[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_deltaEtaSuperClusterTrackAtVtx"])->Fill(eleid_deltaEtaSuperClusterTrackAtVtx[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_hadronicOverEm"])->Fill(eleid_hadronicOverEm[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_numberOfHits"])->Fill(eleid_numberOfHits[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_dxy"])->Fill(eleid_dxy[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_dz"])->Fill(eleid_dz[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_ecalDriven"])->Fill(eleid_ecalDriven[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_convDist"])->Fill(eleid_convDist[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_convDcot"])->Fill(eleid_convDcot[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_isConv"])->Fill(eleid_isConv[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_passConversionVeto"])->Fill(eleid_passConversionVeto[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_numberOfLostHits"])->Fill(eleid_numberOfLostHits[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_e1x5"])->Fill(eleid_e1x5[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_e2x5Max"])->Fill(eleid_e2x5Max[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_e5x5"])->Fill(eleid_e5x5[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_e1x5Over5x5"])->Fill(eleid_e1x5Over5x5[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_e2x5MaxOver5x5"])->Fill(eleid_e2x5MaxOver5x5[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				
 				/// Also, once per event we check if the event is interesting...
 				/// What's interesting?
 				/// * nCands > 10
 				/// * mZZ in the [1900,2100] range
 				if(false) {
-				  if(nCands>9)
-				    printf("High nCands events: nCands = %i, Run = %i, Lumi = %i, Event = %i\n",nCands,run,ls,event);
-				  if(mZZ[ivec] > 1900 and mZZ[ivec] < 2100)
-				    printf("Event around 2TeV: mZZ = %g, Run = %i, Lumi = %i, Event = %i\n",mZZ[ivec],run,ls,event);
+					if(nCands>9)
+						printf("High nCands events: nCands = %i, Run = %i, Lumi = %i, Event = %i\n",nCands,run,ls,event);
+					if(mZZ[ivec] > 1900 and mZZ[ivec] < 2100)
+						printf("Event around 2TeV: mZZ = %g, Run = %i, Lumi = %i, Event = %i\n",mZZ[ivec],run,ls,event);
 				}
-				
+
 				// (theHistograms[""])->Fill([ivec],actualWeight);
 				hmjmzz->Fill(mZZ[ivec],mJJ[ivec],actualWeight);
 
