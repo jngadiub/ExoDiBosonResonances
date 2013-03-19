@@ -24,7 +24,7 @@ double optimizer(){
 	bool wantSideband  = false; // Will make histograms for sideband region
 	bool wantSignal    = true; // Will make histograms for signal region
 	int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
-	bool isZZchannel   = true; 
+	bool isZZchannel   = false; 
 	int  flavour = 0; 
 	if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
 
@@ -34,7 +34,7 @@ double optimizer(){
 
 	/// Path to wherever the files with the trees are. 
 	//std::string pathToTrees="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsigCA8/";
-	std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/goodbtag/AK7/fullsig/";
+	std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/fullallrange/";
 
 	system("rm -rf CA8optimization");	
 	system("mkdir CA8optimization");
@@ -57,28 +57,29 @@ double optimizer(){
 	  "DYJetsPt70To100",
 	  "DYJetsPt100"};
 	*/	
-	
-	const int nMC=13;//set to zero if you don't want to plot
-	std::string mcLabels[nMC]={
-	  "TTBAR_xww",
-	  "SingleTopBarTWchannel_xww",
-	  "SingleTopTWchannel_xww",
-	  "SingleTopBarSchannel_xww", 
-	  "SingleTopSchannel_xww",
-	  "SingleTopBarTchannel_xww",
-	  "SingleTopTchannel_xww",
-	  "WW_xww",
-	  "WZ_xww",
-	  "ZZ_xww",
-	  "DYJetsPt50To70_xww",
-	  "DYJetsPt70To100_xww",
-	  "DYJetsPt100_xww",
-        
-	  ///     "WJetsPt50To70_xww",
-	  //  "WJetsPt70To100_xww",
-	  //"WJetsPt100_xww",
-	};
-	
+
+
+  const int nMC=16;//set to zero if you don't want to plot
+  std::string mcLabels[nMC]={//"TTBAR_xww",
+                 "TTBARpowheg_xww",
+                 "SingleTopBarTWchannel_xww",
+                 "SingleTopTWchannel_xww",
+                 "SingleTopBarSchannel_xww", 
+                 "SingleTopSchannel_xww",
+                 "SingleTopBarTchannel_xww",
+                 "SingleTopTchannel_xww",
+                 "WW_xww",
+                 "WZ_xww",
+                 "ZZ_xww",
+                 "DYJetsPt50To70_xww",
+                 "DYJetsPt70To100_xww",
+                 "DYJetsPt100_xww",
+                 "WJetsPt50To70_xww",
+                 "WJetsPt70To100_xww",
+                 "WJetsPt100_xww",
+                 };
+
+
 	std::vector<std::string> fMC;
 	for(int ii=0;ii<nMC;ii++){
 		fMC.push_back(pathToTrees+"treeEDBR_"+mcLabels[ii]+".root");
@@ -128,24 +129,47 @@ double optimizer(){
 
 	// The signal:
 	std::vector<int> massPoints;
+	/*
 	massPoints.push_back(600); 
-	//massPoints.push_back(700); 
-	//massPoints.push_back(800);
-	//massPoints.push_back(900); 
+	massPoints.push_back(700); 
+	massPoints.push_back(800);
+	massPoints.push_back(900); 
 	massPoints.push_back(1000); 
-	//massPoints.push_back(1100); 
-	//massPoints.push_back(1300); 
-	//massPoints.push_back(1400); 
+	massPoints.push_back(1100); 
+	massPoints.push_back(1300); 
+	massPoints.push_back(1400); 
 	massPoints.push_back(1500); 
-	//massPoints.push_back(1700); 
-	//massPoints.push_back(1800); 
-	//massPoints.push_back(1900);
+	massPoints.push_back(1700); 
+	massPoints.push_back(1800); 
+	massPoints.push_back(1900);
+	*/
+
+    massPoints.push_back(600); 
+    massPoints.push_back(700); 
+    massPoints.push_back(800);
+    massPoints.push_back(900); 
+    massPoints.push_back(1000); 
+    massPoints.push_back(1100); 
+	massPoints.push_back(1200); 
+    massPoints.push_back(1300); 
+    massPoints.push_back(1400); 
+    massPoints.push_back(1500); 
+	massPoints.push_back(1600); 
+    massPoints.push_back(1700); 
+    massPoints.push_back(1800); 
+    massPoints.push_back(1900);
+	massPoints.push_back(2000);
+	massPoints.push_back(2100);
+	massPoints.push_back(2200);
+	massPoints.push_back(2300);
+	massPoints.push_back(2400);
+	massPoints.push_back(2500);
 
 	for(size_t i=0; i!=massPoints.size(); ++i)
 	{
 		std::stringstream pathToSignal;
 		//pathToSignal << pathToTrees << "treeEDBR_BulkG_ZZ_lljj_c0p2_M"
-		pathToSignal << pathToTrees << "treeEDBR_BulkG_WW_lvjj_c1p0_M"
+		pathToSignal << pathToTrees << "treeEDBR_BulkG_WW_lvjj_c0p2_M"
 			<< massPoints.at(i) << "_xww.root";
 				//<< massPoints.at(i) << ".root";
 		printf("Running over %s\n",pathToSignal.str().c_str());

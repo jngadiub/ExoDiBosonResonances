@@ -85,8 +85,8 @@ class OptimizationMaker {
 		Double_t        puMvajet2[99];   //[nCands]
 		Double_t        prunedmass[99];   //[nCands]
 		Double_t        mdrop[99];   //[nCands]
-		Double_t        nsubj12[99];   //[nCands]
-		Double_t        nsubj23[99];   //[nCands]
+		Double_t        nsubj21[99];   //[nCands]
+		Double_t        nsubj32[99];   //[nCands]
 		Double_t        tau1[99];   //[nCands]
 		Double_t        tau2[99];   //[nCands]
 		Double_t        qjet[99];   //[nCands]
@@ -202,8 +202,8 @@ class OptimizationMaker {
 		TBranch        *b_puMvajet2;   //!
 		TBranch        *b_prunedmass;   //!
 		TBranch        *b_mdrop;   //!
-		TBranch        *b_nsubj12;   //!
-		TBranch        *b_nsubj23;   //!
+		TBranch        *b_nsubj21;   //!
+		TBranch        *b_nsubj32;   //!
 		TBranch        *b_tau1;   //!
 		TBranch        *b_tau2;   //!
 		TBranch        *b_qjet;   //!
@@ -269,6 +269,32 @@ class OptimizationMaker {
 		void createAllHistos();
 		void printAllHistos();
 		void saveAllHistos(std::string outFileName);
+
+        double deltaPhi(const double& phi1, const double& phi2)
+        {
+            double deltaphi = fabs(phi1 - phi2);
+            if (deltaphi > 3.141592654) deltaphi = 6.283185308 - deltaphi;
+            return deltaphi;
+        }
+
+        //  ------------------------------------------------------------
+
+        double deltaEta(const double& eta1, const double& eta2)
+        {
+            double deltaeta = fabs(eta1 - eta2);
+            return deltaeta;
+        }
+
+        //  ------------------------------------------------------------
+
+        double deltaR(const double& eta1, const double& phi1,
+                const double& eta2, const double& phi2)
+        {
+            double deltaphi = deltaPhi(phi1, phi2);
+            double deltaeta = deltaEta(eta1, eta2);
+            double deltar = sqrt(deltaphi*deltaphi + deltaeta*deltaeta);
+            return deltar;
+        }
 
 		void setWantElectrons(bool doele=false){wantElectrons_=doele;}
 		void setWantMuons(bool domu=false){wantMuons_=domu;}
@@ -375,8 +401,8 @@ void OptimizationMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("puMvajet2", puMvajet2, &b_puMvajet2);
 	fChain->SetBranchAddress("prunedmass", prunedmass, &b_prunedmass);
 	fChain->SetBranchAddress("mdrop", mdrop, &b_mdrop);
-	fChain->SetBranchAddress("nsubj12", nsubj12, &b_nsubj12);
-	fChain->SetBranchAddress("nsubj23", nsubj23, &b_nsubj23);
+	fChain->SetBranchAddress("nsubj21", nsubj21, &b_nsubj21);
+	fChain->SetBranchAddress("nsubj32", nsubj32, &b_nsubj32);
 	fChain->SetBranchAddress("tau1", tau1, &b_tau1);
 	fChain->SetBranchAddress("tau2", tau2, &b_tau2);
 	fChain->SetBranchAddress("qjet", qjet, &b_qjet);
@@ -501,7 +527,7 @@ void OptimizationMaker::createAllHistos() {
 	
 	histo = new TH2D("histogram","nsubj21XmZZ",
 			 40,0,1,
-			 40,0,2000
+			 60,0,3000
 			 );
 
 	histo->SetDirectory(0);
@@ -655,10 +681,19 @@ void OptimizationMaker::Loop(std::string outFileName, double massPoint, double p
 		for(int ivec=0;ivec<nCands;ivec++){
 		  
 		  if(eventPassesCut(ivec, 80, 20)){
+
+                double deltaR_LJ = deltaR(etalep1[ivec],philep1[ivec],etajet1[ivec],phijet1[ivec]);
+                double deltaPhi_JMET = deltaPhi(phijet1[ivec],philep2[ivec]);
+                double deltaPhi_JWL  = deltaPhi(phijet1[ivec],phiZll[ivec]); 
+
                 if(isZZchannel_==false)//WW channel, veto second loose lepton
                 {   
                     if( (nLooseEle+nLooseMu==1) && ptZjj[ivec]>200 );//global selection
                     else continue;  
+
+                    //cut from fermilab
+                    if(deltaR_LJ>1.57 && deltaPhi_JMET>2. && deltaPhi_JWL>2.);
+                    else continue;
 
                     //b veto cut
                     if(nbtagsM[ivec]==0) ;
@@ -669,11 +704,11 @@ void OptimizationMaker::Loop(std::string outFileName, double massPoint, double p
                     //else continue;
 
                     //nsubjettiness cut
-                    //double nsubjett = 1.0/nsubj12[ivec];
+                    //double nsubjett = 1.0/nsubj21[ivec];
                     //if(nsubjett<0.4) ;
                     //else continue;
                 }   			
-		    histo->Fill(1.0/nsubj12[ivec],mZZ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+		    histo->Fill(nsubj21[ivec],mZZ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
   			//histo->Fill(qjet[ivec],mZZ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 		  }//end if eventPassesCut
 		}//end loop over nCands
