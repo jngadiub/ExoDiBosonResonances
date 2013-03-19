@@ -165,6 +165,10 @@ elif "BulkG_ZZ_lljj_c0p2_M1100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(9358)
     process.ANEDBR.xsec=cms.double(4.40e-05) ### Checked
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M1200" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(40040)
+    process.ANEDBR.xsec=cms.double(2.35e-05) ### Checked
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_ZZ_lljj_c0p2_M1300" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(8360)
     process.ANEDBR.xsec=cms.double(1.31e-05) ### Checked
@@ -177,6 +181,10 @@ elif "BulkG_ZZ_lljj_c0p2_M1500" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(9356)
     process.ANEDBR.xsec=cms.double(4.35e-06) ### Checked
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M1600" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(40040)
+    process.ANEDBR.xsec=cms.double(2.59e-06) ### Checked
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_ZZ_lljj_c0p2_M1700" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(8009)
     process.ANEDBR.xsec=cms.double(1.57e-06) ### Checked
@@ -188,6 +196,10 @@ elif "BulkG_ZZ_lljj_c0p2_M1800" in "<SAMPLE>" :
 elif "BulkG_ZZ_lljj_c0p2_M1900" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(9355)
     process.ANEDBR.xsec=cms.double(6.03e-07) ### Checked
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M2000" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(40040)
+    process.ANEDBR.xsec=cms.double(3.79e-07) ### Checked
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 ###### RS Graviton, ZZ, c = 0.05
 elif "RSG_ZZ_lljj_c0p05_M1000" in "<SAMPLE>" :
