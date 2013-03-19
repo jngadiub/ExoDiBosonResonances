@@ -93,7 +93,7 @@ edbrtags2J =  cms.PSet( vbfDoubleJet = cms.PSet( vbf = vbfString,
                         ###same as above: 1J flags are dummy (will always be false) for the 2J case,
                         ### the important thing is that they are there
                         vbfSingleJetHP = cms.PSet( kine = kineString1Jet),
-                        SingleJetLP = cms.PSet( kine = kineString1Jet),
+                        SingleJetHP = cms.PSet( kine = kineString1Jet),
                         vbfSingleJetLP = cms.PSet( kine = kineString1Jet),
                         SingleJetLP = cms.PSet( kine = kineString1Jet),
                         vbfSingleJetSBHP = cms.PSet( kine = kineString1Jet),
