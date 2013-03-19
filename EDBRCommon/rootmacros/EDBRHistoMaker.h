@@ -716,6 +716,7 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("eleid_convDcot",50,-1,1);
 	hs.setHisto("eleid_isConv",3,0,3);
 	hs.setHisto("eleid_passConversionVeto",3,0,3);
+	hs.setHisto("eleid_passConversionVeto_old",3,0,3);
 	hs.setHisto("eleid_numberOfLostHits",3,0,3);  
 	hs.setHisto("eleid_e1x5",100,0,2000); 
 	hs.setHisto("eleid_e2x5Max",100,0,2000); 
@@ -931,6 +932,8 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				double deltaPhi_LMET = deltaPhi(philep1[ivec],philep2[ivec]);
 				double ptLoverJ      = ptlep1[ivec]/ptjet1[ivec];
 
+                double eleid_passConversionVeto_old=0;
+                if(fabs(eleid_convDist[ivec])>0.02 || fabs(eleid_convDcot[ivec])>0.02)eleid_passConversionVeto_old=1;
 
 				if(isZZchannel_==0)//WW channel, veto second loose lepton
 				{
@@ -943,14 +946,21 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//cut from fermilab
 					if(deltaR_LJ>1.57 && deltaPhi_JMET>2. && deltaPhi_JWL>2.);
 					else continue;
+					
+					//conversion veto
+					//if(eleid_passConversionVeto[ivec]==1);
+					//else continue;
+					//if(eleid_passConversionVeto_old==1);
+					//else continue;
+					//if(eleid_numberOfLostHits[ivec]==0);
+					//else continue;
 
-
-					//if(met>100);
+					//if(met<60);
 					//else continue;
 
 					//b veto cut
-					if(nbtagsM[ivec]==0) ;
-					else continue;
+					//if(nbtagsM[ivec]==0) ;
+					//else continue;
 
 					//b cut - ttbar control region
 					//if(nbtagscleanT[ivec]>=1) ;
@@ -1045,6 +1055,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["eleid_convDcot"])->Fill(eleid_convDcot[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["eleid_isConv"])->Fill(eleid_isConv[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["eleid_passConversionVeto"])->Fill(eleid_passConversionVeto[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["eleid_passConversionVeto_old"])->Fill(eleid_passConversionVeto_old,actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["eleid_numberOfLostHits"])->Fill(eleid_numberOfLostHits[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["eleid_e1x5"])->Fill(eleid_e1x5[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["eleid_e2x5Max"])->Fill(eleid_e2x5Max[ivec],actualWeight);//printf("line number %i\n",__LINE__);
