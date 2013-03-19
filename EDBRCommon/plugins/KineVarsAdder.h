@@ -151,20 +151,18 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 					(*(*newCand.leg1().leg1().sourcePtr())).userIso(2) ) / 
 				newCand.leg1().leg1().pt();
 		}
-
-#ifdef EDBRNEUTRINO
+		
+		/// This DOESN'T WORK. So just don't use the electron
+		/// isolations of the second leg. If you do, the wrath of
+		/// Maurizio will be unleashed upon thee.
+		/*
 		if(isleg2GoodEle) {
-			trkiso2 = -99;
-			caloiso2 = -99;
+		  trkiso2 = (*(*newCand.leg1().leg2().sourcePtr())).userIso(0);
+		  caloiso2 = ( (*(*newCand.leg1().leg2().sourcePtr())).userIso(1) + 
+			       (*(*newCand.leg1().leg2().sourcePtr())).userIso(2) ) / 
+		    newCand.leg1().leg2().pt();
 		}
-#else
-		if(isleg2GoodEle) {
-		        trkiso2 = (*(*newCand.leg1().leg2().sourcePtr())).userIso(0);
-			caloiso2 = ( (*(*newCand.leg1().leg2().sourcePtr())).userIso(1) + 
-				     (*(*newCand.leg1().leg2().sourcePtr())).userIso(2) ) / 
-			  newCand.leg1().leg2().pt();
-		}
-#endif
+		*/
 
 		/// Muon isolation:
 		//  Is just the tracker based isolation minus the other muon pt if it is deltaR < 0.3.
@@ -255,4 +253,5 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 
 
 }
+
 #endif
