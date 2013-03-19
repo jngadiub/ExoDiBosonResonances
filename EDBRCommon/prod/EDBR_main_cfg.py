@@ -10,11 +10,8 @@ process = cms.Process("CMG")
 ###########
 # Options #
 ###########
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents))
-###process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000))
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
-
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
@@ -31,12 +28,15 @@ process.load("JetMETCorrections.Configuration.JetCorrectionServicesAllAlgos_cff"
 # Input   #
 ###########
 
-
 fullname  = "ExoDiBosonResonances.EDBRCommon.datasets." + options.infile
 ###fullname  = "ExoDiBosonResonances.EDBRCommon.datasets.test_RSGZZ600_cff" 
 print 'Importing dataset from '
 print fullname
 process.load(fullname)
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents))
+###process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000))
+
 ##skip events with problem related to kinematic fit                    DYJetsToLL_PtZ-50To70              TTBar                    WJetsPt70To100
 process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:58698863"),cms.EventRange("1:11250208"),cms.EventRange("1:15386873"))
 ####for synch studies
