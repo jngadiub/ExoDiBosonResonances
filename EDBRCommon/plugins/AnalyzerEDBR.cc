@@ -72,19 +72,20 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
 	//use these for X->ZZ analysis
-	/*		
+			
+        /*
 	typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
 	typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
 	typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
-	typedef  cmg::DiMuonDiJetEDBR     cmgMuDiJetEDBR  ;
+	typedef  cmg::DiMuonDiJetEDBR         cmgMuDiJetEDBR  ;
 	*/
-	//use these for X->WW analysis
-			
-	typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
-	typedef  cmg::WmunuSingleJetEDBR     cmgMuSingleJetEDBR  ; 
-	typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
-	typedef  cmg::WmunuDiJetEDBR     cmgMuDiJetEDBR  ;
 
+	//use these for X->WW analysis
+        typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
+	typedef  cmg::WmunuSingleJetEDBR  cmgMuSingleJetEDBR  ; 
+	typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
+	typedef  cmg::WmunuDiJetEDBR      cmgMuDiJetEDBR  ;
+	
 	
 	nEvt++;
 
@@ -122,7 +123,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	edm::Handle<std::vector<cmg::PFJet> > ak5jets;
 	iEvent.getByLabel("jetAK5", ak5jets);
 	nak5jets=ak5jets->size();
-
+	
 	// GET MISSING ET
 	edm::Handle<edm::View<pat::MET> > metHandle;
 	iEvent.getByLabel("patMETs", metHandle);
@@ -528,6 +529,14 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("eleid_e5x5"     ,&e5x5   ,"eleid_e5x5[nCands]/D"  );
 	outTree_->Branch("eleid_e1x5Over5x5"     ,&e1x5Over5x5   ,"eleid_e1x5Over5x5[nCands]/D"  );
 	outTree_->Branch("eleid_e2x5MaxOver5x5"     ,&e2x5MaxOver5x5   ,"eleid_e2x5MaxOver5x5[nCands]/D"  );
+	
+	outTree_->Branch("muonid_globalMuon", &globalMuon, "muonid_globalMuon[nCands]/I");
+	outTree_->Branch("muonid_nTrackerLayers", &nTrackerLayers, "muonid_nTrackerLayers[nCands]/I");
+	outTree_->Branch("muonid_nPixelHits", &nPixelHits, "muonid_nPixelHits[nCands]/I");
+	outTree_->Branch("muonid_nMuonHits", &nMuonHits, "muonid_nMuonHits[nCands]/I");
+	outTree_->Branch("muonid_dXY", &muondXY, "muonid_muondXY[nCands]/D");
+	outTree_->Branch("muonid_dZ", &muondZ, "muonid_muondZ[nCands]/D");
+
 	outTree_->Branch("Ngen"            ,&Ngen_         ,"Ngen/I"                 );
 	outTree_->Branch("xsec"            ,&xsec_         ,"xsec/D"                 );
 
@@ -589,6 +598,9 @@ void AnalyzerEDBR::initDataMembers(){
 		isoele1trk[i]=-99.; isoele2trk[i]=-99.; isoele1calo[i]=-99.; isoele2calo[i]=-99.;
 		sigmaIetaIeta[i]=-99., deltaPhiSuperClusterTrackAtVtx[i]=-99., deltaEtaSuperClusterTrackAtVtx[i]=-99., hadronicOverEm[i]=-99., numberOfHits[i]=-99., dxy[i]=-99., dz[i]=-99., ecalDriven[i]=-99.,convDist[i]=-99., convDcot[i]=-99., isConv[i]=-99.,passConversionVeto[i]=-99.;
 		numberOfLostHits[i]=-99.,  e1x5[i]=-99., e2x5Max[i]=-99., e5x5[i]=-99., e1x5Over5x5[i]=-99., e2x5MaxOver5x5[i]=-99.;
+		globalMuon[i]=-99., nTrackerLayers[i]=-99., nPixelHits[i]=-99., nMuonHits[i]=-99., nMatches[i]=-99.;
+		muondXY[i]=-99., muondZ[i]=-99.;
+
 		nXjets[i]=-99.;	
 	} 
 

@@ -137,7 +137,7 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 		//     EDBRElectron/python/skims/selEventsElectrons_cfi.py
 		// It depends on the fact that electrons may be barrel or endcap, and their energies, etc.
 		// To first approximation, the cut is isolCalo < A + B*et,
-		// so we plot the variable isolCalo/et/
+		// so we plot the variable isolCalo/et.
 		float trkiso1=-99.0;
 		float trkiso2=-99.0;
 		float caloiso1=-99.0;

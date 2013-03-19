@@ -405,6 +405,35 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     isomu1mod[ih]=edbr->userFloat("isomu1mod");
     isomu2mod[ih]=edbr->userFloat("isomu2mod");
 
+    /// Let's add the muon ID here for Shuai!
+    /*
+    const pat::Muon* patMuonPtr = edbr->leg1().leg1().sourcePtr()->get();
+    const reco::Track* globalTrackPtr = patMuonPtr->globalTrack();
+    const reco::Track* innerTrackPtr = patMuonPtr->innerTrack();
+    int isGlobalMuon     = patMuonPtr->isGlobalMuon() ? 1 : 0;
+    int numTrackerLayers = innerTrackPtr->hitPattern().trackerLayersWithMeasurement();
+    int numPixelHits     = innerTrackPtr->hitPattern().numberOfValidPixelHits();
+    int numMuonHits      = globalTrackPtr->hitPattern().numberOfValidMuonHits();
+    int numMatches       = patMuonPtr->numberOfMatchedStations();
+    */
+    /// Easier life...
+    const cmg::Muon& cmgMuon = edbr->leg1().leg1();
+    int isGlobalMuon     = cmgMuon.isGlobalMuon() ? 1 : 0;
+    int numTrackerLayers = cmgMuon.trackerLayersWithMeasurement();
+    int numPixelHits     = cmgMuon.numberOfValidPixelHits();
+    int numMuonHits      = cmgMuon.numberOfValidMuonHits();
+    int numMatches       = cmgMuon.numberOfMatches();
+    double dXY           = fabs(cmgMuon.dxy());
+    double dZ            = fabs(cmgMuon.dz());
+
+    globalMuon[ih] = isGlobalMuon;
+    nTrackerLayers[ih] = numTrackerLayers;
+    nPixelHits[ih] = numPixelHits;
+    nMuonHits[ih] = numMuonHits;
+    nMatches[ih] = numMatches;
+    muondXY[ih] = dXY;
+    muondZ[ih] = dZ;
+
     //dummy for muons 
     eleMVAId1[ih] = -1.0;
     eleMVAId2[ih] = -1.0;
@@ -461,6 +490,15 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 	e1x5Over5x5[ih] = (e5x5[ih]!=0 ? e1x5[ih]/e5x5[ih] : 0.);
 	e2x5MaxOver5x5[ih] = (e5x5[ih]!=0 ? e2x5Max[ih]/e5x5[ih] : 0.);
 
+	// Muon ID variables are dummy for electrons
+	globalMuon[ih] = -1;
+	nTrackerLayers[ih] = -1;
+	nPixelHits[ih] = -1;
+	nMuonHits[ih] = -1;
+	nMatches[ih] = -1;
+	muondXY[ih] = -1;
+	muondZ[ih] = -1;
+	
     if(debug_)    std::cout<<"leg1.eleMVA="<<eleMVAId1[ih]<<"  leg2.eleMVA="<<eleMVAId2[ih]<<std::endl;
   }//end analyzeElectron
 
@@ -602,6 +640,10 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   //variables of electron id
   double sigmaIetaIeta[nMaxCand], deltaPhiSuperClusterTrackAtVtx[nMaxCand], deltaEtaSuperClusterTrackAtVtx[nMaxCand], hadronicOverEm[nMaxCand], numberOfHits[nMaxCand], dxy[nMaxCand], dz[nMaxCand], ecalDriven[nMaxCand],convDist[nMaxCand],convDcot[nMaxCand],isConv[nMaxCand], passConversionVeto[nMaxCand];
   double numberOfLostHits[nMaxCand],  e1x5[nMaxCand], e2x5Max[nMaxCand], e5x5[nMaxCand], e1x5Over5x5[nMaxCand], e2x5MaxOver5x5[nMaxCand];
+  
+  //variables of muon id
+  int globalMuon[nMaxCand], nTrackerLayers[nMaxCand], nPixelHits[nMaxCand], nMuonHits[nMaxCand], nMatches[nMaxCand];
+  double muondXY[nMaxCand], muondZ[nMaxCand];
 
 };//end class AnalyzerEDBR 
 
