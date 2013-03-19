@@ -10,13 +10,16 @@
 void absolute_eff()
 {
   //TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/goodbtag/AK7/fullsig/";
-	TString inputpath = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/fullsig/";
+	TString inputpath = "/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsigCA8/";
 	TString cut = "absolute_efficiency";
 	vector<TString> dataSamples;
 	vector<TString> bkgSamples;
 	vector<TString> sigSamples;
 
-	bool weightedeff = true;
+	bool weightedeff = false;
+	double lepCut=1.0;//0->ele 1->mu
+	double nxjCut=1.0;
+	double nsubjCut=0.45;
 
 	double lumi = 19538.85;
 /*
@@ -28,37 +31,37 @@ void absolute_eff()
 	dataSamples.push_back("SingleMu_Run2012D_PromptReco_xww");
 */
 
-	bkgSamples.push_back("TTBAR_xww");
-	bkgSamples.push_back("SingleTopBarTWchannel_xww");
-	bkgSamples.push_back("SingleTopTWchannel_xww");
-	bkgSamples.push_back("SingleTopBarSchannel_xww" );
-	bkgSamples.push_back("SingleTopSchannel_xww");
-	bkgSamples.push_back("SingleTopBarTchannel_xww");
-	bkgSamples.push_back("SingleTopTchannel_xww");			     
-	bkgSamples.push_back("WW_xww");
-	bkgSamples.push_back("WZ_xww");
-	bkgSamples.push_back("ZZ_xww");
-	bkgSamples.push_back("WJetsPt50To70_xww");
-	bkgSamples.push_back("WJetsPt70To100_xww");
-	bkgSamples.push_back("WJetsPt100_xww");
-	bkgSamples.push_back("DYJetsPt50To70_xww");
-	bkgSamples.push_back("DYJetsPt70To100_xww");
-	bkgSamples.push_back("DYJetsPt100_xww");
+	bkgSamples.push_back("TTBAR");  
+	bkgSamples.push_back("WW");
+	bkgSamples.push_back("WZ");
+	bkgSamples.push_back("ZZ");
+	bkgSamples.push_back("DYJetsPt50To70");
+	bkgSamples.push_back("DYJetsPt70To100");
+	bkgSamples.push_back("DYJetsPt100");
 
-	sigSamples.push_back("RSG_WW_lvjj_c0p2_M600_xww");
-	sigSamples.push_back("RSG_WW_lvjj_c0p2_M1000_xww");
-	sigSamples.push_back("RSG_WW_lvjj_c0p2_M1500_xww");
-	sigSamples.push_back("BulkG_WW_lvjj_c1p0_M600_xww");
-	sigSamples.push_back("BulkG_WW_lvjj_c1p0_M1000_xww");
-	sigSamples.push_back("BulkG_WW_lvjj_c1p0_M1500_xww");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M600");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M700");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M800");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M900");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1000");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1100");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1300");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1400");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1500");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1700");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1800");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1900");
 
-	int ndata = dataSamples.size();
-	int nbkg  = bkgSamples.size();
-	int nsig  = sigSamples.size();
+
+	const int ndata = dataSamples.size();
+	const int nbkg  = bkgSamples.size();
+	const int nsig  = sigSamples.size();
+	std::vector<double> sig_effs, sig_masses;
 
 	cout<<"data samples "<<ndata<<"  bkg samples "<<nbkg<<"  signal samples "<<nsig<<endl;	
 
 	TH1F * h1 = new TH1F (cut,cut,ndata+nbkg+nsig,0,ndata+nbkg+nsig);
+	TH1F * h1b = new TH1F ("HistFit","HistFitTitle",17,550,2250);
 	//h1->GetYaxis()->SetRangeUser(0,1);
 	h1->SetBit(TH1::kCanRebin);
 	h1->SetStats(0);
@@ -67,6 +70,9 @@ void absolute_eff()
 
 	TCanvas * c1 = new TCanvas();	
 
+	int indM=0;
+	double startM=600.0; double step=100.0;
+	
 	for(int i =0; i<ndata+nbkg+nsig; i++   )
 	{
 		TString filename;
@@ -82,16 +88,17 @@ void absolute_eff()
 		{
 			filename = "treeEDBR_"+bkgSamples.at(i-ndata)+".root";
 			samplename = bkgSamples.at(i-ndata);//TTBAR_xww
-			samplename.Remove(samplename.Length()-4,4);//TTBAR
+			//			samplename.Remove(samplename.Length()-4,4);//TTBAR
 		}
 		else if(i>=(ndata+nbkg)) 
 		{
 			filename = "treeEDBR_"+sigSamples.at(i-ndata-nbkg)+".root";
 			samplename = sigSamples.at(i-ndata-nbkg);//RSG_WW_lvjj_c0p2_M1500_xww,BulkG_WW_lvjj_c1p0_M1500_xww
-			samplename.Remove(samplename.Length()-4,4);//RSG_WW_lvjj_c0p2_M1500,BulkG_WW_lvjj_c1p0_M1500
+			//samplename.Remove(samplename.Length()-4,4);//RSG_WW_lvjj_c0p2_M1500,BulkG_WW_lvjj_c1p0_M1500
 			if(samplename.Contains("RSG"))samplename.Remove(4,8);//RSG_c0p2_M1500
 			if(samplename.Contains("BulkG"))samplename.Remove(6,8);//BulkG_c1p0_M1500
 		}
+		cout<<"\n\n----------------------"<<endl;
 		cout<<filename<<endl;
 		cout<<samplename<<endl;
 
@@ -130,6 +137,7 @@ void absolute_eff()
 		double LumiWeight=-1;
 		double GenWeight=-1;
 		double region[99];
+		double nsubj12[99];
 
 		tree->SetBranchAddress("Ngen", &Ngen);
 		tree->SetBranchAddress("xsec", &xsec);
@@ -150,6 +158,7 @@ void absolute_eff()
 		tree->SetBranchAddress("nXjets", nXjets);
 		tree->SetBranchAddress("lep", lep);
 		tree->SetBranchAddress("nCands", &nCands);
+		tree->SetBranchAddress("nsubj12", &nsubj12);
 
 		tree->SetBranchAddress("PUweight", &PUweight);
 		tree->SetBranchAddress("LumiWeight", &LumiWeight);
@@ -158,7 +167,6 @@ void absolute_eff()
 		
 	
 		bool filled = 0;
-
 		for(int j=0;j<entries;j++)
 		{
 			tree->GetEntry(j);
@@ -183,17 +191,18 @@ void absolute_eff()
 				if(filled==0)//cout the event as pass if any candidate pass all the cuts
 				{
 					//make cuts
-					if(lep[ivec]!=1.)continue;// 1 is for mu
+					if(lep[ivec]!=lepCut)continue;// 1 is for mu
 					if(region[ivec]!=1)continue;// 1 is mjj signal region
-					if((nLooseEle+nLooseMu)!=1)continue;
-					if(met<40)continue;
-					if(ptlep1[ivec]<50)continue;
-					if(etalep1[ivec]<-2.1)continue;
-					if(etalep1[ivec]>2.1)continue;
-					if(ptZll[ivec]<200)continue;
-					if(ptZjj[ivec]<200)continue;
-					if(nXjets[ivec]!=2)continue;// 1 jet candidate
-					if(nbtagsM[ivec]!=0)continue; //b-tag veto
+					//if((nLooseEle+nLooseMu)!=1)continue;
+					//if(met<40)continue;
+					//if(ptlep1[ivec]<50)continue;
+					//if(etalep1[ivec]<-2.1)continue;
+					//if(etalep1[ivec]>2.1)continue;
+					//if(ptZll[ivec]<200)continue;
+					//if(ptZjj[ivec]<200)continue;
+					if(nXjets[ivec]!=nxjCut)continue;// 1 jet candidate
+					//if(nbtagsM[ivec]!=0)continue; //b-tag veto
+					if(1.0/nsubj12[ivec]>nsubjCut)continue;
 
 					pass=pass+actualWeight;
 
@@ -210,6 +219,7 @@ void absolute_eff()
 		if(total!=0)
 		{
 			eff = (double)pass/(double)total;
+			
 		}
 
 		cout<<"crossSection: "<<crossSection<<" total: "<<total<<" pass: "<<pass<<" eff: "<<eff<<endl;
@@ -217,13 +227,43 @@ void absolute_eff()
 		
 		h1->Fill(samplename,eff);	
 
+		if(samplename.Contains("BulkG")){
+
+		  int binToFill=h1b->FindBin(indM*step+startM);
+		  cout<<"Filling IndM="<<indM<<"  M="<<indM*step+startM<<"  Bin#"<<binToFill<<"  Eff="<<eff<<endl;
+		  h1b->SetBinContent(binToFill,eff);
+		  sig_masses.push_back(indM*step+startM);
+		  sig_effs.push_back(eff);
+		  indM++;
+		  if(indM*step+startM==1200)indM++;
+		  if(indM*step+startM==1600)indM++;
+		}
 	}//end of sample loop
 
 	c1->SetGridy(1);
+
+	TF1 *fitPol1=new TF1("fitPoly1","[0]+[1]*x",1250,1950);
+	fitPol1->SetLineColor(kRed);
+	h1b->Fit(fitPol1,"R");
+
+	cout<<"\n\nEff extrapolated at 2000 GeV: "<<fitPol1->Eval(2000.0)<<endl;
 
 	h1->SetTitle(cut);
 	h1->Draw();
 	h1->Draw("TEXT0same");
 	c1->SaveAs(cut+".png");
+
+	TCanvas *c2=new TCanvas("cFit","cFit",800,800);
+	c2->cd();
+	h1b->SetMarkerStyle(20);
+	h1b->Draw("P");
+	fitPol1->Draw("Lsame");
+
+
+	cout<<"data samples "<<ndata<<"  bkg samples "<<nbkg<<"  signal samples "<<nsig<<endl;	
+	cout<<"\nEfficiencies for Lep="<<lepCut<<"  nXjets="<<nxjCut<<" : "<<endl;
+	for(int im=0;im<sig_effs.size();im++){
+	  cout<<"M="<<sig_masses.at(im)<<"  Eff="<<sig_effs.at(im)<<endl;
+	}
 
 }

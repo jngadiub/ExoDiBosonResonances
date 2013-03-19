@@ -32,7 +32,7 @@
 #include "DataCardUtils.h"
 
 const std::string wsDir="FitSidebandsMJJ_CA8_0315/";
-const std::string datacardDir("DataCards_XZZ_20130315b");
+const std::string datacardDir("DataCards_XZZ_20130315c");
 float mZZmin_ = 600.;
 
 
@@ -243,9 +243,6 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   ofs << "process            0\t\t\t1" << std::endl;
 
   float eff = f1_eff_vs_mass->Eval(hp.mH);
-  //factor 1000 is due just to avoid tiny numbers when running the limits
-  //remember to scale it back down when pltting the limit on the xsect instead of the ratio
-  // float rate_gg   = eff*hp.XSgg*hp.BRZZto2l2q*lumi*1000.0; //xsect has both ee and mm
   float rate_gg   = eff*hp.XSgg*hp.BRZZto2l2q*lumi; //xsect has both ee and mm
 
   // compute expected BG yield from observed sideband events:
@@ -576,7 +573,7 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj,  float mZZmin ) 
 
 TheorSigParameters get_thParameters( float mass ) {
 
-  std::string nameXsecFile = "../../data/xsect_BulkG_ZZ_lljj_c0p5_xsect_in_pb.txt";
+  std::string nameXsecFile = "../../data/xsect_BulkG_ZZ_c0p5_xsect_in_pb.txt";
   std::ifstream xsect_file(nameXsecFile.c_str());
 
   if (! xsect_file.is_open()) { 

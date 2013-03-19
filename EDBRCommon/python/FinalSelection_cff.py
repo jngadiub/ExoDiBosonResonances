@@ -12,8 +12,11 @@ vbfString = cms.string("vbfptr.isAvailable")
 #nXJets was added as userfloat by KineVarsAdder
 kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 1.0") # && leg2.pt()>80.0
 kineString2Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 2.0") # && leg2.pt()>80.0
-sigreg=cms.string("leg2.getSelection(\"cuts_isZSignal\") && leg2.ntau21()<0.4")
-sbreg=cms.string("leg2.getSelection(\"cuts_isZSideband\")&& leg2.ntau21()<0.4")
+sigregZ=cms.string("leg2.getSelection(\"cuts_isZSignal\")")
+vtagHP=cms.string("leg2.ntau21()<0.45")
+sbregZ=cms.string("leg2.getSelection(\"cuts_isZSideband\")")
+vtagLP=cms.string("leg2.ntau21()>0.45&& leg2.ntau21()<0.75")
+
 
 
 ### unused, in just for reference
@@ -23,39 +26,59 @@ sbreg=cms.string("leg2.getSelection(\"cuts_isZSideband\")&& leg2.ntau21()<0.4")
 
 edbrtags =  cms.PSet( vbfDoubleJet = cms.PSet( vbf = vbfString,
                                                kine = kineString2Jet,
-                                               sigRegion = sigreg
+                                               sigRegion = sigregZ
                                                # LD  = LDString0,
                                                #btag= bString0
                                                ),
                       DoubleJet = cms.PSet( kine = kineString2Jet,
-                                            sigRegion = sigreg
+                                            sigRegion = sigregZ
                                             ),
                       ##### similar but select only in the sideband region
                       vbfDoubleJetSB = cms.PSet( vbf = vbfString,
                                                  kine = kineString2Jet,
-                                                 sbRegion = sbreg
+                                                 sbRegion = sbregZ
                                                  # LD  = LDString0,
                                                  #btag= bString0
                                                  ),
                       DoubleJetSB = cms.PSet( kine = kineString2Jet,
-                                              sbRegion = sbreg
+                                              sbRegion = sbregZ
                                               ),
                       ####
-                      vbfSingleJet = cms.PSet( vbf = vbfString,
+                      vbfSingleJetHP = cms.PSet( vbf = vbfString,
                                                kine = kineString1Jet,
-                                               sigRegion = sigreg
+                                               sigRegion = sigregZ,
+                                               vtag = vtagHP
                                                ),
-                      SingleJet = cms.PSet( kine = kineString1Jet,
-                                            sigRegion = sigreg
+                      SingleJetHP = cms.PSet( kine = kineString1Jet,
+                                            sigRegion = sigregZ
+                                            ),
+                      vbfSingleJetLP = cms.PSet( vbf = vbfString,
+                                               kine = kineString1Jet,
+                                               sigRegion = sigregZ,
+                                               vtag=vtagLP
+                                               ),
+                      SingleJetLP = cms.PSet( kine = kineString1Jet,
+                                              sigRegion = sigregZ,
+                                              vtag=vtagLP
                                             ),
                       ##### similar but select only in the sideband region
-                      vbfSingleJetSB = cms.PSet( vbf = vbfString,
-                                                 kine = kineString1Jet,
-                                                 sbRegion = sbreg
-                                                 ),
-                      SingleJetSB = cms.PSet( kine = kineString1Jet,
-                                              sbRegion = sbreg
-                                              )                           
+                     vbfSingleJetSBHP = cms.PSet( vbf = vbfString,
+                                               kine = kineString1Jet,
+                                               sbRegion = sbregZ,
+                                               vtag = vtagHP
+                                               ),
+                      SingleJetSBHP = cms.PSet( kine = kineString1Jet,
+                                            sbRegion = sbregZ
+                                            ),
+                      vbfSingleJetSBLP = cms.PSet( vbf = vbfString,
+                                               kine = kineString1Jet,
+                                               sbRegion = sbregZ,
+                                               vtag=vtagLP
+                                               ),
+                      SingleJetSBLP = cms.PSet( kine = kineString1Jet,
+                                              sbRegion = sbregZ,
+                                              vtag=vtagLP
+                                            )                           
                       )#end edbrtags
 
 
@@ -82,17 +105,17 @@ SingleJetVBFTagger =  cms.EDProducer("DiElectronSingleJetEDBRTagger",
 
 
 BestCandSelector=cms.EDProducer("DiElectronNJetEDBRBestCandidateSelector",
-                                  srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
-                                  srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
-                                  tagSelectionList =cms.vstring("tag_SingleJet","tag_DoubleJet"),#highest priority to lowest priority
-								  VMass            =cms.double(91.1876)
+                                srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
+                                srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
+                                tagSelectionList =cms.vstring("tag_SingleJetHP","tag_SingleJetLP","tag_DoubleJet"),#highest priority to lowest priority
+                                VMass            =cms.double(91.1876)
                                            )
 
 BestSidebandSelector=cms.EDProducer("DiElectronNJetEDBRBestCandidateSelector",
                                     srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
                                     srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
-                                    tagSelectionList =cms.vstring("tag_SingleJetSB","tag_DoubleJetSB"),#highest priority to lowest priority
-									VMass            =cms.double(91.1876)
+                                    tagSelectionList =cms.vstring("tag_SingleJetSBHP","tag_SingleJetSBLP","tag_DoubleJetSB"),#highest priority to lowest priority
+                                    VMass            =cms.double(91.1876)
                                     )
 
 allSelectedEDBR = cms.EDProducer("CandViewMerger",

@@ -99,7 +99,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
   ///
  //read in theoretical values from text files
   // bool   applyExtraTherUnc=true;
-  string xsect_file_th="../../../data/xsect_BulkG_ZZ_lljj_c0p5_xsect_in_pb.txt";
+  string xsect_file_th="../../../data/xsect_BulkG_ZZ_c0p5_xsect_in_pb.txt";
   //  make_interpolated_xsect(xsect_file_th, xsect_file_interpol);
   // string xsect_file_interpol="./RSGravXSectTimesBRToZZ_AgasheHapola_c10_EXPOINTERP.txt";
  
@@ -114,7 +114,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
     if(mH==1200)cout<<"~~~~~ 600 theor ~~~~~~~~~~~~~"<<endl;
     if(mH<1000.0)continue;
     v_mhxs.push_back(mH);
-    v_xs.push_back(CS);
+    v_xs.push_back(CS*BRZZ2l2q);//eff in cards are for process X->ZZ->2l2q
    
     //unavailable theor errors for graviton   
 
@@ -127,7 +127,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
   cout<<"Size of theor "<<v_mhxs.size()<<endl;
   xsect_file.close();
 
-  string xsect_file_interpol2="../../../data/xsect_BulkG_ZZ_lljj_c0p2_xsect_in_pb.txt";
+  string xsect_file_interpol2="../../../data/xsect_BulkG_ZZ_c0p2_xsect_in_pb.txt";
   ifstream xsect_file2(xsect_file_interpol2.c_str(),ios::in);
   if (! xsect_file2.is_open()){ cout<<"Failed to open file with xsections (c=0.10)"<<endl;}
   float mH2,CS10;
@@ -137,7 +137,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
     xsect_file2 >> mH2>> CS10;
     if(mH2==975)cout<<"~~~~~ 975 theor ~~~~~~~~~~~~~"<<endl;
     if(mH2<1000.0)continue;
-    v_xs10.push_back(CS10);//*BRZZ2l2q
+    v_xs10.push_back(CS10*BRZZ2l2q);//*BRZZ2l2q
    
     //unavailable theor errors for graviton   
     float tot_err_p=0.0;
