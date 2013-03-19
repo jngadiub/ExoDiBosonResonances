@@ -1,3 +1,10 @@
+vector<int> masspoint;
+vector<double> ourcut;
+vector<double> punzivalue;
+vector<double> punzi45;
+vector<double> sigeff;
+vector<double> sigeff45;
+
 TH1D* getNSubjHisto(TFile* targetFile, double mass){
 	char buffer[256];
 	sprintf(buffer,"nsubj21_m%i",(int)mass);
@@ -52,6 +59,11 @@ TCanvas* compareHistos(TH1* signalHisto, TH1* backgroundHisto){
 	S->SetLineColor(kRed);
 	S->SetMarkerColor(kRed);
 
+
+	double bestcut=0;
+	double maxPunzi=0;
+	double bestsigeff=0;
+
 	for(size_t i=1; i!=(nBins+1); ++i) {
 		double thisB = backgroundHisto->Integral(1,i);
 		double thisS = signalHisto->Integral(1,i);
@@ -62,7 +74,15 @@ TCanvas* compareHistos(TH1* signalHisto, TH1* backgroundHisto){
 		double thisPunzi = effSgn/(1.0+sqrt(thisB));
 		double binLowEdge = backgroundHisto->GetBinLowEdge(i);
 		double binHighEdge = binLowEdge+backgroundHisto->GetBinWidth(i);
-		printf("binHighEdge = %g, eff Bkg = %g, eff Sgn = %g\n",binHighEdge,effBkg,effSgn);
+		cout<<"cut: "<<binHighEdge<<" thisPunzi: "<<thisPunzi<<endl;
+		if(binHighEdge==0.45){punzi45.push_back(thisPunzi);sigeff45.push_back(effSgn);}
+		if(thisPunzi>maxPunzi)
+		{
+			maxPunzi=thisPunzi;
+			bestcut=binHighEdge;
+			bestsigeff=effSgn;
+		}
+		//printf("binHighEdge = %g, eff Bkg = %g, eff Sgn = %g\n",binHighEdge,effBkg,effSgn);
 		ROC->SetPoint(i-1,effSgn,1.0-effBkg);
 		S->SetPoint(i-1,binHighEdge,effSgn);
 		B->SetPoint(i-1,binHighEdge,effBkg);
@@ -70,6 +90,11 @@ TCanvas* compareHistos(TH1* signalHisto, TH1* backgroundHisto){
 		SoverSB->SetPoint(i-1,binHighEdge,thisSOverSB);
 		punzi->SetPoint(i-1,binHighEdge,thisPunzi);
 	}
+	
+	cout<<"bestcut: "<<bestcut<<" maxPunzi: "<<maxPunzi<<endl;
+	ourcut.push_back(bestcut);
+	punzivalue.push_back(maxPunzi);
+	sigeff.push_back(bestsigeff);
 
 	cv->cd(1);
 	gPad->SetGridx();
@@ -127,6 +152,7 @@ TCanvas* compareHistos(TH1* signalHisto, TH1* backgroundHisto){
 
 void makeROCcurves(int massValue) {
 	char buffer[256];
+	masspoint.push_back(massValue);
 	sprintf(buffer,"CA8optimization/signal_%i.root",massValue);
 	TFile* sgnFile = TFile::Open(buffer); 
 	TFile* bkgFile = TFile::Open("CA8optimization/allBackgrounds.root"); 
@@ -142,15 +168,87 @@ void makeROCcurves(int massValue) {
 
 void ROCcurves(){
 	makeROCcurves(600);
-	//makeROCcurves(700);
-//	makeROCcurves(800);
-//	makeROCcurves(900);
+	makeROCcurves(700);
+	makeROCcurves(800);
+	makeROCcurves(900);
 	makeROCcurves(1000);
-//	makeROCcurves(1100);
-//	makeROCcurves(1300);
-//	makeROCcurves(1400);
+	makeROCcurves(1100);
+	makeROCcurves(1200);
+	makeROCcurves(1300);
+	makeROCcurves(1400);
 	makeROCcurves(1500);
-//	makeROCcurves(1700);
-//	makeROCcurves(1800);
-//	makeROCcurves(1900);
+	makeROCcurves(1600);
+	makeROCcurves(1700);
+	makeROCcurves(1800);
+	makeROCcurves(1900);
+	makeROCcurves(2000);
+	makeROCcurves(2100);
+	makeROCcurves(2200);
+	makeROCcurves(2300);
+	makeROCcurves(2400);
+	makeROCcurves(2500);
+
+	TGraph* cutVSmass     = new TGraph(masspoint.size());
+	TGraph* punziVSmass     = new TGraph(masspoint.size());
+	TGraph* bestpunziVSmass     = new TGraph(masspoint.size());
+	TGraph* sigeffVSmass     = new TGraph(masspoint.size());
+	TGraph* sigeff45VSmass     = new TGraph(masspoint.size());
+	TCanvas* c1 = new TCanvas();
+
+	for(int i =0; i< masspoint.size(); i++)
+	{
+		cout<<"mass "<<masspoint.at(i)<<" cut "<<ourcut.at(i)<<" punzi "<<punzivalue.at(i)<<" punzi45 "<<punzi45.at(i)<<endl;
+		cutVSmass->SetPoint(i,masspoint.at(i),ourcut.at(i));
+		punziVSmass->SetPoint(i,masspoint.at(i),punzi45.at(i));
+		bestpunziVSmass->SetPoint(i,masspoint.at(i),punzivalue.at(i));
+		sigeffVSmass->SetPoint(i,masspoint.at(i),sigeff.at(i));
+		sigeff45VSmass->SetPoint(i,masspoint.at(i),sigeff45.at(i));
+
+	}
+    c1->SetGridx();
+    c1->SetGridy();
+	c1->cd();
+    cutVSmass->Draw("ALP");
+	cutVSmass->SetTitle("");
+    cutVSmass->GetXaxis()->SetTitle("signal mass");
+    cutVSmass->GetYaxis()->SetTitle("best cut on tau21");
+	cutVSmass->GetYaxis()->SetRangeUser(0,1);
+	cutVSmass->SetMarkerStyle(20);
+	cutVSmass->SetMarkerSize(1);
+	c1->SaveAs("cutVSmass.png");
+
+	bestpunziVSmass->SetTitle("");
+	bestpunziVSmass->GetXaxis()->SetTitle("signal mass");
+	bestpunziVSmass->GetYaxis()->SetTitle("#epsilon_{S} / (1.0+sqrt(B))");
+	bestpunziVSmass->SetMarkerStyle(20);
+	bestpunziVSmass->SetMarkerSize(1);
+	bestpunziVSmass->SetMarkerColor(kRed);
+	bestpunziVSmass->Draw("ALP");
+	punziVSmass->SetMarkerStyle(20);
+	punziVSmass->SetMarkerSize(1);
+	punziVSmass->Draw("LPsame");
+	TLegend * leg = new TLegend (0.1, 0.7, 0.4, 0.9, NULL, "brNDC") ;
+	leg->AddEntry (bestpunziVSmass, "Best Cut Punzi" ,"p") ;
+	leg->AddEntry (punziVSmass, "0.45 Punzi" ,"p") ;
+	leg->Draw();
+	c1->SaveAs("punziVSmass.png");
+
+    sigeffVSmass->SetTitle("");
+    sigeffVSmass->GetXaxis()->SetTitle("signal mass");
+    sigeffVSmass->GetYaxis()->SetTitle("#epsilon_{S}");
+    sigeffVSmass->SetMarkerStyle(20);
+    sigeffVSmass->SetMarkerSize(1);
+    sigeffVSmass->SetMarkerColor(kRed);
+    sigeffVSmass->Draw("ALP");
+    sigeff45VSmass->SetMarkerStyle(20);
+    sigeff45VSmass->SetMarkerSize(1);
+    sigeff45VSmass->Draw("LPsame");
+    TLegend * leg = new TLegend (0.1, 0.7, 0.4, 0.9, NULL, "brNDC") ;
+    leg->AddEntry (sigeffVSmass, "Best Cut sigeff" ,"p") ;
+    leg->AddEntry (sigeff45VSmass, "0.45 sigeff" ,"p") ;
+    leg->Draw();
+    c1->SaveAs("sigeffVSmass.png");
+
 }
+
+
