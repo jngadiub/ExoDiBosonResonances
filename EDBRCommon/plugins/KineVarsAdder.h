@@ -154,15 +154,15 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 
 #ifdef EDBRNEUTRINO
 		if(isleg2GoodEle) {
-			trkiso2 = (*(*newCand.leg1().leg2().sourcePtr())).userIso(0);
-			caloiso2 = ( (*(*newCand.leg1().leg2().sourcePtr())).userIso(1) + 
-					(*(*newCand.leg1().leg2().sourcePtr())).userIso(2) ) / 
-				newCand.leg1().leg2().pt();
+			trkiso2 = -99;
+			caloiso2 = -99;
 		}
 #else
 		if(isleg2GoodEle) {
-			trkiso2 = -99;
-			caloiso2 = -99;
+		        trkiso2 = (*(*newCand.leg1().leg2().sourcePtr())).userIso(0);
+			caloiso2 = ( (*(*newCand.leg1().leg2().sourcePtr())).userIso(1) + 
+				     (*(*newCand.leg1().leg2().sourcePtr())).userIso(2) ) / 
+			  newCand.leg1().leg2().pt();
 		}
 #endif
 
