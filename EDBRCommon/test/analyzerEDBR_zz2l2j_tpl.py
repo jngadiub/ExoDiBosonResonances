@@ -62,9 +62,12 @@ if processFullSel :
 
 
 ##### set Ngen and xsect values ofr MC samples; xsect in pb !!! 
-if "TTBAR" in "<SAMPLE>" :
+if "TTBAR"=="<SAMPLE>" or "TTBAR_xww"=="<SAMPLE>":
     process.ANEDBR.Ngen=cms.uint32(6540800)
     process.ANEDBR.xsec=cms.double(225.197)
+elif "TTBARpowheg"=="<SAMPLE>" or "TTBARpowheg_xww"=="<SAMPLE>":
+	process.ANEDBR.Ngen=cms.uint32(21675970)
+	process.ANEDBR.xsec=cms.double(225.197)
 elif "DYJetsPt50To70" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(4823000)
     process.ANEDBR.xsec=cms.double(105.7) # 105.7 = 89.0 (from PREP) times 1.188
@@ -80,7 +83,7 @@ elif "DYJetsPt100" in "<SAMPLE>" :
 elif "WW"=="<SAMPLE>" or "WW_xww" == "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(3870000)
     process.ANEDBR.xsec=cms.double(57.1097)
-elif "WZ" in "<SAMPLE>" :
+elif "WZ"=="<SAMPLE>" or "WZ_xww"=="<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(1910000)
     process.ANEDBR.xsec=cms.double(22.88)
 elif "ZZ"=="<SAMPLE>" or "ZZ_xww"=="<SAMPLE>" :
