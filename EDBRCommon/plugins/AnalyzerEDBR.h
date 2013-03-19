@@ -271,6 +271,11 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     nsubj32[ih]=edbr->leg2().ntau32();
     tau1[ih]=edbr->leg2().tau1();
     tau2[ih]=edbr->leg2().tau2();
+    if(nsubj21[ih]<0.45) vTagPurity[ih]=1.0;
+    else if(nsubj21[ih]<0.75) vTagPurity[ih]=0.0;
+    else  vTagPurity[ih]=-1.0;
+      //( edbr->getSelection("tag_SingleJetHP")? 1.0 : 0.0 );
+    // nsubj21[ih]<0.45 -> 1.0  //nsubj21[ih]>0.45 &&  nsubj21[ih]<0.75 -> 0.0
 
 
     btagjet1[ih]=edbr->leg2().bDiscriminator( "combinedSecondaryVertexBJetTags" );
@@ -294,6 +299,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
     if(debug_)std::cout<<"nXJets="<<edbr->userFloat("nXJets")<<" (it should be ==2) "<<endl;
     nXjets[ih]=int(edbr->userFloat("nXJets"));//edbr->nJets();
+    vTagPurity[ih]=-2.0;//dummy for 2-Jet topology
     mzzNoKinFit[ih]=edbr->userFloat("nokinfitMZZ");
     ptmzzNoKinFit[ih]=edbr->userFloat("nokinfitPTZZ");
     mjj[ih]=edbr->leg2().mass();
@@ -618,6 +624,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   unsigned int nevent,run,ls, njets, nak5jets , nvtx,npu;
   int q1fl[nMaxCand], q2fl[nMaxCand];
   int nXjets[nMaxCand];//by how many jets is the hadronic V made
+  double vTagPurity[nMaxCand];
   //int jjfl[nMaxCand];
   bool readLDFromUserFloat_,  readQGFromUserFloat_;
   HLTConfigProvider hltConfig;

@@ -421,6 +421,7 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("mt"              ,&mt            ,"mt[nCands]/D"           );
 	outTree_->Branch("region"          ,&reg           ,"region[nCands]/D"       );
 	outTree_->Branch("nXjets"          ,&nXjets        ,"nXjets[nCands]/I"    ); 
+	outTree_->Branch("vTagPurity"      ,&vTagPurity    ,"vTagPurity[nCands]/D"    ); 
 	outTree_->Branch("mZZ"             ,&mzz           ,"mZZ[nCands]/D"          );
 	outTree_->Branch("mZZNoKinFit"     ,&mzzNoKinFit   ,"mZZNoKinFit[nCands]/D"  );
 	outTree_->Branch("ptmzz"           ,&ptmzz         ,"ptmzz[nCands]/D"        );
