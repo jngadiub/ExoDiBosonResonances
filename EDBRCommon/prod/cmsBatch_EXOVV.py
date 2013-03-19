@@ -344,28 +344,28 @@ batchManager.SubmitJobs( waitingTime )
 
 # logging
 
-from logger import logger
+# from logger import logger
 
-oldPwd = os.getcwd()
-os.chdir(batchManager.outputDir_)
-logDir = 'Logger'
-os.system( 'mkdir ' + logDir )
-log = logger( logDir )
-if doCVSTag==False:
-   print 'cmsBatchEXO-VV will NOT tag CVS'
+# oldPwd = os.getcwd()
+# os.chdir(batchManager.outputDir_)
+# logDir = 'Logger'
+# os.system( 'mkdir ' + logDir )
+# log = logger( logDir )
+# if doCVSTag==False:
+#    print 'cmsBatchEXO-VV will NOT tag CVS'
 
-log.tagPackage=doCVSTag
-log.logCMSSW()
-log.logJobs(nJobs)
-#COLIN not so elegant... but tar is behaving in a strange way.
-log.addFile( oldPwd + '/' + cfgFileName )
+# log.tagPackage=doCVSTag
+# log.logCMSSW()
+# log.logJobs(nJobs)
+# #COLIN not so elegant... but tar is behaving in a strange way.
+# log.addFile( oldPwd + '/' + cfgFileName )
 
-if not batchManager.options_.negate:
-   if batchManager.remoteOutputDir_ != "":
-      # we don't want to crush an existing log file on castor
-      #COLIN could protect the logger against that.
-      log.stageOut( batchManager.remoteOutputDir_ )
+# if not batchManager.options_.negate:
+#    if batchManager.remoteOutputDir_ != "":
+#       # we don't want to crush an existing log file on castor
+#       #COLIN could protect the logger against that.
+#       log.stageOut( batchManager.remoteOutputDir_ )
       
-os.chdir( oldPwd )
+# os.chdir( oldPwd )
 
 
