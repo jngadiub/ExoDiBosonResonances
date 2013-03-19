@@ -68,8 +68,6 @@ template <class type1, class type2>
     for (unsigned int i=0 ; i<edbr1Jcands->size() ; ++i ) {
       edm::RefToBase<type1>  edbrCand = edbr1Jcands->refAt(i);
 
-      //the 1J or 2J flag should be embedded by the EDBRTagger as UserFloat 
-      //based on the KineVarsAdder module
       if(! edbrCand->getSelection(priorityList_[cat]))continue;
 
       //compute mass differences
@@ -105,8 +103,6 @@ template <class type1, class type2>
     for (unsigned int i=0 ; i<edbr2Jcands->size() ; ++i ) {
       edm::RefToBase<type2>  edbrCand2 = edbr2Jcands->refAt(i);
 
-      //the 1J or 2J flag should be embedded by the EDBRTagger as UserFloat 
-      //based on the KineVarsAdder module
       if(! edbrCand2->getSelection(priorityList_[cat]))continue;
 
       //compute mass differences
