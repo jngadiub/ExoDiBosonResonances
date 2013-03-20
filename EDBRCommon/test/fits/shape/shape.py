@@ -171,7 +171,9 @@ def readTree(filename, njet, workspace):
                             continue #b-tag veto
                         if(deltaR_LJ<1.57 or deltaPhi_JMET<2. or deltaPhi_JWL<2.):
                             continue
-
+                        if(event.nsubj21[i]>0.45):
+                            continue
+                        
                     match.setIndex(1) #assume all 1-jet events to be matched for now
                     
                 dataset.add(root.RooArgSet(mzz,match,weight))
