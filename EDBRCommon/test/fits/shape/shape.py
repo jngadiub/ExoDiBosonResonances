@@ -4,6 +4,32 @@
 import ROOT as root
 import argparse
 import os,sys
+import math
+
+#delta-R computation copied from CMSSW
+
+def deltaPhi(phi1, phi2):
+
+    M_PI = 3.1415926535897
+    
+    result = phi1 - phi2
+    while (result > M_PI):
+        result -= 2*M_PI
+    while (result <= -M_PI):
+        result += 2*M_PI
+
+    return result;
+
+
+def deltaR2(eta1,phi1,eta2,phi2):
+    deta = eta1 - eta2
+    dphi = deltaPhi(phi1, phi2)
+    return deta*deta + dphi*dphi
+
+def deltaR(eta1, phi1, eta2, phi2):
+    return math.sqrt(deltaR2(eta1, phi1, eta2, phi2))
+
+
 
 # some utility functions to deduce signal types from filenames
 def desc(filepath):
@@ -39,7 +65,7 @@ def ConstructPdf(workspace):
     MatchedFuncBase   = root.RooDoubleCB("MatchedFunc","MatchedFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("alpha1_match"),workspace.var("n1_match"),workspace.var("alpha2_match"),workspace.var("n2_match")) 
     #MatchedFuncBase   = root.RooVoigtian("MatchedFunc","MatchedFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("width_match"))
     #MatchedFuncBase   = root.RooCBShape("MatchedFunc","MatchedFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("alpha_match"),workspace.var("n_match") )
-    totalnorm = root.RooRealVar("totalnorm","totalnorm",100,0,100000)
+    totalnorm = root.RooRealVar("totalnorm","totalnorm",100,1,100000)
     matchnorm = root.RooProduct("matchnorm","matchnorm",root.RooArgSet(totalnorm,workspace.var("machfrac")))
     MatchedFunc = root.RooExtendPdf("ExtMatchedFunc","ExtMatchedFunc",MatchedFuncBase,matchnorm)
     
@@ -53,7 +79,7 @@ def ConstructPdf(workspace):
 
 # set up the variables to be used in the fit. Will need ot be extended if we use different funcional forms for different channels
 def defineVars(descriptor,njets,workspace,plotonly):
-    mzz    = root.RooRealVar("mZZ","mZZ",400,2500) ## IMPORTANT: Master fit range must be the same as for the datacards
+    mzz    = root.RooRealVar("mZZ","mZZ",400,3000) ## IMPORTANT: Master fit range must be the same as for the datacards
     weight = root.RooRealVar("weight","weight",0,100000)
     match  = root.RooCategory("match","match")
     match.defineType("unmatched",0)
@@ -125,11 +151,28 @@ def readTree(filename, njet, workspace):
                         match.setIndex(1)
                     else:
                         match.setIndex(0)
-                else:                     
-                    if 1./(event.nsubj12[i]) > 0.45: #nsubjettiness cut
-                        break                    
+                else:
+                    #print deduceBosonType(filename)
+                    if  deduceBosonType(filename)=="Z":
+                        if event.nsubj21[i] > 0.45: #nsubjettiness cut for ZZ
+                            continue
+                    else: #WW
+                        deltaR_LJ = deltaR(event.etalep1[i],event.philep1[i],event.etajet1[i],event.phijet1[i]);
+                        deltaPhi_JMET = deltaPhi(event.phijet1[i],event.philep2[i]);
+                        deltaPhi_JWL  = deltaPhi(event.phijet1[i],event.phiZll[i]);
+
+                        if(event.lep[i]!=1.):
+                            continue # 1 is for mu,0 for ele
+                        if((event.nLooseEle+event.nLooseMu)!=1):
+                            continue # second lepton veto
+                        if(event.ptZll[i]<200):
+                            continue #pt of Wmunu                                                
+                        if(event.nbtagsM[i]!=0):
+                            continue #b-tag veto
+                        if(deltaR_LJ<1.57 or deltaPhi_JMET<2. or deltaPhi_JWL<2.):
+                            continue
+
                     match.setIndex(1) #assume all 1-jet events to be matched for now
-                    
                     
                 dataset.add(root.RooArgSet(mzz,match,weight))
     
