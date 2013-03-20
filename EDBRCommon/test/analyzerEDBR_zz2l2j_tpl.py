@@ -289,7 +289,7 @@ elif "BulkG_WW_lvjj_c0p2_M1500" in "<SAMPLE>" :
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_WW_lvjj_c0p2_M1600" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(45994) ### Checked
-    process.ANEDBR.xsec=cms.double(1.5771-05)
+    process.ANEDBR.xsec=cms.double(1.5771e-05)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_WW_lvjj_c0p2_M1700" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(9899) ### Checked
