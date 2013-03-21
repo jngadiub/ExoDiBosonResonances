@@ -15,10 +15,10 @@
 
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1);
 void doAlpha(TTree *chMC, std::string wType);
-const std::string myOutDir="FitSidebandsMJJ_CA8_0314/";//it must already exist !
+const std::string myOutDir="FitSidebandsMJJ_CA8_TEST/";//it must already exist !
 
-const string inDirSIG="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsigCA8/";
-const string inDirSB ="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsidebandCA8/";
+const string inDirSIG="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
+const string inDirSB ="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsidebandCA8/";
 int main( int argc, char* argv[] ) {
 
   std::string weighting = "weight";
@@ -261,7 +261,8 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   double leptType;
   int mynxj[35];
   double mZZd[35],region[35],mZqq[35];
-  double nsubj12[35];
+  double vTagPurity[35];
+  double nsubj21[35];
 
   t1->SetBranchAddress("nCands",&ncands);
   t1->SetBranchAddress("run",&nrun);
@@ -272,7 +273,8 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   t1->SetBranchAddress("nXjets",mynxj);
   t1->SetBranchAddress("mJJ",mZqq);
   t1->SetBranchAddress("region",region);
-  t1->SetBranchAddress("nsubj12",nsubj12);
+  t1->SetBranchAddress("vTagPurity",vTagPurity);
+  t1->SetBranchAddress("nsubj21",nsubj21);
 
   TFile *fOut=new TFile(f2Name.c_str(),"RECREATE");
   fOut->cd();
@@ -281,7 +283,8 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   double eventWeight_2;
   unsigned int nrun_2,nevt_2;
   double leptType_2;
-  double mZZd_2,region_2,mZqq_2, nsubj12_2;
+  double mZZd_2,region_2,mZqq_2, nsubj21_2;
+  double vTagPurity_2;
 
   TTree *t2=new TTree(t2Name.c_str(),t2Name.c_str());
  
@@ -294,7 +297,9 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   t2->Branch("mZZ",&mZZd_2 , "mZZ/D");
   t2->Branch("mJJ",&mZqq_2 , "mJJ/D");
   t2->Branch("region",&region_2 , "region/D");
-  t2->Branch("nsubj21",&nsubj12_2, "nsubj21/D");
+  t2->Branch("nsubj21",&nsubj21_2, "nsubj21/D");
+  t2->Branch("vTagPurity",&vTagPurity_2, "vTagPurity/D");
+
 
   for(int i=0;i<t1->GetEntries();i++){
 
@@ -310,9 +315,10 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
       region_2=region[j];
       mZqq_2=mZqq[j];
       mynxj_2=int(mynxj[j]);
-      nsubj12_2=1.0/nsubj12[j]; 
+      nsubj21_2=nsubj21[j]; 
+      vTagPurity_2=vTagPurity[j]; 
 
-      if(nsubj12_2>0.45)continue;
+      //if(nsubj21_2>0.45)continue;
 
       if(region[j]<0||mZZd_2>9999.0||mynxj_2>10||mZqq_2>999.0){
 	//cout<<"Event="<<nevt<<" cand="<<j<<" has reg="<<region[j]<<" mZZ="<<mZZd_2<<endl;
