@@ -10,9 +10,8 @@ cp ${CMSSW_BASE}/src/ExoDiBosonResonances/EDBRCommon/test/fits/HZZ2L2QRooPdfs.h 
 cp ${CMSSW_BASE}/src/ExoDiBosonResonances/EDBRCommon/test/fits/HZZ2L2QRooPdfs.cc ${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/src/
 cp ${CMSSW_BASE}/src/ExoDiBosonResonances/EDBRCommon/test/fits/LinkDef.h.CombinedLimit ${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/src/LinkDef.h
 
-cd -
 scram b -j 4
-
+cd -
 
 ------------------------------------
 1: Calculate sideband extrapolation factor
