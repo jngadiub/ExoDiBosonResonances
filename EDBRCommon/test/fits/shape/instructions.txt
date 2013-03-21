@@ -46,6 +46,7 @@ At the time of this writing, we use only the muons for the WW monojet channel
 
 Final event selection for the 2jet channel may be out of date.
 
+The 2-jet fits need some care with the fit range: the relative fraction of matched and unmatched events is computed in the fit range, so if the range used in the datacards is different from the one used here, the fraction may need to be adjusted accordingly. (The unmatched contribution is quite broad and the number of events expected depend on the range)
 
 
 Code structre (in case you want to improve the script)
