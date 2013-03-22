@@ -61,9 +61,9 @@ const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
 
 
 //binning for double Jet topology 
-const int nBins2=22;
+const int nBins2=16;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
+			    1000,1100,1250,1400};
 
 
 SidebandFitter::SidebandFitter(const std::string& PUType ) {
@@ -78,13 +78,14 @@ SidebandFitter::SidebandFitter(const std::string& PUType ) {
   CMS_hzz2l2q_mZZ_ = new RooRealVar("CMS_exovv_mVV", "m_{VV}", mZZmin_, mZZmax_, "GeV");
   fitfuncName_="alpha_fitfunc";
   canvas_label_="";
+
 }
 
 
 
 
 
-RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& leptType_str, TTree* treeMC, bool withRooFit ) {
+RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const std::string& leptType_str,  int purCut, bool withRooFit ) {
   std::cout<<"Inside SidebandFitter::getAlphaFit"<<std::endl;
 
   //  std::string outdir = get_outdir();
@@ -100,11 +101,15 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
     exit(1111);
   }
 
+  std::string pur_str="";
+  if(purCut==0)pur_str="LP";
+  if(purCut==1)pur_str="HP";
+
   double mZZd;
   double eventWeight;
   int mynxj; //double mynxj;
   double mZqq;double region;
-  double leptType;
+  double leptType; double vTagPur;
   cout<<"SidebandFitter::getAlphaFit addressing branches"<<endl;
   //treeMC->SetBranchAddress("mZZ",&mZZ);
   treeMC->SetBranchAddress("mZZ",&mZZd);
@@ -113,6 +118,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
   treeMC->SetBranchAddress("mJJ",&mZqq);
   treeMC->SetBranchAddress("lep",&leptType);
   treeMC->SetBranchAddress("region",&region);
+  treeMC->SetBranchAddress("vTagPurity",&vTagPur);
   
   int nb;
   const double* binpointer;
@@ -149,6 +155,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
     if( leptType_str=="MU" && leptType!=1 ) continue;
     if( leptType_str=="ELE" && leptType!=0 ) continue;
     if( mynxj!=nxjCategory ) continue;
+    if( vTagPur!=purCut && purCut>=0)continue;
     if( mZZd>mZZmax_ || mZZd < mZZmin_ ) continue;
   
     bool isSignalRegion = (region==1.0);
@@ -206,7 +213,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
   l1->AddEntry(h1_alpha,"Original","P");
   l1->AddEntry(h1_alpha_smooth,"Smoothened","P");
   l1->Draw();
-  sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s.eps", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+  sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s.eps", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
   c1->SaveAs(canvasName);
 
   TCanvas* c1sig = new TCanvas("c1Sig", "can_fit_hist_SigReg", 600, 600);
@@ -214,14 +221,14 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
   h1_mZZ_signalRegion.SetMarkerStyle(20);
   h1_mZZ_signalRegion.SetMarkerColor(kBlue);
   h1_mZZ_signalRegion.Draw();
-  sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_SIGONLY.root", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+  sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_SIGONLY.root", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
   c1sig->SaveAs(canvasName);
   TCanvas* c1sb = new TCanvas("c1SB", "can_fit_hist_SBReg", 600, 600);
   c1sb->cd();
   h1_mZZ_sidebands.SetMarkerStyle(21);
   h1_mZZ_sidebands.SetMarkerColor(kRed);
   h1_mZZ_sidebands.Draw();
-  sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_SBONLY.root", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+  sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_SBONLY.root", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
   c1sb->SaveAs(canvasName);
 
   std::cout<<" PART1 of SidebandFitter::getAlphaFit is FINISHED !\n\n"<<std::endl;
@@ -234,7 +241,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
 
  //fill a RooDataHist from the TH1D; the errors will be the proper ones
   double minMZZ=bins1[0];
- rangecut_=binpointer[nb];
+  rangecut_=binpointer[nb];
   //  RooRealVar *mZZ = new RooRealVar("mZZ", "m_{ZZ}", mZZmin_, mZZmax_, "GeV");
   RooRealVar mZZ("mZZ","mZZ",minMZZ, bins1[nBins1-1]);//range to be synchronized with array of histo
   mZZ.setRange("fullRange",minMZZ,bins1[nBins1-1]);
@@ -253,22 +260,29 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
     //now we try to do the same with RooFit...
     //other vars on which one cuts
     std::cout<<"From SidebadFitter : doing the game with RooFit"<<std::endl;
-    RooRealVar *nXjets=new RooRealVar("nXjets","nXjets",0,2);
+    RooRealVar *nXjets=new RooRealVar("nXjets","nXjets",-0.1,2.1);
     RooRealVar *mJJ=new RooRealVar("mJJ","mJJ",50.0,150.0);
     RooRealVar *lep=new RooRealVar("lep","lep",0.0,1.0);
     RooRealVar *region=new RooRealVar("region","region",0.0,1.0);
+    RooRealVar *vTagPurity=new RooRealVar("vTagPurity","vTagPurity",-5.0,5.0);
     RooRealVar *weight=new RooRealVar("weight","weight",0.0,10.0);
     stringstream strmcut;
     strmcut<<minMZZ;
     stringstream ssnxj;
     ssnxj<<nxjCategory;
-    string cutSB="nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>"+strmcut.str();
-    string cutSIG="nXjets=="+ssnxj.str()+" && region==1.0 &&mZZ>"+ strmcut.str();
+    stringstream strpurcut;
+    strpurcut<<purCut;
+    std::string vtagcutstr;
+    if(purCut<0)vtagcutstr="";
+    else vtagcutstr=" &&vTagPurity=="+strpurcut.str();
+
+    string cutSB="nXjets=="+ssnxj.str()+vtagcutstr+" &&region==0.0  &&mZZ>"+strmcut.str();
+    string cutSIG="nXjets=="+ssnxj.str()+vtagcutstr+" && region==1.0 &&mZZ>"+ strmcut.str();
     
    
     
-    RooDataSet *mcSigDSet=new RooDataSet("dsMCSig","dMCSig",(TTree*)treeMC,RooArgSet(mZZ,*nXjets,*mJJ,*lep,*region,*weight),cutSIG.c_str(),"weight");
-    RooDataSet *mcSBDSet=new RooDataSet("dsMCSB","dMCSB",(TTree*)treeMC,RooArgSet(mZZ,*nXjets,*mJJ,*lep,*region,*weight),cutSB.c_str(),"weight");
+    RooDataSet *mcSigDSet=new RooDataSet("dsMCSig","dMCSig",(TTree*)treeMC,RooArgSet(mZZ,*nXjets,*mJJ,*lep,*region,*vTagPurity,*weight),cutSIG.c_str(),"weight");
+    RooDataSet *mcSBDSet=new RooDataSet("dsMCSB","dMCSB",(TTree*)treeMC,RooArgSet(mZZ,*nXjets,*mJJ,*lep,*region,*vTagPurity,*weight),cutSB.c_str(),"weight");
     // ------------------------ fit with a single exponential ------------------------------
     RooRealVar *slope_SIG = new RooRealVar("slopeSIG","exponential slope (SIGNAL)",-0.1,-5.0,0.0);
     RooExponential *bkgd_fit_SIG = new RooExponential("background_SIG","background_SIG",mZZ,*slope_SIG);
@@ -435,17 +449,17 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
     */
 
 
-    sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFIT.eps", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFIT.eps", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
     c2->SaveAs(canvasName);
-    sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFIT_SIGONLY.eps", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFIT_SIGONLY.eps", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
     c2a->SaveAs(canvasName);
-    sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFITSBONLY.eps", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFITSBONLY.eps", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
     c2b->SaveAs(canvasName);
-    sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFIT.root", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFIT.root", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
     c2->SaveAs(canvasName);
-    sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFIT_SIGONLY.root", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFIT_SIGONLY.root", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
     c2a->SaveAs(canvasName);
-    sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s%s_ROOFITSBONLY.root", outdir_.c_str(), nxjCategory, leptType_str.c_str(),canvas_label_.c_str());
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFITSBONLY.root", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
     c2b->SaveAs(canvasName);
 
 
@@ -465,7 +479,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
   //- the RooDataHist with alpha
   //- the fit result
   char ws_name[200];
-  sprintf(ws_name,"ws_alpha_%dJ%s",nxjCategory, leptType_str.c_str());
+  sprintf(ws_name,"ws_alpha_%dJ_%s_%s",nxjCategory,pur_str.c_str(), leptType_str.c_str());
   RooWorkspace* alphaws=new RooWorkspace(ws_name,ws_name);
   alphaws->import(*dhAlpha);
   alphaws->import(*pol0_fit);
@@ -485,7 +499,7 @@ RooWorkspace* SidebandFitter::getAlphaFit( int nxjCategory, const std::string& l
   delete outFile;
 
   delete h1_alpha; delete h1_alpha_smooth;
-  std::cout<<"Finishing getAlphaFit for nXjets=="<<nxjCategory<<std::endl;
+  std::cout<<"Finishing getAlphaFit for nXjets=="<<nxjCategory<<"  VTagPurity=="<<purCut<<std::endl;
   return alphaws;
 }
 

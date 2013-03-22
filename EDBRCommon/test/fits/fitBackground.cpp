@@ -54,11 +54,11 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 
 const string inDirSig="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
 const string inDir="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsidebandCA8/";
-const string outDir="FitSidebandsMJJ_CA8_TEST/";
+const string outDir="FitSidebandsMJJ_CA8_V5/";
 const string leptType="ALL";//"ALL" //"MU" //"ELE"
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 500;
-const bool unblind=false;//default is not to plot the data in signal region
+const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 //binning for merged Jet topology 
 const int nBins1=22;
@@ -66,9 +66,9 @@ const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
 			    1000,1100,1200,1300,1500,1700,1900,2100,2300,2600};
 
 //binning for double Jet topology 
-const int nBins2=22;
+const int nBins2=16;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
+			    1000,1100,1250,1400};
 
 
 int main(){
@@ -120,14 +120,22 @@ int main(){
   const double maxMZZ=bins1[nBins1-1];
   int inxj=0;
   RooRealVar* mZZ = new RooRealVar("mZZ","mZZ",minMZZ,maxMZZ);//bins[nBins-1]);
-  RooRealVar *nXjets=new RooRealVar("nXjets","nXjets",-0.1,1.1);
+  RooRealVar *nXjets=new RooRealVar("nXjets","nXjets",-0.1,2.1);
   RooRealVar *mJJ=new RooRealVar("mJJ","mJJ",50.0,150.0);
   RooRealVar *lep=new RooRealVar("lep","lep",0.0,1.0);
   RooRealVar *region=new RooRealVar("region","region",-0.1,1.1);
+  RooRealVar *vTagPurity=new RooRealVar("vTagPurity","vTagPurity",-5.0,5.0);
   RooRealVar* alphaWeight = new RooRealVar("alphaWeight","alphaWeight",1.,0.,100000.);//(RooRealVar*) dsDataSB->addColumn(*alpha_formula) ;
   //add roorealvar for purity
 
   for( inxj=1;inxj<3;inxj++){
+   
+    int nPurities=1;
+    if(inxj==1)nPurities=2;
+
+    double purityCut=-1;
+    for(int iP=0;iP<nPurities;iP++){//loop over purity categories
+      if(inxj==1)purityCut=iP;//for 2J category, no cut on Purity
 
     int nBins;
     const double* bins=0;
@@ -135,6 +143,8 @@ int main(){
     if(inxj==2){
       nBins = nBins2;
       bins = bins2;
+      mZZ->setMin(bins[0]);
+      mZZ->setMax(bins[nBins-1]);
     }
     else if(inxj==1){
       nBins = nBins1;
@@ -147,9 +157,16 @@ int main(){
 
     std::stringstream ssnxj;
     ssnxj << inxj;
-    logf<<"\n\n\n\n****** NEW NXJ = "<<inxj<<"  ---> "<<(outDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+leptType+".root").c_str() <<std::endl; 
-    std::cout<<"\n\n\n\n****** NEW NXJ = "<<inxj<<"  ---> "<<(outDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+leptType+".root").c_str() <<std::endl; 
-    TFile *falpha=new TFile( (outDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+leptType+".root").c_str() );
+
+    std::string pur_str="";
+    if(purityCut==0)pur_str="LP";
+    if(purityCut==1)pur_str="HP";
+    
+
+    string alphaFileName=outDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root";
+    logf<<"\n\n\n\n****** NEW NXJ = "<<inxj<<" "<< pur_str.c_str()<<" ---> "<<(alphaFileName).c_str() <<std::endl; 
+    std::cout<<"\n\n\n\n****** NEW NXJ = "<<inxj<<" "<< pur_str.c_str()<<"  ---> "<<(alphaFileName).c_str() <<std::endl; 
+    TFile *falpha=new TFile( (alphaFileName).c_str() );
     char alphahname[50];
     //    sprintf(alphahname,"nominal_alpha_%dnxj",inxj);//histo with fit to alpha
     sprintf(alphahname,"h_alpha_smoothened");
@@ -182,7 +199,7 @@ int main(){
     strmcut<<minMZZ;
     //read in the file with the alpha fit function
     TF1 *alpha_func=(TF1*)falpha->Get("alpha_fitfunc");
-    RooWorkspace *ws = (RooWorkspace*)falpha->Get( ("ws_alpha_"+ssnxj.str()+"J"+leptType).c_str() );
+    RooWorkspace *ws = (RooWorkspace*)falpha->Get( ("ws_alpha_"+ssnxj.str()+"J_"+pur_str+"_"+leptType).c_str() );
     ws->Print();
   
     RooPolynomial *ws_alpha_pol=(RooPolynomial*)ws->pdf("pol0_func");
@@ -194,15 +211,21 @@ int main(){
     if(leptType=="ELE")lepCutStr=" &&lep==0";
     if(leptType=="MU")lepCutStr=" &&lep==1";
 
+    stringstream strpurcut;
+    strpurcut<<purityCut;
+    std::string vtagcutstr;
+    if(purityCut<0)vtagcutstr="";
+    else vtagcutstr=" &&vTagPurity=="+strpurcut.str();
+
     //select the data in the sidebands, convert it in a RooDataSet
     //weight events by the alpha function
-    string cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>"+strmcut.str()+lepCutStr;
-    string cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>"+ strmcut.str()+lepCutStr;
-    string cutDum="nXjets=="+ssnxj.str()+" && mZZ>"+ strmcut.str()+lepCutStr;
+    string cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>"+strmcut.str()+lepCutStr+vtagcutstr;
+    string cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>"+ strmcut.str()+lepCutStr+vtagcutstr;
+    string cutDum="nXjets=="+ssnxj.str()+" && mZZ>"+ strmcut.str()+lepCutStr+vtagcutstr;
  
     
     logf<<"Applying the following cuts: "<<cutSIG.c_str()<<std::endl;
-    RooDataSet *dsDataSB=new RooDataSet("dsDataSB","dsDataSB",(TTree*)treeDATA_tmp,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep),cutSB.c_str()) ;
+    RooDataSet *dsDataSB=new RooDataSet("dsDataSB","dsDataSB",(TTree*)treeDATA_tmp,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity),cutSB.c_str()) ;
     //real data; weight each event by the alpha factor in order to scale to signal region
 
     logf<<"\n================================="<<std::endl;
@@ -214,8 +237,8 @@ int main(){
     logf<<"===> MZZ="<<mZZ->getVal()<<"    ALPHA (fromFIT)="<<alphaWeight->getVal()<<std::endl;
     logf<<"=================================\n"<<std::endl;
 
-    RooDataSet *dsDataSB2=new RooDataSet("dsDataSB2","dsDataSB2",weightedData,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
-    RooDataSet *dsDataSIG=dsDataSIG=new RooDataSet("dsDataSIG","dsDataSIG",(TTree*)treeDATA_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep),cutSIG.c_str()) ;//real data in signal region; cuts on mjj and nXjets
+    RooDataSet *dsDataSB2=new RooDataSet("dsDataSB2","dsDataSB2",weightedData,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
+    RooDataSet *dsDataSIG=new RooDataSet("dsDataSIG","dsDataSIG",(TTree*)treeDATA_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity),cutSIG.c_str()) ;//real data in signal region; cuts on mjj and nXjets
     logf<<"Number of events in OBSERVED datasets:"<<std::endl;
     logf<<dsDataSB->GetName()<<"  -> "<<dsDataSB->numEntries()<<"  "<<dsDataSB->sumEntries()<<std::endl;
     logf<<dsDataSB2->GetName()<<"  -> "<<dsDataSB2->numEntries()<<"  "<<dsDataSB2->sumEntries()<<std::endl;
@@ -229,8 +252,8 @@ int main(){
     }
 
     //fit the weighted dataset with a custom function
-    double minFitRange=600.0;//minMZZ;
-    double maxFitRange=maxMZZ;
+    double minFitRange=(inxj==1 ? 600.0 : 500);//minMZZ
+    double maxFitRange=(inxj==1 ? maxMZZ : bins[nBins-1]);
     std::cout<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;
     logf<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;
     mZZ->setRange("fitRange",minFitRange,maxFitRange) ;
@@ -276,11 +299,12 @@ int main(){
     double initf1=0.0;
     if(inxj==1)initf1=0.0;
     if(inxj==2)initf1=0.0;
-
+    double initm=560.0;
+    if(inxj==2)initm=400.0;
     RooRealVar *f0=new RooRealVar("f0","sigma",initf0,0.0,300.0);
     RooRealVar *f1=new RooRealVar("f1","alpha",initf1,-0.5,2.0);
     RooRealVar *f1b=new RooRealVar("f1b","beta",initf1,-0.5,2.0);
-    RooRealVar *f2=new RooRealVar("f2","m",560,200.0,500.0);
+    RooRealVar *f2=new RooRealVar("f2","m",initm,200.0,500.0);
     RooRealVar *f3=new RooRealVar("f3","theta",0.0);
     f2->setConstant(kTRUE);
     f3->setConstant(kTRUE);
@@ -318,12 +342,12 @@ int main(){
     //refit to get a new covariance matrix to check that this has worked
     r_sig_expLev_decorr = background_decorr_->fitTo(*dsDataSB2, Save(),SumW2Error(kTRUE),RooFit::PrintLevel(-1),Range("fitRange"));
     //    char fitResultName_eig[200];
-    sprintf( fitResultName_eig, "resultsExpLevelledFit_%dJ_%s_decorr",inxj , leptType.c_str() );
+    sprintf( fitResultName_eig, "resultsExpLevelledFit_%dJ_%s_%s_decorr",inxj ,pur_str.c_str(), leptType.c_str() );
     r_sig_expLev_decorr->SetName(fitResultName_eig); 
     logf<<"Sigma= "<<f0->getVal()<<" -> SigmaDecorr="<<f0rot->getVal()<<std::endl;
     logf<<"Alphaa= "<<f1b->getVal()<<" -> AlphaDecorr="<<f1rot->getVal()<<std::endl;
     logf<<"m= "<<f2->getVal()<<" Theta="<<f3->getVal()<<std::endl;
-    sprintf( fitResultName_eig, "%s/resultsExpLevelledFit_%dJ_%s_decorr.txt",outDir.c_str(),inxj , leptType.c_str() );
+    sprintf( fitResultName_eig, "%s/resultsExpLevelledFit_%dJ_%s_%s_decorr.txt",outDir.c_str(),inxj ,pur_str.c_str(), leptType.c_str() );
     RooArgSet rotvars( *f0rot,*f1rot );
     rotvars.writeToFile(fitResultName_eig);
 
@@ -342,7 +366,7 @@ int main(){
     RooPlot *plot = new RooPlot(*f0,*f1b,f0val-2*f0err,f0val+2*f0err,f1val-2*f1err,f1val+2*f1err);
     plot->addPlotable(contour);
     plot->Draw();
-    c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J"+leptType+".eps").c_str());
+    c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
     
     f0val=f0rot->getVal();
     f1val=f1rot->getVal();
@@ -356,7 +380,7 @@ int main(){
     plotRot->addPlotable(contourRot);
     plotRot->Draw();
     // ContourPlot(f0,f1,r_sig_expLev);
-    c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J"+leptType+"_decorrelated.eps").c_str());
+    c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_decorrelated.eps").c_str());
     
     delete contour;
     delete c_rot;
@@ -365,9 +389,9 @@ int main(){
     }//edn if decorrLevExpo
 
     //save everything in a RooWorkspace
-    TFile *fout=new TFile((outDir+"/workspace_"+ssnxj.str()+"J"+leptType+"_new.root").c_str(),"RECREATE");
+    TFile *fout=new TFile((outDir+"/workspace_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_new.root").c_str(),"RECREATE");
     RooWorkspace *wsnew=new RooWorkspace(*ws);
-    wsnew->SetName(("ws_alpha_"+ssnxj.str()+"J"+leptType).c_str());
+    wsnew->SetName(("ws_alpha_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType).c_str());
     logf<<"\n\nName of new WS: "<<wsnew->GetName()<<std::endl;
     wsnew->import(*Nbkg);
     wsnew->import(*NbkgELE);
@@ -437,7 +461,7 @@ int main(){
     TCanvas *can1=new TCanvas("canvas1", "can1",800,800);
     can1->cd();
     RooPlot *xf=mZZ->frame();
-    string frameTitle="Bkgd Estimation from Data Sidebands ("+ssnxj.str()+"J - "+leptType+" lept flav)";
+    string frameTitle="Bkgd Estimation from Data Sidebands ("+ssnxj.str()+"J "+pur_str +" - "+leptType+" lept flav)";
     xf->SetTitle(frameTitle.c_str());
     //DO NOT CHANGE THE ORDER !!!!!!! DATA AS FIRST ONES !!!!
     dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));
@@ -466,14 +490,15 @@ int main(){
     dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));//,Normalization(dsDataSB2->numEntries(),RooAbsPdf::NumEvent)
     if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
     logf<<"Check nromalization: NumEntries of dsDataSIG= "<<dsDataSIG->numEntries() <<"("<<dsDataSIG->sumEntries() <<")    SumEntries of dsDataSB2="<<dsDataSB2->sumEntries()<<"   numEntries="<<dsDataSB2->numEntries()<<"    Nbkg (NORM)="<<NbkgRange->getVal()<<"   Nent="<<Nent->getVal()<<"     Nerr="<<Nerr->getVal() <<std::endl;
+
     xf->Draw();
-    can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+leptType+".root").c_str());
-    can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+leptType+".eps").c_str());
+    can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".root").c_str());
+    can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
     xf->SetMinimum(0.06);
     gPad->SetLogy();
     xf->Draw();
-    can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+leptType+"_log.root").c_str());
-    can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+leptType+"_log.eps").c_str());
+    can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.root").c_str());
+    can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.eps").c_str());
     delete xf;
      
     //don't change this order, for God's sake !
@@ -484,6 +509,9 @@ int main(){
     delete ws;
     delete fout;
     // if(inxj==2) delete falpha;
+
+    }//end loop on purity categories
+
   }//end loop on nxj
   logf.close();
   

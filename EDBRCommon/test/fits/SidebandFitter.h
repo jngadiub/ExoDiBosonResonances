@@ -24,13 +24,13 @@ class SidebandFitter {
   SidebandFitter(  const std::string& PUType );
   ~SidebandFitter() {};
 
-  RooWorkspace* getAlphaFit( int btagCategory, const std::string& leptType_str, TTree* treeMC, bool withRooFit );
+  RooWorkspace* getAlphaFit( TTree* treeMC,int nxjCategory,const std::string& leptType_str, int purCut, bool withRooFit );
 
   
-  RooFitResult* fitSidebands( TTree* treeMC, TTree* treeDATA, int btagCategory, const std::string& leptType, TH1D* h1_alpha );
+  RooFitResult* fitSidebands( TTree* treeMC, TTree* treeDATA, int nxjCategory, const std::string& leptType, TH1D* h1_alpha );
 
-  std::string get_fitResultsName( int nbtags, const std::string& init );
-  std::string get_fitResultsRootFileName( int btagCategory, const std::string& leptType );
+  std::string get_fitResultsName( int nxj, const std::string& init );
+  std::string get_fitResultsRootFileName( int nxjCategory, const std::string& leptType );
 
   std::string get_outdir();
   void setOutDir(string new_outdir);
@@ -42,7 +42,7 @@ class SidebandFitter {
   TH1D* dummyAlphaHist( float alpha , TH1D* inhist , char* histName );
   void alphaFit( TH1D* alpha_hist , std::vector<double> & fitpars, std::vector<double> & fiterrs);
   std::string getFitFunc(std::string modifier){return fitfuncName_+modifier;}
-  void bkgdFitIterative(TTree *treeMC, RooRealVar& mZZ, int btagCategory, const std::string& leptType_str);
+  void bkgdFitIterative(TTree *treeMC, RooRealVar& mZZ, int nxjCategory, const std::string& leptType_str);
 //   TTree* correctTreeWithAlpha( TTree* tree, TH1D* h1_alpha, int btagCategory, const std::string& name );
 
 

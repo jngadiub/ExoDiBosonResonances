@@ -15,7 +15,7 @@
 
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1);
 void doAlpha(TTree *chMC, std::string wType);
-const std::string myOutDir="FitSidebandsMJJ_CA8_TEST/";//it must already exist !
+const std::string myOutDir="FitSidebandsMJJ_CA8_V5/";//it must already exist !
 
 const string inDirSIG="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
 const string inDirSB ="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsidebandCA8/";
@@ -107,43 +107,55 @@ void doAlpha(TTree *chMC, std::string wType){
   //will performa a separate bkg estimation for each of them
   for( unsigned inxj=1; inxj<=2; ++inxj ) {
     
-    SidebandFitter *sf = new SidebandFitter( wType);
+    int nPurities=1;
+    if(inxj==1)nPurities=2;
 
-    sf->setOutDir(myOutDir);
- 
-    int nxjCut=inxj;
-    int nentriesTOT=chMC->GetEntries();
-    std::cout<<"Cutting nXjets=="<<nxjCut<<" on a chain with "<< nentriesTOT<<" entries"<<std::endl;
- 
-    int nxjOld;
-    chMC->SetBranchAddress("nXjets",&nxjOld);
-    TTree* treeMC_nxj=(TTree*)chMC->CloneTree(0);
-    for (Int_t iOld=0;iOld<nentriesTOT; iOld++) {
-      chMC->GetEntry(iOld);
-      if(nxjOld==nxjCut)treeMC_nxj->Fill();
-    }
+    double purityCut=-1;
+    for(int iP=0;iP<nPurities;iP++){//loop over purity categories
+      if(inxj==1)purityCut=iP;//for 2J category, no cut on Purity
 
-    std::cout<<"Cut applied: "<<treeMC_nxj->GetEntries()<< " entries remain"<<std::endl;
-    string outFileName;
-    string leptStr="ALL";//"MU" //"ELE"
-    std::stringstream ss;
-    ss << inxj;
- 
-    outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"J_"+leptStr+".root";
-    sf->setOutFile(outFileName);
-    sf->setCanvasLabel("_Madgraph");
-    RooWorkspace* alpha_nxj = sf->getAlphaFit( inxj, leptStr, treeMC_nxj ,true);
+      SidebandFitter *sf = new SidebandFitter( wType);
+      
+      sf->setOutDir(myOutDir);
+      
+      int nxjCut=inxj;
+      int nentriesTOT=chMC->GetEntries();
+      std::cout<<"Cutting nXjets=="<<nxjCut<<" on a chain with "<< nentriesTOT<<" entries"<<std::endl;
+      
+      int nxjOld;
+      chMC->SetBranchAddress("nXjets",&nxjOld);
+      TTree* treeMC_nxj=(TTree*)chMC->CloneTree(0);
+      for (Int_t iOld=0;iOld<nentriesTOT; iOld++) {
+	chMC->GetEntry(iOld);
+	if(nxjOld==nxjCut)treeMC_nxj->Fill();
+      }
 
-   
+      std::cout<<"Cut applied: "<<treeMC_nxj->GetEntries()<< " entries remain"<<std::endl;
+      string outFileName;
+      string leptStr="ALL";//"MU" //"ELE"
+      std::stringstream ss;
+      ss << inxj;
 
-    // now estimate stat errors by throwing toys
-    // 1: get the histos produced before and saved in the output file
-    cout<<"\n*** Throwing toys for category "<<inxj<<"Jet ***"<<endl<<endl;
-    outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"J_"+leptStr+".root";
-    TFile *fWS=new TFile(outFileName.c_str(),"UPDATE");
-    // fWS->ls();
-    TH1D *myalpha=(TH1D*)fWS->Get("h_alpha_smoothened");
-  
+      std::string pur_str="";
+      if(purityCut==0)pur_str="LP";
+      if(purityCut==1)pur_str="HP";
+      
+
+      outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"J_"+pur_str+"_"+leptStr+".root";
+      sf->setOutFile(outFileName);
+      sf->setCanvasLabel("_Madgraph");
+      RooWorkspace* alpha_nxj = sf->getAlphaFit( treeMC_nxj , inxj,  leptStr, purityCut,true);
+      
+      
+      
+      // now estimate stat errors by throwing toys
+      // 1: get the histos produced before and saved in the output file
+      cout<<"\n*** Throwing toys for category "<<inxj<<"Jet "<< pur_str.c_str()<<" ***"<<endl<<endl;
+      //  outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"J_"+pur_str+"_"+leptStr+".root";
+      TFile *fWS=new TFile(outFileName.c_str(),"UPDATE");
+      // fWS->ls();
+      TH1D *myalpha=(TH1D*)fWS->Get("h_alpha_smoothened");
+      
     /*
     outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"btag_"+leptStr+".root";
     TFile *fWS=new TFile(outFileName.c_str(),"UPDATE");
@@ -173,7 +185,7 @@ void doAlpha(TTree *chMC, std::string wType){
     myalpha->SetMarkerColor(kBlue);
     myalpha->Draw("PE0");
     char canvasName[400];
-    sprintf( canvasName, "%s/mZZ_alpha_%dJ_%s.eps", myOutDir.c_str(), inxj, "ALL");
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.eps", myOutDir.c_str(), inxj,pur_str.c_str(), "ALL");
     calphaAVG->SaveAs( canvasName  );
     delete calphaAVG;
 
@@ -218,34 +230,34 @@ void doAlpha(TTree *chMC, std::string wType){
     myalpha->SetMarkerColor(2);
     myalpha->Draw("same");
     //    char canvasName[400];
-    sprintf( canvasName, "%s/mZZ_alphaToys_%dJ_%s.eps", myOutDir.c_str(), inxj, "ALL");
+    sprintf( canvasName, "%s/mZZ_alphaToys_%dJ%s_%s.eps", myOutDir.c_str(), inxj,pur_str.c_str(), "ALL");
     can.SaveAs(canvasName);
   
 
     myalpha->Write();
     fWS->Close();
-    //delete h_dist_p0;
+    cout<<"Deleting "<<endl; 
+   //delete h_dist_p0;
     delete fWS;
     delete alpha_nxj;
+    delete sf;
+ 
 
-
-    //     RooFitResult* fr = sf->fitSidebands( treeMC_Xbtag, treeDATA_Xbtag, inxj, "ALL", alpha_Xbtag );
-    
+    //     RooFitResult* fr = sf->fitSidebands( treeMC_Xbtag, treeDATA_Xbtag, inxj, "ALL", alpha_Xbtag );    
     //     for(int i = 0 ; i <nToys ; i++) {
     //       std::cout << std::endl << "[ " << inxj << " jets ]  Toy: " << i << "/" << nToys << std::endl;
     //       TH1D* variedHisto = sf->shuffle(alpha_Xbtag, randomNum ,"tmp");
     //       sf->fitPseudo( treeMC_Xbtag, treeDATA_Xbtag, ibtag, "ALL", variedHisto,i);
     //       delete variedHisto;
-    //     }
-    
+    //     }    
     //     if( nToys > 0 )
     //       sf->pseudoMassge(nToys, inxj,"ALL",fr);
-    
-    //     delete fr;
-    //     delete sf;
-    
-    /////// delete alpha_Xbtag;
+    //     delete fr;    
 
+    
+ 
+
+    }//end loop over purities
 
   } //end loop on nXjets
  
