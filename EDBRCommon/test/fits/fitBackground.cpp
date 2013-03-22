@@ -58,7 +58,7 @@ const string outDir="FitSidebandsMJJ_CA8_V5/";
 const string leptType="ALL";//"ALL" //"MU" //"ELE"
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 500;
-const bool unblind=true;//default is not to plot the data in signal region
+const bool unblind=false;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 //binning for merged Jet topology 
 const int nBins1=22;
