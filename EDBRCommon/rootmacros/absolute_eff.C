@@ -1,5 +1,6 @@
 #include <vector>
 #include "TH1.h"
+#include "TF1.h"
 #include "TString.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -10,16 +11,17 @@
 void absolute_eff()
 {
   //TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv6/goodbtag/AK7/fullsig/";
-	TString inputpath = "/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsigCA8/";
-	TString cut = "absolute_efficiency";
+	TString inputpath = "/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
+	TString histoTitle = "absolute_efficiency";
 	vector<TString> dataSamples;
 	vector<TString> bkgSamples;
 	vector<TString> sigSamples;
 
 	bool weightedeff = false;
-	double lepCut=1.0;//0->ele 1->mu
+	double lepCut=0.0;//0->ele 1->mu
 	double nxjCut=1.0;
-	double nsubjCut=0.45;
+	double nsubjCut=999.9;
+	double purityCut=0.0;
 
 	double lumi = 19538.85;
 /*
@@ -45,26 +47,39 @@ void absolute_eff()
 	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M900");
 	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1000");
 	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1100");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1200");
 	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1300");
 	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1400");
 	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1500");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1600");
 	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1700");
 	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1800");
 	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1900");
+	sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M2000");
 
 
+	const int nCat=6;//EE1JHP, MM1JHP, EE1JLP, MM1JLP, EE2J, MM2J
 	const int ndata = dataSamples.size();
 	const int nbkg  = bkgSamples.size();
 	const int nsig  = sigSamples.size();
-	std::vector<double> sig_effs, sig_masses;
+	std::vector<double>  sig_masses;
+	double sig_effs[nCat][nsig];
 
 	cout<<"data samples "<<ndata<<"  bkg samples "<<nbkg<<"  signal samples "<<nsig<<endl;	
 
-	TH1F * h1 = new TH1F (cut,cut,ndata+nbkg+nsig,0,ndata+nbkg+nsig);
+	TH1F * h1[nCat];
+
+	for(int i=0;i<nCat;i++){
+	  TString titlenew=histoTitle+"_Cat";
+	  titlenew+=i;
+	  h1[i] = new TH1F (titlenew,titlenew,ndata+nbkg+nsig,0,ndata+nbkg+nsig);
+	h1[i]->SetBit(TH1::kCanRebin);
+	h1[i]->SetStats(0);
+
+	}
+
 	TH1F * h1b = new TH1F ("HistFit","HistFitTitle",17,550,2250);
 	//h1->GetYaxis()->SetRangeUser(0,1);
-	h1->SetBit(TH1::kCanRebin);
-	h1->SetStats(0);
 	gStyle->SetPaintTextFormat("1.4f");
 	//h1->Sumw2();
 
@@ -73,8 +88,10 @@ void absolute_eff()
 	int indM=0;
 	double startM=600.0; double step=100.0;
 	
-	for(int i =0; i<ndata+nbkg+nsig; i++   )
-	{
+	for(int i =0; i<ndata+nbkg+nsig; i++   ) {
+
+
+
 		TString filename;
 		TString samplename;
 		if(i<ndata) 
@@ -108,7 +125,7 @@ void absolute_eff()
 		int entries = tree->GetEntries();
 		cout<<"entries: "<<entries<<endl;
 
-		double pass=0;
+
 		double total=0;
 		double crossSection=0;
 		//gen events and crossSection
@@ -128,6 +145,7 @@ void absolute_eff()
 		double ptZll[99];
 		double ptZjj[99];
 		double lep[99];
+		double vTagPurity[99];
 		int    nCands;
 		int    nXjets[99];
 		int nLooseEle;
@@ -137,7 +155,7 @@ void absolute_eff()
 		double LumiWeight=-1;
 		double GenWeight=-1;
 		double region[99];
-		double nsubj12[99];
+		double nsubj21[99];
 
 		tree->SetBranchAddress("Ngen", &Ngen);
 		tree->SetBranchAddress("xsec", &xsec);
@@ -156,17 +174,35 @@ void absolute_eff()
 		tree->SetBranchAddress("ptZjj", ptZjj);
 		tree->SetBranchAddress("met", &met);
 		tree->SetBranchAddress("nXjets", nXjets);
+		tree->SetBranchAddress("vTagPurity", vTagPurity);
 		tree->SetBranchAddress("lep", lep);
 		tree->SetBranchAddress("nCands", &nCands);
-		tree->SetBranchAddress("nsubj12", &nsubj12);
+		tree->SetBranchAddress("nsubj21", &nsubj21);
 
 		tree->SetBranchAddress("PUweight", &PUweight);
 		tree->SetBranchAddress("LumiWeight", &LumiWeight);
 		tree->SetBranchAddress("GenWeight", &GenWeight);
 		tree->SetBranchAddress("region", region);
 		
-	
+		//	if(!samplename.Contains("BulkG"))continue;
 		bool filled = 0;
+		int indCat=0;
+
+		//order of categories:EE1JHP, MM1JHP, EE1JLP, MM1JLP, EE2J, MM2J
+		for(int iNJ=1;iNJ<=2;iNJ++){
+		  nxjCut=double(iNJ);
+		  for(int iPur=1;iPur>=0;iPur--){
+		  
+		    
+		    purityCut=double(iPur);
+		    if(iNJ==2){
+		      if(iPur!=1)continue;//no High/Low purity for 2J topology
+		      else purityCut=-2.0;
+		  }
+		    for(int ilep=0;ilep<2;ilep++){
+		      lepCut=double(ilep);
+
+		      double pass=0;
 		for(int j=0;j<entries;j++)
 		{
 			tree->GetEntry(j);
@@ -201,8 +237,8 @@ void absolute_eff()
 					//if(ptZll[ivec]<200)continue;
 					//if(ptZjj[ivec]<200)continue;
 					if(nXjets[ivec]!=nxjCut)continue;// 1 jet candidate
-					//if(nbtagsM[ivec]!=0)continue; //b-tag veto
-					if(1.0/nsubj12[ivec]>nsubjCut)continue;
+					if(vTagPurity[ivec]!=purityCut&&purityCut>=0)continue; // HP
+					//if(nsubj21[ivec]>nsubjCut)continue;
 
 					pass=pass+actualWeight;
 
@@ -225,33 +261,50 @@ void absolute_eff()
 		cout<<"crossSection: "<<crossSection<<" total: "<<total<<" pass: "<<pass<<" eff: "<<eff<<endl;
 
 		
-		h1->Fill(samplename,eff);	
+		h1[indCat]->Fill(samplename,eff);	
 
 		if(samplename.Contains("BulkG")){
 
 		  int binToFill=h1b->FindBin(indM*step+startM);
-		  cout<<"Filling IndM="<<indM<<"  M="<<indM*step+startM<<"  Bin#"<<binToFill<<"  Eff="<<eff<<endl;
+		  cout<<"Filling IndM="<<indM<<"  Cat="<<indCat<<"  M="<<indM*step+startM<<"  Bin#"<<binToFill<<"  Eff="<<eff<<endl;
 		  h1b->SetBinContent(binToFill,eff);
-		  sig_masses.push_back(indM*step+startM);
-		  sig_effs.push_back(eff);
-		  indM++;
-		  if(indM*step+startM==1200)indM++;
-		  if(indM*step+startM==1600)indM++;
+		  if(indCat==0)sig_masses.push_back(indM*step+startM);
+		  //		  sig_effs.push_back(eff);
+		  sig_effs[indCat][indM]=eff;
+		  if(indCat==nCat-1)indM++;
+		  indCat++;
+		  //		  if(indM*step+startM==1200)indM++;
+		  // if(indM*step+startM==1600)indM++;
+
 		}
+
+
+
+		    } //end loop on lep categoires
+		  }//end loop on Purity categories
+		}//end loop on N Jets categories
+
 	}//end of sample loop
 
+	TF1 *fitPol1=new TF1("fitPoly1","[0]+[1]*x",550,2050);
+	for(int indCat=0;indCat<nCat;indCat++){
 	c1->SetGridy(1);
 
-	TF1 *fitPol1=new TF1("fitPoly1","[0]+[1]*x",1250,1950);
+
 	fitPol1->SetLineColor(kRed);
 	h1b->Fit(fitPol1,"R");
 
 	cout<<"\n\nEff extrapolated at 2000 GeV: "<<fitPol1->Eval(2000.0)<<endl;
 
-	h1->SetTitle(cut);
-	h1->Draw();
-	h1->Draw("TEXT0same");
-	c1->SaveAs(cut+".png");
+	//	h1->SetTitle(histoTitle);
+	h1[indCat]->Draw();
+	h1[indCat]->Draw("TEXT0same");
+	TString canTitle=histoTitle+"_Cat";
+	canTitle+=indCat;
+
+	c1->SaveAs(canTitle+".png");
+
+	}
 
 	TCanvas *c2=new TCanvas("cFit","cFit",800,800);
 	c2->cd();
@@ -261,9 +314,13 @@ void absolute_eff()
 
 
 	cout<<"data samples "<<ndata<<"  bkg samples "<<nbkg<<"  signal samples "<<nsig<<endl;	
-	cout<<"\nEfficiencies for Lep="<<lepCut<<"  nXjets="<<nxjCut<<" : "<<endl;
-	for(int im=0;im<sig_effs.size();im++){
-	  cout<<"M="<<sig_masses.at(im)<<"  Eff="<<sig_effs.at(im)<<endl;
+	cout<<"\n------------------"<<endl;
+	cout<<"Efficiencies for Lep="<<lepCut<<"  nXjets="<<nxjCut<<" PurityCut="<<purityCut <<" : "<<endl;
+	cout<<"\nM [GeV]\tEff_EE1JHP\tEff_MM1JHP\tEff_EE1LP\tEff_MM1JLP\tEff_EE2J\tEff_MM2J"<<endl;
+	for(int im=0;im<sig_masses.size();im++){
+	  // cout<<"M="<<sig_masses.at(im)<<"  Eff="<<sig_effs.at(im)<<endl;
+	  
+	  cout<<sig_masses.at(im)<<"\t"<<sig_effs[0][im]<<"\t"<<sig_effs[1][im]<<"\t"<<sig_effs[2][im]<<"\t"<<sig_effs[3][im]<<"\t"<<sig_effs[4][im]<<"\t"<<sig_effs[5][im]<<endl;
 	}
 
 }
