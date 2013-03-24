@@ -270,7 +270,7 @@ int main(){
     //  RooFitResult* r_sig = expo_fit->fitTo(*dsDataSB,Save(kTRUE),Range("fitRange")) ;
     RooFitResult* r_sig2 = expo_fit->fitTo(*dsDataSB2,Save(kTRUE),SumW2Error(kTRUE),RooFit::PrintLevel(-1),Range("fitRange")) ;
     char fitResultName_expo[200];
-    sprintf( fitResultName_expo, "resultsExpoFit_%dJ_%s",inxj , leptType.c_str() );
+    sprintf( fitResultName_expo, "resultsExpoFit_%dJ_%s_%s",inxj ,pur_str.c_str(), leptType.c_str() );
     r_sig2->SetName(fitResultName_expo); 
     logf<<"\n\n\n\n\n#################\nCheck entries: "<<dsDataSB->sumEntries()<<"   "<<dsDataSB2->sumEntries()
 	<<"##############\n\n\n\n\n"<<endl;

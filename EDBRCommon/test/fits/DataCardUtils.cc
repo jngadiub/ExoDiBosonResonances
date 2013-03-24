@@ -36,10 +36,10 @@ std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory, const st
   
 }
 
-std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory, const std::string& leptType , std::string myDir) {
+std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory,const std::string& purType , const std::string& leptType , std::string myDir) {
   
   char fitResultsFileName[500];              
-  sprintf( fitResultsFileName, "/workspace_%dJ%s_new.root", nxjCategory, leptType.c_str() );
+  sprintf( fitResultsFileName, "/workspace_%dJ_%s_%s_new.root", nxjCategory,purType.c_str(), leptType.c_str() );
   
   std::string fitResultsFileName_str(myDir+fitResultsFileName);
   
@@ -47,10 +47,10 @@ std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory, const st
   
 }
 
-std::string DataCardUtils::get_fitResultsRootFileName(double mass, int nxjCategory, const std::string& leptType , std::string myDir) {
+std::string DataCardUtils::get_fitResultsRootFileName(double mass, int nxjCategory,const std::string& purType , const std::string& leptType , std::string myDir) {
   
   char fitResultsFileName[500];              
-  sprintf( fitResultsFileName, "/workspace_M%d_%dJ%s_new.root", int(mass), nxjCategory, leptType.c_str() );
+  sprintf( fitResultsFileName, "/workspace_M%d_%dJ_%s_%s_new.root", int(mass), nxjCategory,purType.c_str(), leptType.c_str() );
   
   std::string fitResultsFileName_str(myDir+fitResultsFileName);
   
@@ -58,20 +58,22 @@ std::string DataCardUtils::get_fitResultsRootFileName(double mass, int nxjCatego
   
 }
 
-RooDataSet* DataCardUtils::get_observedDataset( RooWorkspace* bgws  ,   std::string leptType_str, int nxj,std::string datasetName ){
+RooDataSet* DataCardUtils::get_observedDataset( RooWorkspace* bgws  , std::string leptType_str, int nxj, int purity, std::string datasetName ){
   string dName="dsDataSIGfull";
   if(datasetName!="")dName=datasetName;
   char cutstring[200];
-  sprintf(cutstring,"nXjets==%d && lep==%d",nxj,convert_leptType(leptType_str));
+  if(purity<0)sprintf(cutstring,"nXjets==%d && lep==%d",nxj,convert_leptType(leptType_str));
+  else sprintf(cutstring,"nXjets==%d && lep==%d &&vTagPurity==%d",nxj,convert_leptType(leptType_str),purity);
   return dynamic_cast<RooDataSet*>(bgws->data(dName.c_str())->reduce(cutstring));
 }
 
 
-double DataCardUtils::get_backgroundNormalization( RooWorkspace* bgws  , std::string leptType_str, int nxj ,std::string BkgDatasetName){
+double DataCardUtils::get_backgroundNormalization( RooWorkspace* bgws  , std::string leptType_str, int nxj ,int purity,std::string BkgDatasetName){
   string dName="dsDataSB2";
   if(BkgDatasetName!="")dName=BkgDatasetName;
   char cutstring[200];
-  sprintf(cutstring,"nXjets==%d && lep==%d",nxj,convert_leptType(leptType_str));
+  if(purity<0)sprintf(cutstring,"nXjets==%d && lep==%d",nxj,convert_leptType(leptType_str));
+  else  sprintf(cutstring,"nXjets==%d && lep==%d &&vTagPurity==%d",nxj,convert_leptType(leptType_str),purity);
   std::cout<<"DataCardUtils::get_backgroundNormalization , dSet: "<<dName.c_str()<<"  "<< bgws->data(dName.c_str())->reduce(cutstring)->numEntries()<<" ("<<  bgws->data(dName.c_str())->reduce(cutstring)->sumEntries()<<std::endl;
  
   return bgws->data(dName.c_str())->reduce(cutstring)->sumEntries();

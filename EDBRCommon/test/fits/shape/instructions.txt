@@ -7,15 +7,23 @@ Necessary inputs are:
 
 
 usage:
-python shape.py -n njets -f file [-p]
+python shape.py -n njets -p purity -l lepFlav -f file [--plotonly]
 
--n njets:	1: monojet channel
+-j njets:	1: monojet channel
 		2: dijet channel
 		3: both channels
 
+-p purity:	-1: no check on the V-tagging purity flag
+		0: low-purity V-tag category
+		1: high-purity V-tag category 
+
+-l lepFlav:	0: only electrons
+		1: only muons
+		2: both ele and muons
+
 -f file:	input to use, this can be a root file as produced by the treemaker or a directory with such root files. In the case of a directory, the script will loop over all root files in the directory.
 
--p :		If this option is set, no fit is performed, but plots are produced using the saved results from previous fits.
+--plotonly: if this option is set, no fit is performed but plots are produced using the saved results from previous fits.
 
 
 The root files are expected to have names as produced by the std production scripts such as:
@@ -33,30 +41,46 @@ plots/BulkG_WW_lvjj_c0p2_M1000_xww_<njet><category><scale>.eps
 The "outpars..." files serve as input for the datacards.
 
 
-Some notes:
-Internally the script fits a matched and unmatched contribution even in 1-jet case, were our final shape is only the matched one.
-The unmatched contribution is suppressed by filling all 1-jet events into the matched category and the unmatched contribution to the pdf is fixed in the input parameters to 0.1% of the full function.
-This could possibly be improved by using a properly simplified function for the 1jet case, but I didn't get around to do that yet.
+Some notes: 
 
-Fit convergence can be troublesome. Playing with the initial parameters can help with that.
+Internally the script fits a matched and unmatched
+contribution even in 1-jet case, were our final shape is only the
+matched one.  The unmatched contribution is suppressed by filling all
+1-jet events into the matched category and the unmatched contribution
+to the pdf is fixed in the input parameters to 0.1% of the full
+function.  This could possibly be improved by using a properly
+simplified function for the 1jet case, but I didn't get around to do
+that yet.
 
-When creating the datasets, the script applies the recommended selections. These may change and will have to be updated.
+Fit convergence can be troublesome. Playing with the initial
+parameters can help with that.
 
-At the time of this writing, we use only the muons for the WW monojet channel
+When creating the datasets, the script applies the recommended
+selections. These may change and will have to be updated.
+
+At the time of this writing, we use only the muons for the WW monojet
+channel
 
 Final event selection for the 2jet channel may be out of date.
 
-The 2-jet fits need some care with the fit range: the relative fraction of matched and unmatched events is computed in the fit range, so if the range used in the datacards is different from the one used here, the fraction may need to be adjusted accordingly. (The unmatched contribution is quite broad and the number of events expected depend on the range)
+The 2-jet fits need some care with the fit range: the relative
+fraction of matched and unmatched events is computed in the fit range,
+so if the range used in the datacards is different from the one used
+here, the fraction may need to be adjusted accordingly. (The unmatched
+contribution is quite broad and the number of events expected depend
+on the range)
 
 
-Code structre (in case you want to improve the script)
-main:
-parses the command line parameters and starts processing of each appropriate file
+Code structure (in case you want to improve the script) main: parses
+the command line parameters and starts processing of each appropriate
+file
 
-processSubsample:
-executes the fit on one subsample (i.e. inputfile + njet-selection)
-It will create a workspace that collects all relevant variables and pdfs, execute the fit and produce plots
-Filling the workspace and plotting is handles by separate routines, outlined below:
+processSubsample: 
+executes the fit on one subsample (i.e. inputfile +
+njet-selection) It will create a workspace that collects all relevant
+variables and pdfs, execute the fit and produce plots Filling the
+workspace and plotting is handles by separate routines, outlined
+below:
 
 defineVars:
 create all the RooRealVars for the fit and import them into the workspace.

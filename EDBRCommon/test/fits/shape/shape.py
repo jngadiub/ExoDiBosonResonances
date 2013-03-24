@@ -79,11 +79,6 @@ def ConstructPdf(workspace):
 
 # set up the variables to be used in the fit. Will need ot be extended if we use different funcional forms for different channels
 def defineVars(descriptor,njets,workspace,plotonly):
-    mzz    = root.RooRealVar("mZZ","mZZ",400,3000) ## IMPORTANT: Master fit range must be the same as for the datacards
-    weight = root.RooRealVar("weight","weight",0,100000)
-    match  = root.RooCategory("match","match")
-    match.defineType("unmatched",0)
-    match.defineType("matched",1)
     # matched parameters
     mean_match = root.RooRealVar("mean_match","mean_match",0)
     sigma_match = root.RooRealVar("sigma_match","sigma_match",0)
@@ -109,24 +104,42 @@ def defineVars(descriptor,njets,workspace,plotonly):
     fitpars.add(alpha2_match)
     fitpars.add(n2_match)
 
-     
-    getattr(workspace,'import')(mzz)
-    getattr(workspace,'import')(weight)
-    getattr(workspace,'import')(match)
-
+  
     workspace.defineSet("pars",fitpars,True)
-    
+
     filename = "pars/"
     if plotonly:
         filename +="outpars_"
     else:
         filename +="inpars_"
-    filename += descriptor  +"_" +  str( njets ) +  ".config" 
+    filename += descriptor  +"_" +  str( njets ) +  ".config"
+    print 'Initializing par values from ',filename
+    print 'mean-match before reading from file: ',workspace.var("mean_match").getVal()
     workspace.set("pars").readFromFile(filename)
+    print 'mean-match after reading from file: ',workspace.var("mean_match").getVal()
+    
+    mzzLow=workspace.var("mean_match").getVal()- workspace.var("sigma_match").getVal()*6.0
+    if mzzLow < 400.0 :
+        mzzLow=400.0
+    mzzHigh=workspace.var("mean_match").getVal()+ workspace.var("sigma_match").getVal()*6.0
+    if mzzHigh > 3000.0 :
+        mzzHigh=3000.0
+        
+  
+    
+    mzz = root.RooRealVar("mZZ","mZZ",mzzLow,mzzHigh) ## IMPORTANT: Master fit range must be the same as for the datacards
+    print 'mzz created in range ',mzzLow,' ', mzzHigh
+    weight = root.RooRealVar("weight","weight",0,100000)
+    match  = root.RooCategory("match","match")
+    match.defineType("unmatched",0)
+    match.defineType("matched",1)
+     
+    getattr(workspace,'import')(mzz)
+    getattr(workspace,'import')(weight)
+    getattr(workspace,'import')(match)
 
 
-
-def readTree(filename, njet, workspace):
+def readTree(filename, njet,pur,lep, workspace):
     # set up dataset, filtering for the proper jet category
 
     varlist = root.RooArgSet(workspace.var("mZZ"),workspace.var("weight"),workspace.cat("match"))
@@ -143,38 +156,41 @@ def readTree(filename, njet, workspace):
     for event in tree:
         for i in range(event.nCands):
             if event.nXjets[i]==njet and event.region[i]==1 \
-            and event.mZZ[i]> mzz.getMin() and event.mZZ[i]< mzz.getMax(): # select events in signal region with corect jet number, with njettiness cut
-                mzz.setVal(event.mZZ[i])
-                weight.setVal(event.weight)
-                if njet==2 : # mc matching active only for 2-jets right now
-                    if event.MCmatch[i]!=0:
-                        match.setIndex(1)
+            and event.mZZ[i]> mzz.getMin() and event.mZZ[i]< mzz.getMax(): # select events in signal region with corect jet number
+                if (event.lep[i]!=lep and lep!=2):
+                    continue 
+                if pur<0 or event.vTagPurity[i]==pur:                    
+                    mzz.setVal(event.mZZ[i])
+                    weight.setVal(event.weight)
+                    if njet==2 : # mc matching active only for 2-jets right now
+                        if event.MCmatch[i]!=0:
+                            match.setIndex(1)
+                        else:
+                            match.setIndex(0)
                     else:
-                        match.setIndex(0)
-                else:
-                    #print deduceBosonType(filename)
-                    if  deduceBosonType(filename)=="Z":
-                        if event.nsubj21[i] > 0.45: #nsubjettiness cut for ZZ
-                            continue
-                    else: #WW
-                        deltaR_LJ = deltaR(event.etalep1[i],event.philep1[i],event.etajet1[i],event.phijet1[i]);
-                        deltaPhi_JMET = deltaPhi(event.phijet1[i],event.philep2[i]);
-                        deltaPhi_JWL  = deltaPhi(event.phijet1[i],event.phiZll[i]);
+                    ###print deduceBosonType(filename)
+                        if  deduceBosonType(filename)=="Z":
+                            if event.nsubj21[i] > 0.45: #nsubjettiness cut for ZZ
+                                continue
+                        else: #WW
+                            deltaR_LJ = deltaR(event.etalep1[i],event.philep1[i],event.etajet1[i],event.phijet1[i]);
+                            deltaPhi_JMET = deltaPhi(event.phijet1[i],event.philep2[i]);
+                            deltaPhi_JWL  = deltaPhi(event.phijet1[i],event.phiZll[i]);
 
-                        if(event.lep[i]!=1.):
-                            continue # 1 is for mu,0 for ele
-                        if((event.nLooseEle+event.nLooseMu)!=1):
-                            continue # second lepton veto
-                        if(event.ptZll[i]<200):
-                            continue #pt of Wmunu                                                
-                        if(event.nbtagsM[i]!=0):
-                            continue #b-tag veto
-                        if(deltaR_LJ<1.57 or deltaPhi_JMET<2. or deltaPhi_JWL<2.):
-                            continue
-                        if(event.nsubj21[i]>0.45):
-                            continue
+                            if(event.lep[i]!=1.):
+                                continue # 1 is for mu,0 for ele
+                            if((event.nLooseEle+event.nLooseMu)!=1):
+                                continue # second lepton veto
+                            if(event.ptZll[i]<200):
+                                continue #pt of Wmunu                                                
+                            if(event.nbtagsM[i]!=0):
+                                continue #b-tag veto
+                            if(deltaR_LJ<1.57 or deltaPhi_JMET<2. or deltaPhi_JWL<2.):
+                                continue
+                            if(event.nsubj21[i]>0.45):
+                                continue
                         
-                    match.setIndex(1) #assume all 1-jet events to be matched for now
+                        match.setIndex(1) #assume all 1-jet events to be matched for now
                     
                 dataset.add(root.RooArgSet(mzz,match,weight))
     
@@ -185,7 +201,7 @@ def readTree(filename, njet, workspace):
     getattr(workspace,'import')(weightedSet)
 
 
-# male pretty plots of the different categories
+# make pretty plots of the different categories
 def plot( category , workspace, descriptor):
 
     plot = workspace.var("mZZ").frame()
@@ -239,7 +255,14 @@ def plot( category , workspace, descriptor):
     c.SaveAs(filename+"_log.eps")
     
 
-def processSubsample(inputpath,njets,plotonly):
+def processSubsample(inputpath,njets,pur, lep,plotonly):
+
+    print ''
+    print ''
+    print ''
+    print ''
+    print '==================================================================================='
+    print 'Fitting shape for events in ',inputpath,' (',str(njets),'J ',str(pur),' ',str(lep),')'
     
     bosontype = deduceBosonType(inputpath) # we don't use this yet, but meybe we will?
     descriptor = desc(inputpath) # core string of the input file. This determines the file to read the initial values as well as names of output plots
@@ -247,7 +270,7 @@ def processSubsample(inputpath,njets,plotonly):
     # set up variables, functions, datasets
     workspace = root.RooWorkspace("ws","ws")
     defineVars(descriptor,njets,workspace,plotonly)           
-    readTree(inputpath,njets,workspace)
+    readTree(inputpath,njets,pur,lep,workspace)
     ConstructPdf(workspace)
 
     # fit goes here
@@ -255,24 +278,45 @@ def processSubsample(inputpath,njets,plotonly):
     if not plotonly:
         result = workspace.pdf("FitFunc").fitTo( data , root.RooFit.Save() )
         result.Print("v")
-        workspace.set("pars").writeToFile("pars/outpars_"+descriptor +"_" + str( njets ) +  ".config")
+        pur_str=""
+        if pur==0 :
+            pur_str="LP"
+        elif pur==1 :
+            pur_str="HP"
+        else:
+            pur_str=""
+
+        lep_str=""
+        if lep==0 :
+            lep_str="ELE"
+        elif lep==1 :
+            lep_str="MU"
+        else:
+            lep_str="ALL"
+
+        suffix= str( njets )+"J_" +pur_str+"_"+lep_str
+            
+        workspace.set("pars").writeToFile("pars/outpars_"+descriptor +"_" +suffix+  ".config")
                 
-    plot(0,workspace,descriptor+"_"+str(njets))
-    plot(1,workspace,descriptor+"_"+str(njets))
-    plot(2,workspace,descriptor+"_"+str(njets))
+    plot(0,workspace,descriptor+"_"+suffix)
+    plot(1,workspace,descriptor+"_"+suffix)
+    plot(2,workspace,descriptor+"_"+suffix)
     #workspace.Print("v")
 
    
 def main():
     parser = argparse.ArgumentParser(description='Signal Shape Fitting Tool')
-    parser.add_argument('-n','--njets',     help='number of jets: 1 or 2 or 3(both), default:both'                   ,type=int, choices=[1,2,3]    , default = 3)
+    parser.add_argument('-j','--njets',     help='number of jets: 1 or 2 or 3(both), default:both'  ,type=int, choices=[1,2,3]    , default = 3)
+    parser.add_argument('-p','--purity',     help='purity category: 0 (low purity) or 1 (high purity) or -1 (both), default:-1'  ,type=int, choices=[-1,0,1]    , default = -1)
+    parser.add_argument('-l','--lep',     help='lepton flavor: 0 (ele) or 1 (muons) or 2 (both), default:both'                   ,type=int, choices=[0,1,2]    , default = 2)
     parser.add_argument('-f','--filepath',  help='path to input trees, default: ./trees'                             , default = "../trees" )                                      
-    parser.add_argument('-p','--plotonly',  help='don\'t refit, just redraw plots from available parameter files, default = False', default = False, type=bool )                                 
+    parser.add_argument('--plotonly',  help='don\'t refit, just redraw plots from available parameter files, default = False', default = False, type=bool )                                 
     args = parser.parse_args()
     
     root.gROOT.SetBatch(True)
     root.gSystem.Load('libHiggsAnalysisCombinedLimit')
 
+    print 'PRINTING ARGUMENTS:'
     print args
 
     filelist = []
@@ -283,14 +327,26 @@ def main():
         for file in os.listdir(args.filepath):
             filelist.append(args.filepath + "/" +  file)
 
-
+   
     for file in filelist:
         if(checkfile(desc(file))):
-            if args.njets==3:
-                processSubsample(file,1,args.plotonly)
-                processSubsample(file,2,args.plotonly)           
-            else:
-                processSubsample(file,args.njets,args.plotonly)
+            for nj in 1,2:
+                if (nj!=args.njets and args.njets!=3):
+                    continue  
+                for np in -1,0,1:
+                    if (np!=args.purity):
+                        continue
+                    if (nj==2):                        
+                        np=-1
+                    for lf in 0,1:
+                        if(lf!=args.lep and args.lep!=2):
+                            continue
+                        if (args.lep==2):
+                            if (lf>0):
+                                continue
+                            else:
+                                lf=2
+                        processSubsample(file,nj,np,lf,args.plotonly)
             
 
 
