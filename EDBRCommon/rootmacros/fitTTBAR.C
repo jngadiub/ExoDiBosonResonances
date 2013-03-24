@@ -65,7 +65,7 @@ TVector randomizePars(int nPar, TMatrixDSym covarianceMatrix, int randomSeed, TF
   // multiply this vector by Lt to introduce the appropriate correlations
   g*= (*_Lt);
 
-  /*  
+  /*
   for(Int_t iPar= 0; iPar < nPar; iPar++) {
     for(Int_t kPar= 0; kPar < nPar; kPar++) {      
       std::cout << _Lt(iPar, kPar) << " ";      
@@ -106,6 +106,14 @@ void fitTTBAR(){
   //TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbar_CA8_nsub0p45/root/can_h_mJJ.root");
   TFile *_file_noMassCut_noNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarPowheg_CA8/root/can_h_mJJ.root");
   TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarPowheg_CA8_nsub0p45/root/can_h_mJJ.root");
+
+//   TFile *_file_noMassCut_noNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_ptlt300/root/can_h_mJJ.root");
+//   TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_ptlt300_nsub0p45/root/can_h_mJJ.root");
+//  TFile *_file_noMassCut_noNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_pt300to400/root/can_h_mJJ.root");
+//  TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_pt300to400_nsub0p45/root/can_h_mJJ.root");
+//   TFile *_file_noMassCut_noNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_ptgt400/root/can_h_mJJ.root");
+//   TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_ptgt400_nsub0p45/root/can_h_mJJ.root");
+
 
   //###########################
 
@@ -179,11 +187,11 @@ void fitTTBAR(){
   fitFcn_noCut->SetParameter(2,-1); 
   fitFcn_noCut->SetParLimits(2,0,-30); 
   fitFcn_noCut->SetParameter(3,10); 
-  fitFcn_noCut->SetParLimits(3,0,6000); 
+  fitFcn_noCut->SetParLimits(3,5,6000); 
   fitFcn_noCut->SetParameter(4,5); 
-  fitFcn_noCut->SetParLimits(4,3,30);   
+  fitFcn_noCut->SetParLimits(4,3,20);   
   fitFcn_noCut->SetParameter(5,80);   
-  fitFcn_noCut->SetParLimits(5,75,90);  
+  fitFcn_noCut->SetParLimits(5,75,90);  //85?
 
   TF1 *fitFcn_WithCut = new TF1("fitFcn_WithCut",fitFunction,XminFit,XmaxFit,6);
   fitFcn_WithCut->SetNpx(500);
@@ -197,11 +205,11 @@ void fitTTBAR(){
   fitFcn_WithCut->SetParameter(2,-1); 
   fitFcn_WithCut->SetParLimits(2,0,-30); 
   fitFcn_WithCut->SetParameter(3,10); 
-  fitFcn_WithCut->SetParLimits(3,0,6000); 
+  fitFcn_WithCut->SetParLimits(3,5,6000); 
   fitFcn_WithCut->SetParameter(4,5); 
-  fitFcn_WithCut->SetParLimits(4,3,30);   
+  fitFcn_WithCut->SetParLimits(4,3,20);   
   fitFcn_WithCut->SetParameter(5,80);   
-  fitFcn_WithCut->SetParLimits(5,75,90);  
+  fitFcn_WithCut->SetParLimits(5,75,90);  //85?
 
   //Fits
   TFitResultPtr fitResult_noCut;
@@ -328,13 +336,13 @@ void fitTTBAR(){
 
   // Calculate efficiencies using shapes modified using the covariance matrix
 
-  TH1D *histo_efficiency_NsubjettinessCut = new TH1D("histo_efficiency_NsubjettinessCut","histo_efficiency_NsubjettinessCut",50,0.5,1);
+  TH1D *histo_efficiency_NsubjettinessCut = new TH1D("histo_efficiency_NsubjettinessCut","histo_efficiency_NsubjettinessCut",100,0.5,1.5);
   TH1D *histo_err_efficiency_NsubjettinessCut = new TH1D("histo_err_efficiency_NsubjettinessCut","histo_err_efficiency_NsubjettinessCut",50,0,0.05);
 
-  TH1D *histo_efficiency_massCut = new TH1D("histo_efficiency_massCut","histo_efficiency_massCut",50,0.5,1);
+  TH1D *histo_efficiency_massCut = new TH1D("histo_efficiency_massCut","histo_efficiency_massCut",100,0.5,1.5);
   TH1D *histo_err_efficiency_massCut = new TH1D("histo_err_efficiency_massCut","histo_err_efficiency_massCut",50,0,0.05);
 
-  TH1D *histo_efficiency_tot = new TH1D("histo_efficiency_tot","histo_efficiency_tot",50,0.5,1);
+  TH1D *histo_efficiency_tot = new TH1D("histo_efficiency_tot","histo_efficiency_tot",100,0.5,1.5);
   TH1D *histo_err_efficiency_tot = new TH1D("histo_err_efficiency_tot","histo_err_efficiency_tot",50,0,0.05);
 
   TMatrixDSym covarianceMatrix_noCut = fitResult_noCut->GetCovarianceMatrix();
@@ -344,8 +352,10 @@ void fitTTBAR(){
   for(int toy=1; toy<=nToys; toy++)
     {
 
-      TVector newPars_noCut = randomizePars(6, covarianceMatrix_noCut, 55673+toy, fitFcn_noCut);  
-      TVector newPars_WithCut = randomizePars(6, covarianceMatrix_WithCut, 86954+toy, fitFcn_WithCut);  
+      int theSeed = 55673+toy; 
+
+      TVector newPars_noCut = randomizePars(6, covarianceMatrix_noCut, theSeed, fitFcn_noCut);  
+      TVector newPars_WithCut = randomizePars(6, covarianceMatrix_WithCut, theSeed, fitFcn_WithCut);  
 
       TF1 *fitFcn_noCut_NEW = new TF1("fitFcn_noCut_NEW",fitFunction,XminFit,XmaxFit,6);  
       TF1 *fitFcn_WithCut_NEW = new TF1("fitFcn_WithCut_NEW",fitFunction,XminFit,XmaxFit,6);  
