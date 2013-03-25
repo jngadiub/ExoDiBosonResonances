@@ -34,6 +34,11 @@ SidebandFitter.o: SidebandFitter.cc
 create_datacards: create_datacards.cpp DataCardUtils.o
 	$(CC) -Wall $(INCLUDES) -o create_datacards create_datacards.cpp DataCardUtils.o  $(ROOTFLAG) $(EXTRALIBS) -lHiggsAnalysisCombinedLimit
 
+chi2BackgroundFit: chi2BackgroundFit.cpp DataCardUtils.o
+	$(CC) -Wall $(INCLUDES) -o chi2BackgroundFit chi2BackgroundFit.cpp  DataCardUtils.o  $(ROOTFLAG) $(EXTRALIBS) -lHiggsAnalysisCombinedLimit
+
+FTest: FTestExoVV.cpp DataCardUtils.o
+	$(CC) -Wall $(INCLUDES) -o FTest FTestExoVV.cpp  DataCardUtils.o  $(ROOTFLAG) $(EXTRALIBS) -lHiggsAnalysisCombinedLimit
 
 DataCardUtils.o: DataCardUtils.cc 
 	$(CC) $(CFLAGS) $(INCLUDES) DataCardUtils.cc  $(ROOTFLAG) $(EXTRALIBS)

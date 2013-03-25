@@ -180,7 +180,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
   // get fit result:
   char fitResultName[200]; 
-  //  sprintf( fitResultName, "resultsExpLevelledFit_%dJ_ALL_decorr", nxj );
+  //  sprintf( fitResultName, "resultsExpLevelledFit_%dJ_%s_ALL_decorr", nxj ,pur_str.c_str());
   //  sprintf( fitResultName, "resultsExpoFit_%dJ_%s",nxj , leptType_str.c_str() );
   sprintf( fitResultName, "resultsExpoFit_%dJ_%s_ALL",nxj,pur_str.c_str() );
   cout<<"Trying to pick RooFitResult :"<<fitResultName<<endl;
