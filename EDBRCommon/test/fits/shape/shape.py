@@ -253,6 +253,7 @@ def plot( category , workspace, descriptor):
         filename+= "_matched"
     
     c.SaveAs(filename+".eps")
+    c.SaveAs(filename+".png")
 
     plot.SetMinimum(maximum / max(2,workspace.data("weightedSet").numEntries()))
     plot.Draw()
@@ -260,6 +261,7 @@ def plot( category , workspace, descriptor):
     c.SetLogy(True)
     
     c.SaveAs(filename+"_log.eps")
+    c.SaveAs(filename+"_log.png")
     
 
 def processSubsample(inputpath,njets,pur, lep,plotonly):
