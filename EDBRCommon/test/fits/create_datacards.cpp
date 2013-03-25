@@ -133,11 +133,14 @@ int main( int argc, char* argv[] ) {
     system(mkdir_command);
 
     create_singleDatacard( mass, lumi_ELE, "ELE", 1,1, f1_eff_vs_mass_ELE_1JHP);
-    //create_singleDatacard( mass, lumi_ELE, "ELE", 1,0, f1_eff_vs_mass_ELE_1JLP);
-    //    create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
+    create_singleDatacard( mass, lumi_ELE, "ELE", 1,0, f1_eff_vs_mass_ELE_1JLP);
+
     create_singleDatacard( mass, lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
-    //    create_singleDatacard( mass, lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
-    //create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
+    create_singleDatacard( mass, lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
+    if(mass<=800){
+      create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
+      create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
+    }
 
   } //while masses
 
@@ -503,7 +506,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
     char mkdir_command[100];
     sprintf( mkdir_command, "mkdir -p %s/fitPlotCards", datacardDir.c_str());
     system(mkdir_command);
-    string canvasname= datacardDir+"/fitPlotCards/fitPlotCards_"+ssnxj.str()+"J"+leptType_str;
+    string canvasname= datacardDir+"/fitPlotCards/fitPlotCards_"+ssnxj.str()+"J"+pur_str+"_"+leptType_str;
     std::cout<<canvasname.c_str()<<std::endl;
     xf->Draw();
     can1->SaveAs((canvasname+"_M"+ssM.str()+".eps").c_str());
@@ -728,7 +731,8 @@ double get_signalParameter(int nxj,  const std::string& purType_str, const std::
   //which files to read
   for(int i =0 ; i <nMasses ; i++){
     if(masses[i]==massH){//direct Match outpars_BulkG_ZZ_lljj_c0p2_M1800_1.config
-      sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ_%s_%s.config",masses[i],nxj,purType_str.c_str(),leptType_str.c_str());
+      //      sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ_%s_%s.config",masses[i],nxj,purType_str.c_str(),leptType_str.c_str());
+      sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",masses[i],nxj,leptType_str.c_str());
       paramsup.readFromFile(filename, "READ");
       //  cout<<"For MH="<<massH<<" "<<varname.c_str()<<" = "<<var.getVal()<<endl;
       return var.getVal();
