@@ -141,6 +141,7 @@ def defineVars(descriptor,njets,workspace,plotonly):
 
 def readTree(filename, njet,pur,lep, workspace):
     # set up dataset, filtering for the proper jet category
+    print 'Reading tree with arguments: ',njet,' ',pur,' ' ,lep
 
     varlist = root.RooArgSet(workspace.var("mZZ"),workspace.var("weight"),workspace.cat("match"))
     dataset = root.RooDataSet("dataset","dataset",varlist)
@@ -153,13 +154,18 @@ def readTree(filename, njet,pur,lep, workspace):
     #read the tree
     infile = root.TFile.Open(filename)
     tree = infile.Get("SelectedCandidates")
+ ###   print 'Input tree contains: ',tree.GetEntries(),' entries'
     for event in tree:
+    ###    print 'nCands=',event.nCands
         for i in range(event.nCands):
+       ###     print 'nXj=',event.nXjets[i],'  Region=',event.region[i],'  MZZ=',event.mZZ[i]
             if event.nXjets[i]==njet and event.region[i]==1 \
             and event.mZZ[i]> mzz.getMin() and event.mZZ[i]< mzz.getMax(): # select events in signal region with corect jet number
-                if (event.lep[i]!=lep and lep!=2):
-                    continue 
-                if pur<0 or event.vTagPurity[i]==pur:                    
+                if (event.lep[i]!=lep and lep!=2): #if lep==2, no check on lep flavor, i.e. sum ele+mu
+                    continue
+                
+                if (pur<0 or event.vTagPurity[i]==pur):
+             ###       print 'vTag=',event.vTagPurity[i],'  ---> event selected'
                     mzz.setVal(event.mZZ[i])
                     weight.setVal(event.weight)
                     if njet==2 : # mc matching active only for 2-jets right now
@@ -170,7 +176,7 @@ def readTree(filename, njet,pur,lep, workspace):
                     else:
                     ###print deduceBosonType(filename)
                         if  deduceBosonType(filename)=="Z":
-                            if event.nsubj21[i] > 0.45: #nsubjettiness cut for ZZ
+                            if event.nsubj21[i] > 999.0: #nsubjettiness cut for ZZ
                                 continue
                         else: #WW
                             deltaR_LJ = deltaR(event.etalep1[i],event.philep1[i],event.etajet1[i],event.phijet1[i]);
@@ -187,13 +193,14 @@ def readTree(filename, njet,pur,lep, workspace):
                                 continue #b-tag veto
                             if(deltaR_LJ<1.57 or deltaPhi_JMET<2. or deltaPhi_JWL<2.):
                                 continue
-                            if(event.nsubj21[i]>0.45):
-                                continue
+                           ## if(event.nsubj21[i]>0.45):
+                           ##     continue
                         
                         match.setIndex(1) #assume all 1-jet events to be matched for now
                     
-                dataset.add(root.RooArgSet(mzz,match,weight))
-    
+                    dataset.add(root.RooArgSet(mzz,match,weight))
+              ###  else :
+              ###      print 'vTag=',event.vTagPurity[i],'  ---> event rejected'
     
     weightedSet = root.RooDataSet("weightedSet","weightedSet",dataset,varlist,"","weight");
     weightedSet.Print("v")
@@ -275,6 +282,7 @@ def processSubsample(inputpath,njets,pur, lep,plotonly):
 
     # fit goes here
     data = workspace.data("weightedSet")
+    print 'Goint to fit dataset containing ',    data.sumEntries()
     if not plotonly:
         result = workspace.pdf("FitFunc").fitTo( data , root.RooFit.Save() )
         result.Print("v")
@@ -307,10 +315,12 @@ def processSubsample(inputpath,njets,pur, lep,plotonly):
 def main():
     parser = argparse.ArgumentParser(description='Signal Shape Fitting Tool')
     parser.add_argument('-j','--njets',     help='number of jets: 1 or 2 or 3(both), default:both'  ,type=int, choices=[1,2,3]    , default = 3)
-    parser.add_argument('-p','--purity',     help='purity category: 0 (low purity) or 1 (high purity) or -1 (both), default:-1'  ,type=int, choices=[-1,0,1]    , default = -1)
-    parser.add_argument('-l','--lep',     help='lepton flavor: 0 (ele) or 1 (muons) or 2 (both), default:both'                   ,type=int, choices=[0,1,2]    , default = 2)
+    parser.add_argument('-p','--purity',     help='purity category: 0 (low purity) or 1 (high purity) or -1 (no purity selection), default:-1'  ,type=int, choices=[-1,0,1]    , default = -1)
+    parser.add_argument('-l','--lep',     help='lepton flavor: 0 (ele) or 1 (muons) or 2 (both, no lepton flavor selection), default:both'                   ,type=int, choices=[0,1,2]    , default = 2)
     parser.add_argument('-f','--filepath',  help='path to input trees, default: ./trees'                             , default = "../trees" )                                      
     parser.add_argument('--plotonly',  help='don\'t refit, just redraw plots from available parameter files, default = False', default = False, type=bool )                                 
+    parser.add_argument('-m','--mass', help='process only signal with this mass value in the file name', type=int, default=-1)
+
     args = parser.parse_args()
     
     root.gROOT.SetBatch(True)
@@ -330,6 +340,8 @@ def main():
    
     for file in filelist:
         if(checkfile(desc(file))):
+            if (desc(file).find('M'+str(args.mass))==-1 and args.mass>0) :
+                continue
             for nj in 1,2:
                 if (nj!=args.njets and args.njets!=3):
                     continue  

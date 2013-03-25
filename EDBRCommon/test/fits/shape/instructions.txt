@@ -7,7 +7,7 @@ Necessary inputs are:
 
 
 usage:
-python shape.py -n njets -p purity -l lepFlav -f file [--plotonly]
+python shape.py -j njets -p purity -l lepFlav -f file [--plotonly]
 
 -j njets:	1: monojet channel
 		2: dijet channel
@@ -25,6 +25,8 @@ python shape.py -n njets -p purity -l lepFlav -f file [--plotonly]
 
 --plotonly: if this option is set, no fit is performed but plots are produced using the saved results from previous fits.
 
+-m mass:    process only files with name containing the mass requested. 
+	    Default is -1 -> all masses
 
 The root files are expected to have names as produced by the std production scripts such as:
 treeEDBR_BulkG_WW_lvjj_c0p2_M1000_xww.root
