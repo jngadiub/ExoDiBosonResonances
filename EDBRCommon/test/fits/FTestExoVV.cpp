@@ -188,11 +188,11 @@ int main(){
     res_fit_2par->printMultiline(logf,99,true);
 
     //for lev expo2
-    RooRealVar *f0c=new RooRealVar("f0b","sigma",initf0a,0.0,300.0);
-    RooRealVar *f1c=new RooRealVar("f1b","alpha",initf1a,-0.5,2.0);
-    RooRealVar *f2c=new RooRealVar("f2b","beta",initf2a,-0.5,2.0);
-    RooRealVar *mc=new RooRealVar("mb","m",500,200.0,500.0);
-    RooRealVar *tc=new RooRealVar("tb","theta",0.0);
+    RooRealVar *f0c=new RooRealVar("f0c","sigma",135.0,0.0,300.0);
+    RooRealVar *f1c=new RooRealVar("f1c","alpha",0.115,-0.5,2.0);
+    RooRealVar *f2c=new RooRealVar("f2c","beta",initf2a,-0.5,2.0);
+    RooRealVar *mc=new RooRealVar("mc","m",560,200.0,500.0);
+    RooRealVar *tc=new RooRealVar("tc","theta",0.0);
     mc->setConstant(kTRUE);
     tc->setConstant(kTRUE);
     RooLevelledExp2 *fit_3par=new RooLevelledExp2("fitFunc_3p","Levelled expo (3par)",*x,*f0c,*f1c,*f2c,*mc,*tc);
