@@ -104,16 +104,12 @@ void fitTTBAR(){
   //Input files
   //TFile *_file_noMassCut_noNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbar_CA8/root/can_h_mJJ.root");
   //TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbar_CA8_nsub0p45/root/can_h_mJJ.root");
-  TFile *_file_noMassCut_noNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarPowheg_CA8/root/can_h_mJJ.root");
-  TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarPowheg_CA8_nsub0p45/root/can_h_mJJ.root");
 
-//   TFile *_file_noMassCut_noNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_ptlt300/root/can_h_mJJ.root");
-//   TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_ptlt300_nsub0p45/root/can_h_mJJ.root");
-//  TFile *_file_noMassCut_noNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_pt300to400/root/can_h_mJJ.root");
-//  TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_pt300to400_nsub0p45/root/can_h_mJJ.root");
-//   TFile *_file_noMassCut_noNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_ptgt400/root/can_h_mJJ.root");
-//   TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarpowheg_CA8_ptgt400_nsub0p45/root/can_h_mJJ.root");
+  //TFile *_file_noMassCut_noNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarPowheg_CA8/root/can_h_mJJ.root");
+  //TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_mu_fullrange_ttbarPowheg_CA8_nsub0p45/root/can_h_mJJ.root");
 
+  TFile *_file_noMassCut_noNsubjettinessCut = TFile::Open("WW_ele_fullrange_ttbarPowheg_CA8/root/can_h_mJJ.root");
+  TFile *_file_noMassCut_yesNsubjettinessCut = TFile::Open("WW_ele_fullrange_ttbarPowheg_CA8_nsub0p45/root/can_h_mJJ.root");
 
   //###########################
 
@@ -380,6 +376,13 @@ void fitTTBAR(){
       double N_W_WithNsubjettinessCut_NEW = fitFcn_WithCut_NEW->GetParameter(3) / bin_width;
       double N_W_WithNsubjettinessCut_WithMassCut_NEW = signalFcn_WithCut_NEW->Integral(XminSignalRegion,XmaxSignalRegion) / bin_width;
       
+      /*
+      cout << "...." << endl;
+      cout << "N_W_noCut_NEW : " << N_W_noCut_NEW << endl;
+      cout << "N_W_WithNsubjettinessCut_NEW : " << N_W_WithNsubjettinessCut_NEW << endl;
+      cout << "...." << endl;
+      */
+
       double eff_NsubjettinessCut_NEW = N_W_WithNsubjettinessCut_NEW / N_W_noCut_NEW;
       double err_eff_NsubjettinessCut_NEW = sqrt( eff_NsubjettinessCut_NEW * (1-eff_NsubjettinessCut_NEW) / N_W_noCut_NEW );
       
