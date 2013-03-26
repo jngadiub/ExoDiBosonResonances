@@ -17,21 +17,21 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name, std::s
 void doAlpha(TTree *chMC, std::string wType);
 
 //##############EDIT THIS PART####################
-/*
-const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V2/";
-const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaTree/";
-const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaTree/";
-*/
 
+const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V2/";
+const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSigTree/";
+const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSBTree/";
+
+/*
 const std::string myOutDir="FitSidebandsMJJ_CA8_V5/";
 const string inDirSIG="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
 const string inDirSB ="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsidebandCA8/";
+*/
 
-
-bool isZZChannel=true;
+bool isZZChannel=false;
 const int nxjCut=-1;//if negative: no cut
 string leptStr="ALL";//"MU" //"ELE"
-const std::string InTreeName="SelectedCandidates";
+const std::string InTreeName="SelectedCandidatesAB";
 const std::string tmpTreeName="SelectedCandidatesV2";
 //################################################
 
@@ -40,7 +40,6 @@ int main( int argc, char* argv[] ) {
 	std::string weighting = "weight";
 	bool unrollSIGTree=true;
 	bool unrollSBTree=true;
-	if(isZZChannel==false)unrollSBTree=false;
 
 	string inDir="dummy";
 	char foutn[64];
@@ -82,13 +81,26 @@ int main( int argc, char* argv[] ) {
 	if(unrollSBTree){
 		inDir=inDirSB;
 		TChain* chainMC = new TChain(InTreeName.c_str());
-		chainMC->Add( (inDir+"treeEDBR_DYJetsPt50To70.root").c_str());
-		chainMC->Add( (inDir+"treeEDBR_DYJetsPt70To100.root").c_str());
-		chainMC->Add( (inDir+"treeEDBR_DYJetsPt100.root").c_str());
-		chainMC->Add( (inDir+"treeEDBR_TTBAR.root").c_str());
-		chainMC->Add( (inDir+"treeEDBR_WW.root").c_str());
-		chainMC->Add( (inDir+"treeEDBR_WZ.root").c_str());
-		chainMC->Add( (inDir+"treeEDBR_ZZ.root").c_str());
+		if(isZZChannel==true)
+		{   
+			chainMC->Add( (inDir+"treeEDBR_DYJetsPt50To70.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_DYJetsPt70To100.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_DYJetsPt100.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_TTBAR.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_WW.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_WZ.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_ZZ.root").c_str());
+		}   
+		if(isZZChannel==false)
+		{   
+			chainMC->Add( (inDir+"treeEDBR_DYJets*").c_str());
+			chainMC->Add( (inDir+"treeEDBR_SingleTop*").c_str());
+			chainMC->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_WJets*").c_str());
+			chainMC->Add( (inDir+"treeEDBR_WW_xww.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_WZ_xww.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_ZZ_xww.root").c_str());
+		}
 		gROOT->cd(); //magic!
 
 		if(nxjCut>=0)  sprintf(foutn,"EXOVVTree_forAlpha_SB_%dJ.root",nxjCut);
@@ -113,12 +125,9 @@ int main( int argc, char* argv[] ) {
 	if(nxjCut>=0) sprintf(foutn,"EXOVVTree_forAlpha_SIG_%dJ.root",nxjCut);
 	else  sprintf(foutn,"EXOVVTree_forAlpha_SIG_NOcut.root");
 	tTmp->Add(foutn);
-	if(isZZChannel==true)
-	{
-		if(nxjCut>=0) sprintf(foutn,"EXOVVTree_forAlpha_SB_%dJ.root",nxjCut);
-		else  sprintf(foutn,"EXOVVTree_forAlpha_SB_NOcut.root");
-		tTmp->Add(foutn);
-	}
+	if(nxjCut>=0) sprintf(foutn,"EXOVVTree_forAlpha_SB_%dJ.root",nxjCut);
+	else  sprintf(foutn,"EXOVVTree_forAlpha_SB_NOcut.root");
+	tTmp->Add(foutn);
 	doAlpha(tTmp,weighting);
 
 	delete tTmp;
