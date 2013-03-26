@@ -31,7 +31,8 @@ const string inDirSB ="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer
 bool isZZChannel=true;
 const int nxjCut=-1;//if negative: no cut
 string leptStr="ALL";//"MU" //"ELE"
-const std::string tmpTreeName="SelectedCandidates";
+const std::string InTreeName="SelectedCandidates";
+const std::string tmpTreeName="SelectedCandidatesV2";
 //################################################
 
 int main( int argc, char* argv[] ) {
@@ -46,7 +47,7 @@ int main( int argc, char* argv[] ) {
 
 	if(unrollSIGTree){
 		inDir=inDirSIG;
-		TChain* chainMC = new TChain(tmpTreeName.c_str());
+		TChain* chainMC = new TChain(InTreeName.c_str());
 		if(isZZChannel==true)
 		{
 			chainMC->Add( (inDir+"treeEDBR_DYJetsPt50To70.root").c_str());
@@ -80,7 +81,7 @@ int main( int argc, char* argv[] ) {
 
 	if(unrollSBTree){
 		inDir=inDirSB;
-		TChain* chainMC = new TChain(tmpTreeName.c_str());
+		TChain* chainMC = new TChain(InTreeName.c_str());
 		chainMC->Add( (inDir+"treeEDBR_DYJetsPt50To70.root").c_str());
 		chainMC->Add( (inDir+"treeEDBR_DYJetsPt70To100.root").c_str());
 		chainMC->Add( (inDir+"treeEDBR_DYJetsPt100.root").c_str());
