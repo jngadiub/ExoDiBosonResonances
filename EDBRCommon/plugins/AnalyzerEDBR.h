@@ -621,7 +621,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
 
 
-  unsigned int nevent,run,ls, njets, nak5jets , nvtx,npu;
+  unsigned int nevent,run,ls, njets, njetspt50, nak5jets , nvtx,npu;
   int q1fl[nMaxCand], q2fl[nMaxCand];
   int nXjets[nMaxCand];//by how many jets is the hadronic V made
   double vTagPurity[nMaxCand];

@@ -73,19 +73,20 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
 	//use these for X->ZZ analysis
 			
-        /*
+        
 	typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
 	typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
 	typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
 	typedef  cmg::DiMuonDiJetEDBR         cmgMuDiJetEDBR  ;
-	*/
+	
 
 	//use these for X->WW analysis
+  /*
         typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
 	typedef  cmg::WmunuSingleJetEDBR  cmgMuSingleJetEDBR  ; 
 	typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
 	typedef  cmg::WmunuDiJetEDBR      cmgMuDiJetEDBR  ;
-	
+  */
 	
 	nEvt++;
 
@@ -112,17 +113,18 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	iEvent.getByLabel("jetIDJet", allJets);
 	//cout<<allJets->size()<<endl;
 	std::vector<cmg::PFJet>::const_iterator idjet;
-	njets=0;
+	njetspt50=0;
 	//make cut on "jetIDJet", requiring pt>50 GeV, and then count the number
 	for(idjet = allJets->begin(); idjet != allJets->end(); ++idjet ){
-		if(idjet->pt()>50)njets++;
+		if(idjet->pt()>50)njetspt50++;
 	}
+	njets=allJets->size();
 	//cout<<njets<<endl;
 
 	//total number of AK5 jets (cleaned) used for btagging
-	edm::Handle<std::vector<cmg::PFJet> > ak5jets;
-	iEvent.getByLabel("jetAK5", ak5jets);
-	nak5jets=ak5jets->size();
+	//edm::Handle<std::vector<cmg::PFJet> > ak5jets;
+	//iEvent.getByLabel("jetAK5", ak5jets);
+	//nak5jets=ak5jets->size();
 	
 	// GET MISSING ET
 	edm::Handle<edm::View<pat::MET> > metHandle;
@@ -471,6 +473,7 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("MCmatch"         ,&MCmatch       ,"MCmatch[nCands]/D"      );
 	outTree_->Branch("nVtx"            ,&nvtx          ,"nVtx/i"                 );
 	outTree_->Branch("nJets"           ,&njets         ,"nJets/i"                );
+	outTree_->Branch("nJetsPt50"       ,&njetspt50     ,"nJetsPt50/i"                );
 	outTree_->Branch("nAK5jets"        ,&nak5jets      ,"nAK5jets/i"             );
 	outTree_->Branch("nPU"             ,&npu           ,"nPU/i"                  );
 	outTree_->Branch("HLTweight"       ,&HLTSF         ,"HLTweight/D"            ); 
