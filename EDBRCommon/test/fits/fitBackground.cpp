@@ -97,7 +97,7 @@ int main(){
   else   sprintf(foutn,"EXOVVTree_DATASB_NOcut.root");
   std::string tmpFileName=foutn;
   std::string weighting = "weight";
-  CopyTreeVecToPlain(chainData,weighting,tmpFileName,tmpTreeName);//(TTree*)
+  CopyTreeVecToPlain(chainData,weighting,tmpFileName,tmpTreeName,nxjCut);//(TTree*)
   delete chainData;
 
   const std::string tmpSigTreeName="SelectedCandidatesSIG";
@@ -105,7 +105,7 @@ int main(){
   if(nxjCut>=0)  sprintf(foutSig,"EXOVVTree_DATASIG_%d.root",nxjCut);
   else   sprintf(foutSig,"EXOVVTree_DATASIG_NOcut.root");
   std::string tmpSigFileName=foutSig;
-  CopyTreeVecToPlain(chainDataSig,weighting,tmpSigFileName,tmpSigTreeName);//(TTree*)
+  CopyTreeVecToPlain(chainDataSig,weighting,tmpSigFileName,tmpSigTreeName,nxjCut);//(TTree*)
   delete chainDataSig;
 
   TFile *ftree=new TFile(foutn,"READ");
@@ -1063,7 +1063,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   int ncands; 
   double eventWeight;
   unsigned int nrun,nevt;
-  double leptType;
+  double leptType[35];
   int mynxj[35];
   double mZZd[35],region[35],mZqq[35];
   double vTagPurity[35];
@@ -1072,7 +1072,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
   t1->SetBranchAddress("nCands",&ncands);
   t1->SetBranchAddress("run",&nrun);
   t1->SetBranchAddress("event",&nevt);
-  t1->SetBranchAddress("lep",&leptType);
+  t1->SetBranchAddress("lep",leptType);
   t1->SetBranchAddress(wType.c_str(),&eventWeight);
   t1->SetBranchAddress("mZZ",mZZd);
   t1->SetBranchAddress("nXjets",mynxj);
@@ -1115,7 +1115,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
       nrun_2=nrun;
       nevt_2=nevt;
       eventWeight_2=eventWeight;
-      leptType_2=leptType;
+      leptType_2=leptType[j];
       mZZd_2=mZZd[j];
       region_2=region[j];
       mZqq_2=mZqq[j];
