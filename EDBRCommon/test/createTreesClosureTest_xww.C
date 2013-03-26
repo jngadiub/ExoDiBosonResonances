@@ -253,13 +253,13 @@ int createTreesClosureTest_xww()
 				nsubj21Ana[ivec]=nsubj21[ivec];	
 				mJJNoKinFitAnaSig[ivec]=mJJNoKinFit[ivec];
 				//signal and sideband as usual
-				if(region[ivec]==0)regionAnaSB[ivec]=1;else regionAnaSB[ivec]=-1;
+				if(region[ivec]==0)regionAnaSB[ivec]=0;else regionAnaSB[ivec]=-1;
 				if(region[ivec]==1)regionAnaSig[ivec]=1;else regionAnaSig[ivec]=-1;
 				// sideband A1, signal A2
-				if(mJJNoKinFit[ivec]<A1High&&mJJNoKinFit[ivec]>A1Low)regionA1A2SB[ivec]=1;  else regionA1A2SB[ivec]=-1;
+				if(mJJNoKinFit[ivec]<A1High&&mJJNoKinFit[ivec]>A1Low)regionA1A2SB[ivec]=0;  else regionA1A2SB[ivec]=-1;
 				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A2Low)regionA1A2Sig[ivec]=1; else regionA1A2Sig[ivec]=-1;
 				// sideband A, signal B
-				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A1Low)regionABSB[ivec]=1;  else regionABSB[ivec]=-1;
+				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A1Low)regionABSB[ivec]=0;  else regionABSB[ivec]=-1;
 				if(mJJNoKinFit[ivec]<BHigh &&mJJNoKinFit[ivec]>BLow )regionABSig[ivec]=1;  else regionABSig[ivec]=-1;
 			}			
 
