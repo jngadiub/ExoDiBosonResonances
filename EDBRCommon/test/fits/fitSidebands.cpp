@@ -28,7 +28,7 @@ const string inDirSIG="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer
 const string inDirSB ="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsidebandCA8/";
 */
 
-bool isZZChannel=false;
+bool isZZChannel=false;//this will change only the file list
 const int nxjCut=-1;//if negative: no cut
 string leptStr="ALL";//"MU" //"ELE"
 const std::string InTreeName="SelectedCandidatesAB";
