@@ -43,7 +43,8 @@ int createTreesClosureTest_xww()
 {
 	//########EDIT THIS PART###########
 	TString inTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/fullallrange";
-	TString outAnaTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaTree";
+	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSigTree";
+	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSBTree";
 
 	const double A1Low=50.0;
 	const double A1High=60.0;
@@ -57,7 +58,8 @@ int createTreesClosureTest_xww()
 	//#########################
 
 
-	system("mkdir -p "+outAnaTree);
+	system("mkdir -p "+outSigTree);
+	system("mkdir -p "+outSBTree);
 
 	//make file list
 	FILE *fp;
@@ -149,54 +151,65 @@ int createTreesClosureTest_xww()
 		tIn->SetBranchAddress("mJJNoKinFit", mJJNoKinFit);
 
 		//set branch for out tree
-		TFile *fOut=new TFile(outAnaTree+"/"+file,"RECREATE");
-		TTree *tAna=new TTree("SelectedCandidates","SelectedCandidates");
+		TFile *fOutSig=new TFile(outSigTree+"/"+file,"RECREATE");
+		TFile *fOutSB=new TFile(outSBTree+"/"+file,"RECREATE");
+		fOutSig->cd();
+		TTree *tAnaSig=new TTree("SelectedCandidates","SelectedCandidates");
 
-		double regionAna[99],regionA1A2[99],regionAB[99];
+		double regionAnaSig[99],regionA1A2Sig[99],regionABSig[99];
+		double regionAnaSB[99],regionA1A2SB[99],regionABSB[99];
 		int    nCandsAna;
-		unsigned int neventAna, runAna;
+		unsigned int neventAnaSig, runAna;
 		double lepAna[99],mZZAna[99],mJJAna[99];
-		double mLLAna[99],nsubj21Ana[99],prMJAna[99],mJJNoKinFitAna[99];
+		double mLLAna[99],nsubj21Ana[99],prMJAna[99],mJJNoKinFitAnaSig[99];
 		double  vTagPurityAna[99];
 		int nXjetsAna[99];
-		double PUweightAna, LumiWeightAna,GenWeightAna,weightAna;
-		tAna->Branch("nCands" ,         &nCandsAna ,      "nCands/I");
-		tAna->Branch("event"           ,&neventAna        ,"event/i");
-		tAna->Branch("run"             ,&runAna           ,"run/i");
-		tAna->Branch("lep"             ,&lepAna           ,"lep[nCands]/D"   );
-		tAna->Branch("nXjets"          ,&nXjetsAna        ,"nXjets[nCands]/I");
-		tAna->Branch("vTagPurity"          ,&vTagPurityAna        ,"vTagPurity[nCands]/D");
-		tAna->Branch("mZZ"             ,&mZZAna           ,"mZZ[nCands]/D"   );
-		tAna->Branch("mLL"             ,&mLLAna           ,"mLL[nCands]/D"  );
-		tAna->Branch("mJJ"             ,&mJJAna           ,"mJJ[nCands]/D");
-		tAna->Branch("mJJNoKinFit"             ,&mJJNoKinFitAna           ,"mJJNoKinFit[nCands]/D");
-		tAna->Branch("prunedmass"      , &prMJAna, "prunedmass[nCands]/D");
-		tAna->Branch("nsubj21"       ,&nsubj21Ana    ,"nsubj21[nCands]/D");
-		tAna->Branch("PUweight"        ,&PUweightAna            ,"PUweight/D" );
-		tAna->Branch("LumiWeight"      ,&LumiWeightAna         ,"LumiWeight/D"  );
-		tAna->Branch("GenWeight"      ,&GenWeightAna         ,"GenWeight/D"  );
-		tAna->Branch("weight"          ,&weightAna             ,"weight/D");
+		double PUweightAnaSig, LumiWeightAnaSig,GenWeightAnaSig,weightAnaSig;
+		tAnaSig->Branch("nCands" ,         &nCandsAna ,      "nCands/I");
+		tAnaSig->Branch("event"           ,&neventAnaSig        ,"event/i");
+		tAnaSig->Branch("run"             ,&runAna           ,"run/i");
+		tAnaSig->Branch("lep"             ,&lepAna           ,"lep[nCands]/D"   );
+		tAnaSig->Branch("nXjets"          ,&nXjetsAna        ,"nXjets[nCands]/I");
+		tAnaSig->Branch("vTagPurity"          ,&vTagPurityAna        ,"vTagPurity[nCands]/D");
+		tAnaSig->Branch("mZZ"             ,&mZZAna           ,"mZZ[nCands]/D"   );
+		tAnaSig->Branch("mLL"             ,&mLLAna           ,"mLL[nCands]/D"  );
+		tAnaSig->Branch("mJJ"             ,&mJJAna           ,"mJJ[nCands]/D");
+		tAnaSig->Branch("mJJNoKinFit"             ,&mJJNoKinFitAnaSig           ,"mJJNoKinFit[nCands]/D");
+		tAnaSig->Branch("prunedmass"      , &prMJAna, "prunedmass[nCands]/D");
+		tAnaSig->Branch("nsubj21"       ,&nsubj21Ana    ,"nsubj21[nCands]/D");
+		tAnaSig->Branch("PUweight"        ,&PUweightAnaSig            ,"PUweight/D" );
+		tAnaSig->Branch("LumiWeight"      ,&LumiWeightAnaSig         ,"LumiWeight/D"  );
+		tAnaSig->Branch("GenWeight"      ,&GenWeightAnaSig         ,"GenWeight/D"  );
+		tAnaSig->Branch("weight"          ,&weightAnaSig             ,"weight/D");
 
 
-		TTree *tA1A2 = tAna->CloneTree(0);				
-		tA1A2->SetName("SelectedCandidatesA1A2");
-		TTree *tAB = tAna->CloneTree(0);			
-		tAB->SetName("SelectedCandidatesAB");	
-		tAna->Branch("region"             ,&regionAna           ,"region[nCands]/D"   );
-		tA1A2->Branch("region"             ,&regionA1A2           ,"region[nCands]/D"   );
-		tAB->Branch("region"             ,&regionAB           ,"region[nCands]/D"   );
+		TTree *tA1A2Sig = tAnaSig->CloneTree(0);				
+		tA1A2Sig->SetName("SelectedCandidatesA1A2");
+		TTree *tABSig = tAnaSig->CloneTree(0);			
+		tABSig->SetName("SelectedCandidatesAB");
+
+		fOutSB->cd();
+		TTree *tAnaSB = tAnaSig->CloneTree(0);
+		TTree *tA1A2SB = tA1A2Sig->CloneTree(0);
+		TTree *tABSB = tABSig->CloneTree(0);	
+		tAnaSB->Branch("region"             ,&regionAnaSB           ,"region[nCands]/D"   );
+		tA1A2SB->Branch("region"             ,&regionA1A2SB           ,"region[nCands]/D"   );
+		tABSB->Branch("region"             ,&regionABSB           ,"region[nCands]/D"   );
+        tAnaSig->Branch("region"             ,&regionAnaSig           ,"region[nCands]/D"   );  
+        tA1A2Sig->Branch("region"             ,&regionA1A2Sig           ,"region[nCands]/D"   );  
+        tABSig->Branch("region"             ,&regionABSig           ,"region[nCands]/D"   );
 
 		for(int i=0;i<tIn->GetEntries();i++){
 			tIn->GetEntry(i);
 
 			//set variables for new trees
 			nCandsAna=nCands;
-			neventAna=nevent;
+			neventAnaSig=nevent;
 			runAna=run;
-			PUweightAna=PUweight;
-			LumiWeightAna=LumiWeight;
-			GenWeightAna=GenWeight;
-			weightAna=PUweight*LumiWeight*GenWeight;
+			PUweightAnaSig=PUweight;
+			LumiWeightAnaSig=LumiWeight;
+			GenWeightAnaSig=GenWeight;
+			weightAnaSig=PUweight*LumiWeight*GenWeight;
 
 			bool goodevent=false;
 			for(int ivec =0; ivec<nCands; ivec++)
@@ -238,42 +251,47 @@ int createTreesClosureTest_xww()
 				mJJAna[ivec]=mJJ[ivec];
 				prMJAna[ivec]=prMJ[ivec];
 				nsubj21Ana[ivec]=nsubj21[ivec];	
-				mJJNoKinFitAna[ivec]=mJJNoKinFit[ivec];
+				mJJNoKinFitAnaSig[ivec]=mJJNoKinFit[ivec];
 				//signal and sideband as usual
-				regionAna[ivec]=region[ivec];
+				if(region[ivec]==0)regionAnaSB[ivec]=1;else regionAnaSB[ivec]=-1;
+				if(region[ivec]==1)regionAnaSig[ivec]=1;else regionAnaSig[ivec]=-1;
 				// sideband A1, signal A2
-				if(mJJNoKinFit[ivec]<A1High&&mJJNoKinFit[ivec]>A1Low)regionA1A2[ivec]=0;
-				else if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A2Low)regionA1A2[ivec]=1;
-				else regionA1A2[ivec]=-1;
+				if(mJJNoKinFit[ivec]<A1High&&mJJNoKinFit[ivec]>A1Low)regionA1A2SB[ivec]=1;  else regionA1A2SB[ivec]=-1;
+				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A2Low)regionA1A2Sig[ivec]=1; else regionA1A2Sig[ivec]=-1;
 				// sideband A, signal B
-				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A1Low)regionAB[ivec]=0;
-				else if(mJJNoKinFit[ivec]<BHigh &&mJJNoKinFit[ivec]>BLow )regionAB[ivec]=1;
-				else regionAB[ivec]=-1;
+				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A1Low)regionABSB[ivec]=1;  else regionABSB[ivec]=-1;
+				if(mJJNoKinFit[ivec]<BHigh &&mJJNoKinFit[ivec]>BLow )regionABSig[ivec]=1;  else regionABSig[ivec]=-1;
 			}			
-			
+
 			if(goodevent)
 			{
-				tAna->Fill();//signal and sideband as usual
-				tA1A2->Fill();// sideband A1, signal A2
-				tAB->Fill();// sideband A, signal B
+				tAnaSig->Fill();//signal and sideband as usual
+				tAnaSB->Fill();//signal and sideband as usual
+				tA1A2Sig->Fill();// sideband A1, signal A2
+				tA1A2SB->Fill();// sideband A1, signal A2
+				tABSig->Fill();// sideband A, signal B
+				tABSB->Fill();// sideband A, signal B
+
 			}
 		}
-
-		//save the trees
-		fOut->cd();
-		tAna->Write();
-		tA1A2->Write();
-		tAB->Write();
-
-		//delte objects
-		delete tAna;
-		delete tA1A2;
-		delete tAB;
-		fOut->Close();
-		delete fOut;
-		delete tIn;
 		fIn->Close();
 		delete fIn;
+
+		//save the trees
+		fOutSig->cd();
+		tAnaSig->Write();
+		tA1A2Sig->Write();
+		tABSig->Write();
+		fOutSig->Close();
+		delete fOutSig;
+
+
+		fOutSB->cd();
+		tAnaSB->Write();
+		tA1A2SB->Write();
+		tABSB->Write();
+		fOutSB->Close();
+		delete fOutSB;
 
 	}//endl of loop over samples
 
