@@ -97,8 +97,8 @@ int main(){
 	}
 	else
 	{
-		chainData->Add( (inDir+"treeEDBR_SingleMu_Run2012*").c_str()  );
-		chainData->Add( (inDir+"treeEDBR_SingleElectron_Run2012*").c_str()  );
+		if(leptType=="MU"||leptType=="ALL")chainData->Add( (inDir+"treeEDBR_SingleMu_Run2012*").c_str()  );
+		if(leptType=="ELE"||leptType=="ALL")chainData->Add( (inDir+"treeEDBR_SingleElectron_Run2012*").c_str()  );
 	}
 
 	logf<<"In the data chain there are "<<chainData->GetEntries()<<" events"<<endl;
@@ -112,8 +112,8 @@ int main(){
 	}
 	else
 	{
-		chainDataSig->Add( (inDirSig+"treeEDBR_SingleMu_Run2012*").c_str()  );
-		chainDataSig->Add( (inDirSig+"treeEDBR_SingleElectron_Run2012*").c_str()  );
+		if(leptType=="MU"||leptType=="ALL")chainDataSig->Add( (inDirSig+"treeEDBR_SingleMu_Run2012*").c_str()  );
+		if(leptType=="ELE"||leptType=="ALL")chainDataSig->Add( (inDirSig+"treeEDBR_SingleElectron_Run2012*").c_str()  );
 	}
 	//write in a plain tree because RooFit does not like trees with branches storing vectors 
 	const int nxjCut=-1;//if negative: no cut
