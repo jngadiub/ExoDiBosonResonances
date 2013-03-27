@@ -155,16 +155,16 @@ void doAlpha(TTree *chMC, std::string wType){
 
 			sf->setOutDir(myOutDir);
 
-			int nxjCut=inxj;
+			int nxjCut_=inxj;
 			int nentriesTOT=chMC->GetEntries();
-			std::cout<<"Cutting nXjets=="<<nxjCut<<" on a chain with "<< nentriesTOT<<" entries"<<std::endl;
+			std::cout<<"Cutting nXjets=="<<nxjCut_<<" on a chain with "<< nentriesTOT<<" entries"<<std::endl;
 
 			int nxjOld;
 			chMC->SetBranchAddress("nXjets",&nxjOld);
 			TTree* treeMC_nxj=(TTree*)chMC->CloneTree(0);
 			for (Int_t iOld=0;iOld<nentriesTOT; iOld++) {
 				chMC->GetEntry(iOld);
-				if(nxjOld==nxjCut)treeMC_nxj->Fill();
+				if(nxjOld==nxjCut_)treeMC_nxj->Fill();
 			}
 
 			std::cout<<"Cut applied: "<<treeMC_nxj->GetEntries()<< " entries remain"<<std::endl;
