@@ -209,7 +209,8 @@ int createTreesClosureTest_xww()
 			PUweightAnaSig=PUweight;
 			LumiWeightAnaSig=LumiWeight;
 			GenWeightAnaSig=GenWeight;
-			weightAnaSig=PUweight*LumiWeight*GenWeight;
+			if(file.Contains("WJetsPt"))GenWeightAnaSig=GenWeightAnaSig*1.3;//for wjets, add addtionnal 1.3 factor
+			weightAnaSig=PUweight*LumiWeight*GenWeightAnaSig;
 
 			bool goodevent=false;
 			for(int ivec =0; ivec<nCands; ivec++)
