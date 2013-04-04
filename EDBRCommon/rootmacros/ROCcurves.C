@@ -5,15 +5,19 @@ vector<double> punzi45;
 vector<double> sigeff;
 vector<double> sigeff45;
 
+double masswindow = 0.15;
+
 TH1D* getNSubjHisto(TFile* targetFile, double mass){
 	char buffer[256];
 	sprintf(buffer,"nsubj21_m%i",(int)mass);
 	TH2D* histogram = targetFile->Get("histogram");
 	int nMassBins = histogram->GetNbinsY();
 	int nSubjBins = histogram->GetNbinsX();
-	double widthMassBin = 50.0;
+	double widthMassBin = histogram->GetYaxis()->GetBinWidth(1);
 	int mainBin = (int)mass/widthMassBin;
-	TH1D* projection = histogram->ProjectionX(buffer,mainBin-1,mainBin+2);
+	double binsHalfRange = mass*masswindow/widthMassBin/2;
+	//double binsHalfRange = 200/widthMassBin/2;//for check with before
+	TH1D* projection = histogram->ProjectionX(buffer,mainBin-binsHalfRange-1,mainBin+binsHalfRange);
 	//cout<<histogram->GetYaxis()->GetBinLowEdge(mainBin)<<endl;
 	projection->SetDirectory(0);
 	return projection;
