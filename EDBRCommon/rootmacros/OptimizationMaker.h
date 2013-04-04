@@ -527,7 +527,7 @@ void OptimizationMaker::createAllHistos() {
 	
 	histo = new TH2D("histogram","nsubj21XmZZ",
 			 40,0,1,
-			 60,0,3000
+			 3000,0,3000
 			 );
 
 	histo->SetDirectory(0);
