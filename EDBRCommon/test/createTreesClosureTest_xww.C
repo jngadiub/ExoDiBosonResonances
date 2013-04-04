@@ -43,8 +43,8 @@ int createTreesClosureTest_xww()
 {
 	//########EDIT THIS PART###########
 	TString inTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/fullallrange";
-	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSigTree";
-	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSBTree";
+	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSigTree_elemet80";
+	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSBTree_elemet80";
 
 	const double A1Low=50.0;
 	const double A1High=60.0;
@@ -113,6 +113,9 @@ int createTreesClosureTest_xww()
 		double PUweight=-1;
 		double LumiWeight=-1;
 		double GenWeight=-1;
+		//for ele 
+		double eleid_passConversionVeto[99];
+		double eleid_numberOfLostHits[99];
 		//fit variables
 		double mZZ[99],mJJ[99],mLL[99],prMJ[99],mJJNoKinFit[99];		
 
@@ -149,6 +152,8 @@ int createTreesClosureTest_xww()
 		tIn->SetBranchAddress("mLL", mLL);
 		tIn->SetBranchAddress("prunedmass", prMJ);
 		tIn->SetBranchAddress("mJJNoKinFit", mJJNoKinFit);
+		tIn->SetBranchAddress("eleid_passConversionVeto", eleid_passConversionVeto);
+		tIn->SetBranchAddress("eleid_numberOfLostHits", eleid_numberOfLostHits);
 
 		//set branch for out tree
 		TFile *fOutSig=new TFile(outSigTree+"/"+file,"RECREATE");
@@ -195,9 +200,9 @@ int createTreesClosureTest_xww()
 		tAnaSB->Branch("region"             ,&regionAnaSB           ,"region[nCands]/D"   );
 		tA1A2SB->Branch("region"             ,&regionA1A2SB           ,"region[nCands]/D"   );
 		tABSB->Branch("region"             ,&regionABSB           ,"region[nCands]/D"   );
-        tAnaSig->Branch("region"             ,&regionAnaSig           ,"region[nCands]/D"   );  
-        tA1A2Sig->Branch("region"             ,&regionA1A2Sig           ,"region[nCands]/D"   );  
-        tABSig->Branch("region"             ,&regionABSig           ,"region[nCands]/D"   );
+		tAnaSig->Branch("region"             ,&regionAnaSig           ,"region[nCands]/D"   );  
+		tA1A2Sig->Branch("region"             ,&regionA1A2Sig           ,"region[nCands]/D"   );  
+		tABSig->Branch("region"             ,&regionABSig           ,"region[nCands]/D"   );
 
 		for(int i=0;i<tIn->GetEntries();i++){
 			tIn->GetEntry(i);
@@ -235,9 +240,16 @@ int createTreesClosureTest_xww()
 				else continue;
 
 				if(lep[ivec]==0){//cut on met in electron channel
-					if(met>100); 
+					if(met>80); 
+					else continue;
+					//conversion veto
+					if(eleid_passConversionVeto[ivec]==1);
+					else continue;
+					if(eleid_numberOfLostHits[ivec]==0);
 					else continue;
 				}
+
+
 				goodevent =true;
 
 
