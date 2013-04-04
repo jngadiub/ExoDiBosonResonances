@@ -179,20 +179,23 @@ def readTree(filename, njet,pur,lep, workspace):
                             if event.nsubj21[i] > 999.0: #nsubjettiness cut for ZZ
                                 continue
                         else: #WW
-                            deltaR_LJ = deltaR(event.etalep1[i],event.philep1[i],event.etajet1[i],event.phijet1[i]);
-                            deltaPhi_JMET = deltaPhi(event.phijet1[i],event.philep2[i]);
-                            deltaPhi_JWL  = deltaPhi(event.phijet1[i],event.phiZll[i]);
-
-                            if(event.lep[i]!=1.):
-                                continue # 1 is for mu,0 for ele
-                            if((event.nLooseEle+event.nLooseMu)!=1):
-                                continue # second lepton veto
-                            if(event.ptZll[i]<200):
-                                continue #pt of Wmunu                                                
-                            if(event.nbtagsM[i]!=0):
-                                continue #b-tag veto
-                            if(deltaR_LJ<1.57 or deltaPhi_JMET<2. or deltaPhi_JWL<2.):
-                                continue
+                            dummy =  event.nsubj21[i]
+                            #print "fitting WW sample"
+                            #deltaR_LJ = deltaR(event.etalep1[i],event.philep1[i],event.etajet1[i],event.phijet1[i]);
+                            #deltaPhi_JMET = deltaPhi(event.phijet1[i],event.philep2[i]);
+                            #deltaPhi_JWL  = deltaPhi(event.phijet1[i],event.phiZll[i]);
+                            
+                            # these cuts are already applied in the lates trees
+                            #if(event.lep[i]!=1.):
+                            #    continue # 1 is for mu,0 for ele
+                            #if((event.nLooseEle+event.nLooseMu)!=1):
+                            #    continue # second lepton veto
+                            #if(event.ptZll[i]<200):
+                            #    continue #pt of Wmunu                                                
+                            #if(event.nbtagsM[i]!=0):
+                            #    continue #b-tag veto
+                            #if(deltaR_LJ<1.57 or deltaPhi_JMET<2. or deltaPhi_JWL<2.):
+                            #    continue
                            ## if(event.nsubj21[i]>0.45):
                            ##     continue
                         
