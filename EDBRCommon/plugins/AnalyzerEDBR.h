@@ -118,8 +118,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
 
    // if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric "<<ih<<" "<<flush;
-   if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSignal"))) reg[ih]=1;
-   if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSideband"))) reg[ih]=0;
+   //if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSignal"))) reg[ih]=1;
+   //if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSideband"))) reg[ih]=0;
 
    if(VType_=="Z")reg[ih]=(edbr->leg2().getSelection("cuts_isZSignal")? 1.0 : 0.0 );
    mzz[ih]=edbr->mass();
@@ -240,6 +240,10 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     mzzNoKinFit[ih]=edbr->mass();
     mjj[ih]=edbr->leg2().prunedMass();
     mjjNoKinFit[ih]=mjj[ih];
+	//40-65 -- 65-105 -- 105-130
+	if(VType_=="W"&&(mjjNoKinFit[ih]>65&&mjjNoKinFit[ih]<105)) reg[ih]=1;
+	else if(VType_=="W"&&( (mjjNoKinFit[ih]>40&&mjjNoKinFit[ih]<65) || (mjjNoKinFit[ih]>105&&mjjNoKinFit[ih]<130)) ) reg[ih]=0;
+	else if(VType_=="W") reg[ih]=-1;
     ptmzzNoKinFit[ih]=edbr->pt();
     ptjjNoKinFit[ih]=edbr->leg2().pt();
     ////fill jet kine vars: first jet vars refer to jet used for building EDBR,
@@ -304,6 +308,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     ptmzzNoKinFit[ih]=edbr->userFloat("nokinfitPTZZ");
     mjj[ih]=edbr->leg2().mass();
     mjjNoKinFit[ih]=edbr->userFloat("nokinfitMJJ");
+    if(VType_=="W"&&(mjjNoKinFit[ih]>65&&mjjNoKinFit[ih]<105)) reg[ih]=1;
+    else if(VType_=="W"&&( (mjjNoKinFit[ih]>40&&mjjNoKinFit[ih]<65) || (mjjNoKinFit[ih]>105&&mjjNoKinFit[ih]<130)) ) reg[ih]=0;
+	else if(VType_=="W") reg[ih]=-1;
     	//  double isomu1mod[nMaxCand], isomu2mod[nMaxCand]; // modified tracker iso for muons
 	//  double isoele1trk[nMaxCand], isoele2trk[nMaxCand], isoele1calo[nMaxCand], isoele2calo[nMaxCand]; // modified isos for ele
 
