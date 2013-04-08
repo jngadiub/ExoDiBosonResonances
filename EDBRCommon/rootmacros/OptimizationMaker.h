@@ -663,7 +663,8 @@ void OptimizationMaker::Loop(std::string outFileName, double massPoint, double p
 		//double actualWeight = weight;//*HLTweight*PUweight*LumiWeight*GenWeight;
 		double sampleWeight=1;
 		TString sample = outFileName;
-		if(isZZchannel_==false&&sample.Contains("WJetsPt"))sampleWeight=1.3;
+		if(isZZchannel_==false&&sample.Contains("WJetsPt180"))sampleWeight=1.3*1.1;
+		if(isZZchannel_==false&&sample.Contains("WJetsPt100"))sampleWeight=1.3;
 		//cout<<"sample weight "<<sampleWeight<<endl;
 		
 		double actualWeight = PUweight*LumiWeight*GenWeight*lumi_*sampleWeight;
