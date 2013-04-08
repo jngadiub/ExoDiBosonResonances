@@ -56,11 +56,17 @@ const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
 
 int main(){
   RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING) ;
-  ofstream logf("./log_FTest_MZZ_Std.log",ios::out);
+
+
+  string leptType_str="ALL";//ELE // "MU"
+  // const string outDir="FitSidebandsAlphaHistSmoothenedWithToys";
+  const string outDir="FitSidebandsMJJ_CA8_V5_ALL/";
+
+  ofstream logf((outDir+"./log_FTest_MZZ_Std.log").c_str(),ios::out);
 
   //double iM=0.0;
   const double limitM=1000.0;
-  TFile *fout=new TFile("./histosChi2.root","RECREATE");
+  TFile *fout=new TFile((outDir+"./histosChi2.root").c_str(),"RECREATE");
 
   int nxj=0,ipur=0;
   int icat=0;//icat==0 ->1JHP, icat==1 ->1JLP , icat==2 -> 2J
@@ -75,10 +81,6 @@ int main(){
       if(ipur==0)pur_str="LP";
       if(ipur==1)pur_str="HP";
 
-      string leptType_str="ALL";//ELE // "MU"
-      // const string outDir="FitSidebandsAlphaHistSmoothenedWithToys";
-      const string outDir="FitSidebandsMJJ_CA8_V5/";
-
       logf<<"\n\n\n========================"<<endl;
       logf<<"Starting chi2 calculation for cat: "<<nxj<<"J "<<pur_str.c_str()<<"  "<<leptType_str.c_str()<<endl<<endl;
       
@@ -92,14 +94,14 @@ int main(){
 			      1000,1100,1200,1300,1500,1700,1900,2100,2300,2600};
 
 
-  std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, "ALL" ,outDir.c_str());
+  std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, leptType_str ,outDir.c_str());
   std::cout << "reading results from: "<< fitResultsFileName.c_str() << std::endl;
  
   logf<<"Load file "<<fitResultsFileName.c_str()<<std::flush;
   TFile *f=new TFile(fitResultsFileName.c_str(),"READ");
-  logf<<f->GetName()<<std::endl;;
+  logf<<"\t"<<f->GetName()<<std::endl;;
   char workspaceName[200];
-  sprintf( workspaceName, "ws_alpha_%dJ_%s_ALL", nxj,pur_str.c_str() );
+  sprintf( workspaceName, "ws_alpha_%dJ_%s_%s", nxj,pur_str.c_str(),leptType_str.c_str() );
   RooWorkspace *w1=(RooWorkspace*)f->Get(workspaceName);
   //  f->ls();
   //logf<<"\nDumping contents of the WS: "<<("ws_alpha_"+sscat.str()+"cat"+leptType).c_str()<<std::endl;
@@ -123,7 +125,9 @@ int main(){
   RooAbsData *SBdset=w1->data("dsDataSB2");//->reduce(("nCats=="+sscat+" && lep==0").c_str()); 
   RooAbsData *SIGdset=w1->data("dsDataSIG");
 
-  cout<<" RooDataSet "<<endl;
+  cout<<" RooDataSet in SB, integral="<<SBdset->sumEntries()<<endl;
+  logf<<" RooDataSet in SB, integral="<<SBdset->sumEntries()<<endl;
+
 
 
   // get BG shape:
@@ -266,8 +270,8 @@ int main(){
   RooDataHist* dsetBinned =new RooDataHist("dhALLData","My Binned dataset",RooArgSet(*x), *SBdset);
   cout<<"Datahist loaded"<<endl;
   // TH1D *hbin2=(TH1D*)SIGdsetFULL->reduce("mZZ>375&&mZZ<1250")->createHistogram( ("h_dsbinned2_M"+ssM.str()+sscat.str()+"b").c_str(),*x,Binning(RooBinning(nBins-1,bins0)));
-  TH1D *hbin2=(TH1D*)SBdset->createHistogram( ("h_dsbinned2_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(29,600,2050)));  
-  TH1D *hbinEE=(TH1D*)SBdset->reduce("lep==0")->createHistogram( ("h_dsbinnedEE_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(29,600,2050)));
+  TH1D *hbin2=(TH1D*)SBdset->createHistogram( ("h_dsbinned2_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(37,600,2450)));  
+  TH1D *hbinEE=(TH1D*)SBdset->reduce("lep==0")->createHistogram( ("h_dsbinnedEE_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(37,600,2450)));
 
   
     //  TH1D *hbin=(TH1D*)dsetBinned->createHistogram("h_dsbinned",*x);
@@ -379,7 +383,7 @@ int main(){
     RooPlot *xf=x->frame();
     string frameTitle="F-Test validation ("+ssnxj.str()+"J "+pur_str +" - "+leptType_str+" lept flav)";
     xf->SetTitle(frameTitle.c_str());
-    SBdset->plotOn(xf,RooFit::Binning(RooBinning(29,600,2050)),RooFit::MarkerStyle(21),RooFit::MarkerColor(kRed));
+    SBdset->plotOn(xf,RooFit::Binning(RooBinning(37,600,2450)),RooFit::MarkerStyle(21),RooFit::MarkerColor(kRed));
     fit_1par->plotOn(xf, RooFit::Normalization(normFitRange,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), RooFit::LineColor(kBlue), RooFit::LineStyle(kDotted));//RooFit::NormRange("fitRange"),
     fit_2par->plotOn(xf, RooFit::Normalization(normFitRange,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), RooFit::LineColor(kOrange+5), RooFit::LineStyle(kDashed));//RooFit::NormRange("fitRange"),
     fit_3par->plotOn(xf, RooFit::Normalization(normFitRange,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), RooFit::LineColor(kBlack), RooFit::LineStyle(kSolid));//RooFit::NormRange("fitRange"),

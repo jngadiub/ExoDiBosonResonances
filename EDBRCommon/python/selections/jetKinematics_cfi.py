@@ -13,10 +13,10 @@ zjj = cms.PSet(
     mass = cms.string('mass() >= 60 && mass() < 130'),
 )
 isSignal = cms.PSet(
-    mass = cms.string('mass() >= 75 && mass() < 105'),
+    mass = cms.string('mass() >= 70 && mass() < 110'),
 )
 isSideband = cms.PSet(
-    mass = cms.string('(mass() >= 60 && mass() < 75) || ( mass() >= 105 && mass() < 130 )'),
+    mass = cms.string('(mass() >= 60 && mass() < 70) || ( mass() >= 110 && mass() < 130 )'),
 )
 isWSignal = cms.PSet(
     mass = cms.string('mass() >= 70 && mass() < 100'),
@@ -45,11 +45,11 @@ mergedJetVTagging = cms.PSet(
     )
 
 isMergedSignal = cms.PSet(
-    prunedMass = cms.string('prunedMass()>75.0 && prunedMass()<105.0')
+    prunedMass = cms.string('prunedMass()>70.0 && prunedMass()<110.0')
     )
 
 isMergedSideband = cms.PSet(
-    prunedMass = cms.string('(prunedMass()>50.0&&prunedMass()<75.0) || prunedMass()>105.0')
+    prunedMass = cms.string('(prunedMass()>50.0&&prunedMass()<70.0) || prunedMass()>110.0')
     )
 
 isMergedWSignal = cms.PSet(
