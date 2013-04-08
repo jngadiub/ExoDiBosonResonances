@@ -2,13 +2,18 @@
 
 ####EDIT THIS PART#####
 
-TREEDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7/fullallrange/
+TREEDIR=/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange/
 
-RESUB=0 ##use 1 to resubmit, 0 not to resubmit
+##use 1 to resubmit, 0 not to resubmit
+RESUB=0 
 
 QUEUE=2nd
 
-MERGE=1  ##after everything is fine you can merge the output
+##after everything is fine you can merge the output using MERGE=1
+MERGE=0
+
+##option for WW, to merege similar smaples using MERGESAMPLE=1. NOTE: check the last part for safety
+MERGESAMPLE=0
 
 ######################
 
@@ -71,6 +76,16 @@ do
 	fi
 done  ##end of loop of sample
 
+
+
+if test $MERGESAMPLE -eq 1
+	then
+	echo merging similar samples for plotting:
+	cd ${TREEDIR}
+	hadd treeEDBR_SingleTop_xww.root treeEDBR_SingleTop*
+	hadd treeEDBR_VV_xww.root treeEDBR_WW_xww.root treeEDBR_WZ_xww.root treeEDBR_ZZ_xww.root
+	hadd treeEDBR_DYJets_xww.root treeEDBR_DYJetsP*
+fi
 
 
 
