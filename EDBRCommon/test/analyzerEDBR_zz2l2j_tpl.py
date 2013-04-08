@@ -102,6 +102,10 @@ elif "WJetsPt100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(12106534)
     process.ANEDBR.xsec=cms.double(282.5)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
+elif "WJetsPt180" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9732165)
+    process.ANEDBR.xsec=cms.double(23.5)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "SingleTopBarSchannel" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(139974)
     process.ANEDBR.xsec=cms.double(1.76)
