@@ -79,7 +79,7 @@ TCanvas* compareHistos(TH1* signalHisto, TH1* backgroundHisto){
 		double binLowEdge = backgroundHisto->GetBinLowEdge(i);
 		double binHighEdge = binLowEdge+backgroundHisto->GetBinWidth(i);
 		cout<<"cut: "<<binHighEdge<<" thisPunzi: "<<thisPunzi<<endl;
-		if(binHighEdge==0.45){punzi45.push_back(thisPunzi);sigeff45.push_back(effSgn);}
+		if(binHighEdge==0.5){punzi45.push_back(thisPunzi);sigeff45.push_back(effSgn);}
 		if(thisPunzi>maxPunzi)
 		{
 			maxPunzi=thisPunzi;
@@ -233,13 +233,14 @@ void ROCcurves(){
 	punziVSmass->Draw("LPsame");
 	TLegend * leg = new TLegend (0.1, 0.7, 0.4, 0.9, NULL, "brNDC") ;
 	leg->AddEntry (bestpunziVSmass, "Best Cut Punzi" ,"p") ;
-	leg->AddEntry (punziVSmass, "0.45 Punzi" ,"p") ;
+	leg->AddEntry (punziVSmass, "0.5 Punzi" ,"p") ;
 	leg->Draw();
 	c1->SaveAs("punziVSmass.png");
 
     sigeffVSmass->SetTitle("");
     sigeffVSmass->GetXaxis()->SetTitle("signal mass");
     sigeffVSmass->GetYaxis()->SetTitle("#epsilon_{S}");
+	sigeffVSmass->GetYaxis()->SetRangeUser(0.6,1);
     sigeffVSmass->SetMarkerStyle(20);
     sigeffVSmass->SetMarkerSize(1);
     sigeffVSmass->SetMarkerColor(kRed);
@@ -249,7 +250,7 @@ void ROCcurves(){
     sigeff45VSmass->Draw("LPsame");
     TLegend * leg = new TLegend (0.1, 0.7, 0.4, 0.9, NULL, "brNDC") ;
     leg->AddEntry (sigeffVSmass, "Best Cut sigeff" ,"p") ;
-    leg->AddEntry (sigeff45VSmass, "0.45 sigeff" ,"p") ;
+    leg->AddEntry (sigeff45VSmass, "0.5 sigeff" ,"p") ;
     leg->Draw();
     c1->SaveAs("sigeffVSmass.png");
 
