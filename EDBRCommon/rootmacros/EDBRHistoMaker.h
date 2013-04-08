@@ -610,17 +610,17 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("cosTheta2",100,-1.15,1.15);
 	hs.setHisto("phi",100,-3.7,3.7);
 	hs.setHisto("phiStar1",100,-3.7,3.7);
-	hs.setHisto("ptlep1",50,0,500);
+	hs.setHisto("ptlep1",50,0,500);//50       0       500
 	hs.setHisto("ptlep2",50,0,500);
 	hs.setHisto("ptjet1",50,0,500);
 	hs.setHisto("ptjet2",50,0,500);
-	hs.setHisto("ptZll",100,0,1000);
-	hs.setHisto("ptZjj",100,0,1000);
+	hs.setHisto("ptZll",40,200,800);//40    200      800
+	hs.setHisto("ptZjj",40,200,800);//40    200       800
 	hs.setHisto("yZll",28,-2.8,2.8);
 	hs.setHisto("yZjj",28,-2.8,2.8);
 	hs.setHisto("phiZll",100,-3.7,3.7);
 	hs.setHisto("phiZjj",100,-3.7,3.7);
-	hs.setHisto("etalep1",25,-2.5,2.5);
+	hs.setHisto("etalep1",25,-2.1,2.1);// 25   -2.1       2.1
 	hs.setHisto("etalep2",25,-2.5,2.5);
 	hs.setHisto("etajet1",25,-2.5,2.5);
 	hs.setHisto("etajet2",25,-2.5,2.5);
@@ -630,15 +630,15 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("phijet2",100,-3.7,3.7);
 	hs.setHisto("lep",100,0,1);
 	hs.setHisto("region",100,0,1);
-	hs.setHisto("mZZ",75,0,3000);
+	hs.setHisto("mZZ",60,200,2000);//60    200       2000
 	hs.setHisto("mZZNoKinFit",75,0,3000);
 	hs.setHisto("ptmzz",35,0,350);
 	hs.setHisto("ptmzzNoKinFit",35,0,350);
 	hs.setHisto("mLL",40,70,110);
 	hs.setHisto("mJJ",20,40,140);
-	hs.setHisto("prunedmass",20,40,140);
-	hs.setHisto("mJJNoKinFit",20,40,140);
-	hs.setHisto("met",60,0,600);
+	hs.setHisto("prunedmass",28,0,140);//28      0       140
+	hs.setHisto("mJJNoKinFit",25,40,140);//25     40      140
+	hs.setHisto("met",35,0,600);//35      0       600
 	hs.setHisto("metSign",20,0,10);
 	//hs.setHisto("nBTags",100,-2.2,0);
 	hs.setHisto("deltaREDBR",100,0,4);
@@ -652,12 +652,12 @@ void EDBRHistoMaker::createAllHistos() {
 	//hs.setHisto("puMvajet1",100,-1080,1000);
 	//hs.setHisto("puMvajet2",100,-1080,1000);
 	hs.setHisto("nXjets",6,-0.5,5.5);
-	hs.setHisto("mdrop",40,0,1);
-	hs.setHisto("nsubj21",40,0,1);
+	hs.setHisto("mdrop",35,0.1,1.15);//35     0.1      1.15
+	hs.setHisto("nsubj21",35,0.2,1.1);//35     0.2      1.1
 	//hs.setHisto("nsubj32",100,-1080,100);
 	//hs.setHisto("tau1",100,-1080,100);
 	//hs.setHisto("tau2",100,-1080,100);
-	//hs.setHisto("qjet",100,-1080,100);
+	hs.setHisto("qjet",35,0,1);//35     0        1
 	hs.setHisto("isomu1mod",100,0,0.2);
 	hs.setHisto("isomu2mod",100,0,0.2);
 	hs.setHisto("isoele1calo",100,0,1);
@@ -668,7 +668,7 @@ void EDBRHistoMaker::createAllHistos() {
 	//hs.setHisto("q1fl",4,-101,-97);
 	//hs.setHisto("q2fl",4,-101,-97);
 	hs.setHisto("MCmatch",100,-1.2,1.2);
-	hs.setHisto("nVtx",41,-0.5,40.5);
+	hs.setHisto("nVtx",40,0,40);//40      0       40
 	hs.setHisto("nJets",10,0.5,10.5);
 	//hs.setHisto("nPU",2,0,1);
 	//hs.setHisto("HLTweight",100,0.99,10);
@@ -946,7 +946,13 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//cut from fermilab
 					if(deltaR_LJ>1.57 && deltaPhi_JMET>2. && deltaPhi_JWL>2.);
 					else continue;
-					
+				
+					//cut on mjj
+					//if(mJJNoKinFit[ivec]<50)continue;	
+
+					//if(ptZjj[ivec]>225;
+					//else continue;
+
 					//conversion veto
 					//if(eleid_passConversionVeto[ivec]==1);
 					//else continue;
@@ -955,20 +961,23 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//if(eleid_numberOfLostHits[ivec]==0);
 					//else continue;
 
-					//if(met<60);
+					//eta cut on electron: using only barrel
+					//if(fabs(etalep1[ivec])<1.442);
+					//else continue;
+
+					//if(met>80);
 					//else continue;
 
 					//b veto cut
-					//if(nbtagsM[ivec]==0) ;
-					//else continue;
+					if(nbtagsM[ivec]==0) ;
+					else continue;
 
 					//b cut - ttbar control region
 					//if(nbtagscleanT[ivec]>=1) ;
 					//else continue;
 
 					//nsubjettiness cut
-					//double nsubjett = 1.0/nsubj21[ivec];
-					//if(nsubjett<0.4) ;
+					//if(nsubj21[ivec]<0.5) ;
 					//else continue;
 				}
 
@@ -1021,6 +1030,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["mZZ"])->Fill(mZZ[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["prunedmass"])->Fill(prunedmass[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["mdrop"])->Fill(mdrop[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["qjet"])->Fill(qjet[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["mJJNoKinFit"])->Fill(mJJNoKinFit[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["nsubj21"])->Fill(nsubj21[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["nXjets"])->Fill(nXjets[ivec],actualWeight);//printf("line number %i\n",__LINE__);
