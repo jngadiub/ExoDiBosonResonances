@@ -47,17 +47,18 @@ myHLTMuEffWeights =  cms.PSet( lumi = cms.double(1.),#dummy
 #### (a set of efficieincies for each of them, function of etan and pt, calculated with T&P)
 HLTWeightsKinFitMu = cms.EDProducer("HLTWeightProducerMu",
                                   src = cms.InputTag("cmgDiMuonDiJetKinFitEDBR") ,
-                                  ranges = cms.VPSet( cms.PSet( lumi = cms.double(217.),#Run2011A1
-                                                                double1 = doubleMuLeg1Eff_Run2011A,
-                                                                double2 = doubleMuLeg2Eff_Run2011A,
-                                                                single = singleMuEff_Run2011A
-                                                                ),
-                                                      cms.PSet( lumi = cms.double(920.),#Run2011A2
-                                                                double1 = doubleMuLeg1Eff_Run2011A,
-                                                                double2 = doubleMuLeg2Eff_Run2011A,
-                                                                single = singleMuEff_Run2011A
-                                                                ),
-                                                       myHLTMuEffWeights
+                                  ranges = cms.VPSet(
+    #  cms.PSet( lumi = cms.double(217.),#Run2011A1
+    #                                                                 double1 = doubleMuLeg1Eff_Run2011A,
+    #                                                                 double2 = doubleMuLeg2Eff_Run2011A,
+    #                                                                 single = singleMuEff_Run2011A
+    #                                                                 ),
+    #                                                       cms.PSet( lumi = cms.double(920.),#Run2011A2
+    #                                                                 double1 = doubleMuLeg1Eff_Run2011A,
+    #                                                                 double2 = doubleMuLeg2Eff_Run2011A,
+    #                                                                 single = singleMuEff_Run2011A
+    #                                                                 ),
+                                                      myHLTMuEffWeights
                                                                 
                                   
                                                       )# end ranges
