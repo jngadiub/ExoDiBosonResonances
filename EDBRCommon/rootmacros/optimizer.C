@@ -34,7 +34,7 @@ double optimizer(){
 
 	/// Path to wherever the files with the trees are. 
 	//std::string pathToTrees="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv4/fullsigCA8/";
-	std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/fullallrange/";
+	std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange/";
 
 	system("rm -rf CA8optimization");	
 	system("mkdir CA8optimization");
@@ -59,7 +59,7 @@ double optimizer(){
 	*/	
 
 
-  const int nMC=16;//set to zero if you don't want to plot
+  const int nMC=14;//set to zero if you don't want to plot
   std::string mcLabels[nMC]={//"TTBAR_xww",
                  "TTBARpowheg_xww",
                  "SingleTopBarTWchannel_xww",
@@ -74,9 +74,10 @@ double optimizer(){
                  "DYJetsPt50To70_xww",
                  "DYJetsPt70To100_xww",
                  "DYJetsPt100_xww",
-                 "WJetsPt50To70_xww",
-                 "WJetsPt70To100_xww",
+                 //"WJetsPt50To70_xww",
+                 //"WJetsPt70To100_xww",
                  "WJetsPt100_xww",
+				 //"WJetsPt180_xww",
                  };
 
 
