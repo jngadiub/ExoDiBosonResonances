@@ -40,9 +40,9 @@ double deltaR(const double& eta1, const double& phi1,
 void absolute_eff()
 {
 	//TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSigTree";
-  //	TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/fullallrange";
-  TString inputpath = "/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
-  ///afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
+	TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange";
+	//TString inputpath = "/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
+	///afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
 	TString cut = "absolute_efficiency";
 	vector<TString> dataSamples;
 	vector<TString> bkgSamples;
@@ -50,7 +50,7 @@ void absolute_eff()
 
 
 	bool weightedeff = true;
-	bool isZZChannel = true;
+	bool isZZChannel = false;
 	/*
 	   double lepCut=0.0;   // 0->ele 1->mu
 	   double nxjCut=1.0;  // -1 means you take both single and double jet
@@ -169,7 +169,7 @@ void absolute_eff()
 				cout<<"data samples "<<ndata<<"  bkg samples "<<nbkg<<"  signal samples "<<nsig<<endl;	
 
 				TH1F * h1 = new TH1F (cut,cut,ndata+nbkg+nsig,0,ndata+nbkg+nsig);
-				TH1F * h1b = new TH1F ("Efficiency","Efficiency",11,550,2050);
+				TH1F * h1b = new TH1F ("Efficiency","Efficiency",nsig,550,550+100*nsig);
 				//h1->GetYaxis()->SetRangeUser(0,1);
 				h1->SetBit(TH1::kCanRebin);
 				h1->SetStats(0);
@@ -326,14 +326,18 @@ void absolute_eff()
 								if(region[ivec]!=1)continue;// 1 is mjj signal region
 								if(nXjets[ivec]!=nxjCut)continue;// 1 jet candidate
 								//for nsubjtiness
-								if(vtag[ivec]!=purCut&&iNJ!=2)continue;
-							 //if(iPur==1&&nsubj21[ivec]<0.45);
-							 //else if(iPur==0&&(nsubj21[ivec]>0.45&&nsubj21[ivec]<0.75));
-							 //else if(nxjCut==2);
-							 //else continue;
-								////
+								if(isZZChannel)
+								{
+									if(vtag[ivec]!=purCut&&iNJ!=2)continue;
+								}
 								if(!isZZChannel)
 								{
+									//for nsubjtiness
+									if(iPur==1&&nsubj21[ivec]<0.5);
+									else if(iPur==0&&(nsubj21[ivec]>0.5&&nsubj21[ivec]<0.75));
+									else if(nxjCut==2);
+									else continue;
+									////
 									if((nLooseEle+nLooseMu)!=1)continue;
 									if(ptZll[ivec]<200)continue;
 									if(nbtagsM[ivec]!=0)continue; //b-tag veto
@@ -376,13 +380,13 @@ void absolute_eff()
 						sig_masses.push_back(indM*step+startM);
 						sig_effs.push_back(eff);
 						indM++;
-					
-					cout<<"Array indexes: "<<isig<<"  "<<iCat<<endl;
-					SigEff[isig][iCat]=eff;
-					isig++;
-					if(isig==nsig){//finished last sample
-					  iCat++;
-					}
+
+						cout<<"Array indexes: "<<isig<<"  "<<iCat<<endl;
+						SigEff[isig][iCat]=eff;
+						isig++;
+						if(isig==nsig){//finished last sample
+							iCat++;
+						}
 					}
 				}//end of sample loop
 
