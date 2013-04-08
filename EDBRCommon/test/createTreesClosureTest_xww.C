@@ -42,17 +42,17 @@ double deltaR(const double& eta1, const double& phi1,
 int createTreesClosureTest_xww()
 {
 	//########EDIT THIS PART###########
-	TString inTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/fullallrange";
-	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSigTree_elemet80";
-	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSBTree_elemet80";
+	TString inTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange";
+	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree";
+	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree";
 
-	const double A1Low=50.0;
-	const double A1High=60.0;
+	const double A1Low=40.0;
+	const double A1High=55.0;
 
-	const double A2Low=60.0;
-	const double A2High=70.0;
+	const double A2Low=55.0;
+	const double A2High=65.0;
 
-	const double BLow=100;
+	const double BLow=105;
 	const double BHigh=130;
 
 	//#########################
@@ -213,9 +213,10 @@ int createTreesClosureTest_xww()
 			runAna=run;
 			PUweightAnaSig=PUweight;
 			LumiWeightAnaSig=LumiWeight;
+			//if(file.Contains("BulkG_WW_lvjj_c0p2_M1600"))LumiWeightAnaSig=1.5771e-05/45994;
 			GenWeightAnaSig=GenWeight;
 			if(file.Contains("WJetsPt"))GenWeightAnaSig=GenWeightAnaSig*1.3;//for wjets, add addtionnal 1.3 factor
-			weightAnaSig=PUweight*LumiWeight*GenWeightAnaSig;
+			weightAnaSig=PUweightAnaSig*LumiWeightAnaSig*GenWeightAnaSig;
 
 			bool goodevent=false;
 			for(int ivec =0; ivec<nCands; ivec++)
@@ -253,7 +254,7 @@ int createTreesClosureTest_xww()
 				goodevent =true;
 
 
-				if(nsubj21[ivec]<0.45) vTagPurityAna[ivec]=1;
+				if(nsubj21[ivec]<0.5) vTagPurityAna[ivec]=1;
 				else if(nsubj21[ivec]<0.75) vTagPurityAna[ivec]=0;
 				else  vTagPurityAna[ivec]=-1;
 
