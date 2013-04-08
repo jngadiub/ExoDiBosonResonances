@@ -1,7 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-
 cmgFiles = cms.untracked.vstring()
 source = cms.Source("PoolSource",
                     noEventSort = cms.untracked.bool(True),
@@ -10,8 +8,8 @@ source = cms.Source("PoolSource",
                    )
 
 cmgFiles.extend([
-    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/tomei_edbr_vv_20130313/Summer12/CA8/BulkG_ZZ_lljj_c0p2_M2000/cmgTuple_0.root',
-    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/tomei_edbr_vv_20130313/Summer12/CA8/BulkG_ZZ_lljj_c0p2_M2000/cmgTuple_1.root',
-    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/tomei_edbr_vv_20130313/Summer12/CA8/BulkG_ZZ_lljj_c0p2_M2000/cmgTuple_2.root',
-    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/tomei_edbr_vv_20130313/Summer12/CA8/BulkG_ZZ_lljj_c0p2_M2000/cmgTuple_3.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1d/Summer12//BulkG_ZZ_lljj_c0p2_M2000/cmgTuple_0.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1d/Summer12//BulkG_ZZ_lljj_c0p2_M2000/cmgTuple_1.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1d/Summer12//BulkG_ZZ_lljj_c0p2_M2000/cmgTuple_2.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1d/Summer12//BulkG_ZZ_lljj_c0p2_M2000/cmgTuple_3.root',
     ])

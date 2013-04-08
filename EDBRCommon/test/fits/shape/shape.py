@@ -118,10 +118,10 @@ def defineVars(descriptor,njets,workspace,plotonly):
     workspace.set("pars").readFromFile(filename)
     print 'mean-match after reading from file: ',workspace.var("mean_match").getVal()
     
-    mzzLow=workspace.var("mean_match").getVal()- workspace.var("sigma_match").getVal()*6.0
+    mzzLow=workspace.var("mean_match").getVal()- workspace.var("sigma_match").getVal()*4.0
     if mzzLow < 400.0 :
         mzzLow=400.0
-    mzzHigh=workspace.var("mean_match").getVal()+ workspace.var("sigma_match").getVal()*6.0
+    mzzHigh=workspace.var("mean_match").getVal()+ workspace.var("sigma_match").getVal()*4.0
     if mzzHigh > 3000.0 :
         mzzHigh=3000.0
         
@@ -344,6 +344,7 @@ def main():
 
    
     for file in filelist:
+        print 'File is ',file
         if(checkfile(desc(file))):
             if (desc(file).find('M'+str(args.mass))==-1 and args.mass>0) :
                 continue

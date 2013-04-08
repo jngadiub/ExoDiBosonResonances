@@ -34,7 +34,7 @@ from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
 process.ANEDBR = AnalyzerXZZ.clone(
     debug=cms.bool(False),
     outFileName=cms.string("treeEDBR_<SAMPLE>.root"),
-    VType=cms.string("W"),
+    VType=cms.string("Z"),
     Ngen=cms.uint32(1),
     xsec=cms.double(1.0) ###in pb
     )
@@ -47,18 +47,19 @@ process.ANEDBR = AnalyzerXZZ.clone(
 processFullSel=True
 
 if processFullSel :
-    #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
-    #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
-    #process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
-    #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
-    #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
-    #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
-    #process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
-    #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
-    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
-    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
-    process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
-    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
+#    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
+#    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
+#    process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
+#    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
+       process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
+       process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
+       process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
+       process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
+
+#    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
+#    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
+#    process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
+#    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
 
 
 ##### set Ngen and xsect values ofr MC samples; xsect in pb !!! 
@@ -452,8 +453,8 @@ print '---> Ngen=',process.ANEDBR.Ngen,'  Xsect=',process.ANEDBR.xsec
 
 process.filterFinalSelPath = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
-                                       HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu"),
-                                       #HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
+                                       #HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu"),
+                                       HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
                                        eventSetupPathsKey = cms.string(''),
                                        andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
                                        throw = cms.bool(True)    # throw exception on unknown path names

@@ -40,8 +40,9 @@ double deltaR(const double& eta1, const double& phi1,
 void absolute_eff()
 {
 	//TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSigTree";
-	TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/fullallrange";
-	//TString inputpath = "/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
+  //	TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/fullallrange";
+  TString inputpath = "/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
+  ///afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
 	TString cut = "absolute_efficiency";
 	vector<TString> dataSamples;
 	vector<TString> bkgSamples;
@@ -49,7 +50,7 @@ void absolute_eff()
 
 
 	bool weightedeff = true;
-	bool isZZChannel = false;
+	bool isZZChannel = true;
 	/*
 	   double lepCut=0.0;   // 0->ele 1->mu
 	   double nxjCut=1.0;  // -1 means you take both single and double jet
@@ -157,7 +158,8 @@ void absolute_eff()
 		double nxjCut=double(iNJ);
 
 		for(int iPur=1;iPur>=0;iPur--){
-			if(iNJ==2&&iPur==0)break;//for 2 jet only do the first loop
+			if(iNJ==2&&iPur==0)continue;//for 2 jet only do the first loop
+			double purCut=double(iPur);
 			for(int ilep=0;ilep<2;ilep++){
 				double lepCut=double(ilep);
 
@@ -167,7 +169,7 @@ void absolute_eff()
 				cout<<"data samples "<<ndata<<"  bkg samples "<<nbkg<<"  signal samples "<<nsig<<endl;	
 
 				TH1F * h1 = new TH1F (cut,cut,ndata+nbkg+nsig,0,ndata+nbkg+nsig);
-				TH1F * h1b = new TH1F ("Efficiency","Efficiency",17,550,2650);
+				TH1F * h1b = new TH1F ("Efficiency","Efficiency",11,550,2050);
 				//h1->GetYaxis()->SetRangeUser(0,1);
 				h1->SetBit(TH1::kCanRebin);
 				h1->SetStats(0);
@@ -240,6 +242,7 @@ void absolute_eff()
 					double phiZll[99];
 					double ptZjj[99];
 					double lep[99];
+					double vtag[99];
 					int    nCands;
 					int    nXjets[99];
 					int nLooseEle;
@@ -278,6 +281,7 @@ void absolute_eff()
 					tree->SetBranchAddress("met", &met);
 					tree->SetBranchAddress("nXjets", nXjets);
 					tree->SetBranchAddress("lep", lep);
+					tree->SetBranchAddress("vTagPurity", vtag);
 					tree->SetBranchAddress("nCands", &nCands);
 
 					tree->SetBranchAddress("PUweight", &PUweight);
@@ -322,10 +326,11 @@ void absolute_eff()
 								if(region[ivec]!=1)continue;// 1 is mjj signal region
 								if(nXjets[ivec]!=nxjCut)continue;// 1 jet candidate
 								//for nsubjtiness
-								if(iPur==1&&nsubj21[ivec]<0.45);
-								else if(iPur==0&&(nsubj21[ivec]>0.45&&nsubj21[ivec]<0.75));
-								else if(nxjCut==2);
-								else continue;
+								if(vtag[ivec]!=purCut&&iNJ!=2)continue;
+							 //if(iPur==1&&nsubj21[ivec]<0.45);
+							 //else if(iPur==0&&(nsubj21[ivec]>0.45&&nsubj21[ivec]<0.75));
+							 //else if(nxjCut==2);
+							 //else continue;
 								////
 								if(!isZZChannel)
 								{
@@ -371,11 +376,14 @@ void absolute_eff()
 						sig_masses.push_back(indM*step+startM);
 						sig_effs.push_back(eff);
 						indM++;
-					}
+					
+					cout<<"Array indexes: "<<isig<<"  "<<iCat<<endl;
 					SigEff[isig][iCat]=eff;
 					isig++;
-					if(isig==nsig)//finished last sample
-						iCat++;
+					if(isig==nsig){//finished last sample
+					  iCat++;
+					}
+					}
 				}//end of sample loop
 
 				c1->SetGridy(1);
@@ -408,7 +416,7 @@ void absolute_eff()
 				//outFile<<SaveName<<endl;
 
 				/// The original plot with efficiencies for both signals and backgrounds
-				h1->SetTitle(cut);
+				h1->SetTitle(cut);			
 				h1->Draw();
 				h1->Draw("TEXT0same");
 				c1->SaveAs("SignalEffPlots/"+cut+SaveName+".png");
@@ -417,9 +425,12 @@ void absolute_eff()
 				TCanvas *c2=new TCanvas("cFit","cFit",800,800);
 				c2->cd();
 				h1b->SetMarkerStyle(20);
+				h1b->SetMinimum(0.0);
+				h1b->SetMaximum(0.25);
 				h1b->Draw("P");
 				fitFunc->Draw("Lsame");
 				c2->SaveAs("SignalEffPlots/efficiencyAndFit"+SaveName+".png");
+				c2->SaveAs("SignalEffPlots/efficiencyAndFit"+SaveName+".pdf");
 
 				cout<<"data samples "<<ndata<<"  bkg samples "<<nbkg<<"  signal samples "<<nsig<<endl;	
 				cout<<"\nEfficiencies for Lep="<<lepCut<<"  nXjets="<<nxjCut<<" : "<<endl;
