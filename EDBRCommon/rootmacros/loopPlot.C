@@ -20,8 +20,8 @@ void loopPlot(){
   
   //#####################EDIT THE OPTIONS##############################
   /// Boolean flags to steer the histogram making
-  bool wantElectrons = true; // Will make histograms for electrons
-  bool wantMuons     = false; // Will make histograms for muons
+  bool wantElectrons = false; // Will make histograms for electrons
+  bool wantMuons     = true; // Will make histograms for muons
   bool wantSideband  = true; // Will make histograms for sideband region
   bool wantSignal    = false; // Will make histograms for signal region
   bool wantFullRange = false; // Will not check signal or sideband, ie, pick all jet mass range
@@ -32,8 +32,8 @@ void loopPlot(){
   
   /// Luminosity value in pb^-1
   //double lumiValue = 19477.6;// for DoubleEle2012?
-  //double lumiValue = 19538.85;// for SingleMu2012
-  double lumiValue = 19531.85;// for singleEle2012
+  double lumiValue = 19538.85;// for SingleMu2012
+  //double lumiValue = 19531.85;// for singleEle2012
   /// Should we scale the histograms to data?
   bool scaleToData = false;
   /// Should we plot the Data/Bkg and Data-Bkg/Error ratios?
@@ -45,12 +45,12 @@ void loopPlot(){
 
   /// Path to wherever the files with the trees are. 
   //CA8 (cmgTuple_08032013_CA8)
-  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/fullallrange/";
+  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange/";
   //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/fullsig/";
   //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_08_03_2013_muOnly_CA8/merged/";
 
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./WW_ele_sideband_CA8";
+  std::string outputDir = "./WW_mu_sideband_bvetoM_notau_wj180_ptW200";
 
   /// Setup names of data files for trees.
  
@@ -74,7 +74,7 @@ void loopPlot(){
 				 "DoublePhotonHighPt_Run2012D_PRv1"};
   */ 
  
- 
+/* 
   const int nDATA=7;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"SingleElectron_Run2012A_13Jul2012_xww",
 				 "SingleElectron_Run2012A_recover_xww",
@@ -83,8 +83,8 @@ void loopPlot(){
 				 "SingleElectron_Run2012C_PromptReco_xww",
 				 "SingleElectron_Run2012C_EcalRecove_xww",
 				 "SingleElectron_Run2012D_PromptReco_xww"};  
+*/
 
-/*
    const int nDATA=7;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"SingleMu_Run2012A_13Jul2012_xww",
                  "SingleMu_Run2012A_recover_xww",
@@ -93,11 +93,11 @@ void loopPlot(){
                  "SingleMu_Run2012C_PromptReco_xww",
                  "SingleMu_Run2012C_EcalRecove_xww",
                  "SingleMu_Run2012D_PromptReco_xww"};
-*/
-/*    
+
+/*   
   const int nDATA=0;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={};
-  */
+ */
 
   std::vector<std::string> fData;
   for(int ii=0;ii<nDATA;ii++){
@@ -118,25 +118,30 @@ void loopPlot(){
   double kFactorsMC_array[nMC] = {1., 1., 1., 1., 1., 1., 1.};
   */
 
-  const int nMC=16;//set to zero if you don't want to plot
-  std::string mcLabels[nMC]={"TTBAR_xww",
-			     "SingleTopBarTWchannel_xww",
-			     "SingleTopTWchannel_xww",
-			     "SingleTopBarSchannel_xww", 
-			     "SingleTopSchannel_xww",
-			     "SingleTopBarTchannel_xww",
-			     "SingleTopTchannel_xww",
-			     "WW_xww",
-			     "WZ_xww",
-			     "ZZ_xww",
-			     "DYJetsPt50To70_xww",
-			     "DYJetsPt70To100_xww",
-			     "DYJetsPt100_xww",
-			     "WJetsPt50To70_xww",
-			     "WJetsPt70To100_xww",
-			     "WJetsPt100_xww",
+  const int nMC=5;//set to zero if you don't want to plot
+  std::string mcLabels[nMC]={//"TTBAR_xww",
+				 "TTBARpowheg_xww",
+			     //"SingleTopBarTWchannel_xww",
+			     //"SingleTopTWchannel_xww",
+			     //"SingleTopBarSchannel_xww", 
+			     //"SingleTopSchannel_xww",
+			     //"SingleTopBarTchannel_xww",
+			     //"SingleTopTchannel_xww",
+				 "SingleTop_xww",
+			     //"WW_xww",
+			     //"WZ_xww",
+			     //"ZZ_xww",
+				 "VV_xww",
+			     //"DYJetsPt50To70_xww",
+			     //"DYJetsPt70To100_xww",
+			     //"DYJetsPt100_xww",
+				 "DYJets_xww",
+			     //"WJetsPt50To70_xww",
+			     //"WJetsPt70To100_xww",
+			     "WJetsPt180_xww",
+				 //"WJetsPt100_xww",
 			     };
-  double kFactorsMC_array[nMC] = {1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.3, 1.3, 1.3};
+  double kFactorsMC_array[nMC] = {1, 1., 1., 1., 1.3};
   
   std::vector<std::string> fMC;
   for(int ii=0;ii<nMC;ii++){
@@ -153,9 +158,10 @@ void loopPlot(){
 
   /// Setup names of MC signal files for trees.
   const int nMCSig=3;//set to zero if you don't want to plot
-  std::string mcLabelsSig[nMCSig]={"BulkG_WW_lvjj_c1p0_M600_xww",
-				   "BulkG_WW_lvjj_c1p0_M1000_xww",
-				   "BulkG_WW_lvjj_c1p0_M1500_xww",
+  std::string mcLabelsSig[nMCSig]={"BulkG_WW_lvjj_c0p2_M1500_xww",
+				   "BulkG_WW_lvjj_c0p2_M2500_xww",
+				   //"RSG_WW_lvjj_c0p2_M600_xww",
+				   "RSG_WW_lvjj_c0p2_M1500_xww",
                                   };
   
   /*
@@ -336,19 +342,19 @@ void loopPlot(){
   std::vector<int> fColorsMC;
   fColorsMC.push_back(kGreen-3);
   fColorsMC.push_back(kYellow-9);
-  fColorsMC.push_back(kYellow-6);
-  fColorsMC.push_back(kYellow-3);
-  fColorsMC.push_back(kYellow+3);
-  fColorsMC.push_back(kYellow+6);
-  fColorsMC.push_back(kYellow+9);
+  //fColorsMC.push_back(kYellow-6);
+  //fColorsMC.push_back(kYellow-3);
+  //fColorsMC.push_back(kYellow+3);
+  //fColorsMC.push_back(kYellow+6);
+  //fColorsMC.push_back(kYellow+9);
   fColorsMC.push_back(kMagenta-9);
-  fColorsMC.push_back(kMagenta-6);
-  fColorsMC.push_back(kMagenta-3);
+  //fColorsMC.push_back(kMagenta-6);
+  //fColorsMC.push_back(kMagenta-3);
   fColorsMC.push_back(kBlue-3);
-  fColorsMC.push_back(kBlue-6);
-  fColorsMC.push_back(kBlue-9);
-  fColorsMC.push_back(kRed+3);
-  fColorsMC.push_back(kRed);
+  //fColorsMC.push_back(kBlue-6);
+  //fColorsMC.push_back(kBlue-9);
+  //fColorsMC.push_back(kRed+3);
+  //fColorsMC.push_back(kRed);
   fColorsMC.push_back(kRed-4);
 
   ////// {"BulkG_WW_lvjj_c1p0_M600_xww","BulkG_WW_lvjj_c1p0_M1000_xww","BulkG_WW_lvjj_c1p0_M1500_xww"};
