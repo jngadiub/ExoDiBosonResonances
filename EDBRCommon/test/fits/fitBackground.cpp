@@ -46,9 +46,9 @@ using namespace RooFit ;
 
 RooPlot* ContourPlot(RooRealVar* var1,RooRealVar* var2, RooFitResult* r);
 TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verbose=false);
-void fitPseudoOnePar( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* initialvalues, int nxj);
+void fitPseudoOnePar( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* initialvalues, int nxj,std::string inPurStr);
 void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* initialvalues, int nxj);
-void pseudoMassgeOnePar(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1);
+void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1);
 void pseudoMassgeTwoPars(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2);
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::string t2Name,int nxjCut=-1);
 
@@ -281,8 +281,10 @@ int main(){
 			logf<<"===> MZZ="<<mZZ->getVal()<<"    ALPHA (fromFIT)="<<alphaWeight->getVal()<<std::endl;
 			logf<<"=================================\n"<<std::endl;
 
-			RooDataSet *dsDataSB2=new RooDataSet("dsDataSB2","dsDataSB2",weightedData,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
-			RooDataSet *dsDataSIG=new RooDataSet("dsDataSIG","dsDataSIG",(TTree*)treeDATA_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity),cutSIG.c_str()) ;//real data in signal region; cuts on mjj and nXjets
+			std::string name_datasb2="dsDataSB2";//"_"+ssnxj.str()+"J"+pur_str;
+			RooDataSet *dsDataSB2=new RooDataSet(name_datasb2.c_str(),name_datasb2.c_str(),weightedData,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
+			std::string name_datasig="dsDataSIG";//"_"+ssnxj.str()+"J"+pur_str;
+			RooDataSet *dsDataSIG=new RooDataSet(name_datasig.c_str(),name_datasig.c_str(),(TTree*)treeDATA_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity),cutSIG.c_str()) ;//real data in signal region; cuts on mjj and nXjets
 			logf<<"Number of events in OBSERVED datasets:"<<std::endl;
 			logf<<dsDataSB->GetName()<<"  -> "<<dsDataSB->numEntries()<<"  "<<dsDataSB->sumEntries()<<std::endl;
 			logf<<dsDataSB2->GetName()<<"  -> "<<dsDataSB2->numEntries()<<"  "<<dsDataSB2->sumEntries()<<std::endl;
@@ -305,9 +307,10 @@ int main(){
 			double inislope;
 			if(inxj==1)inislope=-0.25;
 			if(inxj==2)inislope=-0.25;
-			char slopePar_name[32];
-			sprintf(slopePar_name,"a0_%dJ",inxj);
-			RooRealVar *a0=new RooRealVar(slopePar_name,slopePar_name,inislope,-10.0,0.0);
+			//	char slopePar_name[32];
+			//	sprintf(slopePar_name,"a0_%dJ",inxj);
+			std::string slopePar_name="a0_"+ssnxj.str()+"J"+pur_str;
+			RooRealVar *a0=new RooRealVar(slopePar_name.c_str(),slopePar_name.c_str(),inislope,-10.0,0.0);
 			RooExponential *expo_fit=new RooExponential("exp_fit","exp_fit",*mZZ,*a0);
 			//  RooRealVar *exp_norm=new RooRealVar("exp_N","exp_N",0.0,10000.0);
 
@@ -473,7 +476,7 @@ int main(){
 					TTree* weightedPseudo = weightTree(treeDATA_tmp ,(TH1D*)falpha->Get(alphahname), tmpTname);
 					RooDataSet pseudoSB2("pseudoSB2","pseudoSB2",weightedPseudo,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
 					if(decorrLevExpo) fitPseudoTwoPars(pseudoSB2,*wsnew,n,fitResultName_expo,inxj);
-					else      fitPseudoOnePar(pseudoSB2,*wsnew,n,fitResultName_expo,inxj);
+					else      fitPseudoOnePar(pseudoSB2,*wsnew,n,fitResultName_expo,inxj,pur_str);
 					//      cout<<"Deleting tree #"<<n<<"  "<<weightedPseudo->GetName()<<endl;
 					delete weightedPseudo;
 				}
@@ -490,7 +493,7 @@ int main(){
 				RooRealVar errV2(var2errA,var2errA,0.0);
 				std::cout<<"Starting pseudoMassge"<<std::endl;
 				if(decorrLevExpo) pseudoMassgeTwoPars( inxj ,r_sig_expLev,*wsnew,fitResultName_eig, Nerr->getVal(), errV1, errV2);
-				else  pseudoMassgeOnePar( inxj ,r_sig2,*wsnew,fitResultName_expo, Nerr->getVal(), errV1);
+				else  pseudoMassgeOnePar( inxj,pur_str  ,r_sig2,*wsnew,fitResultName_expo, Nerr->getVal(), errV1);
 
 				wsnew->import(errV1);
 				if(decorrLevExpo) wsnew->import(errV2);
@@ -621,10 +624,10 @@ TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verb
 	return newTree;
 
 }
-void fitPseudoOnePar( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char* initialvalues , int nxj) {
+void fitPseudoOnePar( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char* initialvalues , int nxj,std::string inPurStr) {
 	//reset parameters
 	char var1[50];
-	sprintf(var1,"a0_%dJ",nxj);
+	sprintf(var1,"a0_%dJ%s",nxj,inPurStr.c_str());
 	char argname[100];
 	sprintf(argname,"%s",var1);
 	ws.argSet(argname).readFromFile(initialvalues);
@@ -658,10 +661,10 @@ void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char*
 
 }
 
-void pseudoMassgeOnePar(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1){
+void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1){
 	char var1[50];
 
-	sprintf(var1,"a0_%dJ",nxj);//this must be equal to what is in fitPseudo
+	sprintf(var1,"a0_%dJ%s",nxj,inPurStr.c_str());//this must be equal to what is in fitPseudo
 	char argname[100];
 	sprintf(argname,"%s",var1);
 
