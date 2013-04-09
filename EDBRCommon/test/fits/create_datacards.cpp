@@ -34,7 +34,7 @@
 const std::string wsDir="FitSidebandsMJJ_ZZ_20130408/";
 const std::string datacardDir("DataCards_XZZ_20130408");
 float mZZmin_ = 600.;
-
+const int jetCats =1; // 1 for only 1jet case and 2 for both
 
 struct TheorSigParameters {
 
@@ -108,11 +108,13 @@ int main( int argc, char* argv[] ) {
   //first loop over available signal MC files to fit efficiency:
   TF1* f1_eff_vs_mass_MU_1JHP = get_eff_vs_mass("MU", 1,1, mZZmin_);
   TF1* f1_eff_vs_mass_MU_1JLP = get_eff_vs_mass("MU", 1,0, mZZmin_);
-  TF1* f1_eff_vs_mass_MU_2J   = get_eff_vs_mass("MU", 2,-1, mZZmin_);//set purity to -1 for 2J cat
+  TF1* f1_eff_vs_mass_MU_2J   = 0;
+  if(jetCats>1)f1_eff_vs_mass_MU_2J = get_eff_vs_mass("MU", 2,-1, mZZmin_);//set purity to -1 for 2J cat
 
   TF1* f1_eff_vs_mass_ELE_1JHP = get_eff_vs_mass("ELE", 1,1, mZZmin_);
   TF1* f1_eff_vs_mass_ELE_1JLP = get_eff_vs_mass("ELE", 1,0, mZZmin_);
-  TF1* f1_eff_vs_mass_ELE_2J   = get_eff_vs_mass("ELE", 2,-1, mZZmin_);
+  TF1* f1_eff_vs_mass_ELE_2J   = 0;
+  if(jetCats>1)f1_eff_vs_mass_ELE_2J = get_eff_vs_mass("ELE", 2,-1, mZZmin_);
 
   std::ifstream ifs("masses.txt");
   
@@ -137,7 +139,7 @@ int main( int argc, char* argv[] ) {
 
     create_singleDatacard( mass, lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
     create_singleDatacard( mass, lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
-    if(mass<=800){
+    if(jetCats>1&&mass<=800){
       create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
       create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
     }
