@@ -48,7 +48,7 @@ using namespace RooFit;
 //const int nBins=17;
 //const  float bins0[nBins]={270,290,320,340,360,380,400,430,460,490,520,550,600,650,700,800,1000};
 
-
+double startFit = 800.0;
 
 //binning for merged Jet topology 
 const int nBins1=22;
@@ -246,7 +246,7 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
   RooRealVar mZZ("mZZ","mZZ",minMZZ, bins1[nBins1-1]);//range to be synchronized with array of histo
   mZZ.setRange("fullRange",minMZZ,bins1[nBins1-1]);
   // mZZ.setRange("fitRange",minMZZ,rangecut_);
-  mZZ.setRange("fitRange",600.0,rangecut_);
+  mZZ.setRange("fitRange",startFit,rangecut_);//600 for zz and 800
   // mZZ.setBins(1000);
 
   RooDataHist *dhAlpha=new RooDataHist("DataHistAlpha","DataHist Alpha vs MZZ",mZZ,Import(*h1_alpha)) ;

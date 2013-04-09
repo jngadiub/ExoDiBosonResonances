@@ -60,19 +60,21 @@ const string inDir="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_tr
 const string outDir="FitSidebandsMJJ_CA8_V5/";
 */
 
-const std::string outDir="FitSidebandsMJJ_CA8_WW_V2/";
-const string inDirSig="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSigTree/";
-const string inDir ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSBTree/";
+const std::string outDir="FitSidebandsMJJ_CA8_WW_V6_AB/";
+const string inDirSig="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree/";
+const string inDir ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree/";
 
 bool isZZChannel=false;//only changes the file list
 string InTreeName = "SelectedCandidatesAB";
-
-const string leptType="ALL";//"ALL" //"MU" //"ELE"
+double startFit = 800.0;
+int jetCats =1; // 1 for only 1jet case and 2 for both
+const string leptType="MU";//"ALL" //"MU" //"ELE"
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 500;
 const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 //binning for merged Jet topology 
+/*
 const int nBins1=22;
 const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
 	1000,1100,1200,1300,1500,1700,1900,2100,2300,2600};
@@ -81,6 +83,22 @@ const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
 const int nBins2=16;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
 	1000,1100,1250,1400};
+*/
+//binning for merged Jet topology 
+const int nBins1=22;
+const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
+                1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
+
+//const int nBins1=15;
+//const double bins1[nBins1]={480,560,640,720,800,920,
+//              1100,1250,1400,1600,1800,2000,2200,2400,2600};
+
+//binning for double Jet topology 
+const int nBins2=16;
+const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
+                1000,1100,1250,1400};
+
+
 //#######################################################################################
 
 int main(){
@@ -154,7 +172,7 @@ int main(){
 	RooRealVar* alphaWeight = new RooRealVar("alphaWeight","alphaWeight",1.,0.,100000.);//(RooRealVar*) dsDataSB->addColumn(*alpha_formula) ;
 	//add roorealvar for purity
 
-	for( inxj=1;inxj<3;inxj++){
+	for( inxj=1;inxj<=jetCats;inxj++){
 
 		int nPurities=1;
 		if(inxj==1)nPurities=2;
@@ -278,7 +296,7 @@ int main(){
 			}
 
 			//fit the weighted dataset with a custom function
-			double minFitRange=(inxj==1 ? 600.0 : 500);//minMZZ
+			double minFitRange=(inxj==1 ? startFit : 500);//minMZZ
 			double maxFitRange=(inxj==1 ? maxMZZ : bins[nBins-1]);
 			std::cout<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;
 			logf<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;

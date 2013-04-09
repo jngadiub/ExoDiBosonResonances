@@ -18,23 +18,22 @@ void doAlpha(TTree *chMC, std::string wType);
 
 //##############EDIT THIS PART####################
 
-const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V2/";
-const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSigTree/";
-const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSBTree/";
-
+const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V6_AB/";
+const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree/";
+const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree/";
 /*
 const std::string myOutDir="FitSidebandsMJJ_CA8_V5/";
 const string inDirSIG="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
 const string inDirSB ="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsidebandCA8/";
 */
-
+unsigned int jetCats = 1;//1 for only 1 jet case, 2 for both
 bool isZZChannel=false;//this will change only the file list
-const int nxjCut=-1;//if negative: no cut
-string leptStr="ALL";//"MU" //"ELE"
+string leptStr="MU";//"MU" //"ELE"
 const std::string InTreeName="SelectedCandidatesAB";
-const std::string tmpTreeName="SelectedCandidatesV2";
 //################################################
 
+const int nxjCut=-1;//if negative: no cut
+const std::string tmpTreeName="SelectedCandidatesV2";
 int main( int argc, char* argv[] ) {
 
 	std::string weighting = "weight";
@@ -62,7 +61,8 @@ int main( int argc, char* argv[] ) {
 			chainMC->Add( (inDir+"treeEDBR_DYJets*").c_str());
 			chainMC->Add( (inDir+"treeEDBR_SingleTop*").c_str());
 			chainMC->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
-			chainMC->Add( (inDir+"treeEDBR_WJets*").c_str());
+			chainMC->Add( (inDir+"treeEDBR_WJetsPt100_xww.root").c_str());
+			//chainMC->Add( (inDir+"treeEDBR_WJetsPt180_xww.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_WW_xww.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_WZ_xww.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_ZZ_xww.root").c_str());
@@ -96,7 +96,8 @@ int main( int argc, char* argv[] ) {
 			chainMC->Add( (inDir+"treeEDBR_DYJets*").c_str());
 			chainMC->Add( (inDir+"treeEDBR_SingleTop*").c_str());
 			chainMC->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
-			chainMC->Add( (inDir+"treeEDBR_WJets*").c_str());
+			chainMC->Add( (inDir+"treeEDBR_WJetsPt100_xww.root").c_str());
+			//chainMC->Add( (inDir+"treeEDBR_WJetsPt180_xww.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_WW_xww.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_WZ_xww.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_ZZ_xww.root").c_str());
@@ -142,7 +143,7 @@ void doAlpha(TTree *chMC, std::string wType){
 
 	///loop on different topologies/categories: the code
 	//will performa a separate bkg estimation for each of them
-	for( unsigned inxj=1; inxj<=2; ++inxj ) {
+	for( unsigned inxj=1; inxj<=jetCats; ++inxj ) {
 
 		int nPurities=1;
 		if(inxj==1)nPurities=2;
