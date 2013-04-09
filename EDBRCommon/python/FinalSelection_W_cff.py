@@ -13,7 +13,7 @@ vbfString = cms.string("vbfptr.isAvailable")
 kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>200.0 && leg2.pt()>200.0 && userFloat(\"nXJets\") == 1.0") 
 kineString2Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && userFloat(\"nXJets\") == 2.0") # && leg2.pt()>80.0
 
-kineString1JetTTBar=cms.string("mass > 180.0 && leg1.pt()>160.0 && leg2.pt()>200.0 && userFloat(\"nXJets\") == 1.0") 
+kineString1JetTTBar=cms.string("mass > 180.0 && leg1.pt()>200.0 && leg2.pt()>200.0 && userFloat(\"nXJets\") == 1.0") 
 kineString2JetTTBar=cms.string("mass > 180.0 && leg1.pt()>80.0 && userFloat(\"nXJets\") == 2.0")
 
 sigreg=cms.string("leg2.getSelection(\"cuts_isWSignal\")")
