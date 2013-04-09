@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <math.h>
+#include <algorithm> 
 //#include <cstdlib>
 #include "TTree.h"
 #include "TH1D.h"
@@ -68,33 +69,48 @@ void plot_golfcourse_Asymptotic(bool unblind){
   t->SetBranchAddress("limit",&limit);
   t->SetBranchAddress("quantileExpected",&quant);
 
-  vector<double> v_mh, v_median,v_68l,v_68h,v_95l,v_95h, v_obs;
-
+  //1st loop on tree for preparing mH ordered list
+  vector<double> v_mhTMP;
   for(int i=0;i<t->GetEntries();i++){
-    // int i=j;
-    // if(j==t->GetEntries())i=0;
     t->GetEntry(i);
-    //cout<<"i "<<i<<flush<<"  m = "<<mh<<endl;
-    // if(mh==600)cout<<"$$$$$$$$$ TREE 600 $$$$$$$$$$$$$$"<<endl;
-
     if(quant>-1.01&&quant<-0.99){
-      v_obs.push_back(limit);
-      v_mh.push_back(mh);
+      v_mhTMP.push_back(mh);
     }
-    else if(quant>0.02&&quant<0.03)v_95l.push_back(limit);
-    else if(quant>0.15&&quant<0.17)v_68l.push_back(limit);
-    else if(quant>0.49&&quant<0.51)v_median.push_back(limit);
-    else if(quant>0.83&&quant<0.85)v_68h.push_back(limit);
-    else if(quant>0.965&&quant<0.98){
-      //   cout<<"95% -> at M="<<mh<<" I found "<<limit<<endl;
-      v_95h.push_back(limit);
-    }
-
-    else {cout<<"Error! Quantile =  "<<quant<<endl;}
   }
-  cout<<"Out of the loop !"<<endl;
+  std::sort(v_mhTMP.begin(),v_mhTMP.end());
 
- 
+  int nMH=v_mhTMP.size();
+  int iMH=0;
+  vector<double> v_mh, v_median,v_68l,v_68h,v_95l,v_95h, v_obs;
+  while(iMH<nMH){
+    double mhTMP=v_mhTMP.at(iMH);
+    for(int i=0;i<t->GetEntries();i++){
+      // int i=j;
+      // if(j==t->GetEntries())i=0;
+      t->GetEntry(i);
+      //cout<<"i "<<i<<flush<<"  m = "<<mh<<endl;
+      // if(mh==600)cout<<"$$$$$$$$$ TREE 600 $$$$$$$$$$$$$$"<<endl;
+
+      if(mh!=mhTMP)continue;//follow exactly the order of v_mhTMP
+
+      if(quant>-1.01&&quant<-0.99){
+	v_obs.push_back(limit);
+	v_mh.push_back(mh);
+      }
+      else if(quant>0.02&&quant<0.03)v_95l.push_back(limit);
+      else if(quant>0.15&&quant<0.17)v_68l.push_back(limit);
+      else if(quant>0.49&&quant<0.51)v_median.push_back(limit);
+      else if(quant>0.83&&quant<0.85)v_68h.push_back(limit);
+      else if(quant>0.965&&quant<0.98){
+	//   cout<<"95% -> at M="<<mh<<" I found "<<limit<<endl;
+	v_95h.push_back(limit);
+      }
+
+      else {cout<<"Error! Quantile =  "<<quant<<endl;}
+    }
+    iMH++;
+  }//end while loop
+  cout<<"Out of the loop !"<<endl;
   ////////////////////////////////////////
   ///
  //read in theoretical values from text files
@@ -111,8 +127,8 @@ void plot_golfcourse_Asymptotic(bool unblind){
   vector<float> v_mhxs, v_xs,  v_brzz2l2q,v_toterrh,v_toterrl;
   while(xsect_file.good()){
     xsect_file >> mH>> CS;
-    if(mH==1200)cout<<"~~~~~ 600 theor ~~~~~~~~~~~~~"<<endl;
-    if(mH<1000.0)continue;
+    if(mH==1200)cout<<"~~~~~ 1200 theor ~~~~~~~~~~~~~"<<endl;
+    if(mH<600.0)continue;
     v_mhxs.push_back(mH);
     v_xs.push_back(CS*BRZZ2l2q);//eff in cards are for process X->ZZ->2l2q
    
@@ -136,7 +152,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
   while(xsect_file2.good()){
     xsect_file2 >> mH2>> CS10;
     if(mH2==975)cout<<"~~~~~ 975 theor ~~~~~~~~~~~~~"<<endl;
-    if(mH2<1000.0)continue;
+    if(mH2<600.0)continue;
     v_xs10.push_back(CS10*BRZZ2l2q);//*BRZZ2l2q
    
     //unavailable theor errors for graviton   
@@ -211,12 +227,12 @@ void plot_golfcourse_Asymptotic(bool unblind){
       down68err[nMassEff1]=(v_median.at(im)-v_68l.at(im))*fl_xs;
       cout<<"M="<<mass1[nMassEff1]<<"  Median="<<medianD[nMassEff1]<<endl;
       
-      //scale factor 1000 for making the xsect visible
-      xs[nMassEff1]=fl_xs*1000.0;
+      //scale factor 100 for making the xsect visible
+      xs[nMassEff1]=fl_xs;//*100.0;
       xs_uperr[nMassEff1]=double( v_toterrh.at(ind))*xs[nMassEff1]- xs[nMassEff1];
       xs_downerr[nMassEff1]=  xs[nMassEff1]- double( v_toterrl.at(ind))* xs[nMassEff1];
 
-      xs10[nMassEff1]=fl_xs10*1000.0;
+      xs10[nMassEff1]=fl_xs10;//*100.0;
       xs10_uperr[nMassEff1]=double( v_toterrh.at(ind))*xs10[nMassEff1]- xs10[nMassEff1];
       xs10_downerr[nMassEff1]=  xs10[nMassEff1]- double( v_toterrl.at(ind))* xs10[nMassEff1];
     
@@ -263,7 +279,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
   grthSM10->SetName("SMXSection_2nd");
  
   // cout<<"Plotting"<<endl;
-  double fr_left=990.0, fr_down=0.0005,fr_right=2020.0,fr_up=1.0;
+  double fr_left=590.0, fr_down=0.00005,fr_right=2020.0,fr_up=0.1;
   TCanvas *cMCMC=new TCanvas("c_lim_Asymp","canvas with limits for Asymptotic CLs",630,600);
   cMCMC->cd();
   cMCMC->SetGridx(1);
@@ -370,8 +386,8 @@ void plot_golfcourse_Asymptotic(bool unblind){
    if(unblind)leg->AddEntry(grobslim_cls, "Asympt. CL_{S} Observed", "LP");
    leg->AddEntry(gr68_cls, "Asympt. CL_{S}  Expected #pm 1#sigma", "LF");
    leg->AddEntry(gr95_cls, "Asympt. CL_{S}  Expected #pm 2#sigma", "LF");
-   leg->AddEntry(grthSM, "#sigma_{TH} x BR(G #rightarrow ZZ), #tilde{k}=0.20 (x1000)", "L" );// #rightarrow 2l2q
-   leg->AddEntry(grthSM10, "#sigma_{TH} x BR(G #rightarrow ZZ), #tilde{k}=0.50 (x1000)", "L");// #rightarrow 2l2q
+   leg->AddEntry(grthSM, "#sigma_{TH} x BR(G #rightarrow ZZ), #tilde{k}=0.20", "L" );// #rightarrow 2l2q
+   leg->AddEntry(grthSM10, "#sigma_{TH} x BR(G #rightarrow ZZ), #tilde{k}=0.50", "L");// #rightarrow 2l2q
    leg->Draw();
    
  if(useNewStyle){

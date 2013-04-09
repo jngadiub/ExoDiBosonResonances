@@ -31,8 +31,8 @@
 
 #include "DataCardUtils.h"
 
-const std::string wsDir="FitSidebandsMJJ_CA8_V5/";
-const std::string datacardDir("DataCards_XZZ_20130322_V5");
+const std::string wsDir="FitSidebandsMJJ_ZZ_20130408/";
+const std::string datacardDir("DataCards_XZZ_20130408");
 float mZZmin_ = 600.;
 
 
@@ -108,11 +108,11 @@ int main( int argc, char* argv[] ) {
   //first loop over available signal MC files to fit efficiency:
   TF1* f1_eff_vs_mass_MU_1JHP = get_eff_vs_mass("MU", 1,1, mZZmin_);
   TF1* f1_eff_vs_mass_MU_1JLP = get_eff_vs_mass("MU", 1,0, mZZmin_);
-  TF1* f1_eff_vs_mass_MU_2J = get_eff_vs_mass("MU", 2,-1, mZZmin_);//set purity to -1 for 2J cat
+  TF1* f1_eff_vs_mass_MU_2J   = get_eff_vs_mass("MU", 2,-1, mZZmin_);//set purity to -1 for 2J cat
 
   TF1* f1_eff_vs_mass_ELE_1JHP = get_eff_vs_mass("ELE", 1,1, mZZmin_);
   TF1* f1_eff_vs_mass_ELE_1JLP = get_eff_vs_mass("ELE", 1,0, mZZmin_);
-  TF1* f1_eff_vs_mass_ELE_2J = get_eff_vs_mass("ELE", 2,-1, mZZmin_);
+  TF1* f1_eff_vs_mass_ELE_2J   = get_eff_vs_mass("ELE", 2,-1, mZZmin_);
 
   std::ifstream ifs("masses.txt");
   
@@ -242,7 +242,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   ofs << "------------ " << std::endl;
   ofs << "bin         CMS_xzz_" << suffix << std::endl;
 
-  RooDataSet* dataset_obs = DataCardUtils::get_observedDataset( bgws , leptType_str, nxj,pur, "dsDataSIG" );
+  std::string name_dataobs="dsDataSIG";//+"_"+ssnxj.str()+"J_"+pur_str+"_"+leptType_str;
+  RooDataSet* dataset_obs = DataCardUtils::get_observedDataset( bgws , leptType_str, nxj,pur, name_dataobs );
   dataset_obs->SetName(( dataset_obs->GetName()+rename_str).c_str());
   std::cout<<"Statistics of the observed dataset straight from the ws: "<<dataset_obs->numEntries()<<"  "<<dataset_obs->sumEntries() <<std::endl;
   RooDataSet* dataset_obs_reduced=new RooDataSet("dataset_obs","dataset_obs",dataset_obs,RooArgSet(*CMS_xzz_mZZ));
@@ -270,7 +271,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
   // and now systematics:
 
-  ofs << "lumi\t\t\tlnN\t1.022\t\t\t1.0" << std::endl;
+  ofs << "lumi\t\t\tlnN\t1.044\t\t\t1.0" << std::endl;
 
   //std::pair<double,double> pdf_gg  = theorSyst( hp.XSpdfgg_m, hp.XSpdfgg_p, 0.04, 0.015 );
   //ofs << "pdf_gg\t\tlnN\t" << systString(pdf_gg) << "\t1.0" << std::endl;
@@ -366,14 +367,14 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   // and import it:
   w->import(*expo_fit, RooFit::RecycleConflictNodes());
 
+  //This if you want ot use the leveled expo
   //  RooAbsPdf* background_decorr = bgws->pdf("levexp_dcr");
   // background_decorr->SetName("background_decorr");
   //  w->import(*background_decorr, RooFit::RecycleConflictNodes());
 
 
   //// now define signal shape:
-
-  // now define signal shape (didn manage to do use get_signalShape without a crash):
+  //// (didn manage to do use get_signalShape without a crash):
 
   // ------------------- Crystal Ball (matched) -------------------------------
   cout<<"Starting Signal Shape part"<<endl;
@@ -468,7 +469,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   std::cout<<"FRACTION of signal inside the +/-3 sigma window ["<<sigWindowLow<<" , "<< sigWindowHigh<<"]: "<<signalFrac<<std::endl;
 
   bool doPlot=false;
-  if(mass==1000||mass==1500||mass==1900||mass==2000)doPlot=true;
+  if(mass==650||mass==1000||mass==1500||mass==1900||mass==2000)doPlot=true;
   if(doPlot){
     const int nBinsTMP=22;
     const double binsTMP[nBinsTMP]={480,500,520,560,600,640,680,720,760,800,840,920,
@@ -545,8 +546,8 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
     double mass,efficiency[6];//one for each category: EE1JHP, MM1JHP ,EE1JLP, MM1JLP , EE2J ,MM2J
     ifsMC >> mass >> efficiency[0] >> efficiency[1] >> efficiency[2] >>efficiency[3] >> efficiency[4] >>efficiency[5] ; 
 
-    int index = DataCardUtils::convert_leptType(leptType_str) + (nxj-1) + (1-pur);
-    
+    int index = DataCardUtils::convert_leptType(leptType_str) + (nxj-1) + 2*(1-pur);
+    if(nxj==2)index--;
     gr_eff_vs_mass->SetPoint( iPoint++, mass, efficiency[index] );
 
     gr_eff_vs_mass->Print("v");
@@ -565,7 +566,8 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
   TCanvas* c1 = new TCanvas("c1", "", 600, 600);
   c1->cd();
 
-  TH2D* axes = new TH2D("axes", "", 10, 550., 2250., 10, 0., 0.40);
+  TH2D* axes = new TH2D("axes", "", 10, 550., 2250., 10, 0., 0.25);
+  axes->SetStats(0);
   axes->SetXTitle("m_{H} [GeV]");
   axes->SetYTitle("Efficiency");
   axes->Draw();
@@ -761,10 +763,12 @@ double get_signalParameter(int nxj,  const std::string& purType_str, const std::
 
   //std::cout << indexlow << " " << indexhigh <<std::endl;
 
-  sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ_%s_%s.config",masses[indexlow],nxj,purType_str.c_str(),leptType_str.c_str());
+  //  sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ_%s_%s.config",masses[indexlow],nxj,purType_str.c_str(),leptType_str.c_str());
+  sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",masses[indexlow],nxj,leptType_str.c_str());
   paramsup.readFromFile(filename, "READ");
   double low = var.getVal();
-  sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ_%s_%s.config",masses[indexhigh],nxj,purType_str.c_str(),leptType_str.c_str());
+  //  sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ_%s_%s.config",masses[indexhigh],nxj,purType_str.c_str(),leptType_str.c_str());
+  sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",masses[indexhigh],nxj,leptType_str.c_str());
   paramsup.readFromFile(filename, "READ");
   double high = var.getVal();
   

@@ -2,7 +2,7 @@
 
 myrand=$1
 mass=$2
-OUTDIR=DataCards_XZZ_20130315b/
+OUTDIR=DataCards_XZZ_20130408/
 echo "Starting HiggsCombination with seed=$myrand at $( date +%c ) on $hostname."
 
 startdir=$( pwd )
@@ -18,7 +18,7 @@ label="EXOZZ"
 ntoys=1000
 #WORKDIR=${RELEASEDIR}/HiggsAna/HLLJJCommon/test/fits//${OUTDIR}/${mass}
 WORKDIR=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/CMGTools/CMSSW_5_3_3_patch3/src/ExoDiBosonResonances/EDBRCommon/test/fits/${OUTDIR}/${mass}
-datacard="comb_xzz_2l1J" 
+datacard="comb_xzz" 
 OUTDIR="output_${label}_${algo}_"${datacard}
 
 cd $RELEASEDIR
@@ -50,13 +50,18 @@ minBoundary=0.005
 #change range of scan specifically for BulkG->ZZ with c=0.5
 if [ $mass -gt 1500 ]
     then
-    echo "High mass $mass > 1500 "
-    maxBoundary=4000
-    minBoundary=100
+    maxBoundary=1000
+    minBoundary=1
+    echo "High mass $mass > 1500: boundary of combine is $minBoundary - $maxBoundary "
+elif [ $mass -gt 1000 ]
+    then
+    maxBoundary=100
+    minBoundary=1
+    echo "Medium mass $mass 1000 - 1500: boundary of combine is $minBoundary - $maxBoundary "
 else
-    echo "Low mass $mass <= 1500 "
-    maxBoundary=400
-    minBoundary=10
+    maxBoundary=20
+    minBoundary=0.1
+    echo "Low mass $mass <1000: boundary of combine is $minBoundary - $maxBoundary "
  #   minBoundary=0.0001
    
 fi

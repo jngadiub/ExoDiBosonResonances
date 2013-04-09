@@ -6,7 +6,7 @@ then
     exit 1
 fi
 
-RUN_LOCALLY=1 #if 1 -> do not submit, run locally
+RUN_LOCALLY=0 #if 1 -> do not submit, run locally
 
 startdir=$( pwd )
 NMAXJOBS=1
@@ -35,9 +35,9 @@ do
   if [ $RUN_LOCALLY -eq 1 ]
       then
       ${startdir}/combine_exec.sh $myrand $mass &> ${OUTDIR}/${mass}/$LOGFILE
-  fi
+ 
   else
-  bsub -q $queue -J $JOBNAME -oo ${OUTDIR}/${mass}/$LOGFILE ${startdir}/combine_exec.sh $myrand $mass
+      bsub -q $queue -J $JOBNAME -oo ${OUTDIR}/${mass}/$LOGFILE ${startdir}/combine_exec.sh $myrand $mass
   fi
   let ijob=ijob+1
 done

@@ -5,7 +5,7 @@ do
 echo Moving in $dir
 cd $dir
 rm -f *.log
-rm -f log*
+rm -f log_*
 rm -f batchScript*
 rm -f model*
 rm -f comb.txt

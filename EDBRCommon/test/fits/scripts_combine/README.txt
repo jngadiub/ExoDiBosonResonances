@@ -1,3 +1,4 @@
+#0: copy all scripts in the directory of the cards and move there
 #1: for M in $( cat masses.txt ); do ./make_combined_cards.sh $M ; done
 #2: edit paths and names in combine_exec.sh
 #3: edit paths and names in parallelizeCombine.sh

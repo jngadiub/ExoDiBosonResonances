@@ -15,7 +15,7 @@ else
     exit 1
 fi
 
-DIR="output_EXOZZ_Asymptotic_comb_xzz_2l1J"
+DIR="output_EXOZZ_Asymptotic_comb_xzz"
 LISTFILES_EXP=""
 LISTFILES_OBS=""
 LISTFILES_ASYMPT=""
