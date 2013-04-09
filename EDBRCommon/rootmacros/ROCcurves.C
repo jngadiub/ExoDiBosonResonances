@@ -6,6 +6,7 @@ vector<double> sigeff;
 vector<double> sigeff45;
 
 double masswindow = 0.15;
+double refPunzi=0.45;
 
 TH1D* getNSubjHisto(TFile* targetFile, double mass){
 	char buffer[256];
@@ -79,7 +80,7 @@ TCanvas* compareHistos(TH1* signalHisto, TH1* backgroundHisto){
 		double binLowEdge = backgroundHisto->GetBinLowEdge(i);
 		double binHighEdge = binLowEdge+backgroundHisto->GetBinWidth(i);
 		cout<<"cut: "<<binHighEdge<<" thisPunzi: "<<thisPunzi<<endl;
-		if(binHighEdge==0.5){punzi45.push_back(thisPunzi);sigeff45.push_back(effSgn);}
+		if(binHighEdge==refPunzi){punzi45.push_back(thisPunzi);sigeff45.push_back(effSgn);}
 		if(thisPunzi>maxPunzi)
 		{
 			maxPunzi=thisPunzi;
@@ -186,11 +187,11 @@ void ROCcurves(){
 	makeROCcurves(1800);
 	makeROCcurves(1900);
 	makeROCcurves(2000);
-	makeROCcurves(2100);
-	makeROCcurves(2200);
-	makeROCcurves(2300);
-	makeROCcurves(2400);
-	makeROCcurves(2500);
+	//	makeROCcurves(2100);
+	//	makeROCcurves(2200);
+	//	makeROCcurves(2300);
+	//	makeROCcurves(2400);
+	//	makeROCcurves(2500);
 
 	TGraph* cutVSmass     = new TGraph(masspoint.size());
 	TGraph* punziVSmass     = new TGraph(masspoint.size());
@@ -216,26 +217,28 @@ void ROCcurves(){
 	cutVSmass->SetTitle("");
     cutVSmass->GetXaxis()->SetTitle("signal mass");
     cutVSmass->GetYaxis()->SetTitle("best cut on tau21");
-	cutVSmass->GetYaxis()->SetRangeUser(0,1);
-	cutVSmass->SetMarkerStyle(20);
-	cutVSmass->SetMarkerSize(1);
-	c1->SaveAs("cutVSmass.png");
-
-	bestpunziVSmass->SetTitle("");
-	bestpunziVSmass->GetXaxis()->SetTitle("signal mass");
-	bestpunziVSmass->GetYaxis()->SetTitle("#epsilon_{S} / (1.0+sqrt(B))");
-	bestpunziVSmass->SetMarkerStyle(20);
-	bestpunziVSmass->SetMarkerSize(1);
-	bestpunziVSmass->SetMarkerColor(kRed);
-	bestpunziVSmass->Draw("ALP");
-	punziVSmass->SetMarkerStyle(20);
-	punziVSmass->SetMarkerSize(1);
-	punziVSmass->Draw("LPsame");
-	TLegend * leg = new TLegend (0.1, 0.7, 0.4, 0.9, NULL, "brNDC") ;
-	leg->AddEntry (bestpunziVSmass, "Best Cut Punzi" ,"p") ;
-	leg->AddEntry (punziVSmass, "0.5 Punzi" ,"p") ;
-	leg->Draw();
-	c1->SaveAs("punziVSmass.png");
+    cutVSmass->GetYaxis()->SetRangeUser(0,1);
+    cutVSmass->SetMarkerStyle(20);
+    cutVSmass->SetMarkerSize(1);
+    c1->SaveAs("cutVSmass.png");
+    
+    bestpunziVSmass->SetTitle("");
+    bestpunziVSmass->GetXaxis()->SetTitle("signal mass");
+    bestpunziVSmass->GetYaxis()->SetTitle("#epsilon_{S} / (1.0+sqrt(B))");
+    bestpunziVSmass->SetMarkerStyle(20);
+    bestpunziVSmass->SetMarkerSize(1);
+    bestpunziVSmass->SetMarkerColor(kRed);
+    bestpunziVSmass->Draw("ALP");
+    punziVSmass->SetMarkerStyle(20);
+    punziVSmass->SetMarkerSize(1);
+    punziVSmass->Draw("LPsame");
+    char legEntry2[64];
+    sprintf(legEntry2,"%d Punzi",refPunzi);    
+    TLegend * leg = new TLegend (0.1, 0.7, 0.4, 0.9, NULL, "brNDC") ;
+    leg->AddEntry (bestpunziVSmass, "Best Cut Punzi" ,"p") ;
+    leg->AddEntry (punziVSmass, "0.45 Punzi" ,"p") ;
+    leg->Draw();
+    c1->SaveAs("punziVSmass.png");
 
     sigeffVSmass->SetTitle("");
     sigeffVSmass->GetXaxis()->SetTitle("signal mass");
@@ -248,9 +251,10 @@ void ROCcurves(){
     sigeff45VSmass->SetMarkerStyle(20);
     sigeff45VSmass->SetMarkerSize(1);
     sigeff45VSmass->Draw("LPsame");
+    sprintf(legEntry2,"%d sigeff",refPunzi);
     TLegend * leg = new TLegend (0.1, 0.7, 0.4, 0.9, NULL, "brNDC") ;
     leg->AddEntry (sigeffVSmass, "Best Cut sigeff" ,"p") ;
-    leg->AddEntry (sigeff45VSmass, "0.5 sigeff" ,"p") ;
+    leg->AddEntry (sigeff45VSmass, legEntry2 ,"p") ;
     leg->Draw();
     c1->SaveAs("sigeffVSmass.png");
 
