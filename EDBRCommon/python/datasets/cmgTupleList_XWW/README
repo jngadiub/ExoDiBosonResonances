@@ -20,3 +20,7 @@ cmgTuple_0314_CA8/     : update from cmgTuple_07032013_CA8,
 						1) For the analysis, cut on pt WL>200, pt jet>200 (for 1jet case)
 						2) For ttbar control region, made a new collection, with pt WL>160, pt jet>200, mass range (40,130). Btagging is not applied.
 						3) corrected ntau12 to ntao21
+
+cmgTuple_0409_CA8/     : update from cmgTuple_0314_CA8, 
+						1) for the bestCandidate we are using now the highest pt jet
+						2) fullrange ptWL changed to 200
