@@ -20,3 +20,15 @@ For signal efficiency
 root -l -b absolute_eff.C
 3. Find the plots of 6 categories and efficiencies_MCSig.txt in SignalEffPlots/
 
+
+For closure test
+0. go to ExoDiBosonResonances/EDBRCommon/test/fits
+1. Edit options in fitSidebands.cpp
+2. Edit options in fitBackground.cpp
+3. run
+make fitSidebands
+./fitSidebands
+make fitBackground
+./fitBackground
+4.For results look at mZZ_alpha_1JHP_MU_Madgraph_ROOFIT.eps and fitPlot_1J_HP_MU_log.eps
+
