@@ -97,21 +97,24 @@ BestCandSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
                                   srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
                                   srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
                                   tagSelectionList =cms.vstring("tag_SingleJet","tag_DoubleJet"),#highest priority to lowest priority
-                                  VMass            =cms.double(80.4)
-                                           )
+                                  VMass            =cms.double(80.4),
+								  Algo             =cms.string("UseJetPt")##could be UseVMass or UseJetPt
+                                  )
 
 BestSidebandSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
                                     srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
                                     srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
                                     tagSelectionList =cms.vstring("tag_SingleJetSB","tag_DoubleJetSB"),#highest priority to lowest priority
-                                    VMass            =cms.double(80.4)
+                                    VMass            =cms.double(80.4),
+									Algo             =cms.string("UseJetPt")##could be UseVMass or UseJetPt
                                     )
 
 BestFullRangeSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
                                     srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
                                     srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
                                     tagSelectionList =cms.vstring("tag_SingleJetFull","tag_DoubleJetFull"),#highest priority to lowest priority
-                                    VMass            =cms.double(80.4)
+                                    VMass            =cms.double(80.4),
+									Algo             =cms.string("UseJetPt")##could be UseVMass or UseJetPt
 									)
                                     
 
