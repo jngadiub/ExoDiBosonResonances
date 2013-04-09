@@ -45,7 +45,10 @@ For WW:
 	date         : 20130405
 	cmgtuple     : cmgTuple_cmgTuple_0314_CA8
 	updates      : mjj 40-65 -- 65-105 -- 105-130, vtagPurity flag, add wjets 180, fix bug of 1600
-
+/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree/
+/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree/:
+	date		 : 20130409
+	updates      : tree after for fit. vtag 0.5.
 
 
 ###################################################################################################################
