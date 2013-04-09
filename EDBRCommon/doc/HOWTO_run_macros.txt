@@ -21,14 +21,21 @@ root -l -b absolute_eff.C
 3. Find the plots of 6 categories and efficiencies_MCSig.txt in SignalEffPlots/
 
 
+
+
 For closure test
-0. go to ExoDiBosonResonances/EDBRCommon/test/fits
-1. Edit options in fitSidebands.cpp
-2. Edit options in fitBackground.cpp
-3. run
+1. create trees after cuts
+go to ExoDiBosonResonances/EDBRCommon/test
+Edit the options in createTreesClosureTest_xww.C
+and run with 
+root -l -b createTreesClosureTest_xww.C++
+2. go to ExoDiBosonResonances/EDBRCommon/test/fits
+Edit options in fitSidebands.cpp
+Edit options in fitBackground.cpp
+and run with
 make fitSidebands
 ./fitSidebands
 make fitBackground
 ./fitBackground
-4.For results look at mZZ_alpha_1JHP_MU_Madgraph_ROOFIT.eps and fitPlot_1J_HP_MU_log.eps
+3. For results look at mZZ_alpha_1JHP_MU_Madgraph_ROOFIT.eps and fitPlot_1J_HP_MU_log.eps
 
