@@ -2,6 +2,7 @@
 //#include "ExoDiBosonResonances/EDBRCommon/plugins/RhoWeightProducer.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/PTWeightProducer.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/HLTWeightProducer.h" 
+#include "ExoDiBosonResonances/EDBRCommon/plugins/HLTWeightProducer2012.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/PTWeightAnalyzer.h" 
 //#include "ExoDiBosonResonances/EDBRCommon/plugins/LDProducer.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/KineVarsAdder.h" 
@@ -128,6 +129,10 @@ typedef HLTWeightProducer<cmg::DiElectronDiJetEDBR> HLTWeightProducerElectron;
 typedef HLTWeightProducer<cmg::DiMuonDiJetEDBR>     HLTWeightProducerMu;
 DEFINE_FWK_MODULE(HLTWeightProducerElectron);
 DEFINE_FWK_MODULE(HLTWeightProducerMu);
+typedef HLTWeightProducer2012<cmg::DiElectronDiJetEDBR> HLTWeightProducer2012Electron;
+typedef HLTWeightProducer2012<cmg::DiMuonDiJetEDBR>     HLTWeightProducer2012Mu;
+DEFINE_FWK_MODULE(HLTWeightProducer2012Electron);
+DEFINE_FWK_MODULE(HLTWeightProducer2012Mu);
 typedef WeightAdder<cmg::DiElectronSingleJetEDBR> DiElectronVJetEDBRWeightAdder;
 typedef WeightAdder<cmg::DiMuonSingleJetEDBR>     DiMuonVJetEDBRWeightAdder;
 DEFINE_FWK_MODULE(DiElectronVJetEDBRWeightAdder);
@@ -136,6 +141,10 @@ typedef HLTWeightProducer<cmg::DiElectronSingleJetEDBR> HLTWeightProducerEleVJet
 typedef HLTWeightProducer<cmg::DiMuonSingleJetEDBR>     HLTWeightProducerMuVJet;
 DEFINE_FWK_MODULE(HLTWeightProducerEleVJet);
 DEFINE_FWK_MODULE(HLTWeightProducerMuVJet);
+typedef HLTWeightProducer2012<cmg::DiElectronSingleJetEDBR> HLTWeightProducer2012EleVJet;
+typedef HLTWeightProducer2012<cmg::DiMuonSingleJetEDBR>     HLTWeightProducer2012MuVJet;
+DEFINE_FWK_MODULE(HLTWeightProducer2012EleVJet);
+DEFINE_FWK_MODULE(HLTWeightProducer2012MuVJet);
 
 #define EDBRNEUTRINO
 typedef WeightAdder<cmg::WelenuDiJetEDBR>     WelenuDiJetEDBRWeightAdder;

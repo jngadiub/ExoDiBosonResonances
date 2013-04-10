@@ -13,9 +13,9 @@ vbfString = cms.string("vbfptr.isAvailable")
 kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 1.0") # && leg2.pt()>80.0
 kineString2Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 2.0") # && leg2.pt()>80.0
 sigregZ=cms.string("leg2.getSelection(\"cuts_isZSignal\")")
-vtagHP=cms.string("leg2.ntau21()<0.45")
+vtagHP=cms.string("leg2.ntau21()<0.450")
 sbregZ=cms.string("leg2.getSelection(\"cuts_isZSideband\")")
-vtagLP=cms.string("leg2.ntau21()>0.45&& leg2.ntau21()<0.75")
+vtagLP=cms.string("leg2.ntau21()>0.450&& leg2.ntau21()<0.75")
 
 
 
