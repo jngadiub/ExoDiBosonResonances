@@ -342,12 +342,15 @@ void absolute_eff()
 									if(ptZll[ivec]<200)continue;
 									if(nbtagsM[ivec]!=0)continue; //b-tag veto
 									if(deltaR_LJ<1.57 || deltaPhi_JMET<2. || deltaPhi_JWL<2.)continue;
+									
 									if(lepCut==0)
 									{
 										if(met<80)continue;//for electron, use this cut
-										if(eleid_passConversionVeto[ivec]!=1)continue;
-										if(eleid_numberOfLostHits[ivec]!=0)continue;
+										//if(eleid_passConversionVeto[ivec]!=1)continue;
+										//if(eleid_numberOfLostHits[ivec]!=0)continue;
 									}
+									
+
 								}
 								pass=pass+actualWeight;
 
