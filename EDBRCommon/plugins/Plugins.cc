@@ -151,18 +151,26 @@ typedef WeightAdder<cmg::WelenuDiJetEDBR>     WelenuDiJetEDBRWeightAdder;
 DEFINE_FWK_MODULE(WelenuDiJetEDBRWeightAdder);
 typedef HLTWeightProducer<cmg::WelenuDiJetEDBR>     HLTWeightProducerWelenuDiJet;
 DEFINE_FWK_MODULE(HLTWeightProducerWelenuDiJet);
+typedef HLTWeightProducer2012<cmg::WelenuDiJetEDBR>     HLTWeightProducer2012WelenuDiJet;
+DEFINE_FWK_MODULE(HLTWeightProducer2012WelenuDiJet);
 typedef WeightAdder<cmg::WmunuDiJetEDBR>     WmunuDiJetEDBRWeightAdder;
 DEFINE_FWK_MODULE(WmunuDiJetEDBRWeightAdder);
 typedef HLTWeightProducer<cmg::WmunuDiJetEDBR>     HLTWeightProducerWmunuDiJet;
 DEFINE_FWK_MODULE(HLTWeightProducerWmunuDiJet);
+typedef HLTWeightProducer2012<cmg::WmunuDiJetEDBR>     HLTWeightProducer2012WmunuDiJet;
+DEFINE_FWK_MODULE(HLTWeightProducer2012WmunuDiJet);
 typedef WeightAdder<cmg::WelenuSingleJetEDBR>     WelenuSingleJetEDBRWeightAdder;
 DEFINE_FWK_MODULE(WelenuSingleJetEDBRWeightAdder);
 typedef HLTWeightProducer<cmg::WelenuSingleJetEDBR>     HLTWeightProducerWelenuSingleJet;
 DEFINE_FWK_MODULE(HLTWeightProducerWelenuSingleJet);
+typedef HLTWeightProducer2012<cmg::WelenuSingleJetEDBR>     HLTWeightProducer2012WelenuSingleJet;
+DEFINE_FWK_MODULE(HLTWeightProducer2012WelenuSingleJet);
 typedef WeightAdder<cmg::WmunuSingleJetEDBR>     WmunuSingleJetEDBRWeightAdder;
 DEFINE_FWK_MODULE(WmunuSingleJetEDBRWeightAdder);
 typedef HLTWeightProducer<cmg::WmunuSingleJetEDBR>     HLTWeightProducerWmunuSingleJet;
 DEFINE_FWK_MODULE(HLTWeightProducerWmunuSingleJet);
+typedef HLTWeightProducer2012<cmg::WmunuSingleJetEDBR>     HLTWeightProducer2012WmunuSingleJet;
+DEFINE_FWK_MODULE(HLTWeightProducer2012WmunuSingleJet);
 #undef EDBRNEUTRINO
 
 //define VBF taggers
