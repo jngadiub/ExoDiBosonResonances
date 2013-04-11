@@ -47,9 +47,15 @@ For WW:
 	updates      : mjj 40-65 -- 65-105 -- 105-130, vtagPurity flag, add wjets 180, fix bug of 1600
 /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree/
 /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree/:
-	date		 : 20130409
+	date		: 20130409
 	updates      : tree after for fit. vtag 0.5.
 
+/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_11_04_2013_CA8_highestPtJet/fullallrange/:
+	date         : 20130411
+	cmgtuple     : cmgTuple_0409_CA8/
+	updates      : update from /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange/, 
+                       1) for the bestCandidate we are using now the highest pt jet
+                       2) fullrange ptWL changed to 200
 
 ###################################################################################################################
 
