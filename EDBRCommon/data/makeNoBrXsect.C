@@ -14,7 +14,7 @@ void makeNoBrXsect()
 			string xsec;
 			line>>mass;
 			line>>xsec;
-			outFile<<mass.c_str()<<"	"<<atof(xsec.c_str())/0.292032<<endl;
+			outFile<<mass.c_str()<<"	"<<atof(xsec.c_str())/0.2882464<<endl;
 		}
 	}
 }
