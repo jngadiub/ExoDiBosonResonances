@@ -70,14 +70,22 @@ TLatex* makeCMSLumi(double lumi = 5.0, double x = 0.666, double y = 0.72) {
 
 TLatex* makeChannelLabel(int nJets, int flavour, bool isZZchannel, double x = 0.75, double y = 0.94) {
   char buffer[256];
+  char c;
+  if(nJets==1)
+    c='1';
+  if(nJets==2)
+    c='2';
+  if(nJets==-1)
+    c='X';
+
   if(flavour == 11 && isZZchannel == true)
-    sprintf(buffer,"2e %ij channel",nJets);
+    sprintf(buffer,"2e %cj channel",c);
   if(flavour == 13 && isZZchannel == true)
-    sprintf(buffer,"2#mu %ij channel",nJets);
+    sprintf(buffer,"2#mu %cj channel",c);
   if(flavour == 11 && isZZchannel == false)
-    sprintf(buffer,"e#nu_{e} %ij channel",nJets);
+    sprintf(buffer,"e#nu_{e} %cj channel",c);
   if(flavour == 13 && isZZchannel == false)
-    sprintf(buffer,"#mu#nu_{#mu} %ij channel",nJets);
+    sprintf(buffer,"#mu#nu_{#mu} %cj channel",c);
   TLatex* tex = new TLatex(x,y,buffer);
   tex->SetNDC();
   tex->SetTextFont(42);

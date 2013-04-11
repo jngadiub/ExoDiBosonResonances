@@ -426,6 +426,16 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   else
     maximumForStack = maximumMC;
   hs->SetMaximum(maximumForStack);
+  // Some hacks for better aestetics
+  // Extra vertical space in eta plots
+  if(histoName.find("eta")!=std::string::npos) {
+    hs->SetMaximum(maximumForStack*1.25);
+  }
+  // Extra vertical space in eta plots
+  if(histoName.find("mJJNoKinFit")!=std::string::npos) {
+    hs->SetMaximum(maximumForStack*1.25);
+  }
+
   hs->SetMinimum(0.1);
   hs->Draw("HIST");
   sumMC->Draw("HISTO SAME");
