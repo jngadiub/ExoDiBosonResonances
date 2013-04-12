@@ -51,22 +51,63 @@ void plot_Significance(bool unblind){
     return;
   }
 
-  double arrM[N],arrExp[N],arrObs[N];
+  double arrM[N+1],arrExp[N+1],arrObs[N+1];
 
-  for(int i=0;i<N;i++){
+
+  //1st loop on tree for preparing mH ordered list
+  vector<double> v_mhTMP;
+  for(int i=0;i<texp->GetEntries();i++){
     texp->GetEntry(i);
-    arrM[i]=expM;
-    arrExp[i]=expS;
+    v_mhTMP.push_back(expM);   
+  }
+  std::sort(v_mhTMP.begin(),v_mhTMP.end());
+ 
+  int nMH=v_mhTMP.size();
+  int iMH=0;
+
+  // while(iMH<nMH){
+  // cout<<"Check order: "<<iMH<<" -> "<<v_mhTMP.at(iMH)<<endl;
+  //iMH++;
+  // }
+ iMH=0;
+  while(iMH<nMH){
+    double mhTMP=v_mhTMP.at(iMH);
+    cout<<"Check "<<mhTMP<<endl;
+    for(int i=0;i<N;i++){
+      texp->GetEntry(i);
+      if(expM!=mhTMP)continue;//follow exactly the order of v_mhTMP
+      if(expS<1e-06)expS=1e-06;
+      arrM[iMH]=expM;
+      arrExp[iMH]=expS;
+      //  cout<<"M="<<expM<<"   ExpSig="<<expS<<endl;
+    }
+    iMH++;
   }
 
+  iMH=0;
+  while(iMH<nMH){
+    double mhTMP=v_mhTMP.at(iMH);
+   
+    for(int i=0;i<N;i++){
+      tobs->GetEntry(i);
+      if(obsM!=mhTMP)continue;//follow exactly the order of v_mhTMP
+      arrObs[iMH]=obsS;
+    }
+    iMH++;
+  }
 
   for(int i=0;i<N;i++){
-    tobs->GetEntry(i);
-    arrObs[i]=obsS;
+    cout<<"M="<<arrM[i]<<"   ExpSig="<<arrExp[i]<<flush;
+    if(unblind)cout<<"   ObsSig="<<arrObs[i] <<endl;
+    else cout<<endl;
   }
 
-  TGraph *grExp=new TGraph(N,arrM,arrExp);
-  TGraph *grObs=new TGraph(N,arrM,arrObs);
+  arrM[N]=arrM[N-1];
+  arrExp[N]=arrExp[N-1];
+  arrObs[N]=arrObs[N-1];
+
+  TGraph *grExp=new TGraph(N+1,arrM,arrExp);
+  TGraph *grObs=new TGraph(N+1,arrM,arrObs);
   grExp->SetMarkerStyle(7);
   grObs->SetMarkerStyle(20);
   grExp->SetLineStyle(kDashed);
@@ -80,7 +121,7 @@ void plot_Significance(bool unblind){
   TCanvas *cS=new TCanvas("canSig","Significance EXO-VV",800,800);
   cS->cd();
 
-  double fr_left=990.0, fr_down=1e-06,fr_right=2220.0,fr_up=0.6;
+  double fr_left=590.0, fr_down=1e-06,fr_right=2220.0,fr_up=0.6;
   grExp->GetXaxis()->SetTitle("M_{1} [GeV]");
   grExp->GetYaxis()->SetTitle("p-value");// #rightarrow 2l2q
 
@@ -101,22 +142,22 @@ void plot_Significance(bool unblind){
   l1->SetLineStyle(2);
   l1->SetLineWidth(3.0);
   l1->SetLineColor(kRed);
-  l1->DrawLine(1000.0,quant1sigma,2000.0,quant1sigma);
+  l1->DrawLine(600.0,quant1sigma,2000.0,quant1sigma);
   TLine *l2=new TLine();
   l2->SetLineStyle(2);
   l2->SetLineWidth(3.0);
   l2->SetLineColor(kRed);
-  l2->DrawLine(1000.0,quant2sigma,2000.0,quant2sigma);
+  l2->DrawLine(600.0,quant2sigma,2000.0,quant2sigma);
   TLine *l3=new TLine();
   l3->SetLineStyle(2);
   l3->SetLineWidth(3.0);
   l3->SetLineColor(kRed);
-  l3->DrawLine(1000.0,quant3sigma,2000.0,quant3sigma);
+  l3->DrawLine(600.0,quant3sigma,2000.0,quant3sigma);
   TLine *l4=new TLine();
   l4->SetLineStyle(2);
   l4->SetLineWidth(3.0);
   l4->SetLineColor(kRed);
-  l4->DrawLine(1000.0,quant4sigma,2000.0,quant4sigma);
+  l4->DrawLine(600.0,quant4sigma,2000.0,quant4sigma);
 
 
   TPaveText* cmslabel = new TPaveText( 0.145, 0.953, 0.6, 0.975, "brNDC");

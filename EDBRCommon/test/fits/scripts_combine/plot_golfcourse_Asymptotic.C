@@ -130,7 +130,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
     if(mH==1200)cout<<"~~~~~ 1200 theor ~~~~~~~~~~~~~"<<endl;
     if(mH<600.0)continue;
     v_mhxs.push_back(mH);
-    v_xs.push_back(CS*BRZZ2l2q);//eff in cards are for process X->ZZ->2l2q
+    v_xs.push_back(CS);//*BRZZ2l2q (multyply by BRZZ2l2q only if exp rates in cards are for process X->ZZ->2l2q !)
    
     //unavailable theor errors for graviton   
 
@@ -153,7 +153,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
     xsect_file2 >> mH2>> CS10;
     if(mH2==975)cout<<"~~~~~ 975 theor ~~~~~~~~~~~~~"<<endl;
     if(mH2<600.0)continue;
-    v_xs10.push_back(CS10*BRZZ2l2q);//*BRZZ2l2q
+    v_xs10.push_back(CS10);//*BRZZ2l2q
    
     //unavailable theor errors for graviton   
     float tot_err_p=0.0;
@@ -279,7 +279,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
   grthSM10->SetName("SMXSection_2nd");
  
   // cout<<"Plotting"<<endl;
-  double fr_left=590.0, fr_down=0.00005,fr_right=2020.0,fr_up=0.1;
+  double fr_left=590.0, fr_down=0.0005,fr_right=2020.0,fr_up=1.0;
   TCanvas *cMCMC=new TCanvas("c_lim_Asymp","canvas with limits for Asymptotic CLs",630,600);
   cMCMC->cd();
   cMCMC->SetGridx(1);
@@ -386,8 +386,8 @@ void plot_golfcourse_Asymptotic(bool unblind){
    if(unblind)leg->AddEntry(grobslim_cls, "Asympt. CL_{S} Observed", "LP");
    leg->AddEntry(gr68_cls, "Asympt. CL_{S}  Expected #pm 1#sigma", "LF");
    leg->AddEntry(gr95_cls, "Asympt. CL_{S}  Expected #pm 2#sigma", "LF");
-   leg->AddEntry(grthSM, "#sigma_{TH} x BR(G #rightarrow ZZ), #tilde{k}=0.20", "L" );// #rightarrow 2l2q
-   leg->AddEntry(grthSM10, "#sigma_{TH} x BR(G #rightarrow ZZ), #tilde{k}=0.50", "L");// #rightarrow 2l2q
+   leg->AddEntry(grthSM, "#sigma_{TH} x BR(G #rightarrow ZZ), #tilde{k}=0.50", "L" );// #rightarrow 2l2q
+   leg->AddEntry(grthSM10, "#sigma_{TH} x BR(G #rightarrow ZZ), #tilde{k}=0.20", "L");// #rightarrow 2l2q
    leg->Draw();
    
  if(useNewStyle){

@@ -17,19 +17,20 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name, std::s
 void doAlpha(TTree *chMC, std::string wType);
 
 //##############EDIT THIS PART####################
-
+/*
 const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V6_AB/";
 const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree/";
 const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree/";
-/*
-const std::string myOutDir="FitSidebandsMJJ_CA8_V5/";
-const string inDirSIG="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
-const string inDirSB ="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsidebandCA8/";
 */
-unsigned int jetCats = 1;//1 for only 1 jet case, 2 for both
-bool isZZChannel=false;//this will change only the file list
-string leptStr="MU";//"MU" //"ELE"
-const std::string InTreeName="SelectedCandidatesAB";
+
+const std::string myOutDir="FitSidebandsMJJ_ZZ_20130411/";
+const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
+const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsb/";
+
+unsigned int jetCats = 2;//1 for only 1 jet case, 2 for both
+bool isZZChannel=true;//this will change only the file list
+string leptStr="ALL";//"MU" //"ELE"
+const std::string InTreeName="SelectedCandidates";
 //################################################
 
 const int nxjCut=-1;//if negative: no cut
@@ -51,7 +52,7 @@ int main( int argc, char* argv[] ) {
 			chainMC->Add( (inDir+"treeEDBR_DYJetsPt50To70.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_DYJetsPt70To100.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_DYJetsPt100.root").c_str());
-			chainMC->Add( (inDir+"treeEDBR_TTBAR.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_TTBARpowheg.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_WW.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_WZ.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_ZZ.root").c_str());
@@ -86,7 +87,7 @@ int main( int argc, char* argv[] ) {
 			chainMC->Add( (inDir+"treeEDBR_DYJetsPt50To70.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_DYJetsPt70To100.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_DYJetsPt100.root").c_str());
-			chainMC->Add( (inDir+"treeEDBR_TTBAR.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_TTBARpowheg.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_WW.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_WZ.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_ZZ.root").c_str());

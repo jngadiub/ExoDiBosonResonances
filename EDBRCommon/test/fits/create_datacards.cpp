@@ -31,10 +31,10 @@
 
 #include "DataCardUtils.h"
 
-const std::string wsDir="FitSidebandsMJJ_ZZ_20130408/";
-const std::string datacardDir("DataCards_XZZ_20130408");
-float mZZmin_ = 600.;
-const int jetCats =1; // 1 for only 1jet case and 2 for both
+const std::string wsDir="FitSidebandsMJJ_ZZ_20130412/";
+const std::string datacardDir("DataCards_XZZ_20130412");
+float mZZmin_ = 600.;  // this should be synchronized with startFit in fitBackground.cpp
+const int jetCats =2; // 1 for only 1jet case and 2 for both
 
 struct TheorSigParameters {
 
@@ -211,7 +211,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
   //get global alpha uncertainty
   //the +0.5 effectively leaves the bkgd normalization free to float when profiling the nuisances
-  double globalAlphaErr =  bgws->var("alphaNormErr")->getVal()+0.5;
+  double globalAlphaErr =  bgws->var("alphaNormErr")->getVal();//+0.5
   //std::cout << globalAlphaErr << std::endl;
   //exit(0);
 
@@ -251,7 +251,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   RooDataSet* dataset_obs_reduced=new RooDataSet("dataset_obs","dataset_obs",dataset_obs,RooArgSet(*CMS_xzz_mZZ));
   dataset_obs_reduced->SetName(("dataset_obs"+rename_str).c_str());
   float observedYield = dataset_obs_reduced->sumEntries();
-  std::cout << "observation   " << observedYield << std::endl;
+  std::cout << "observation   " << observedYield << " (numEntries="<< dataset_obs_reduced->numEntries()<<")"<<std::endl;
 
   ofs << "observation   " << observedYield << std::endl;
   ofs << "------------ " << std::endl;

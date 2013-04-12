@@ -54,27 +54,27 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 
 
 //#############EDIT THIS PART#########################
-/*
-const string inDirSig="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
-const string inDir="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsidebandCA8/";
-const string outDir="FitSidebandsMJJ_CA8_V5/";
-*/
 
+const string inDirSig="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
+const string inDir="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsb/";
+const string outDir="FitSidebandsMJJ_ZZ_20130412/";
+
+/*
 const std::string outDir="FitSidebandsMJJ_CA8_WW_V6_AB/";
 const string inDirSig="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree/";
 const string inDir ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree/";
-
-bool isZZChannel=false;//only changes the file list
-string InTreeName = "SelectedCandidatesAB";
-double startFit = 800.0;
-int jetCats =1; // 1 for only 1jet case and 2 for both
-const string leptType="MU";//"ALL" //"MU" //"ELE"
+*/
+bool isZZChannel=true;//only changes the file list
+string InTreeName = "SelectedCandidates";
+double startFit = 600.0;
+int jetCats =2; // 1 for only 1jet case and 2 for both
+const string leptType="ALL";//"ALL" //"MU" //"ELE"
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 500;
 const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 //binning for merged Jet topology 
-/*
+
 const int nBins1=22;
 const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
 	1000,1100,1200,1300,1500,1700,1900,2100,2300,2600};
@@ -83,20 +83,7 @@ const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
 const int nBins2=16;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
 	1000,1100,1250,1400};
-*/
-//binning for merged Jet topology 
-const int nBins1=22;
-const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
-                1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
 
-//const int nBins1=15;
-//const double bins1[nBins1]={480,560,640,720,800,920,
-//              1100,1250,1400,1600,1800,2000,2200,2400,2600};
-
-//binning for double Jet topology 
-const int nBins2=16;
-const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
-                1000,1100,1250,1400};
 
 
 //#######################################################################################
@@ -327,14 +314,16 @@ int main(){
 			alphaErr->setConstant(kTRUE);
 			NormErr->setConstant(kTRUE);
 			Nerr->setConstant(kTRUE);
-			RooRealVar *Nbkg=new RooRealVar("bkgdNormalization","Total uncertainty on background normalization (ELE+MU chan)",dsDataSB2->sumEntries(),0.0,10000.0);
-			RooRealVar *NbkgELE=new RooRealVar("bkgdNormalizationELE","Total uncertainty on background normalization (ELE chan)",dsDataSB2->reduce("lep==0")->sumEntries(),0.0,10000.0);
-			RooRealVar *NbkgMU=new RooRealVar("bkgdNormalizationMU","Total uncertainty on background normalization (MU chan)",dsDataSB2->reduce("lep==1")->sumEntries(),0.0,10000.0);
+			RooRealVar *Nbkg=new RooRealVar("bkgdNormalizationFullRange",("Background normalization in ["+strmcut.str()+", maxMZZ]  (ELE+MU)").c_str(),dsDataSB2->sumEntries(),0.0,10000.0);
+			RooRealVar *NbkgELE=new RooRealVar("bkgdNormalizationFullRangeELE",("Background normalization in ["+strmcut.str()+", maxMZZ]  (ELE)").c_str(),dsDataSB2->reduce("lep==0")->sumEntries(),0.0,10000.0);
+			RooRealVar *NbkgMU=new RooRealVar("bkgdNormalizationFullRangeMU",("Background normalization in ["+strmcut.str()+", maxMZZ]  (MU)").c_str(),dsDataSB2->reduce("lep==1")->sumEntries(),0.0,10000.0);
 			Nbkg->setConstant(kTRUE);
-			RooRealVar *NbkgRange=new RooRealVar("bkgdNormalizationFitRange"," background normalization in range of fit",dsDataSB2->reduce(CutRange("fitRange"))->sumEntries(),0.0,10000.0);
+			RooRealVar *NbkgRange=new RooRealVar("bkgdNormalizationFitRange","Background normalization in range of fit (ELE+MU)",dsDataSB2->reduce(CutRange("fitRange"))->sumEntries(),0.0,10000.0);
+			RooRealVar *NbkgRangeELE=new RooRealVar("bkgdNormalizationELE","Background normalization in range of fit (ELE)",dsDataSB2->reduce(CutRange("fitRange"))->reduce("lep==0")->sumEntries(),0.0,10000.0);
+			RooRealVar *NbkgRangeMU=new RooRealVar("bkgdNormalizationMU","Background normalization in range of fit (MU)",dsDataSB2->reduce(CutRange("fitRange"))->reduce("lep==1")->sumEntries(),0.0,10000.0);
 			NbkgRange->setConstant(kTRUE);
 			// a0->setConstant(kTRUE);
-			logf<<"Normalization ELE="<<NbkgELE->getVal()<<"  MU="<<NbkgMU->getVal()<<"  ALL="<<Nbkg->getVal()<<endl;
+			logf<<"Normalization in full range : ELE="<<NbkgELE->getVal()<<"  MU="<<NbkgMU->getVal()<<"  ALL="<<Nbkg->getVal()<<endl;
 			logf<<"Normalization errors: Nent="<<Nent->getVal()<<" NormErr="<<NormErr->getVal()<<"  Nerr="<<Nerr->getVal()<<std::endl;
 			logf<<"Exp fit done: Norm In Range = "<<NbkgRange->getVal()<<"   Slope="<<a0->getVal()<<std::endl;
 
@@ -444,6 +433,8 @@ int main(){
 			wsnew->import(*NbkgELE);
 			wsnew->import(*NbkgMU);
 			wsnew->import(*NbkgRange);
+			wsnew->import(*NbkgRangeELE);
+			wsnew->import(*NbkgRangeMU);
 			wsnew->import(*Nent);
 			wsnew->import(*alphaErr);
 			wsnew->import(*NormErr);

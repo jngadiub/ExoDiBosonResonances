@@ -2,7 +2,7 @@
 
 myrand=$1
 mass=$2
-OUTDIR=DataCards_XZZ_20130408/
+OUTDIR=DataCards_XZZ_20130412/
 echo "Starting HiggsCombination with seed=$myrand at $( date +%c ) on $hostname."
 
 startdir=$( pwd )
@@ -56,10 +56,10 @@ if [ $mass -gt 1500 ]
 elif [ $mass -gt 1000 ]
     then
     maxBoundary=100
-    minBoundary=1
+    minBoundary=0.1
     echo "Medium mass $mass 1000 - 1500: boundary of combine is $minBoundary - $maxBoundary "
 else
-    maxBoundary=20
+    maxBoundary=50
     minBoundary=0.1
     echo "Low mass $mass <1000: boundary of combine is $minBoundary - $maxBoundary "
  #   minBoundary=0.0001
