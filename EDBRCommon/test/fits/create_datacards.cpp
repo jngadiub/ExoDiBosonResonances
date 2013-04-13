@@ -611,6 +611,8 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
   char canvasName[500];
   sprintf( canvasName, "%s/effFit_%s_%dJ%s.eps", effDirName, leptType_str.c_str(), nxj,purType_forlabel.c_str());
   c1->SaveAs(canvasName);
+  sprintf( canvasName, "%s/effFit_%s_%dJ%s.pdf", effDirName, leptType_str.c_str(), nxj,purType_forlabel.c_str());
+  c1->SaveAs(canvasName);
 
   delete c1;
 
