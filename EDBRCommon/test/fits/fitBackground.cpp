@@ -403,6 +403,7 @@ int main(){
 					plot->addPlotable(contour);
 					plot->Draw();
 					c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
+					c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
 
 					f0val=f0rot->getVal();
 					f1val=f1rot->getVal();
@@ -417,6 +418,7 @@ int main(){
 					plotRot->Draw();
 					// ContourPlot(f0,f1,r_sig_expLev);
 					c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_decorrelated.eps").c_str());
+					c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_decorrelated.png").c_str());
 
 					delete contour;
 					delete c_rot;
@@ -532,11 +534,13 @@ int main(){
 			xf->Draw();
 			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".root").c_str());
 			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
+			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
 			xf->SetMinimum(0.06);
 			gPad->SetLogy();
 			xf->Draw();
 			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.root").c_str());
 			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.eps").c_str());
+			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
 			delete xf;
 
 			//don't change this order, for God's sake !
@@ -710,6 +714,7 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 	sprintf( canvasName, "%s/mZZ_sidebandData_alphaVarWithToys_%dJ_%s", outDir.c_str(), nxj, "ALL");
 	std::string canvasName_str(canvasName);
 	std::string canvasName_eps = canvasName_str + ".eps";
+	std::string canvasName_png = canvasName_str + ".png";
 	TCanvas* c1 = new TCanvas("c1", "", 600, 600);
 	c1->cd();
 
@@ -770,6 +775,7 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 		cout<<"Drawing plot_MCbkg"<<endl;
 		plot_MCbkg->Draw(); 
 		c1->SaveAs(canvasName_eps.c_str());
+		c1->SaveAs(canvasName_png.c_str());
 
 		plot_MCbkg->SetMinimum(0.0001);
 		plot_MCbkg->SetMaximum(1.0);
@@ -779,7 +785,9 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 
 		canvasName_str += "_log";
 		canvasName_eps = canvasName_str + ".eps";
+		canvasName_png = canvasName_str + ".png";
 		c1->SaveAs(canvasName_eps.c_str());
+		c1->SaveAs(canvasName_png.c_str());
 
 		char dumname[200];
 		sprintf(dumname,"%s/rooCurves_%dJ_ALL.root",outDir.c_str(),nxj);
@@ -840,7 +848,9 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 	sprintf( canvasName, "%s/alphaVar_par1_%dJ_%s", outDir.c_str(), nxj, "ALL");
 	canvasName_str = canvasName;
 	canvasName_eps = canvasName_str + ".eps";
+	canvasName_png = canvasName_str + ".png";
 	c1->SaveAs(canvasName_eps.c_str());
+	c1->SaveAs(canvasName_png.c_str());
 
 	errV1.setVal(s1);
 	errV1.setConstant(kTRUE);
@@ -913,6 +923,7 @@ void pseudoMassgeTwoPars(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,cha
 	sprintf( canvasName, "%s/mZZ_sidebandData_alphaVarWithToys_%dJ_%s", outDir.c_str(), nxj, "ALL");
 	std::string canvasName_str(canvasName);
 	std::string canvasName_eps = canvasName_str + ".eps";
+	std::string canvasName_png = canvasName_str + ".png";
 	TCanvas* c1 = new TCanvas("c1", "", 600, 600);
 	c1->cd();
 
@@ -973,6 +984,7 @@ void pseudoMassgeTwoPars(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,cha
 		cout<<"Drawing plot_MCbkg"<<endl;
 		plot_MCbkg->Draw(); 
 		c1->SaveAs(canvasName_eps.c_str());
+		c1->SaveAs(canvasName_png.c_str());
 
 		plot_MCbkg->SetMinimum(0.0001);
 		plot_MCbkg->SetMaximum(1.0);
@@ -982,7 +994,9 @@ void pseudoMassgeTwoPars(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,cha
 
 		canvasName_str += "_log";
 		canvasName_eps = canvasName_str + ".eps";
+		canvasName_png = canvasName_str + ".png";
 		c1->SaveAs(canvasName_eps.c_str());
+		c1->SaveAs(canvasName_png.c_str());
 
 		char dumname[200];
 		sprintf(dumname,"%s/rooCurves_%dJ_ALL.root",outDir.c_str(),nxj);
@@ -1058,7 +1072,9 @@ void pseudoMassgeTwoPars(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,cha
 	sprintf( canvasName, "%s/alphaVar_par1_%dJ_%s", outDir.c_str(), nxj, "ALL");
 	canvasName_str = canvasName;
 	canvasName_eps = canvasName_str + ".eps";
+	canvasName_png = canvasName_str + ".png";
 	c1->SaveAs(canvasName_eps.c_str());
+	c1->SaveAs(canvasName_png.c_str());
 
 	histo2->Draw();
 	line->SetLineColor(2);
@@ -1070,7 +1086,9 @@ void pseudoMassgeTwoPars(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,cha
 	sprintf( canvasName, "%s/alphaVar_par2_%dJ_%s", outDir.c_str(), nxj, "ALL");
 	canvasName_str = canvasName;
 	canvasName_eps = canvasName_str + ".eps";
+	canvasName_png = canvasName_str + ".png";
 	c1->SaveAs(canvasName_eps.c_str());
+	c1->SaveAs(canvasName_png.c_str());
 
 
 	// ws->import(upper);//not supported by RooFit
