@@ -215,6 +215,8 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
   l1->Draw();
   sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s.eps", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
   c1->SaveAs(canvasName);
+  sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s.png", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
+  c1->SaveAs(canvasName);
 
   TCanvas* c1sig = new TCanvas("c1Sig", "can_fit_hist_SigReg", 600, 600);
   c1sig->cd();
@@ -455,6 +457,12 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
     c2a->SaveAs(canvasName);
     sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFITSBONLY.eps", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
     c2b->SaveAs(canvasName);
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFIT.png", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
+    c2->SaveAs(canvasName);
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFIT_SIGONLY.png", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
+    c2a->SaveAs(canvasName);
+    sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFITSBONLY.png", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
+    c2b->SaveAs(canvasName)
     sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFIT.root", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
     c2->SaveAs(canvasName);
     sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFIT_SIGONLY.root", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
