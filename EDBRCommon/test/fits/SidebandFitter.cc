@@ -462,7 +462,7 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
     sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFIT_SIGONLY.png", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
     c2a->SaveAs(canvasName);
     sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFITSBONLY.png", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
-    c2b->SaveAs(canvasName)
+    c2b->SaveAs(canvasName);
     sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFIT.root", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
     c2->SaveAs(canvasName);
     sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s_ROOFIT_SIGONLY.root", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
