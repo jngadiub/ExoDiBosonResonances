@@ -57,7 +57,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 
 const string inDirSig="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
 const string inDir="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsb/";
-const string outDir="FitSidebandsMJJ_ZZ_20130412/";
+const string outDir="FitSidebandsMJJ_ZZ_20130415/";
 
 /*
 const std::string outDir="FitSidebandsMJJ_CA8_WW_V6_AB/";
@@ -71,7 +71,7 @@ int jetCats =2; // 1 for only 1jet case and 2 for both
 const string leptType="ALL";//"ALL" //"MU" //"ELE"
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 500;
-const bool unblind=true;//default is not to plot the data in signal region
+const bool unblind=false;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 //binning for merged Jet topology 
 
@@ -82,7 +82,7 @@ const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
 //binning for double Jet topology 
 const int nBins2=16;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
-	1000,1100,1250,1400};
+	1000,1100,1250,1400};//,1700,2000,2300,2600};
 
 
 
@@ -91,7 +91,7 @@ const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
 int main(){
 	RooMsgService::instance().setGlobalKillBelow(RooFit::INFO) ;
 	//DEBUG=0, INFO=1, PROGRESS=2, WARNING=3, ERROR=4, FATAL=5
-	ofstream logf((outDir+"./log_fitBackground.log").c_str(),ios::out);
+	ofstream logf((outDir+"./log_fitBackground_"+leptType+".log").c_str(),ios::out);
 
 	TChain* chainData = new TChain(InTreeName.c_str());
 	if(isZZChannel)
@@ -535,12 +535,14 @@ int main(){
 			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".root").c_str());
 			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
 			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
+			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".pdf").c_str());
 			xf->SetMinimum(0.06);
 			gPad->SetLogy();
 			xf->Draw();
 			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.root").c_str());
 			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.eps").c_str());
 			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
+			can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.pdf").c_str());
 			delete xf;
 
 			//don't change this order, for God's sake !

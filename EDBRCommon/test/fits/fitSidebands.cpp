@@ -23,7 +23,7 @@ const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/production
 const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree/";
 */
 
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130411/";
+const std::string myOutDir="FitSidebandsMJJ_ZZ_20130415/";
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsb/";
 
@@ -221,9 +221,15 @@ void doAlpha(TTree *chMC, std::string wType){
 			sf->alphaFit( myalpha , avgpars,avgerrs);
 			myalpha->SetMarkerStyle(20);
 			myalpha->SetMarkerColor(kBlue);
+			myalpha->SetXTitle("m_{ZZ} [GeV]");
+			myalpha->SetYTitle("#alpha");
+			myalpha->GetFunction("ratio_fit_expo")->SetBit(TF1::kNotDraw);
+			myalpha->GetFunction("fitPolyRooFit")->SetBit(TF1::kNotDraw);
 			myalpha->Draw("PE0");
 			char canvasName[400];
-			sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.eps", myOutDir.c_str(), inxj,pur_str.c_str(), "ALL");
+			sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.eps", myOutDir.c_str(), inxj,pur_str.c_str(), leptStr.c_str());
+			calphaAVG->SaveAs( canvasName  );
+			sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.pdf", myOutDir.c_str(), inxj,pur_str.c_str(), leptStr.c_str());
 			calphaAVG->SaveAs( canvasName  );
 			delete calphaAVG;
 
@@ -269,6 +275,8 @@ void doAlpha(TTree *chMC, std::string wType){
 			myalpha->Draw("same");
 			//    char canvasName[400];
 			sprintf( canvasName, "%s/mZZ_alphaToys_%dJ%s_%s.eps", myOutDir.c_str(), inxj,pur_str.c_str(), "ALL");
+			can.SaveAs(canvasName);
+			sprintf( canvasName, "%s/mZZ_alphaToys_%dJ%s_%s.pdf", myOutDir.c_str(), inxj,pur_str.c_str(), "ALL");
 			can.SaveAs(canvasName);
 
 

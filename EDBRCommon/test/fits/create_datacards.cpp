@@ -135,15 +135,15 @@ int main( int argc, char* argv[] ) {
     sprintf( mkdir_command, "mkdir -p %s/%.0f", datacardDir.c_str(), mass);
     system(mkdir_command);
 
-    create_singleDatacard( mass, lumi_ELE, "ELE", 1,1, f1_eff_vs_mass_ELE_1JHP);
-    create_singleDatacard( mass, lumi_ELE, "ELE", 1,0, f1_eff_vs_mass_ELE_1JLP);
+    //    create_singleDatacard( mass, lumi_ELE, "ELE", 1,1, f1_eff_vs_mass_ELE_1JHP);
+    // create_singleDatacard( mass, lumi_ELE, "ELE", 1,0, f1_eff_vs_mass_ELE_1JLP);
 
-    create_singleDatacard( mass, lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
-    create_singleDatacard( mass, lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
-    if(jetCats>1&&mass<=800){
-      create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
-      create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
-    }
+    //    create_singleDatacard( mass, lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
+    //create_singleDatacard( mass, lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
+    //if(jetCats>1&&mass<=800){
+      //create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
+      //create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
+    // }
 
   } //while masses
 
@@ -597,7 +597,7 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
   char channelLabelText[300];
   sprintf(channelLabelText, "%d Jet category %s (%s channel)", nxj, purType_forlabel.c_str(),leptType_forlabel.c_str() );
 
-  TPaveText* labelChannel = new TPaveText( 0.4, 0.2, 0.85, 0.25, "brNDC");
+  TPaveText* labelChannel = new TPaveText( 0.4, 0.4, 0.85, 0.45, "brNDC");
   labelChannel->SetTextSize(0.035);
   labelChannel->SetFillColor(0);
   labelChannel->AddText(channelLabelText);
