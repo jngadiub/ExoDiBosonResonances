@@ -31,10 +31,11 @@
 
 #include "DataCardUtils.h"
 
-const std::string wsDir="FitSidebandsMJJ_ZZ_20130412/";
-const std::string datacardDir("DataCards_XZZ_20130412");
+const std::string wsDir="FitSidebandsMJJ_CA8_WW_V8/";
+const std::string datacardDir("DataCards_XWW_V8_blind/");
 float mZZmin_ = 600.;  // this should be synchronized with startFit in fitBackground.cpp
-const int jetCats =2; // 1 for only 1jet case and 2 for both
+const int jetCats =1;  // 1 for only 1jet case and 2 for both
+bool isZZChannel=false;
 
 struct TheorSigParameters {
 
@@ -102,7 +103,7 @@ int main( int argc, char* argv[] ) {
 
   float lumi_ELE;
   float lumi_MU;
-  lumi_ELE=19538.85; //pb^-1
+  lumi_ELE=19531.85; //pb^-1
   lumi_MU =19538.85; //pb^-1
 
   //first loop over available signal MC files to fit efficiency:
@@ -216,7 +217,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   //exit(0);
 
   //// get main variable from input workspace:
-  RooRealVar* CMS_xzz_mZZ = new RooRealVar("mZZ","mZZ",mZZmin_,2400.0);//it works
+  RooRealVar* CMS_xzz_mZZ = new RooRealVar("mZZ","mZZ",mZZmin_,3000.0);//it works
   //   RooRealVar* CMS_hzz2l2q_mZZ = bgws->var("mZZ");//it does not work
   //   RooRealVar* CMS_hzz2l2q_mZZ = mzzws->var("mZZ");//reading it from MZZ-sideband ws works
   CMS_xzz_mZZ->setMin(mZZmin_); 
@@ -471,7 +472,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   std::cout<<"FRACTION of signal inside the +/-3 sigma window ["<<sigWindowLow<<" , "<< sigWindowHigh<<"]: "<<signalFrac<<std::endl;
 
   bool doPlot=false;
-  if(mass==650||mass==1000||mass==1500||mass==1900||mass==2000)doPlot=true;
+  if(mass==650||mass==1000||mass==1500||mass==1900||mass==2000||mass==2500)doPlot=true;
   if(doPlot){
     const int nBinsTMP=22;
     const double binsTMP[nBinsTMP]={480,500,520,560,600,640,680,720,760,800,840,920,
@@ -559,7 +560,7 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
 
   char functName[200];
   sprintf( functName, "eff_vs_mass_%s_%dJ", leptType_str.c_str(), nxj );
-  TF1* f1_eff_vs_mass = new TF1(functName, "[0] + [1]*x + [2]*x*x + [3]*x*x*x", 550., 2050.);
+  TF1* f1_eff_vs_mass = new TF1(functName, "[0] + [1]*x + [2]*x*x + [3]*x*x*x", 550., 2550.);
   gr_eff_vs_mass->Fit(f1_eff_vs_mass, "RQN");
   f1_eff_vs_mass->SetLineStyle(2);
   f1_eff_vs_mass->SetLineColor(38);
@@ -568,7 +569,7 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
   TCanvas* c1 = new TCanvas("c1", "", 600, 600);
   c1->cd();
 
-  TH2D* axes = new TH2D("axes", "", 10, 550., 2250., 10, 0., 0.25);
+  TH2D* axes = new TH2D("axes", "", 10, 550., 2750., 10, 0., 0.25);
   axes->SetStats(0);
   axes->SetXTitle("m_{H} [GeV]");
   axes->SetYTitle("Efficiency");
@@ -625,6 +626,7 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
 TheorSigParameters get_thParameters( float mass ) {
 
   std::string nameXsecFile = "../../data/xsect_BulkG_ZZ_c0p5_xsect_in_pb.txt";
+  if(!isZZChannel)nameXsecFile = "../../data/xsect_BulkG_WW_c0p5_xsect_in_pb.txt";
   std::ifstream xsect_file(nameXsecFile.c_str());
 
   if (! xsect_file.is_open()) { 
@@ -657,6 +659,7 @@ TheorSigParameters get_thParameters( float mass ) {
     xsect_file >> mH >> XSgg;
     BRXtoZZ=0.0;//unknown to me in this moment
     BRZZto2l2q=0.0941;
+	if(isZZChannel)BRZZto2l2q=0.2882464;
 
     if( mH == mass ) {
 
@@ -723,8 +726,8 @@ double expo_interp(double s2, double s1,  double newM,double m2,double m1){
 
 double get_signalParameter(int nxj,  const std::string& purType_str, const std::string& leptType_str, double massH, std::string varname) {
 
-  const int nMasses=15;
-  int masses[nMasses] = {600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000};
+  const int nMasses=20;
+  int masses[nMasses] = {600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500};
 
   RooRealVar var(varname.c_str(),varname.c_str(),0.);
   RooArgSet paramsup, paramslow;
@@ -739,6 +742,7 @@ double get_signalParameter(int nxj,  const std::string& purType_str, const std::
     if(masses[i]==massH){//direct Match outpars_BulkG_ZZ_lljj_c0p2_M1800_1.config
       //      sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ_%s_%s.config",masses[i],nxj,purType_str.c_str(),leptType_str.c_str());
       sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",masses[i],nxj,leptType_str.c_str());
+	  if(!isZZChannel)sprintf(filename,"shape/pars/outpars_BulkG_WW_lvjj_c0p2_M%d_xww_%dJ__%s.config",masses[i],nxj,leptType_str.c_str());
       paramsup.readFromFile(filename, "READ");
       //  cout<<"For MH="<<massH<<" "<<varname.c_str()<<" = "<<var.getVal()<<endl;
       return var.getVal();
@@ -769,10 +773,12 @@ double get_signalParameter(int nxj,  const std::string& purType_str, const std::
 
   //  sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ_%s_%s.config",masses[indexlow],nxj,purType_str.c_str(),leptType_str.c_str());
   sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",masses[indexlow],nxj,leptType_str.c_str());
+  if(!isZZChannel)sprintf(filename,"shape/pars/outpars_BulkG_WW_lvjj_c0p2_M%d_xww_%dJ__%s.config",masses[indexlow],nxj,leptType_str.c_str());
   paramsup.readFromFile(filename, "READ");
   double low = var.getVal();
   //  sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ_%s_%s.config",masses[indexhigh],nxj,purType_str.c_str(),leptType_str.c_str());
   sprintf(filename,"shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",masses[indexhigh],nxj,leptType_str.c_str());
+  if(!isZZChannel)sprintf(filename,"shape/pars/outpars_BulkG_WW_lvjj_c0p2_M%d_xww_%dJ__%s.config",masses[indexhigh],nxj,leptType_str.c_str());
   paramsup.readFromFile(filename, "READ");
   double high = var.getVal();
   
