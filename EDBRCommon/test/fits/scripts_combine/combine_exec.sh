@@ -2,13 +2,15 @@
 
 myrand=$1
 mass=$2
-OUTDIR=DataCards_XZZ_20130412/
+OUTDIR=DataCards_XWW_V8_blind/
 echo "Starting HiggsCombination with seed=$myrand at $( date +%c ) on $hostname."
+export SCRAM_ARCH=slc5_amd64_gcc462
+eval `scramv1 runtime -sh`
 
 startdir=$( pwd )
 
 #set CMSSW environment
-RELEASEDIR=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/CMGTools/CMSSW_5_3_3_patch3/src/
+RELEASEDIR=$CMSSW_BASE/src/
 
 #algo="MarkovChainMC"
 algo="Asymptotic"
@@ -17,14 +19,12 @@ hint="ProfileLikelihood" # before the algo method, run the hint method for restr
 label="EXOZZ"
 ntoys=1000
 #WORKDIR=${RELEASEDIR}/HiggsAna/HLLJJCommon/test/fits//${OUTDIR}/${mass}
-WORKDIR=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/CMGTools/CMSSW_5_3_3_patch3/src/ExoDiBosonResonances/EDBRCommon/test/fits/${OUTDIR}/${mass}
+WORKDIR=$CMSSW_BASE/src/ExoDiBosonResonances/EDBRCommon/test/fits/${OUTDIR}/${mass}
 datacard="comb_xzz" 
 OUTDIR="output_${label}_${algo}_"${datacard}
 
 cd $RELEASEDIR
-export SCRAM_ARCH=slc5_amd64_gcc462
 #cmsenv
-eval `scramv1 runtime -sh`
 cd $startdir
 
 TMPDIR="/tmp/$(whoami)"
