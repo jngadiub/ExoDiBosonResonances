@@ -18,7 +18,7 @@
 //void getSigmaBands(string fileName);
 void plot_golfcourse_Asymptotic(bool unblind=false);
 void setFPStyle();
-
+bool isZZChannel=false;
 double expo_interp(double s2, double s1,  double newM,double m2,double m1){
 
   if(m1>m2){
@@ -53,7 +53,7 @@ double linear_interp( double s2, double s1, double mass, double m2, double m1 ) 
 
 
 const float intLumi=19.5;
-const float BRZZ2l2q=0.0941;
+const float BRZZ2l2q=isZZChannel?0.0941:0.2882464;
 void plot_golfcourse_Asymptotic(bool unblind){
 
   bool useNewStyle=true;
@@ -116,6 +116,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
  //read in theoretical values from text files
   // bool   applyExtraTherUnc=true;
   string xsect_file_th="../../../data/xsect_BulkG_ZZ_c0p5_xsect_in_pb.txt";
+  if(!isZZChannel)xsect_file_th="../../../data/xsect_BulkG_WW_c0p5_xsect_in_pb.txt";
   //  make_interpolated_xsect(xsect_file_th, xsect_file_interpol);
   // string xsect_file_interpol="./RSGravXSectTimesBRToZZ_AgasheHapola_c10_EXPOINTERP.txt";
  
@@ -144,6 +145,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
   xsect_file.close();
 
   string xsect_file_interpol2="../../../data/xsect_BulkG_ZZ_c0p2_xsect_in_pb.txt";
+  if(!isZZChannel)xsect_file_interpol2="../../../data/xsect_BulkG_WW_c0p2_xsect_in_pb.txt";
   ifstream xsect_file2(xsect_file_interpol2.c_str(),ios::in);
   if (! xsect_file2.is_open()){ cout<<"Failed to open file with xsections (c=0.10)"<<endl;}
   float mH2,CS10;
@@ -280,6 +282,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
  
   // cout<<"Plotting"<<endl;
   double fr_left=590.0, fr_down=0.0005,fr_right=2020.0,fr_up=1.0;
+  if(!isZZChannel){fr_left=500.0, fr_down=0.0000005,fr_right=2600.0,fr_up=10.0;}
   TCanvas *cMCMC=new TCanvas("c_lim_Asymp","canvas with limits for Asymptotic CLs",630,600);
   cMCMC->cd();
   cMCMC->SetGridx(1);
@@ -287,8 +290,10 @@ void plot_golfcourse_Asymptotic(bool unblind){
   // draw a frame to define the range
 
   TH1F *hr = cMCMC->DrawFrame(fr_left,fr_down,fr_right,fr_up,"");
+  TString VV = "ZZ";
+  if(!isZZChannel)VV="WW";
   hr->SetXTitle("M_{1} [GeV]");
-  hr->SetYTitle("#sigma_{95%} #times BR(G #rightarrow ZZ) [pb]");// #rightarrow 2l2q
+  hr->SetYTitle("#sigma_{95%} #times BR(G #rightarrow "+VV+") [pb]");// #rightarrow 2l2q
   // cMCMC->GetFrame()->SetFillColor(21);
   //cMCMC->GetFrame()->SetBorderSize(12);
   
@@ -297,7 +302,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
   gr95_cls->SetLineStyle(kDashed);
   gr95_cls->SetLineWidth(3);
   gr95_cls->GetXaxis()->SetTitle("M_{1} [GeV]");
-  gr95_cls->GetYaxis()->SetTitle("#sigma_{95%} #times BR(G #rightarrow ZZ) [pb]");// #rightarrow 2l2q
+  gr95_cls->GetYaxis()->SetTitle("#sigma_{95%} #times BR(G #rightarrow "+VV+") [pb]");// #rightarrow 2l2q
   gr95_cls->GetXaxis()->SetRangeUser(fr_left,fr_right);
   
   gr95_cls->Draw("3");
@@ -308,7 +313,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
   gr68_cls->SetLineWidth(3);
   gr68_cls->Draw("3same");
   grmedian_cls->GetXaxis()->SetTitle("M_{1} [GeV]");
-  grmedian_cls->GetYaxis()->SetTitle("#sigma_{95%} #times BR(G #rightarrow ZZ) [pb]");// #rightarrow 2l2q
+  grmedian_cls->GetYaxis()->SetTitle("#sigma_{95%} #times BR(G #rightarrow "+VV+") [pb]");// #rightarrow 2l2q
   grmedian_cls->SetMarkerStyle(24);//25=hollow squre
   grmedian_cls->SetMarkerColor(kBlack);
   grmedian_cls->SetLineStyle(2);
@@ -386,8 +391,8 @@ void plot_golfcourse_Asymptotic(bool unblind){
    if(unblind)leg->AddEntry(grobslim_cls, "Asympt. CL_{S} Observed", "LP");
    leg->AddEntry(gr68_cls, "Asympt. CL_{S}  Expected #pm 1#sigma", "LF");
    leg->AddEntry(gr95_cls, "Asympt. CL_{S}  Expected #pm 2#sigma", "LF");
-   leg->AddEntry(grthSM, "#sigma_{TH} x BR(G #rightarrow ZZ), #tilde{k}=0.50", "L" );// #rightarrow 2l2q
-   leg->AddEntry(grthSM10, "#sigma_{TH} x BR(G #rightarrow ZZ), #tilde{k}=0.20", "L");// #rightarrow 2l2q
+   leg->AddEntry(grthSM, "#sigma_{TH} x BR(G #rightarrow "+VV+"), #tilde{k}=0.50", "L" );// #rightarrow 2l2q
+   leg->AddEntry(grthSM10, "#sigma_{TH} x BR(G #rightarrow "+VV+"), #tilde{k}=0.20", "L");// #rightarrow 2l2q
    leg->Draw();
    
  if(useNewStyle){
