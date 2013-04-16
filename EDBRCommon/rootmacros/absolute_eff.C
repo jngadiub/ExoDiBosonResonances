@@ -39,9 +39,9 @@ double deltaR(const double& eta1, const double& phi1,
 
 void absolute_eff()
 {
-	//TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_eleid/AnaSigTree";
-	TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange";
-	//TString inputpath = "/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
+
+  //TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange";
+	TString inputpath = "/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
 	///afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
 	TString cut = "absolute_efficiency";
 	vector<TString> dataSamples;
@@ -50,7 +50,7 @@ void absolute_eff()
 
 
 	bool weightedeff = true;
-	bool isZZChannel = false;
+	bool isZZChannel = true;
 	/*
 	   double lepCut=0.0;   // 0->ele 1->mu
 	   double nxjCut=1.0;  // -1 means you take both single and double jet
@@ -76,7 +76,7 @@ void absolute_eff()
 	 */
 	if(isZZChannel)
 	{
-		bkgSamples.push_back("TTBAR");  
+		bkgSamples.push_back("TTBARpowheg");  
 		bkgSamples.push_back("WW");
 		bkgSamples.push_back("WZ");
 		bkgSamples.push_back("ZZ");

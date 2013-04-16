@@ -28,13 +28,15 @@ public:
 		   bool scaleToData,
 		   bool makeRatio,
 		   bool isSignalStackOnBkg,
-		   std::vector<double> kFactorsMC)
+		   std::vector<double> kFactorsMC,
+		   std::vector<double> kFactorsMCSig)
   {
     nameInDir_     = nameInDir;
     fileNamesMC    = nameFileMC;
     fileNamesMCSig = nameFileMCSig;
     fileNamesDATA  = nameFileDATA;
     kFactorsMC_    = kFactorsMC;
+    kFactorsSig_    = kFactorsMCSig;
     targetLumi_    = targetLumi;
     wantNXJets_    = wantNXJets;
     flavour_       = flavour;
@@ -52,6 +54,10 @@ public:
     labels.resize(0);
     labelsSig.resize(0);
     makeLabels();
+   if(fileNamesMCSig.size()!=kFactorsSig_.size()){
+     cout<<"======> Mismatch in size of input MC Sig arrays !!! "<<fileNamesMCSig.size()<<"  "<<kFactorsSig_.size()<<endl;
+    }
+
     printf("Target lumi is %g pb-1\n",targetLumi);
     std::cout << "k factors for MC backgrounds are: " << std::endl;    
     int myKindex=0;
@@ -60,7 +66,19 @@ public:
 	std::cout << *it << " for " << fileNamesMC.at(myKindex) << std::endl ; 
 	myKindex++;
       }
+    myKindex=0;
+    for (std::vector<double>::iterator it = kFactorsSig_.begin(); it != kFactorsSig_.end(); ++it)
+      {
+	std::cout << *it << " for " << fileNamesMCSig.at(myKindex) << std::endl ; 
+	myKindex++;
+      }
+
     std::cout << std::endl;
+
+ 
+
+  
+
   }//end constructor
   
   virtual ~EDBRHistoPlotter(){
@@ -82,6 +100,7 @@ public:
   std::vector<int>         EDBRColors;
   std::vector<int>         EDBRLineColors;
   std::vector<double>      kFactorsMC_;
+  std::vector<double>      kFactorsSig_;
 
   std::string nameInDir_;
   std::string nameOutDir_;
@@ -382,7 +401,9 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     histo->SetLineColor(getLineColor(i)); 
     histoOrig->SetDirectory(0);
     histoOrig->SetLineColor(getLineColor(i)); 
-    
+    histoOrig->SetFillColor(getLineColor(i));
+    if(i%2==0)histoOrig->SetFillStyle(3004);
+    else histoOrig->SetFillStyle(3005);
     //histo->Scale(kFactor_); //============= SCALA FACTORS FOR SIGNAL? ==== FIXME
     
     if(debug_) {
@@ -393,12 +414,12 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   }
 
   //scale the MC signal histogram
+  if(histosMCSig.size()!=kFactorsSig_.size())cout<<"+++++++++++++++++ Mismatch in size of input MC Sig arrays !!!"<<endl;
   for(size_t is=0; is!=histosMCSig.size(); is++){
-    if(debug_)
-      printf("This histogram has integral %g\n",histosMCSig.at(is)->Integral());
+    if(debug_)printf("This histogram has integral %g\n",histosMCSig.at(is)->Integral());
     
-    histosMCSig.at(is)->Scale(targetLumi_);
-    histosMCSigOrig.at(is)->Scale(targetLumi_);
+    histosMCSig.at(is)->Scale(targetLumi_*kFactorsSig_.at(is));
+    histosMCSigOrig.at(is)->Scale(targetLumi_*kFactorsSig_.at(is));
     
     if(debug_)
       printf("After scaling this histogram has integral %g\n",histosMCSig.at(is)->Integral());
@@ -406,7 +427,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     //add the signal to the total background
     histosMCSig.at(is)->Add(sumMC);
   }
-  
+ 
   ///-----------------------------------
   /// Draw both MC and DATA in the stack
   ///-----------------------------------
@@ -449,6 +470,19 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   }
   sumMC->Draw("HISTO SAME");      
 
+  if(histoName.find("mZZ")!=std::string::npos){
+    double limInt0=600.0,limInt1=1400.0,limInt2=2400.0;
+    int binInt0=sumMC->FindBin(limInt0);
+    int binInt1=sumMC->FindBin(limInt1);
+    int binInt2=sumMC->FindBin(limInt2);
+    double errInt=0.0;
+    double mcInt=sumMC->IntegralAndError(binInt0,binInt2,errInt);
+    cout<<"Integral of total MC in range ["<<limInt0<<","<< limInt2<< "] = "<<mcInt<<" +/- "<<errInt<<endl;
+    if(isDataPresent_){
+      double dataInt=sumDATA->Integral(binInt0,binInt2);
+      cout<<"Integral of total DATA in range ["<<limInt0<<","<< limInt2<< "] = "<<dataInt<<" +/- "<<sqrt(dataInt)<<endl;
+    }
+  }
 
   // For the legend, we have to tokenize the name "histos_XXX.root"
   TLegend* leg = new TLegend(0.716,0.61,0.93,0.9);
@@ -459,8 +493,14 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
     leg->AddEntry(histosMC.at(i),labels.at(i).c_str(),"f");
   if( histosMCSig.size() > 0)
     {
-      for(size_t i = 0; i!= histosMCSig.size(); ++i)
-	leg->AddEntry(histosMCSig.at(i),labelsSig.at(i).c_str(),"lf");
+      char rescalingLabel[64];
+
+      for(size_t i = 0; i!= histosMCSig.size(); ++i){
+	sprintf(rescalingLabel," (x%.0f)",kFactorsSig_.at(i));
+	std::string rescalingStr(rescalingLabel);
+	if(kFactorsSig_.at(i)!=1.0)leg->AddEntry(histosMCSig.at(i),(labelsSig.at(i)+rescalingStr).c_str(),"lf");
+	else leg->AddEntry(histosMCSig.at(i),(labelsSig.at(i)).c_str(),"lf");
+      }
     }
 
   leg->SetFillColor(kWhite);
