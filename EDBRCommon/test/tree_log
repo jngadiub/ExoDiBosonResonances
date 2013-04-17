@@ -48,7 +48,12 @@ For WW:
 /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree/
 /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree/:
 	date		: 20130409
-	updates      : tree after for fit. vtag 0.5.
+	updates      : tree after cut for fit. vtag 0.5.
+/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/
+/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv
+	date         : 20130417
+	updates      : tree after cut. sideband from 40, no convertion veto on electron.
+
 
 /afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_11_04_2013_CA8_highestPtJet/fullallrange/:
 	date         : 20130411
