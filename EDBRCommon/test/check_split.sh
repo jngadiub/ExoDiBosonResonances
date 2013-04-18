@@ -12,8 +12,9 @@ QUEUE=2nd
 ##after everything is fine you can merge the output using MERGE=1
 MERGE=0
 
-##option for WW, to merege similar smaples using MERGESAMPLE=1. NOTE: check the last part for safety
-MERGESAMPLE=0
+##option for WW, to merege similar smaples using MERGESAMPLE=1. 
+##NOTE: check the last part for safety
+MERGESAMPLE=1
 
 ######################
 
@@ -82,9 +83,10 @@ if test $MERGESAMPLE -eq 1
 	then
 	echo merging similar samples for plotting:
 	cd ${TREEDIR}
-	hadd treeEDBR_SingleTop_xww.root treeEDBR_SingleTop*
+	hadd treeEDBR_SingleTop_xww.root treeEDBR_SingleTopBarSchannel_xww.root treeEDBR_SingleTopBarTWchannel_xww.root treeEDBR_SingleTopBarTchannel_xww.root treeEDBR_SingleTopSchannel_xww.root treeEDBR_SingleTopTWchannel_xww.root treeEDBR_SingleTopTchannel_xww.root
 	hadd treeEDBR_VV_xww.root treeEDBR_WW_xww.root treeEDBR_WZ_xww.root treeEDBR_ZZ_xww.root
-	hadd treeEDBR_DYJets_xww.root treeEDBR_DYJetsP*
+	hadd treeEDBR_DYJets_xww.root treeEDBR_DYJetsPt*
+	root -l -b -q $CMSSW_BASE/src/ExoDiBosonResonances/EDBRCommon/test/mergeDATA.C\(\"${TREEDIR}\"\)
 fi
 
 
