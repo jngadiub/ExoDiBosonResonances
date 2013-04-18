@@ -160,9 +160,10 @@ int createTreesClosureTest_xww()
 		TFile *fOutSB=new TFile(outSBTree+"/"+file,"RECREATE");
 		fOutSig->cd();
 		TTree *tAnaSig=new TTree("SelectedCandidates","SelectedCandidates");
+		TTree *tAnaSigPlain=new TTree("SelectedCandidatesPlain","SelectedCandidatesPlain");
 
-		double regionAnaSig[99],regionA1A2Sig[99],regionABSig[99];
-		double regionAnaSB[99],regionA1A2SB[99],regionABSB[99];
+		double regionAnaSig[99],regionA1A2Sig[99],regionABSig[99]; 
+		double regionAnaSB[99],regionA1A2SB[99],regionABSB[99];    
 		int    nCandsAna;
 		unsigned int neventAnaSig, runAna;
 		double lepAna[99],mZZAna[99],mJJAna[99];
@@ -188,6 +189,35 @@ int createTreesClosureTest_xww()
 		tAnaSig->Branch("GenWeight"      ,&GenWeightAnaSig         ,"GenWeight/D"  );
 		tAnaSig->Branch("weight"          ,&weightAnaSig             ,"weight/D");
 		tAnaSig->Branch("categories"          ,&categories             ,"categories[nCands]/I");
+		
+		double regionAnaSigPlain;
+		double regionAnaSBPlain;
+		int nCandsAnaPlain;
+		unsigned int neventAnaSigPlain, runAnaPlain;
+		double lepAnaPlain,mZZAnaPlain,mJJAnaPlain;
+		double mLLAnaPlain,nsubj21AnaPlain,prMJAnaPlain,mJJNoKinFitAnaSigPlain;
+		double  vTagPurityAnaPlain;
+		int nXjetsAnaPlain;
+		double PUweightAnaSigPlain, LumiWeightAnaSigPlain,GenWeightAnaSigPlain,weightAnaSigPlain;
+		int categoriesPlain;
+		tAnaSigPlain->Branch("nCands" ,         &nCandsAnaPlain ,      "nCands/I");
+        tAnaSigPlain->Branch("event"           ,&neventAnaSigPlain        ,"event/i");
+        tAnaSigPlain->Branch("run"             ,&runAnaPlain           ,"run/i");
+        tAnaSigPlain->Branch("lep"             ,&lepAnaPlain           ,"lep/D"   );  
+        tAnaSigPlain->Branch("nXjets"          ,&nXjetsAnaPlain        ,"nXjets/I");
+        tAnaSigPlain->Branch("vTagPurity"          ,&vTagPurityAnaPlain        ,"vTagPurity/D");
+        tAnaSigPlain->Branch("mZZ"             ,&mZZAnaPlain           ,"mZZ/D"   );  
+        tAnaSigPlain->Branch("mLL"             ,&mLLAnaPlain           ,"mLL/D"  );  
+        tAnaSigPlain->Branch("mJJ"             ,&mJJAnaPlain           ,"mJJ/D");
+        tAnaSigPlain->Branch("mJJNoKinFit"             ,&mJJNoKinFitAnaSigPlain           ,"mJJNoKinFit/D");
+        tAnaSigPlain->Branch("prunedmass"      , &prMJAnaPlain, "prunedmass/D");
+        tAnaSigPlain->Branch("nsubj21"       ,&nsubj21AnaPlain    ,"nsubj21/D");
+        tAnaSigPlain->Branch("PUweight"        ,&PUweightAnaSigPlain            ,"PUweight/D" );
+        tAnaSigPlain->Branch("LumiWeight"      ,&LumiWeightAnaSigPlain         ,"LumiWeight/D"  );  
+        tAnaSigPlain->Branch("GenWeight"      ,&GenWeightAnaSigPlain         ,"GenWeight/D"  );  
+        tAnaSigPlain->Branch("weight"          ,&weightAnaSigPlain             ,"weight/D");
+        tAnaSigPlain->Branch("categories"          ,&categoriesPlain             ,"categories/I");		
+
 
 		TTree *tA1A2Sig = tAnaSig->CloneTree(0);				
 		tA1A2Sig->SetName("SelectedCandidatesA1A2");
@@ -198,12 +228,16 @@ int createTreesClosureTest_xww()
 		TTree *tAnaSB = tAnaSig->CloneTree(0);
 		TTree *tA1A2SB = tA1A2Sig->CloneTree(0);
 		TTree *tABSB = tABSig->CloneTree(0);	
+		TTree *tAnaSBPlain = tAnaSigPlain->CloneTree(0);	
 		tAnaSB->Branch("region"             ,&regionAnaSB           ,"region[nCands]/D"   );
 		tA1A2SB->Branch("region"             ,&regionA1A2SB           ,"region[nCands]/D"   );
 		tABSB->Branch("region"             ,&regionABSB           ,"region[nCands]/D"   );
+		tAnaSBPlain->Branch("region"             ,&regionAnaSBPlain           ,"region/D"   );
 		tAnaSig->Branch("region"             ,&regionAnaSig           ,"region[nCands]/D"   );  
 		tA1A2Sig->Branch("region"             ,&regionA1A2Sig           ,"region[nCands]/D"   );  
 		tABSig->Branch("region"             ,&regionABSig           ,"region[nCands]/D"   );
+		tAnaSigPlain->Branch("region"             ,&regionAnaSigPlain           ,"region/D"   );
+
 
 		for(int i=0;i<tIn->GetEntries();i++){
 			tIn->GetEntry(i);
@@ -287,6 +321,29 @@ int createTreesClosureTest_xww()
 				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A1Low)regionABSB[ivec]=0;  else regionABSB[ivec]=-1;
 				if(mJJNoKinFit[ivec]<BHigh &&mJJNoKinFit[ivec]>BLow )regionABSig[ivec]=1;  else regionABSig[ivec]=-1;
 			}//end of loop over candidates		
+	
+			//fill plain tree
+			regionAnaSigPlain=regionAnaSig[0];
+			regionAnaSBPlain=regionAnaSB[0];
+			nCandsAnaPlain=nCandsAna;
+			neventAnaSigPlain=neventAnaSig;
+			runAnaPlain=runAna;
+			lepAnaPlain=lepAna[0];
+			mZZAnaPlain=mZZAna[0];
+			mJJAnaPlain=mJJAna[0];
+			mLLAnaPlain=mLLAna[0];
+			nsubj21AnaPlain=nsubj21Ana[0];
+			prMJAnaPlain=prMJAna[0];
+			mJJNoKinFitAnaSigPlain=mJJNoKinFitAnaSig[0];
+			vTagPurityAnaPlain=vTagPurityAna[0];
+			nXjetsAnaPlain=nXjetsAna[0];
+			PUweightAnaSigPlain=PUweightAnaSig;
+			LumiWeightAnaSigPlain=LumiWeightAnaSig;
+			GenWeightAnaSigPlain=GenWeightAnaSig;
+			weightAnaSigPlain=weightAnaSig;
+			categoriesPlain=categories[0];
+							
+	
 
 			if(goodevent)
 			{
@@ -296,6 +353,9 @@ int createTreesClosureTest_xww()
 				tA1A2SB->Fill();// sideband A1, signal A2
 				tABSig->Fill();// sideband A, signal B
 				tABSB->Fill();// sideband A, signal B
+			
+				tAnaSigPlain->Fill();//signal and sideband as usual
+				tAnaSBPlain->Fill();//signal and sideband as usual
 
 			}
 		}//end of loop over input tree
@@ -307,6 +367,7 @@ int createTreesClosureTest_xww()
 		tAnaSig->Write();
 		tA1A2Sig->Write();
 		tABSig->Write();
+		tAnaSigPlain->Write();
 		fOutSig->Close();
 		delete fOutSig;
 
@@ -315,6 +376,7 @@ int createTreesClosureTest_xww()
 		tAnaSB->Write();
 		tA1A2SB->Write();
 		tABSB->Write();
+		tAnaSBPlain->Write();
 		fOutSB->Close();
 		delete fOutSB;
 
