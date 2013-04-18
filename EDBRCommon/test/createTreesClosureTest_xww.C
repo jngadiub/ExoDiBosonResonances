@@ -43,13 +43,13 @@ int createTreesClosureTest_xww()
 {
 	//########EDIT THIS PART###########
 	TString inTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange";
-	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree";
-	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree";
+	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv";
+	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv";
 
-	const double A1Low=40.0;
-	const double A1High=55.0;
+	const double A1Low=50.0;
+	const double A1High=58.0;
 
-	const double A2Low=55.0;
+	const double A2Low=58.0;
 	const double A2High=65.0;
 
 	const double BLow=105;
@@ -170,6 +170,7 @@ int createTreesClosureTest_xww()
 		double  vTagPurityAna[99];
 		int nXjetsAna[99];
 		double PUweightAnaSig, LumiWeightAnaSig,GenWeightAnaSig,weightAnaSig;
+		int categories[99];
 		tAnaSig->Branch("nCands" ,         &nCandsAna ,      "nCands/I");
 		tAnaSig->Branch("event"           ,&neventAnaSig        ,"event/i");
 		tAnaSig->Branch("run"             ,&runAna           ,"run/i");
@@ -186,7 +187,7 @@ int createTreesClosureTest_xww()
 		tAnaSig->Branch("LumiWeight"      ,&LumiWeightAnaSig         ,"LumiWeight/D"  );
 		tAnaSig->Branch("GenWeight"      ,&GenWeightAnaSig         ,"GenWeight/D"  );
 		tAnaSig->Branch("weight"          ,&weightAnaSig             ,"weight/D");
-
+		tAnaSig->Branch("categories"          ,&categories             ,"categories[nCands]/I");
 
 		TTree *tA1A2Sig = tAnaSig->CloneTree(0);				
 		tA1A2Sig->SetName("SelectedCandidatesA1A2");
@@ -244,10 +245,10 @@ int createTreesClosureTest_xww()
 					if(met>80); 
 					else continue;
 					//conversion veto
-					if(eleid_passConversionVeto[ivec]==1);
-					else continue;
-					if(eleid_numberOfLostHits[ivec]==0);
-					else continue;
+					//if(eleid_passConversionVeto[ivec]==1);
+					//else continue;
+					//if(eleid_numberOfLostHits[ivec]==0);
+					//else continue;
 				}
 
 
@@ -266,16 +267,26 @@ int createTreesClosureTest_xww()
 				prMJAna[ivec]=prMJ[ivec];
 				nsubj21Ana[ivec]=nsubj21[ivec];	
 				mJJNoKinFitAnaSig[ivec]=mJJNoKinFit[ivec];
-				//signal and sideband as usual
-				if(region[ivec]==0)regionAnaSB[ivec]=0;else regionAnaSB[ivec]=-1;
-				if(region[ivec]==1)regionAnaSig[ivec]=1;else regionAnaSig[ivec]=-1;
+
+				//define 6 categories: 
+				if(lepAna[ivec]==0&&vTagPurityAna[ivec]==0&&nXjetsAna[ivec]==1)categories[ivec]=0;//0 ele LP 1J
+				else if(lepAna[ivec]==0&&vTagPurityAna[ivec]==1&&nXjetsAna[ivec]==1)categories[ivec]=1;//1 ele HP 1J
+				else if(lepAna[ivec]==1&&vTagPurityAna[ivec]==0&&nXjetsAna[ivec]==1)categories[ivec]=2;//2 mu LP 1J
+				else if(lepAna[ivec]==1&&vTagPurityAna[ivec]==1&&nXjetsAna[ivec]==1)categories[ivec]=3;//3 mu HP 1J
+				else if(lepAna[ivec]==0&&nXjetsAna[ivec]==2)categories[ivec]=4;//4 ele 2J
+				else if(lepAna[ivec]==1&&nXjetsAna[ivec]==2)categories[ivec]=5;//5 mu 2J
+				else categories[ivec]=-1;
+
+				//signal A2Hihg to BLow, sideband A+B
+				if(  (mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A1Low)  || (mJJNoKinFit[ivec]<BHigh &&mJJNoKinFit[ivec]>BLow)  )regionAnaSB[ivec]=0;  else regionAnaSB[ivec]=-1;
+				if(mJJNoKinFit[ivec]<BLow&&mJJNoKinFit[ivec]>A2High)regionAnaSig[ivec]=1; else regionAnaSig[ivec]=-1;
 				// sideband A1, signal A2
 				if(mJJNoKinFit[ivec]<A1High&&mJJNoKinFit[ivec]>A1Low)regionA1A2SB[ivec]=0;  else regionA1A2SB[ivec]=-1;
 				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A2Low)regionA1A2Sig[ivec]=1; else regionA1A2Sig[ivec]=-1;
 				// sideband A, signal B
 				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A1Low)regionABSB[ivec]=0;  else regionABSB[ivec]=-1;
 				if(mJJNoKinFit[ivec]<BHigh &&mJJNoKinFit[ivec]>BLow )regionABSig[ivec]=1;  else regionABSig[ivec]=-1;
-			}			
+			}//end of loop over candidates		
 
 			if(goodevent)
 			{
@@ -287,7 +298,7 @@ int createTreesClosureTest_xww()
 				tABSB->Fill();// sideband A, signal B
 
 			}
-		}
+		}//end of loop over input tree
 		fIn->Close();
 		delete fIn;
 
