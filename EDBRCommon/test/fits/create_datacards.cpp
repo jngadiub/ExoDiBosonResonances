@@ -31,11 +31,12 @@
 
 #include "DataCardUtils.h"
 
-const std::string wsDir="FitSidebandsMJJ_CA8_WW_V8/";
-const std::string datacardDir("DataCards_XWW_V8_blind/");
+const std::string wsDir="FitSidebandsMJJ_ZZ_20130415/";
+const std::string datacardDir("DataCards_XZZ_20130415/");
 float mZZmin_ = 600.;  // this should be synchronized with startFit in fitBackground.cpp
-const int jetCats =1;  // 1 for only 1jet case and 2 for both
-bool isZZChannel=false;
+const int jetCats =2;  // 1 for only 1jet case and 2 for both
+bool isZZChannel=true;
+bool unblind=true;
 
 struct TheorSigParameters {
 
@@ -138,12 +139,12 @@ int main( int argc, char* argv[] ) {
     //    create_singleDatacard( mass, lumi_ELE, "ELE", 1,1, f1_eff_vs_mass_ELE_1JHP);
     // create_singleDatacard( mass, lumi_ELE, "ELE", 1,0, f1_eff_vs_mass_ELE_1JLP);
 
-    //    create_singleDatacard( mass, lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
+    // create_singleDatacard( mass, lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
     //create_singleDatacard( mass, lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
-    //if(jetCats>1&&mass<=800){
-      //create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
-      //create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
-    // }
+    if(jetCats>1&&mass<=800){
+      create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
+      create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
+     }
 
   } //while masses
 
@@ -217,6 +218,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   //exit(0);
 
   //// get main variable from input workspace:
+  if(nxj==2)mZZmin_=600.0;//get in sync with was done in fitBackground for 2J category
   RooRealVar* CMS_xzz_mZZ = new RooRealVar("mZZ","mZZ",mZZmin_,3000.0);//it works
   //   RooRealVar* CMS_hzz2l2q_mZZ = bgws->var("mZZ");//it does not work
   //   RooRealVar* CMS_hzz2l2q_mZZ = mzzws->var("mZZ");//reading it from MZZ-sideband ws works
@@ -488,7 +490,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
     CMS_xzz_mZZ->setRange("plotRange",480,2600) ;
     //  std::cout<<"\nNorm range of background_decorr (2): "<<background_decorr->normRange()<<std::endl;
     xf->SetTitle(("Sideband fit ("+ ssnxj.str() +"Jet "+ pur_str+", "+leptType_str+" leptons) - M="+ssM.str()+")").c_str());
-    dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
+    if(unblind)dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
     std::cout<<" 1 "<<std::flush;
     expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
     std::cout<<" 2 "<<std::flush;
@@ -504,7 +506,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
       signal2J->plotOn(xf,RooFit::Normalization(rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kRed),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
     }
     std::cout<<" 4 "<<std::flush;
-    dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
+    if(unblind)dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
      std::cout<<" 5 "<<std::flush;
 
     char mkdir_command[100];
@@ -659,7 +661,7 @@ TheorSigParameters get_thParameters( float mass ) {
     xsect_file >> mH >> XSgg;
     BRXtoZZ=0.0;//unknown to me in this moment
     BRZZto2l2q=0.0941;
-	if(isZZChannel)BRZZto2l2q=0.2882464;
+    if(!isZZChannel)BRZZto2l2q=0.2882464;
 
     if( mH == mass ) {
 

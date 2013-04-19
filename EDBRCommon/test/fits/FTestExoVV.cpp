@@ -60,7 +60,7 @@ int main(){
 
   string leptType_str="ALL";//ELE // "MU"
   // const string outDir="FitSidebandsAlphaHistSmoothenedWithToys";
-  const string outDir="FitSidebandsMJJ_CA8_V5_ALL/";
+  const string outDir="FitSidebandsMJJ_ZZ_20130415/";
 
   ofstream logf((outDir+"./log_FTest_MZZ_Std.log").c_str(),ios::out);
 
@@ -70,16 +70,20 @@ int main(){
 
   int nxj=0,ipur=0;
   int icat=0;//icat==0 ->1JHP, icat==1 ->1JLP , icat==2 -> 2J
-  for(nxj=1;nxj<2;nxj++){
+  for(nxj=1;nxj<3;nxj++){
 
     for(ipur=1;ipur>-1;ipur--){
-
+      if(nxj==2){
+	if(ipur>0)continue;
+      }
       stringstream ssnxj;
       ssnxj<<nxj;
 
       std::string pur_str="";
-      if(ipur==0)pur_str="LP";
-      if(ipur==1)pur_str="HP";
+      if(nxj==1){
+	if(ipur==0)pur_str="LP";
+	if(ipur==1)pur_str="HP";
+      }
 
       logf<<"\n\n\n========================"<<endl;
       logf<<"Starting chi2 calculation for cat: "<<nxj<<"J "<<pur_str.c_str()<<"  "<<leptType_str.c_str()<<endl<<endl;
@@ -110,7 +114,7 @@ int main(){
   const double minMZZ=bins1[0];
   const double maxMZZ=bins1[nBins1-1];
   RooRealVar *x=w1->var("mZZ");
-  double minFitRange=(nxj==1 ? 600.0 : 500);//minMZZ
+  double minFitRange=(nxj==1 ? 600.0 : 600);//minMZZ
   double maxFitRange=(nxj==1 ? maxMZZ : bins2[nBins2-1]);
   x->setRange("fitRange",minFitRange,maxFitRange) ;
 
@@ -240,7 +244,8 @@ int main(){
  
   Double_t rate_background = DataCardUtils::get_backgroundNormalization(w1 , leptType_str);
   // RooRealVar *N=w1->var("bkgdNormalization"); 
-  RooRealVar *Nbkgd=new RooRealVar("bkgdNorm","bkgdNorm",rate_background,0,rate_background*2.0);
+  cout<<"\nRead from WS the bkgd normalization: "<<rate_background<<endl;
+  RooRealVar *Nbkgd=new RooRealVar("bkgdNormFitRange","bkgdNorm",rate_background,0,rate_background*2.0);
   Nbkgd->setConstant(true);
   double globalAlphaErr =  w1->var("alphaNormErr")->getVal();
   double relBkgdNormErr=sqrt(1.0/(sqrt(SBdset->numEntries())*sqrt(SBdset->numEntries()) )+globalAlphaErr*globalAlphaErr);
@@ -270,8 +275,8 @@ int main(){
   RooDataHist* dsetBinned =new RooDataHist("dhALLData","My Binned dataset",RooArgSet(*x), *SBdset);
   cout<<"Datahist loaded"<<endl;
   // TH1D *hbin2=(TH1D*)SIGdsetFULL->reduce("mZZ>375&&mZZ<1250")->createHistogram( ("h_dsbinned2_M"+ssM.str()+sscat.str()+"b").c_str(),*x,Binning(RooBinning(nBins-1,bins0)));
-  TH1D *hbin2=(TH1D*)SBdset->createHistogram( ("h_dsbinned2_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(37,600,2450)));  
-  TH1D *hbinEE=(TH1D*)SBdset->reduce("lep==0")->createHistogram( ("h_dsbinnedEE_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(37,600,2450)));
+  TH1D *hbin2=(TH1D*)SBdset->createHistogram( ("h_dsbinned2_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(74,600,2450)));  //RooBinning(37,600,2450)
+  TH1D *hbinEE=(TH1D*)SBdset->reduce("lep==0")->createHistogram( ("h_dsbinnedEE_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(74,600,2450))); //RooBinning(37,600,2450)
 
   
     //  TH1D *hbin=(TH1D*)dsetBinned->createHistogram("h_dsbinned",*x);
@@ -354,7 +359,7 @@ int main(){
   //Calculate F-Test
  //http://en.wikipedia.org/wiki/F-test
   //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/DiJetHighMass/test/fitcode/F_test_default.C?revision=1.3&view=markup
-  const double alphaFTest=0.10;
+  const double alphaFTest=0.05;
   logf<<"\nStarting F-Test evaluation with alpha-value="<<alphaFTest<<endl;
   double Ftest_21 = (rss1-rss2)*p2_ndof/ (rss2*1.0);
   double Ftest_32 = (rss2-rss3)*p3_ndof/ (rss3*1.0);
@@ -383,7 +388,7 @@ int main(){
     RooPlot *xf=x->frame();
     string frameTitle="F-Test validation ("+ssnxj.str()+"J "+pur_str +" - "+leptType_str+" lept flav)";
     xf->SetTitle(frameTitle.c_str());
-    SBdset->plotOn(xf,RooFit::Binning(RooBinning(37,600,2450)),RooFit::MarkerStyle(21),RooFit::MarkerColor(kRed));
+    SBdset->plotOn(xf,RooFit::Binning(RooBinning(74,600,2450)),RooFit::MarkerStyle(21),RooFit::MarkerColor(kRed));
     fit_1par->plotOn(xf, RooFit::Normalization(normFitRange,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), RooFit::LineColor(kBlue), RooFit::LineStyle(kDotted));//RooFit::NormRange("fitRange"),
     fit_2par->plotOn(xf, RooFit::Normalization(normFitRange,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), RooFit::LineColor(kOrange+5), RooFit::LineStyle(kDashed));//RooFit::NormRange("fitRange"),
     fit_3par->plotOn(xf, RooFit::Normalization(normFitRange,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), RooFit::LineColor(kBlack), RooFit::LineStyle(kSolid));//RooFit::NormRange("fitRange"),
@@ -392,11 +397,13 @@ int main(){
     xf->Draw();
     can1->SaveAs((outDir+"/FTestPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType_str+".root").c_str());
     can1->SaveAs((outDir+"/FTestPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType_str+".eps").c_str());
+    can1->SaveAs((outDir+"/FTestPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType_str+".pdf").c_str());
     xf->SetMinimum(0.06);
     gPad->SetLogy();
     xf->Draw();
     can1->SaveAs((outDir+"/FTestPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType_str+"_log.root").c_str());
     can1->SaveAs((outDir+"/FTestPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType_str+"_log.eps").c_str());
+    can1->SaveAs((outDir+"/FTestPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType_str+"_log.pdf").c_str());
     delete xf; 
 
     delete fit_1par;    delete fit_2par;    delete fit_3par;

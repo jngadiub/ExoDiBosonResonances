@@ -86,6 +86,7 @@ double DataCardUtils::get_backgroundNormalization( RooWorkspace* bgws, std::stri
   if(!(leptType_str=="" || leptType_str=="ALL" )){
     varName=varName+leptType_str ;
   }
+  else varName=varName+"FitRange";
   // else varName=varName+leptType_str ;
   return bgws->var(varName.c_str())->getVal();
 }

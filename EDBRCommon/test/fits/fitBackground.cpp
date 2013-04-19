@@ -57,7 +57,7 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 
 const string inDirSig="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
 const string inDir="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsb/";
-const string outDir="FitSidebandsMJJ_ZZ_20130415/";
+const string outDir="FitSidebandsMJJ_ZZ_20130418_VVMC/";
 
 /*
 const std::string outDir="FitSidebandsMJJ_CA8_WW_V6_AB/";
@@ -71,8 +71,10 @@ int jetCats =2; // 1 for only 1jet case and 2 for both
 const string leptType="ALL";//"ALL" //"MU" //"ELE"
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 500;
-const bool unblind=false;//default is not to plot the data in signal region
+const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
+const float lumi =19538.85;
+const bool useAlphaVV=false;//to sync with fitSidebands
 //binning for merged Jet topology 
 
 const int nBins1=22;
@@ -120,6 +122,8 @@ int main(){
 		if(leptType=="MU"||leptType=="ALL")chainDataSig->Add( (inDirSig+"treeEDBR_SingleMu_Run2012*").c_str()  );
 		if(leptType=="ELE"||leptType=="ALL")chainDataSig->Add( (inDirSig+"treeEDBR_SingleElectron_Run2012*").c_str()  );
 	}
+
+
 	//write in a plain tree because RooFit does not like trees with branches storing vectors 
 	const int nxjCut=-1;//if negative: no cut
 	const std::string tmpTreeName="SelectedCandidatesV2";
@@ -145,6 +149,21 @@ int main(){
 	TFile *ftreeSig=new TFile(foutSig,"READ");
 	TTree *treeDATA_sig=(TTree*)ftreeSig->Get(tmpSigTreeName.c_str());
 
+
+	TFile *ftreeVV=0;
+	TTree *treeVV_sig=0;
+
+	if(!useAlphaVV){
+	  char foutVV[64];
+	  if(nxjCut>=0)  sprintf(foutVV,"EXOVVTree_MCVV_SIG_%dJ.root",nxjCut);
+	  else   sprintf(foutVV,"EXOVVTree_MCVV_SIG_NOcut.root");
+	  //	  std::string tmpVVFileName=foutVV;
+	  ftreeVV=new TFile(foutVV,"READ");
+	  treeVV_sig=(TTree*)ftreeVV->Get(tmpTreeName.c_str());
+	
+	}//end if not useAlphaVV
+
+
 	// gROOT->cd(); //magic!
 
 	const double minMZZ=bins1[0];
@@ -156,8 +175,8 @@ int main(){
 	RooRealVar *lep=new RooRealVar("lep","lep",0.0,1.0);
 	RooRealVar *region=new RooRealVar("region","region",-0.1,1.1);
 	RooRealVar *vTagPurity=new RooRealVar("vTagPurity","vTagPurity",-5.0,5.0);
-	RooRealVar* alphaWeight = new RooRealVar("alphaWeight","alphaWeight",1.,0.,100000.);//(RooRealVar*) dsDataSB->addColumn(*alpha_formula) ;
-	//add roorealvar for purity
+	RooRealVar *alphaWeight = new RooRealVar("alphaWeight","alphaWeight",1.,0.,100000.);//(RooRealVar*) dsDataSB->addColumn(*alpha_formula) ;
+	RooRealVar *mcweight    = new RooRealVar("weight","mcWeight",1.,0.,100000.);//(RooRealVar*) dsDataSB->addColu	//add roorealvar for purity
 
 	for( inxj=1;inxj<=jetCats;inxj++){
 
@@ -260,11 +279,11 @@ int main(){
 			//real data; weight each event by the alpha factor in order to scale to signal region
 
 			logf<<"\n================================="<<std::endl;
-			mZZ->setVal(500.0);
+			mZZ->setVal(600.0);
 			logf<<"===> MZZ="<<mZZ->getVal()<<"    ALPHA (fromFIT)="<<alphaWeight->getVal()<<std::endl;
-			mZZ->setVal(700.0);
+			mZZ->setVal(1200.0);
 			logf<<"===> MZZ="<<mZZ->getVal()<<"    ALPHA (fromFIT)="<<alphaWeight->getVal()<<std::endl;
-			mZZ->setVal(900.0);
+			mZZ->setVal(1900.0);
 			logf<<"===> MZZ="<<mZZ->getVal()<<"    ALPHA (fromFIT)="<<alphaWeight->getVal()<<std::endl;
 			logf<<"=================================\n"<<std::endl;
 
@@ -275,6 +294,42 @@ int main(){
 			logf<<"Number of events in OBSERVED datasets:"<<std::endl;
 			logf<<dsDataSB->GetName()<<"  -> "<<dsDataSB->numEntries()<<"  "<<dsDataSB->sumEntries()<<std::endl;
 			logf<<dsDataSB2->GetName()<<"  -> "<<dsDataSB2->numEntries()<<"  "<<dsDataSB2->sumEntries()<<std::endl;
+			dsDataSB2->Print("v");
+
+			RooDataSet *VVDataSetNoWeight = 0, *VVDataSetWeight = 0;
+			if(!useAlphaVV){
+			  char vvweightstring[100];
+			  sprintf(vvweightstring,"weight*%f",lumi);
+			  RooFormulaVar weightVV("vvWeight",vvweightstring,*mcweight) ;
+
+			  VVDataSetNoWeight=new RooDataSet("VVDS","VVDS",treeVV_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*mcweight),cutSIG.c_str()) ;
+									
+			  RooRealVar* wVV = (RooRealVar*)VVDataSetNoWeight->addColumn(weightVV);			
+			  // VVDataSetNoWeight->Print("v");
+			  VVDataSetWeight = new RooDataSet("VVDSW","VVDS",VVDataSetNoWeight,*VVDataSetNoWeight->get(),0,wVV->GetName());
+			  //VVDataSetWeight->Print("v");
+			  dsDataSB2->append(*VVDataSetWeight);
+			  //dsDataSB2->Print("v");
+			  
+			  std::cout << "We just added the VV-MC to the extrapolated SB. Now snaity check plot." << std::endl;
+			  TCanvas *canX=new TCanvas("canvasX", "canX",800,800);
+			  canX->cd();
+			  
+			  RooPlot *mccontrol=mZZ->frame();
+			  dsDataSB2->plotOn(mccontrol,MarkerStyle(20),MarkerColor(kBlack));
+			  VVDataSetWeight->plotOn(mccontrol,MarkerStyle(20),MarkerColor(kRed));
+			  mccontrol->Draw();
+			  canX->SaveAs((outDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
+			  mccontrol->SetMinimum(0.00006);
+			  gPad->SetLogy();
+			  mccontrol->Draw();
+			  canX->SaveAs((outDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
+			  delete mccontrol;
+			  delete canX;
+			  cout<<"Finished to add the VV MC to the extrapolated SB."<<endl;
+			}//end if not usealphavv
+
+			delete VVDataSetNoWeight;
 			if(unblind)logf<<dsDataSIG->GetName()<<"  -> "<<dsDataSIG->numEntries()<<"  "<<dsDataSIG->sumEntries()<<std::endl;
 
 			// dsDataSB->Print();
@@ -285,7 +340,7 @@ int main(){
 			}
 
 			//fit the weighted dataset with a custom function
-			double minFitRange=(inxj==1 ? startFit : 500);//minMZZ
+			double minFitRange=(inxj==1 ? startFit : 600);//minMZZ
 			double maxFitRange=(inxj==1 ? maxMZZ : bins[nBins-1]);
 			std::cout<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;
 			logf<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;
@@ -326,8 +381,8 @@ int main(){
 			logf<<"Normalization in full range : ELE="<<NbkgELE->getVal()<<"  MU="<<NbkgMU->getVal()<<"  ALL="<<Nbkg->getVal()<<endl;
 			logf<<"Normalization errors: Nent="<<Nent->getVal()<<" NormErr="<<NormErr->getVal()<<"  Nerr="<<Nerr->getVal()<<std::endl;
 			logf<<"Exp fit done: Norm In Range = "<<NbkgRange->getVal()<<"   Slope="<<a0->getVal()<<std::endl;
-
-
+			r_sig2->printMultiline(logf,99,true);
+			logf<<"\nNow fitting with Leveled Expo:"<<endl;
 			//for levelled exponential
 			double initf0=90.0;
 			if(inxj==1)initf0=200.0;
@@ -467,7 +522,8 @@ int main(){
 					sprintf(alphahname,"tmp_%d",n);
 					sprintf(tmpTname,"pseudoTree_%s",alphahname);     
 					TTree* weightedPseudo = weightTree(treeDATA_tmp ,(TH1D*)falpha->Get(alphahname), tmpTname);
-					RooDataSet pseudoSB2("pseudoSB2","pseudoSB2",weightedPseudo,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
+					RooDataSet pseudoSB2("pseudoSB2","pseudoSB2",weightedPseudo,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*alphaWeight,*vTagPurity),cutSB.c_str(),"alphaWeight") ;
+					pseudoSB2.append(*VVDataSetWeight);
 					if(decorrLevExpo) fitPseudoTwoPars(pseudoSB2,*wsnew,n,fitResultName_expo,inxj);
 					else      fitPseudoOnePar(pseudoSB2,*wsnew,n,fitResultName_expo,inxj,pur_str);
 					//      cout<<"Deleting tree #"<<n<<"  "<<weightedPseudo->GetName()<<endl;
@@ -549,6 +605,8 @@ int main(){
 			delete expLev_fit;delete r_sig_expLev;delete r_sig_expLev_decorr;
 
 			delete dsDataSB;delete dsDataSB2;delete dsDataSIG;
+			//delete VVDataSetNoWeight;
+			delete VVDataSetWeight;
 			delete wsnew;// delete wstmp;
 			delete ws;
 			delete fout;
