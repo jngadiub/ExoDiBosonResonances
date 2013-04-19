@@ -52,7 +52,6 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 void pseudoMassgeTwoPars(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2);
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::string t2Name,int nxjCut=-1);
 
-
 //#############EDIT THIS PART#########################
 /*
 const string inDirSig="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
@@ -89,6 +88,9 @@ const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
 
 
 //#######################################################################################
+
+
+ofstream TestfitBkgLog((outDir+"/TestfitBkgLog.txt").c_str());
 
 int main(){
 	RooMsgService::instance().setGlobalKillBelow(RooFit::INFO) ;
@@ -147,6 +149,9 @@ int main(){
 	TFile *ftreeSig=new TFile(foutSig,"READ");
 	TTree *treeDATA_sig=(TTree*)ftreeSig->Get(tmpSigTreeName.c_str());
 
+	//get SBVV 
+	TFile *ftreeSBVV=new TFile("EXOVVTree_MCVV_SB_NOcut.root","READ");
+	TTree *treeSBVV=(TTree*)ftreeSBVV->Get(tmpTreeName.c_str());
 
 	TFile *ftreeVV=0;
 	TTree *treeVV_sig=0;
@@ -160,7 +165,6 @@ int main(){
 		treeVV_sig=(TTree*)ftreeVV->Get(tmpTreeName.c_str());
 
 	}//end if not useAlphaVV
-
 
 	// gROOT->cd(); //magic!
 
@@ -210,6 +214,32 @@ int main(){
 			if(purityCut==0)pur_str="LP";
 			if(purityCut==1)pur_str="HP";
 
+			//now trying to get R0
+			double lepCut=-1;
+			if(leptType=="ELE")lepCut=0;
+			if(leptType=="MU")lepCut=1;
+			if(leptType=="ALL")lepCut=-1; 
+
+			TString lepTS = Form ("(lep==%.0f)",lepCut );
+			if(lepCut==-1)lepTS="1";
+			TString nXjetsTS = Form ("(nXjets==%d)",inxj );
+			TString vTagPurityTS = Form ("(vTagPurity==%.0f)",purityCut );
+			if(purityCut==-1) vTagPurityTS="1";
+			TString Cut = lepTS+"*"+nXjetsTS+"*"+vTagPurityTS;
+			TestfitBkgLog<<Cut<<endl;
+
+			TCanvas * cr0 = new TCanvas();
+			TH1D * mZZSBVV = new TH1D ("mZZSBVV","mZZSBVV",nBins-1,bins);
+			TH1D * mZZSBData = new TH1D ("mZZSBData","mZZSBData",nBins-1,bins);
+			treeSBVV->Draw("mZZ>>mZZSBVV",Cut);
+			treeDATA_tmp->Draw("mZZ>>mZZSBData",Cut);
+			TH1D * R0 = (TH1D *) mZZSBVV->Clone("R0");
+			R0->Reset();
+			R0->Divide(mZZSBVV,mZZSBData);
+			R0->SetTitle("R0");
+			R0->Draw();
+			cr0->SaveAs((outDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".png").c_str());
+			//got R0
 
 			string alphaFileName=outDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root";
 			logf<<"\n\n\n\n****** NEW NXJ = "<<inxj<<" "<< pur_str.c_str()<<" ---> "<<(alphaFileName).c_str() <<std::endl; 
@@ -218,7 +248,30 @@ int main(){
 			char alphahname[50];
 			//    sprintf(alphahname,"nominal_alpha_%dnxj",inxj);//histo with fit to alpha
 			sprintf(alphahname,"h_alpha_smoothened");
-			TTree* weightedData = weightTree(treeDATA_tmp ,(TH1D*)falpha->Get(alphahname),"alphaWeightedTree" );
+
+			TH1D * alpha_ORI = (TH1D*)falpha->Get(alphahname);	
+			TH1D * alpha_Final = (TH1D*)alpha_ORI->Clone("h_alpha_smoothened_Final");
+
+			if(!useAlphaVV)
+			{
+				alpha_Final->Reset();
+
+				// alpha_Final = (1-R0) * alpha_ORI
+
+				for (int iBin = 1 ; iBin <= alpha_Final->GetNbinsX() ; ++iBin)
+				{
+					double alpha_ORI_c = alpha_ORI->GetBinContent(iBin);
+					double alpha_ORI_e = alpha_ORI->GetBinError(iBin);
+					double R0_c = R0->GetBinContent(iBin);
+					double R0_e = R0->GetBinError(iBin);
+					double alpha_Final_c = (1-R0_c)*alpha_ORI_c;
+					double alpha_Final_e = sqrt(alpha_ORI_c*alpha_ORI_c*R0_e*R0_e+(1-R0_c)*(1-R0_c)*alpha_ORI_e*alpha_ORI_e);
+					alpha_Final->SetBinContent(iBin,alpha_Final_c);
+					alpha_Final->SetBinError(iBin,alpha_Final_e);
+				}
+			}
+
+			TTree* weightedData = weightTree(treeDATA_tmp , alpha_Final  ,"alphaWeightedTree" );
 
 			//stat uncertainty on alpha normalization
 
@@ -1267,4 +1320,49 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 
 	//  cout<<"returning"<<endl;
 }
+/*
+   TH1D * makeVVR0(TTree* treeSBVV , TTree* treeSBData, double lepCut,int inxj, double purityCut)
+   {
+   TCanvas * c0 = new TCanvas();
 
+   int nBins;
+   const double* bins=0;
+   if(inxj==2){
+   nBins = nBins2;
+   bins = bins2;
+   }    
+   else if(inxj==1){
+   nBins = nBins1;
+   bins = bins1;
+   }    
+   string ssnxj;
+   if(inxj==1) ssnxj="1";
+   if(inxj==2) ssnxj="2";
+   string pur_str;
+   if(purityCut==1) pur_str="HP";
+   if(purityCut==0) pur_str="LP";
+   if(purityCut==-1) pur_str="";
+   string leptType;
+   if(lepCut==-1) leptType="ALL";
+   if(lepCut==1) leptType="MU";
+   if(lepCut==0) leptType="ELE";
+
+
+   TH1D * mZZSBVV = new TH1D ("mZZSBVV","mZZSBVV",nBins-1,bins);
+   TH1D * mZZSBData = new TH1D ("mZZSBData","mZZSBData",nBins-1,bins);
+   treeSBVV->Draw("mZZ>>mZZSBVV");
+   treeSBData->Draw("mZZ>>mZZSBData");
+
+   TH1D * R0 = new TH1D ("R0","R0",nBins-1,bins);
+   R0->Reset();
+   R0->Divide(mZZSBVV,mZZSBData);
+   R0->Draw();
+
+   c0->SaveAs((outDir+"/R0_"+ssnxj.c_str()+"J_"+pur_str+"_"+leptType+".png").c_str());
+
+   delete mZZSBVV;
+   delete mZZSBData;
+
+   return R0;
+   }
+ */
