@@ -13,9 +13,9 @@ vbfString = cms.string("vbfptr.isAvailable")
 kineString1Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 1.0") # && leg2.pt()>80.0
 kineString2Jet=cms.string("mass > 180.0 && leg1.pt()>80.0 && leg2.pt()>80.0 && userFloat(\"nXJets\") == 2.0") # && leg2.pt()>80.0
 sigregZ=cms.string("leg2.getSelection(\"cuts_isZSignal\")")
-vtagHP=cms.string("leg2.ntau21()<0.450")
+vtagHP=cms.string("leg2.ntau21()<0.50")
 sbregZ=cms.string("leg2.getSelection(\"cuts_isZSideband\")")
-vtagLP=cms.string("leg2.ntau21()>0.450&& leg2.ntau21()<0.75")
+vtagLP=cms.string("leg2.ntau21()>0.50&& leg2.ntau21()<0.75")
 
 
 
@@ -130,7 +130,7 @@ BestCandSelector=cms.EDProducer("DiElectronNJetEDBRBestCandidateSelector",
                                 srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
                                 tagSelectionList =cms.vstring("tag_SingleJetHP","tag_SingleJetLP","tag_DoubleJet"),#highest priority to lowest priority
                                 VMass            =cms.double(91.1876),
-								Algo             =cms.string("UseVMass")##could be UseVMass or UseJetPt
+                                Algo             =cms.string("UseVMass")##could be UseVMass or UseJetPt
                                 )
 
 BestSidebandSelector=cms.EDProducer("DiElectronNJetEDBRBestCandidateSelector",
@@ -138,7 +138,7 @@ BestSidebandSelector=cms.EDProducer("DiElectronNJetEDBRBestCandidateSelector",
                                     srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
                                     tagSelectionList =cms.vstring("tag_SingleJetSBHP","tag_SingleJetSBLP","tag_DoubleJetSB"),#highest priority to lowest priority
                                     VMass            =cms.double(91.1876),
-									Algo             =cms.string("UseVMass")##could be UseVMass or UseJetPt
+                                    Algo             =cms.string("UseVMass")##could be UseVMass or UseJetPt
                                     )
 
 allSelectedEDBR = cms.EDProducer("CandViewMerger",

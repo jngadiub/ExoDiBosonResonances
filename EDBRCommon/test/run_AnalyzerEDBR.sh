@@ -20,10 +20,13 @@ echo "My working area is $MYWORKAREA"
 echo
 
 
-CFGAREA=${MYWORKAREA}/ExoDiBosonResonances/EDBRCommon/test/tmp_cfg/
-mkdir -p $CFGAREA
 
 type="fullsig" #### could be fullsb or presel or fullsig, denpends on analyzerEDBR_zz2l2j_tpl.py
+
+CFGAREA=${MYWORKAREA}/ExoDiBosonResonances/EDBRCommon/test/tmp_cfg_${type}/
+mkdir -p $CFGAREA
+
+
 OUTDIR=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/${type}
 mkdir -p $OUTDIR/logs
 

@@ -275,8 +275,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     nsubj32[ih]=edbr->leg2().ntau32();
     tau1[ih]=edbr->leg2().tau1();
     tau2[ih]=edbr->leg2().tau2();
-	double nsubjcut=0.45;
-	if(VType_=="W") nsubjcut=0.5;
+    double nsubjcut=0.5;
+    if(VType_=="W") nsubjcut=0.5;
     if(nsubj21[ih]<nsubjcut) vTagPurity[ih]=1.0;
     else if(nsubj21[ih]<0.75) vTagPurity[ih]=0.0;
     else  vTagPurity[ih]=-1.0;
