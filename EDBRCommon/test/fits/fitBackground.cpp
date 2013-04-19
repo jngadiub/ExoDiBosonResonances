@@ -54,20 +54,20 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 
 
 //#############EDIT THIS PART#########################
-
+/*
 const string inDirSig="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
 const string inDir="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsb/";
 const string outDir="FitSidebandsMJJ_ZZ_20130418_VVMC/";
-
-/*
-const std::string outDir="FitSidebandsMJJ_CA8_WW_V6_AB/";
-const string inDirSig="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree/";
-const string inDir ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree/";
 */
-bool isZZChannel=true;//only changes the file list
-string InTreeName = "SelectedCandidates";
-double startFit = 600.0;
-int jetCats =2; // 1 for only 1jet case and 2 for both
+
+const std::string outDir="FitSidebandsMJJ_CA8_WW_V11_A1A2/";
+const string inDirSig="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/";
+const string inDir ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/";
+
+bool isZZChannel=false;//only changes the file list
+string InTreeName = "SelectedCandidatesA1A2";
+double startFit = 1000.0;
+int jetCats =1; // 1 for only 1jet case and 2 for both
 const string leptType="ALL";//"ALL" //"MU" //"ELE"
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 500;
@@ -104,8 +104,7 @@ int main(){
 	}
 	else
 	{
-		if(leptType=="MU"||leptType=="ALL")chainData->Add( (inDir+"treeEDBR_SingleMu_Run2012*").c_str()  );
-		if(leptType=="ELE"||leptType=="ALL")chainData->Add( (inDir+"treeEDBR_SingleElectron_Run2012*").c_str()  );
+		chainData->Add( (inDir+"treeEDBR_data_xww.root").c_str()  );
 	}
 
 	logf<<"In the data chain there are "<<chainData->GetEntries()<<" events"<<endl;
@@ -119,8 +118,7 @@ int main(){
 	}
 	else
 	{
-		if(leptType=="MU"||leptType=="ALL")chainDataSig->Add( (inDirSig+"treeEDBR_SingleMu_Run2012*").c_str()  );
-		if(leptType=="ELE"||leptType=="ALL")chainDataSig->Add( (inDirSig+"treeEDBR_SingleElectron_Run2012*").c_str()  );
+		chainDataSig->Add( (inDirSig+"treeEDBR_data_xww.root").c_str()  );
 	}
 
 
@@ -154,13 +152,13 @@ int main(){
 	TTree *treeVV_sig=0;
 
 	if(!useAlphaVV){
-	  char foutVV[64];
-	  if(nxjCut>=0)  sprintf(foutVV,"EXOVVTree_MCVV_SIG_%dJ.root",nxjCut);
-	  else   sprintf(foutVV,"EXOVVTree_MCVV_SIG_NOcut.root");
-	  //	  std::string tmpVVFileName=foutVV;
-	  ftreeVV=new TFile(foutVV,"READ");
-	  treeVV_sig=(TTree*)ftreeVV->Get(tmpTreeName.c_str());
-	
+		char foutVV[64];
+		if(nxjCut>=0)  sprintf(foutVV,"EXOVVTree_MCVV_SIG_%dJ.root",nxjCut);
+		else   sprintf(foutVV,"EXOVVTree_MCVV_SIG_NOcut.root");
+		//	  std::string tmpVVFileName=foutVV;
+		ftreeVV=new TFile(foutVV,"READ");
+		treeVV_sig=(TTree*)ftreeVV->Get(tmpTreeName.c_str());
+
 	}//end if not useAlphaVV
 
 
@@ -298,35 +296,35 @@ int main(){
 
 			RooDataSet *VVDataSetNoWeight = 0, *VVDataSetWeight = 0;
 			if(!useAlphaVV){
-			  char vvweightstring[100];
-			  sprintf(vvweightstring,"weight*%f",lumi);
-			  RooFormulaVar weightVV("vvWeight",vvweightstring,*mcweight) ;
+				char vvweightstring[100];
+				sprintf(vvweightstring,"weight*%f",lumi);
+				RooFormulaVar weightVV("vvWeight",vvweightstring,*mcweight) ;
 
-			  VVDataSetNoWeight=new RooDataSet("VVDS","VVDS",treeVV_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*mcweight),cutSIG.c_str()) ;
-									
-			  RooRealVar* wVV = (RooRealVar*)VVDataSetNoWeight->addColumn(weightVV);			
-			  // VVDataSetNoWeight->Print("v");
-			  VVDataSetWeight = new RooDataSet("VVDSW","VVDS",VVDataSetNoWeight,*VVDataSetNoWeight->get(),0,wVV->GetName());
-			  //VVDataSetWeight->Print("v");
-			  dsDataSB2->append(*VVDataSetWeight);
-			  //dsDataSB2->Print("v");
-			  
-			  std::cout << "We just added the VV-MC to the extrapolated SB. Now snaity check plot." << std::endl;
-			  TCanvas *canX=new TCanvas("canvasX", "canX",800,800);
-			  canX->cd();
-			  
-			  RooPlot *mccontrol=mZZ->frame();
-			  dsDataSB2->plotOn(mccontrol,MarkerStyle(20),MarkerColor(kBlack));
-			  VVDataSetWeight->plotOn(mccontrol,MarkerStyle(20),MarkerColor(kRed));
-			  mccontrol->Draw();
-			  canX->SaveAs((outDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
-			  mccontrol->SetMinimum(0.00006);
-			  gPad->SetLogy();
-			  mccontrol->Draw();
-			  canX->SaveAs((outDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
-			  delete mccontrol;
-			  delete canX;
-			  cout<<"Finished to add the VV MC to the extrapolated SB."<<endl;
+				VVDataSetNoWeight=new RooDataSet("VVDS","VVDS",treeVV_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*mcweight),cutSIG.c_str()) ;
+
+				RooRealVar* wVV = (RooRealVar*)VVDataSetNoWeight->addColumn(weightVV);			
+				// VVDataSetNoWeight->Print("v");
+				VVDataSetWeight = new RooDataSet("VVDSW","VVDS",VVDataSetNoWeight,*VVDataSetNoWeight->get(),0,wVV->GetName());
+				//VVDataSetWeight->Print("v");
+				dsDataSB2->append(*VVDataSetWeight);
+				//dsDataSB2->Print("v");
+
+				std::cout << "We just added the VV-MC to the extrapolated SB. Now snaity check plot." << std::endl;
+				TCanvas *canX=new TCanvas("canvasX", "canX",800,800);
+				canX->cd();
+
+				RooPlot *mccontrol=mZZ->frame();
+				dsDataSB2->plotOn(mccontrol,MarkerStyle(20),MarkerColor(kBlack));
+				VVDataSetWeight->plotOn(mccontrol,MarkerStyle(20),MarkerColor(kRed));
+				mccontrol->Draw();
+				canX->SaveAs((outDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
+				mccontrol->SetMinimum(0.00006);
+				gPad->SetLogy();
+				mccontrol->Draw();
+				canX->SaveAs((outDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
+				delete mccontrol;
+				delete canX;
+				cout<<"Finished to add the VV MC to the extrapolated SB."<<endl;
 			}//end if not usealphavv
 
 			delete VVDataSetNoWeight;
