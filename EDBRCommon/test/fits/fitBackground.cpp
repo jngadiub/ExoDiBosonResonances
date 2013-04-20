@@ -239,6 +239,7 @@ int main(){
 			R0->SetTitle("R0");
 			R0->Draw();
 			cr0->SaveAs((outDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".png").c_str());
+			cr0->SaveAs((outDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root").c_str());
 			//got R0
 
 			string alphaFileName=outDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root";
