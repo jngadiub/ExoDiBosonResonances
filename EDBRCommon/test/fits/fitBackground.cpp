@@ -59,18 +59,18 @@ const string inDir="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/anal
 const string outDir="FitSidebandsMJJ_ZZ_20130418_VVMC/";
 */
 
-const std::string outDir="FitSidebandsMJJ_CA8_WW_V11_A1A2/";
+const std::string outDir="FitSidebandsMJJ_CA8_WW_V11/";
 const string inDirSig="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/";
 const string inDir ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/";
 
 bool isZZChannel=false;//only changes the file list
-string InTreeName = "SelectedCandidatesA1A2";
+string InTreeName = "SelectedCandidates";
 double startFit = 1000.0;
 int jetCats =1; // 1 for only 1jet case and 2 for both
 const string leptType="ALL";//"ALL" //"MU" //"ELE"
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 500;
-const bool unblind=true;//default is not to plot the data in signal region
+const bool unblind=false;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const float lumi =19538.85;
 const bool useAlphaVV=false;//to sync with fitSidebands
@@ -225,13 +225,14 @@ int main(){
 			TString nXjetsTS = Form ("(nXjets==%d)",inxj );
 			TString vTagPurityTS = Form ("(vTagPurity==%.0f)",purityCut );
 			if(purityCut==-1) vTagPurityTS="1";
+			TString totalWeight = Form("weight*%f",lumi);
 			TString Cut = lepTS+"*"+nXjetsTS+"*"+vTagPurityTS;
 			TestfitBkgLog<<Cut<<endl;
 
 			TCanvas * cr0 = new TCanvas();
 			TH1D * mZZSBVV = new TH1D ("mZZSBVV","mZZSBVV",nBins-1,bins);
 			TH1D * mZZSBData = new TH1D ("mZZSBData","mZZSBData",nBins-1,bins);
-			treeSBVV->Draw("mZZ>>mZZSBVV",Cut);
+			treeSBVV->Draw("mZZ>>mZZSBVV",Cut+"*"+totalWeight);
 			treeDATA_tmp->Draw("mZZ>>mZZSBData",Cut);
 			TH1D * R0 = (TH1D *) mZZSBVV->Clone("R0");
 			R0->Reset();

@@ -18,7 +18,7 @@ void doAlpha(TTree *chMC, std::string wType);
 
 //##############EDIT THIS PART####################
 
-const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V11_A1A2/";
+const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V11/";
 const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/";
 const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/";
 
@@ -30,7 +30,7 @@ const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/a
 unsigned int jetCats = 1;//1 for only 1 jet case, 2 for both
 bool isZZChannel=false;//this will change only the file list
 string leptStr="ALL";//"MU" //"ELE"//"ALL"
-const std::string InTreeName="SelectedCandidatesA1A2";
+const std::string InTreeName="SelectedCandidates";
 const bool useAlphaVV=false;
 //################################################
 
