@@ -6,7 +6,7 @@ SAMPLE_Run2012ELE=( DoublePhotonHighPt_Run2012B_13Jul2012  DoublePhotonHighPt_Ru
 
 SAMPLE_MC1=( TTBARpowheg  DYJetsPt50To70 DYJetsPt70To100 DYJetsPt100 WW WZ ZZ WJetsPt100) # MC Background
 SAMPLE_MC2=( BulkG_ZZ_lljj_c0p2_M600 BulkG_ZZ_lljj_c0p2_M700 BulkG_ZZ_lljj_c0p2_M800 BulkG_ZZ_lljj_c0p2_M900 BulkG_ZZ_lljj_c0p2_M1000 BulkG_ZZ_lljj_c0p2_M1100 BulkG_ZZ_lljj_c0p2_M1200 BulkG_ZZ_lljj_c0p2_M1300 BulkG_ZZ_lljj_c0p2_M1400 BulkG_ZZ_lljj_c0p2_M1500 BulkG_ZZ_lljj_c0p2_M1600 BulkG_ZZ_lljj_c0p2_M1700 BulkG_ZZ_lljj_c0p2_M1800 BulkG_ZZ_lljj_c0p2_M1900 BulkG_ZZ_lljj_c0p2_M2000 BulkG_ZZ_lljj_c1p0_M1000 BulkG_ZZ_lljj_c1p0_M1500 BulkG_ZZ_lljj_c1p0_M600 RSG_ZZ_lljj_c0p05_M1000 RSG_ZZ_lljj_c0p2_M1000 RSG_ZZ_lljj_c0p2_M1500) #MC signal: JHUGrav300  BulkG_ZZ_lljj_c0p2_M1200  BulkG_ZZ_lljj_c0p2_M1600  BulkG_ZZ_lljj_c0p2_M2000
-OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1d/"
+OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/"
 
 OUTPATHDATA=${OUTPATHBASE}/Run2012/
 OUTPATHMC=${OUTPATHBASE}/Summer12/

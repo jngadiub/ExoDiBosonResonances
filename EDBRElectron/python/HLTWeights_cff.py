@@ -13,7 +13,7 @@ eleIdSF_Run2012= cms.VPSet(
     cms.PSet(bin = cms.vdouble(1.44,99.0,20.,999. ,1.00))
     )
 
-doubleEleTrigSF_Run2012= cms.VPSet(
+doubleEleTrigEff_Run2012= cms.VPSet(
     cms.PSet(bin = cms.vdouble(0.0,999.0 ,0.,999. ,1.00))
     )
 
@@ -24,7 +24,7 @@ HLTWeightsKinFit = cms.EDProducer("HLTWeightProducer2012Electron",
                                                     cms.PSet( lumi = cms.double(19532.0),#Run2012
                                                               lep1 = eleIdSF_Run2012,
                                                               lep2 = eleIdSF_Run2012,
-                                                              hlt = doubleEleTrigSF_Run2012 
+                                                              hlt = doubleEleTrigEff_Run2012 
                                                               )
                                                  #     myHLTEleEffWeights
                                                     )# end ranges       
@@ -40,7 +40,7 @@ HLTWeightsMerged = cms.EDProducer("HLTWeightProducer2012EleVJet",
                                                     cms.PSet( lumi = cms.double(19532.0),#Run2012
                                                               lep1 = eleIdSF_Run2012,
                                                               lep2 = eleIdSF_Run2012,
-                                                              hlt = doubleEleTrigSF_Run2012 
+                                                              hlt = doubleEleTrigEff_Run2012 
                                                               )
                                                  #     myHLTEleEffWeights
                                                     )# end ranges       

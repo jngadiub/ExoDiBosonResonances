@@ -35,6 +35,7 @@ cmgJet = cms.EDFilter(
  #       CSV = combinedSecondaryVertexBJetTags.clone(),
        jetKinematics = jetKinematics.clone(),
        looseJetId = looseJetId.clone(),
+       TOBTECjetsId = TOBTECjetsId.clone()
  #      genLepton = cms.PSet( genLepton = cms.string("sourcePtr().get().hasOverlaps('genLeptons')")),
  #      recoLepton = cms.PSet( recoLepton = cms.string("sourcePtr().get().hasOverlaps('recoLeptons')")),
        ),    
@@ -77,6 +78,7 @@ cmgStructuredJet = cms.EDFilter(
     jetKinematics = jetKinematics.clone(),
     mergedJetKinematics = mergedJetKinematics.clone(),
     looseJetId = looseJetId.clone(),
+    TOBTECjetsId = TOBTECjetsId.clone(),
     mergedJetVTagging = mergedJetVTagging.clone(),
     isZSignal = isMergedSignal.clone(),
     isZSideband = isMergedSideband.clone(),

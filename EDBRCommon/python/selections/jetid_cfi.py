@@ -14,6 +14,10 @@ looseJetId = cms.PSet(
     )
 
 
+TOBTECjetsId =  cms.PSet(
+    tobtecChargedFraction = cms.string('abs(eta)<1.0 || abs(eta)>1.5 || ((sourcePtr.get.chargedMultiplicity/sourcePtr.get.neutralMultiplicity) < 2.0)')
+    )
+
 ## mediumJetId = looseJetId.clone
 ## mediumJetId.gammaFraction  = cms.string('component(4).fraction < 0.95')
 ## mediumJetId.h0Fraction  = cms.string('component(5).fraction < 0.95')

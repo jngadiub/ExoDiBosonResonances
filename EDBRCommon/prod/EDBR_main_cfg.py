@@ -29,7 +29,7 @@ process.load("JetMETCorrections.Configuration.JetCorrectionServicesAllAlgos_cff"
 ###########
 
 fullname  = "ExoDiBosonResonances.EDBRCommon.datasets." + options.infile
-###fullname  = "ExoDiBosonResonances.EDBRCommon.datasets.test_RSGZZ600_cff" 
+###fullname  = "ExoDiBosonResonances.EDBRCommon.datasets.summer12_BulkG_ZZ_lljj_c0p2_M1600_cff" 
 print 'Importing dataset from '
 print fullname
 process.load(fullname)

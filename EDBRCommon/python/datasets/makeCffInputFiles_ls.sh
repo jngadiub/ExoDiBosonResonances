@@ -7,8 +7,8 @@ mkdir -p $OUTPUTDIR
 
 ### Location of CMGtuples ###
 
-MAINDIRMC=/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1d/Summer12/
-MAINDIRDATA=/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1d/Run2012/
+MAINDIRMC=/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12/
+MAINDIRDATA=/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Run2012/
 #MAINDIRMC=/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/santanas/production0312/Summer12/CA8/
 #MAINDIRDATA=/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/santanas/production0312/Run2012/CA8/
 

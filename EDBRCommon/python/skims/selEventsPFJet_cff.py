@@ -4,7 +4,7 @@ jetIDJet = cms.EDFilter(
 #    "CmgBaseJetSelector",
     "CmgPFJetSelector",
     src = cms.InputTag("cmgJet"),
-    cut = cms.string( "getSelection(\"cuts_jetKinematics\") && getSelection(\"cuts_looseJetId\")")
+    cut = cms.string( "getSelection(\"cuts_jetKinematics\") && getSelection(\"cuts_looseJetId\")&& getSelection(\"cuts_TOBTECjetsId\")") ###
     )
 
 selectedJetCandFilter = cms.EDFilter("CandViewCountFilter",
@@ -33,7 +33,7 @@ vbfJetMerged = cms.EDFilter("CmgVJetSelector",
 jetIDMerged = cms.EDFilter(
     "CmgVJetSelector",
     src = cms.InputTag("cmgJetStructured"),
-    cut = cms.string( "getSelection(\"cuts_mergedJetKinematics\") && getSelection(\"cuts_mergedJetVTagging\")") ### && getSelection(\"cuts_signalBoostedZ\")
+    cut = cms.string( "getSelection(\"cuts_mergedJetKinematics\") && getSelection(\"cuts_mergedJetVTagging\") && getSelection(\"cuts_looseJetId\") && getSelection(\"cuts_TOBTECjetsId\") ") ### && getSelection(\"cuts_signalBoostedZ\")
     )
 
 selectedVJetCandFilter = cms.EDFilter("CandViewCountFilter",

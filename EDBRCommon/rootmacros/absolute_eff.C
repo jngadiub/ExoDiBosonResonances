@@ -41,7 +41,7 @@ void absolute_eff()
 {
 
   //TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange";
-	TString inputpath = "/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
+	TString inputpath = "/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsig/";
 	///afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
 	TString cut = "absolute_efficiency";
 	vector<TString> dataSamples;

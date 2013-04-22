@@ -56,12 +56,16 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 /*
 const string inDirSig="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
 const string inDir="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsb/";
+<<<<<<< fitBackground.cpp
+const string outDir="FitSidebandsMJJ_ZZ_20130418_TEST2/";
+=======
 const string outDir="FitSidebandsMJJ_ZZ_20130418_VVMC/";
 */
 
 const std::string outDir="FitSidebandsMJJ_CA8_WW_V11/";
 const string inDirSig="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/";
 const string inDir ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/";
+>>>>>>> 1.25
 
 bool isZZChannel=false;//only changes the file list
 string InTreeName = "SelectedCandidates";
@@ -250,6 +254,14 @@ int main(){
 			char alphahname[50];
 			//    sprintf(alphahname,"nominal_alpha_%dnxj",inxj);//histo with fit to alpha
 			sprintf(alphahname,"h_alpha_smoothened");
+<<<<<<< fitBackground.cpp
+			//read original alpha
+			TH1D * halphaORIG = (TH1D*)falpha->Get(alphahname);
+			//create histo with (1-r0)
+			//multuply bin-by-bin the two
+		       	halphaORIG->Reset();
+			TTree* weightedData = weightTree(treeDATA_tmp ,halphaORIG,"alphaWeightedTree" );
+=======
 
 			TH1D * alpha_ORI = (TH1D*)falpha->Get(alphahname);	
 			TH1D * alpha_Final = (TH1D*)alpha_ORI->Clone("h_alpha_smoothened_Final");
@@ -274,6 +286,7 @@ int main(){
 			}
 
 			TTree* weightedData = weightTree(treeDATA_tmp , alpha_Final  ,"alphaWeightedTree" );
+>>>>>>> 1.25
 
 			//stat uncertainty on alpha normalization
 
@@ -293,7 +306,7 @@ int main(){
 			double alphaErrMod= 0.0;
 			double alphaErrtmp= totAlpha*sqrt(1.0/nent_MCsig +1.0/nent_MCsb) ;  
 			double alphaErrTot= sqrt(alphaErrtmp*alphaErrtmp + alphaErrMod*alphaErrMod);//absolute error
-			double alphaFitErr=((TF1*)( (TH1D*)falpha->Get(alphahname))->GetFunction("alpha_fitfunc"))->GetParError(0);//wow !
+			double alphaFitErr= 0.0;//((TF1*)( (TH1D*)falpha->Get(alphahname))->GetFunction("alpha_fitfunc"))->GetParError(0);//wow !
 			logf<<"MC total statistics: SIG="<<nent_MCsig<<"  SB="<<nent_MCsb<<"  alphaERR="<<alphaErrtmp<<" (from fit: "<<alphaFitErr<<")"<<endl;
 			RooRealVar* alphaErr=new RooRealVar("alphaNormErr","alphaNormErr (relative)", alphaErrTot/totAlpha);
 
@@ -712,7 +725,7 @@ TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verb
 	newTree->Branch( "alphaWeight", &alpha, "alphaWeight/D" );
 
 	unsigned nentries = tree->GetEntries();
-
+	cout<<"Starting to loop over tree inside weightTree. The alpha histo has "<<h1_alpha->GetNbinsX()<<" bins"<<endl;
 	for( unsigned iEntry=0; iEntry<nentries; ++iEntry ) {
 
 		tree->GetEntry( iEntry );
@@ -724,10 +737,11 @@ TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verb
 		else
 			alpha = h1_alpha->GetBinContent( alphabin );
 
+		//	alpha=999.0;
 		newTree->Fill();
 
 	}
-
+	cout<<"Finished to llop over entries insied  weightTree."<<endl;
 	//delete tree;
 	return newTree;
 
