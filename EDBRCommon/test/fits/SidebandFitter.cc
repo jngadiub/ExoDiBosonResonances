@@ -48,12 +48,15 @@ using namespace RooFit;
 //const int nBins=17;
 //const  float bins0[nBins]={270,290,320,340,360,380,400,430,460,490,520,550,600,650,700,800,1000};
 
-double startFit = 800.0;
+double startFit = 1000.0;
 
 //binning for merged Jet topology 
+/*
 const int nBins1=22;
-const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
+const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
+*/
+const int nBins1=21;
+const double bins1[nBins1]={520,560,600,640,680,720,760,800,840,920,1000,1100,1250,1400,1600,1800,2000,2200,2400,2600,3000};
 
 //const int nBins1=15;
 //const double bins1[nBins1]={480,560,640,720,800,920,
