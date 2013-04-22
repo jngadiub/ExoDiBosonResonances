@@ -274,7 +274,6 @@ int main(){
 			}
 
 			TTree* weightedData = weightTree(treeDATA_tmp , alpha_Final  ,"alphaWeightedTree" );
->>>>>>> 1.25
 
 			//stat uncertainty on alpha normalization
 
