@@ -761,7 +761,7 @@ int SidebandFitter::smoothHist(TH1 &h, bool forceCorrZero,int smoothLevel){
     
     if(bincontM==0){//mmmh, I put this safety but it looks strange...
       int i2=2;
-      while(b-i2>0 || bincontM!=0){
+      while(b-i2>0 && bincontM==0){
 	bincontM=h.GetBinContent(b-i2);
 	binerrM=h.GetBinError(b-i2);
 	  i2++;
@@ -771,7 +771,7 @@ int SidebandFitter::smoothHist(TH1 &h, bool forceCorrZero,int smoothLevel){
       int i2=2;
       if(b+i2<nbins){
 	
-	while(b+i2<nbins || bincontP!=0){
+	while(b+i2<nbins && bincontP==0){
 	  bincontP=h.GetBinContent(b+i2);
 	  binerrP=h.GetBinError(b+i2);
 	  i2++;
