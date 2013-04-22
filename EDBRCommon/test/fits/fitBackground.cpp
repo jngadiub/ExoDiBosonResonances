@@ -53,22 +53,22 @@ void pseudoMassgeTwoPars(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,cha
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::string t2Name,int nxjCut=-1);
 
 //#############EDIT THIS PART#########################
-
+/*
 const string inDirSig="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig/";
 const string inDir="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsb/";
 const string outDir="FitSidebandsMJJ_ZZ_20130422/";
-
-/*
-const std::string outDir="FitSidebandsMJJ_CA8_WW_V11/";
-const string inDirSig="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/";
-const string inDir ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/";
 */
 
-bool isZZChannel=true;//only changes the file list
-string InTreeName = "SelectedCandidates";
-double startFit = 600.0;
-int jetCats =2; // 1 for only 1jet case and 2 for both
-const string leptType="ALL";//"ALL" //"MU" //"ELE"
+const std::string outDir="FitSidebandsMJJ_CA8_WW_V14_AB/";
+const string inDirSig="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/";
+const string inDir ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/";
+
+
+bool isZZChannel=false;//only changes the file list
+string InTreeName = "SelectedCandidatesAB";
+double startFit = 1000.0;
+int jetCats =1; // 1 for only 1jet case and 2 for both
+const string leptType="MU";//"ALL" //"MU" //"ELE"
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const unsigned int nToys = 500;
 const bool unblind=false;//default is not to plot the data in signal region
@@ -77,9 +77,13 @@ const float lumi =19538.85;
 const bool useAlphaVV=false;//to sync with fitSidebands
 //binning for merged Jet topology 
 
+/*
 const int nBins1=22;
 const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
 	1000,1100,1200,1300,1500,1700,1900,2100,2300,2600};
+*/
+const int nBins1=21;
+const double bins1[nBins1]={520,560,600,640,680,720,760,800,840,920,1000,1100,1200,1300,1500,1700,1900,2100,2300,2600,3000};
 
 //binning for double Jet topology 
 const int nBins2=16;
@@ -230,18 +234,28 @@ int main(){
 			TString Cut = lepTS+"*"+nXjetsTS+"*"+vTagPurityTS;
 			TestfitBkgLog<<Cut<<endl;
 
-			TCanvas * cr0 = new TCanvas();
-			TH1D * mZZSBVV = new TH1D ("mZZSBVV","mZZSBVV",nBins-1,bins);
-			TH1D * mZZSBData = new TH1D ("mZZSBData","mZZSBData",nBins-1,bins);
-			treeSBVV->Draw("mZZ>>mZZSBVV",Cut+"*"+totalWeight);
-			treeDATA_tmp->Draw("mZZ>>mZZSBData",Cut);
-			TH1D * R0 = (TH1D *) mZZSBVV->Clone("R0");
-			R0->Reset();
-			R0->Divide(mZZSBVV,mZZSBData);
-			R0->SetTitle("R0");
-			R0->Draw();
-			cr0->SaveAs((outDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".png").c_str());
-			cr0->SaveAs((outDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root").c_str());
+            TH1D * mZZSBVV = new TH1D ("mZZSBVV","mZZSBVV",nBins-1,bins);
+            TH1D * mZZSBData = new TH1D ("mZZSBData","mZZSBData",nBins-1,bins);
+            mZZSBVV->Sumw2();
+            mZZSBData->Sumw2();
+            treeSBVV->Draw("mZZ>>mZZSBVV",Cut+"*"+totalWeight);
+            treeDATA_tmp->Draw("mZZ>>mZZSBData",Cut);
+            TH1D * R0 = (TH1D *) mZZSBVV->Clone("R0");
+            R0->Reset();
+            R0->Divide(mZZSBVV,mZZSBData);
+            string dummm = "";
+            R0->SetTitle((dummm+"R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType).c_str());
+
+            TCanvas * cr0 = new TCanvas("cr0","cr0",800,600);
+            cr0->Divide(1,3);
+            cr0->cd(1);
+            mZZSBVV->Draw();
+            cr0->cd(2);
+            mZZSBData->Draw();
+            cr0->cd(3);
+            R0->Draw();
+            cr0->SaveAs((outDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".png").c_str());
+            cr0->SaveAs((outDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root").c_str());
 			//got R0
 
 			string alphaFileName=outDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root";
@@ -617,7 +631,7 @@ int main(){
 			dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));
 			if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
 
-			bool plotDecorrLevExpoMain=true;
+			bool plotDecorrLevExpoMain=false;
 			if(plotDecorrLevExpoMain){
 			  //plot error bands of fit			  
 			  background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
@@ -1335,49 +1349,3 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 
 	//  cout<<"returning"<<endl;
 }
-/*
-   TH1D * makeVVR0(TTree* treeSBVV , TTree* treeSBData, double lepCut,int inxj, double purityCut)
-   {
-   TCanvas * c0 = new TCanvas();
-
-   int nBins;
-   const double* bins=0;
-   if(inxj==2){
-   nBins = nBins2;
-   bins = bins2;
-   }    
-   else if(inxj==1){
-   nBins = nBins1;
-   bins = bins1;
-   }    
-   string ssnxj;
-   if(inxj==1) ssnxj="1";
-   if(inxj==2) ssnxj="2";
-   string pur_str;
-   if(purityCut==1) pur_str="HP";
-   if(purityCut==0) pur_str="LP";
-   if(purityCut==-1) pur_str="";
-   string leptType;
-   if(lepCut==-1) leptType="ALL";
-   if(lepCut==1) leptType="MU";
-   if(lepCut==0) leptType="ELE";
-
-
-   TH1D * mZZSBVV = new TH1D ("mZZSBVV","mZZSBVV",nBins-1,bins);
-   TH1D * mZZSBData = new TH1D ("mZZSBData","mZZSBData",nBins-1,bins);
-   treeSBVV->Draw("mZZ>>mZZSBVV");
-   treeSBData->Draw("mZZ>>mZZSBData");
-
-   TH1D * R0 = new TH1D ("R0","R0",nBins-1,bins);
-   R0->Reset();
-   R0->Divide(mZZSBVV,mZZSBData);
-   R0->Draw();
-
-   c0->SaveAs((outDir+"/R0_"+ssnxj.c_str()+"J_"+pur_str+"_"+leptType+".png").c_str());
-
-   delete mZZSBVV;
-   delete mZZSBData;
-
-   return R0;
-   }
- */
