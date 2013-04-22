@@ -17,20 +17,20 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name, std::s
 void doAlpha(TTree *chMC, std::string wType);
 
 //##############EDIT THIS PART####################
-/*
-const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V11/";
+
+const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V14_AB/";
 const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/";
 const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/";
-*/
 
+/*
 const std::string myOutDir="FitSidebandsMJJ_ZZ_20130422b/";
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsb/";
-
-unsigned int jetCats = 2;//1 for only 1 jet case, 2 for both
-bool isZZChannel=true;//this will change only the file list
-string leptStr="ALL";//"MU" //"ELE"//"ALL"
-const std::string InTreeName="SelectedCandidates";
+*/
+unsigned int jetCats = 1;//1 for only 1 jet case, 2 for both
+bool isZZChannel=false;//this will change only the file list
+string leptStr="MU";//"MU" //"ELE"//"ALL"
+const std::string InTreeName="SelectedCandidatesAB";
 const bool useAlphaVV=false;
 //################################################
 
@@ -70,16 +70,17 @@ int main( int argc, char* argv[] ) {
 		if(isZZChannel==false)
 		{
 			chainMC->Add( (inDir+"treeEDBR_DYJets_xww.root").c_str());
-			chainMC->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());		
 			chainMC->Add( (inDir+"treeEDBR_WJetsPt100_xww.root").c_str());
 			////chainMC->Add( (inDir+"treeEDBR_WJetsPt180_xww.root").c_str());
 			if(useAlphaVV){
 			  chainMC->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
 			  chainMC->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
+			  chainMC->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
 			}
 			else{
 			  chainMCVV = new TChain(InTreeName.c_str());
 			  chainMCVV->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
+			  chainMCVV->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
 			  chainMCVV->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
 			}
 		}
@@ -126,17 +127,18 @@ int main( int argc, char* argv[] ) {
 		if(isZZChannel==false)
 		{   
             chainMC->Add( (inDir+"treeEDBR_DYJets_xww.root").c_str());
-            chainMC->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());    
             chainMC->Add( (inDir+"treeEDBR_WJetsPt100_xww.root").c_str());
             ////chainMC->Add( (inDir+"treeEDBR_WJetsPt180_xww.root").c_str());
             if(useAlphaVV){
               chainMC->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
               chainMC->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
+			  chainMC->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
             }   
             else{
               chainMCVV = new TChain(InTreeName.c_str());
               chainMCVV->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
               chainMCVV->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
+			  chainMCVV->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
             }
 		}
 		gROOT->cd(); //magic!
