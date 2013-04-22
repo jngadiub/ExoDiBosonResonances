@@ -581,8 +581,9 @@ TH1D* SidebandFitter::shuffle( TH1D* inhist, TRandom3* random, char *histName, T
 
     float val = outhist->GetBinContent(i);
     float err; 
-    if (inhist2) err=sqrt(pow(inhist2->GetBinContent(i),2)+pow(outhist->GetBinError(i),2)); 
-    else err=outhist->GetBinError(i);
+    //comment by AB: honestly, I don't remember why we were doing such a thing...
+    if (inhist2) err=sqrt(inhist2->GetBinContent(i) *inhist2->GetBinContent(i) +outhist->GetBinError(i)*outhist->GetBinError(i)); 
+    else err=outhist->GetBinError(i);//comment by AB: this is what I would have expected to do
     float valfit=ftmp->Eval(outhist->GetBinCenter(i));
     float errfit =TMath::Max(float(fabs(val-valfit)),float(inhist->GetBinError(i))) ;  //outhist->GetBinError(i);
 

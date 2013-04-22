@@ -23,7 +23,7 @@ const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/production
 const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/";
 */
 
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130422/";
+const std::string myOutDir="FitSidebandsMJJ_ZZ_20130422b/";
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsb/";
 
@@ -284,7 +284,7 @@ void doAlpha(TTree *chMC, std::string wType){
 
 				char histotitle[50];
 				sprintf(histotitle,"tmp_%d",i);
-				TH1D* variedHisto = sf->shuffle(myalpha, randomGen ,histotitle, myalpha);
+				TH1D* variedHisto = sf->shuffle(myalpha, randomGen ,histotitle, NULL);
 
 				variedHisto->Write();
 				//3:for each toy make a fit and save the results in the output histo
@@ -297,8 +297,8 @@ void doAlpha(TTree *chMC, std::string wType){
 			}
 			h_dist_p0->Write();
 
-			float alpha =  ((TF1*)myalpha->GetFunction(sf->getFitFunc("_LowRange").c_str()))->Eval(400);
-			std::cout << "alpha (M=400) : " << alpha << std::endl;    
+			float alpha =  ((TF1*)myalpha->GetFunction(sf->getFitFunc("_LowRange").c_str()))->Eval(800);
+			std::cout << "alpha (M=800) : " << alpha << std::endl;    
 			char hlphname[50];
 			sprintf(hlphname,"nominal_alpha_%dJ",inxj);
 			TH1D* dummy_alpha=sf->dummyAlphaHist(alpha,myalpha,hlphname);

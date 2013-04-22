@@ -415,8 +415,7 @@ int main(){
 			char fitResultName_expo[200];
 			sprintf( fitResultName_expo, "resultsExpoFit_%dJ_%s_%s",inxj ,pur_str.c_str(), leptType.c_str() );
 			r_sig2->SetName(fitResultName_expo); 
-			logf<<"\n\n\n\n\n#################\nCheck entries: "<<dsDataSB->sumEntries()<<"   "<<dsDataSB2->sumEntries()
-				<<"##############\n\n\n\n\n"<<endl;
+			logf<<"\n\n\t---> Check entries: DatainSB (no alpha)="<<dsDataSB->sumEntries()<<"   DatainSB (rescaled with alpha)="<<dsDataSB2->sumEntries()<<endl<<endl;
 			RooRealVar *Nent=new RooRealVar("sidebandNormalization","Integral of data in sidebands before signal-rescaling",dsDataSB->numEntries(),0.0,50000.0);
 			RooRealVar *NormErr=new RooRealVar("errNormDataSB","Statistical uncertainty on bkgd norm (relative)",1.0/sqrt(Nent->getVal()),0.0,50000.0);
 			RooRealVar *Nerr=new RooRealVar("errNormalization","Total uncertainty on bkgd norm (relative)",sqrt(NormErr->getVal()*NormErr->getVal()+alphaErr->getVal()*alphaErr->getVal()) ,0.0,15.0);
@@ -459,6 +458,7 @@ int main(){
 			RooFitResult* r_sig_expLev = expLev_fit->fitTo(*dsDataSB2,Save(kTRUE),SumW2Error(kTRUE),RooFit::PrintLevel(-1),Range("fitRange")) ;//,Range("fitRange"),SumW2Error(kTRUE)
 
 			logf<<"LevExpo fit done: Sigma = "<<f0->getVal()<<"   alpha="<<f1->getVal()<<"   beta="<<f1b->getVal()<<"   m="<<f2->getVal()<<"  Theta="<<f3->getVal()<<std::endl;
+			r_sig_expLev->printMultiline(logf,99,true);
 			logf<<"LEVELLED EXPO FIT PERFORMED ! DECORRELATING PARAMETERS."<<std::endl;
 
 			//now decorrelate parameters:
