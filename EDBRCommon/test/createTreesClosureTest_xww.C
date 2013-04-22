@@ -118,6 +118,9 @@ int createTreesClosureTest_xww()
 		double eleid_numberOfLostHits[99];
 		//fit variables
 		double mZZ[99],mJJ[99],mLL[99],prMJ[99],mJJNoKinFit[99];		
+		//mc match
+		double MCmatch[99];
+
 
 		tIn->SetBranchAddress("nCands", &nCands);
 		tIn->SetBranchAddress("event", &nevent);
@@ -154,6 +157,7 @@ int createTreesClosureTest_xww()
 		tIn->SetBranchAddress("mJJNoKinFit", mJJNoKinFit);
 		tIn->SetBranchAddress("eleid_passConversionVeto", eleid_passConversionVeto);
 		tIn->SetBranchAddress("eleid_numberOfLostHits", eleid_numberOfLostHits);
+		tIn->SetBranchAddress("MCmatch",MCmatch);
 
 		//set branch for out tree
 		TFile *fOutSig=new TFile(outSigTree+"/"+file,"RECREATE");
@@ -172,6 +176,7 @@ int createTreesClosureTest_xww()
 		int nXjetsAna[99];
 		double PUweightAnaSig, LumiWeightAnaSig,GenWeightAnaSig,weightAnaSig;
 		int categories[99];
+		double MCmatchAna[99];
 		tAnaSig->Branch("nCands" ,         &nCandsAna ,      "nCands/I");
 		tAnaSig->Branch("event"           ,&neventAnaSig        ,"event/i");
 		tAnaSig->Branch("run"             ,&runAna           ,"run/i");
@@ -189,6 +194,7 @@ int createTreesClosureTest_xww()
 		tAnaSig->Branch("GenWeight"      ,&GenWeightAnaSig         ,"GenWeight/D"  );
 		tAnaSig->Branch("weight"          ,&weightAnaSig             ,"weight/D");
 		tAnaSig->Branch("categories"          ,&categories             ,"categories[nCands]/I");
+		tAnaSig->Branch("MCmatch"          ,&MCmatchAna             ,"MCmatch[nCands]/D");
 		
 		double regionAnaSigPlain;
 		double regionAnaSBPlain;
@@ -200,6 +206,7 @@ int createTreesClosureTest_xww()
 		int nXjetsAnaPlain;
 		double PUweightAnaSigPlain, LumiWeightAnaSigPlain,GenWeightAnaSigPlain,weightAnaSigPlain;
 		int categoriesPlain;
+		double MCmatchAnaPlain;
 		tAnaSigPlain->Branch("nCands" ,         &nCandsAnaPlain ,      "nCands/I");
         tAnaSigPlain->Branch("event"           ,&neventAnaSigPlain        ,"event/i");
         tAnaSigPlain->Branch("run"             ,&runAnaPlain           ,"run/i");
@@ -217,7 +224,7 @@ int createTreesClosureTest_xww()
         tAnaSigPlain->Branch("GenWeight"      ,&GenWeightAnaSigPlain         ,"GenWeight/D"  );  
         tAnaSigPlain->Branch("weight"          ,&weightAnaSigPlain             ,"weight/D");
         tAnaSigPlain->Branch("categories"          ,&categoriesPlain             ,"categories/I");		
-
+		tAnaSigPlain->Branch("MCmatch"          ,&MCmatchAnaPlain             ,"MCmatch/D");
 
 		TTree *tA1A2Sig = tAnaSig->CloneTree(0);				
 		tA1A2Sig->SetName("SelectedCandidatesA1A2");
@@ -301,6 +308,7 @@ int createTreesClosureTest_xww()
 				prMJAna[ivec]=prMJ[ivec];
 				nsubj21Ana[ivec]=nsubj21[ivec];	
 				mJJNoKinFitAnaSig[ivec]=mJJNoKinFit[ivec];
+				MCmatchAna[ivec]=MCmatch[ivec];
 
 				//define 6 categories: 
 				if(lepAna[ivec]==0&&vTagPurityAna[ivec]==0&&nXjetsAna[ivec]==1)categories[ivec]=0;//0 ele LP 1J
@@ -342,7 +350,7 @@ int createTreesClosureTest_xww()
 			GenWeightAnaSigPlain=GenWeightAnaSig;
 			weightAnaSigPlain=weightAnaSig;
 			categoriesPlain=categories[0];
-							
+			MCmatchAnaPlain=MCmatchAna[0];				
 	
 
 			if(goodevent)
