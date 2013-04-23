@@ -13,12 +13,12 @@
 
 #include "SidebandFitter.h"
 
-void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1);
+void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1,bool ScaleTTbar=0);
 void doAlpha(TTree *chMC, std::string wType);
 
 //##############EDIT THIS PART####################
 
-const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V14_AB/";
+const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V15_AB/";
 const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/";
 const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/";
 
@@ -29,7 +29,7 @@ const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/a
 */
 unsigned int jetCats = 1;//1 for only 1 jet case, 2 for both
 bool isZZChannel=false;//this will change only the file list
-string leptStr="MU";//"MU" //"ELE"//"ALL"
+string leptStr="ELE";//"MU" //"ELE"//"ALL"
 const std::string InTreeName="SelectedCandidatesAB";
 const bool useAlphaVV=false;
 //################################################
@@ -56,15 +56,15 @@ int main( int argc, char* argv[] ) {
 			chainMC->Add( (inDir+"treeEDBR_DYJetsPt100.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_TTBARpowheg.root").c_str());
 			if(useAlphaVV){
-			  chainMC->Add( (inDir+"treeEDBR_WW.root").c_str());
-			  chainMC->Add( (inDir+"treeEDBR_WZ.root").c_str());
-			  chainMC->Add( (inDir+"treeEDBR_ZZ.root").c_str());
+				chainMC->Add( (inDir+"treeEDBR_WW.root").c_str());
+				chainMC->Add( (inDir+"treeEDBR_WZ.root").c_str());
+				chainMC->Add( (inDir+"treeEDBR_ZZ.root").c_str());
 			}
 			else{
-			  chainMCVV = new TChain(InTreeName.c_str());
-			  chainMCVV->Add( (inDir+"treeEDBR_WW.root").c_str());
-			  chainMCVV->Add( (inDir+"treeEDBR_WZ.root").c_str());
-			  chainMCVV->Add( (inDir+"treeEDBR_ZZ.root").c_str());
+				chainMCVV = new TChain(InTreeName.c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_WW.root").c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_WZ.root").c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_ZZ.root").c_str());
 			}
 		}
 		if(isZZChannel==false)
@@ -73,29 +73,32 @@ int main( int argc, char* argv[] ) {
 			chainMC->Add( (inDir+"treeEDBR_WJetsPt100_xww.root").c_str());
 			////chainMC->Add( (inDir+"treeEDBR_WJetsPt180_xww.root").c_str());
 			if(useAlphaVV){
-			  chainMC->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
-			  chainMC->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
-			  chainMC->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
+				chainMC->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
+				chainMC->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
+				chainMC->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
 			}
 			else{
-			  chainMCVV = new TChain(InTreeName.c_str());
-			  chainMCVV->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
-			  chainMCVV->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
-			  chainMCVV->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
+				chainMCVV = new TChain(InTreeName.c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
 			}
 		}
 		gROOT->cd(); //magic!
 
+
 		if(nxjCut>=0)  sprintf(foutn,"EXOVVTree_forAlpha_SIG_%dJ.root",nxjCut);
 		else   sprintf(foutn,"EXOVVTree_forAlpha_SIG_NOcut.root");
 		std::string tmpFileName=foutn;
-		CopyTreeVecToPlain(chainMC,weighting,tmpFileName,tmpTreeName,nxjCut);//(TTree*)
+		bool ScaleTTbar=false;
+		if(!isZZChannel)ScaleTTbar=true;//for ww case, apply ttbar scale factor
+		CopyTreeVecToPlain(chainMC,weighting,tmpFileName,tmpTreeName,nxjCut,ScaleTTbar);//(TTree*)
 
 		if(!useAlphaVV){
-		  if(nxjCut>=0)  sprintf(foutn,"EXOVVTree_MCVV_SIG_%dJ.root",nxjCut);
-		  else   sprintf(foutn,"EXOVVTree_MCVV_SIG_NOcut.root");
-		  tmpFileName=foutn;
-		  CopyTreeVecToPlain(chainMCVV,weighting,tmpFileName,tmpTreeName,nxjCut);//(TTree*)
+			if(nxjCut>=0)  sprintf(foutn,"EXOVVTree_MCVV_SIG_%dJ.root",nxjCut);
+			else   sprintf(foutn,"EXOVVTree_MCVV_SIG_NOcut.root");
+			tmpFileName=foutn;
+			CopyTreeVecToPlain(chainMCVV,weighting,tmpFileName,tmpTreeName,nxjCut,ScaleTTbar);//(TTree*)
 		}
 		delete chainMC; //delete chainData;
 		delete chainMCVV;
@@ -112,34 +115,34 @@ int main( int argc, char* argv[] ) {
 			chainMC->Add( (inDir+"treeEDBR_DYJetsPt100.root").c_str());
 			chainMC->Add( (inDir+"treeEDBR_TTBARpowheg.root").c_str());
 			if(useAlphaVV){
-			  chainMC->Add( (inDir+"treeEDBR_WW.root").c_str());
-			  chainMC->Add( (inDir+"treeEDBR_WZ.root").c_str());
-			  chainMC->Add( (inDir+"treeEDBR_ZZ.root").c_str());
+				chainMC->Add( (inDir+"treeEDBR_WW.root").c_str());
+				chainMC->Add( (inDir+"treeEDBR_WZ.root").c_str());
+				chainMC->Add( (inDir+"treeEDBR_ZZ.root").c_str());
 			}
 			else{
-			  chainMCVV = new TChain(InTreeName.c_str());
-			  chainMCVV->Add( (inDir+"treeEDBR_WW.root").c_str());
-			  chainMCVV->Add( (inDir+"treeEDBR_WZ.root").c_str());
-			  chainMCVV->Add( (inDir+"treeEDBR_ZZ.root").c_str());
+				chainMCVV = new TChain(InTreeName.c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_WW.root").c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_WZ.root").c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_ZZ.root").c_str());
 			}
-			
+
 		}   
 		if(isZZChannel==false)
 		{   
-            chainMC->Add( (inDir+"treeEDBR_DYJets_xww.root").c_str());
-            chainMC->Add( (inDir+"treeEDBR_WJetsPt100_xww.root").c_str());
-            ////chainMC->Add( (inDir+"treeEDBR_WJetsPt180_xww.root").c_str());
-            if(useAlphaVV){
-              chainMC->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
-              chainMC->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
-			  chainMC->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
-            }   
-            else{
-              chainMCVV = new TChain(InTreeName.c_str());
-              chainMCVV->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
-              chainMCVV->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
-			  chainMCVV->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
-            }
+			chainMC->Add( (inDir+"treeEDBR_DYJets_xww.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_WJetsPt100_xww.root").c_str());
+			////chainMC->Add( (inDir+"treeEDBR_WJetsPt180_xww.root").c_str());
+			if(useAlphaVV){
+				chainMC->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
+				chainMC->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
+				chainMC->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
+			}   
+			else{
+				chainMCVV = new TChain(InTreeName.c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
+				chainMCVV->Add( (inDir+"treeEDBR_SingleTop_xww.root").c_str());
+			}
 		}
 		gROOT->cd(); //magic!
 
@@ -150,10 +153,10 @@ int main( int argc, char* argv[] ) {
 
 
 		if(!useAlphaVV){
-		  if(nxjCut>=0)  sprintf(foutn,"EXOVVTree_MCVV_SB_%dJ.root",nxjCut);
-		  else   sprintf(foutn,"EXOVVTree_MCVV_SB_NOcut.root");
-		  tmpFileName=foutn;
-		  CopyTreeVecToPlain(chainMCVV,weighting,tmpFileName,tmpTreeName,nxjCut);//(TTree*)
+			if(nxjCut>=0)  sprintf(foutn,"EXOVVTree_MCVV_SB_%dJ.root",nxjCut);
+			else   sprintf(foutn,"EXOVVTree_MCVV_SB_NOcut.root");
+			tmpFileName=foutn;
+			CopyTreeVecToPlain(chainMCVV,weighting,tmpFileName,tmpTreeName,nxjCut);//(TTree*)
 		}
 
 		delete chainMC; //delete chainData;
@@ -357,7 +360,7 @@ void doAlpha(TTree *chMC, std::string wType){
 
 
 
-void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::string t2Name,int nxjCut){
+void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name,std::string t2Name,int nxjCut,bool ScaleTTbar){
 
 	int ncands; 
 	double eventWeight;
@@ -423,6 +426,27 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 			vTagPurity_2=vTagPurity[j]; 
 
 			//if(nsubj21_2>0.45)continue;
+
+
+			//now add ttbar scale factor to t1, and only to ttbar 
+			if(ScaleTTbar)
+			{
+				double ttbar_scale =0;
+				double tttar_scale_error=0;
+				if(vTagPurity_2==1&&leptType_2==1){ttbar_scale = 0.85468 ; tttar_scale_error = 0.0286928;}
+				if(vTagPurity_2==1&&leptType_2==0){ttbar_scale = 0.894486; tttar_scale_error = 0.0415022;}
+				if(vTagPurity_2==0&&leptType_2==1){ttbar_scale = 1.02822 ; tttar_scale_error = 0.0566702;}
+				if(vTagPurity_2==0&&leptType_2==0){ttbar_scale = 1.21061; tttar_scale_error = 0.0927729;}
+
+
+				TString filename = t1->GetFile()->GetEndpointUrl()->GetUrl();
+				//cout<<filename<<endl;
+				if(filename.Contains("TTBAR"))
+				{
+					//cout<<filename<<endl;
+					eventWeight_2 =eventWeight_2*ttbar_scale;
+				}
+			}
 
 			if(region[j]<0||mZZd_2>9999.0||mynxj_2>10||mZqq_2>999.0){
 				//cout<<"Event="<<nevt<<" cand="<<j<<" has reg="<<region[j]<<" mZZ="<<mZZd_2<<endl;
