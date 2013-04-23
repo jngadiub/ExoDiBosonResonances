@@ -195,7 +195,7 @@ int createTreesClosureTest_xww()
 		tAnaSig->Branch("weight"          ,&weightAnaSig             ,"weight/D");
 		tAnaSig->Branch("categories"          ,&categories             ,"categories[nCands]/I");
 		tAnaSig->Branch("MCmatch"          ,&MCmatchAna             ,"MCmatch[nCands]/D");
-		
+
 		double regionAnaSigPlain;
 		double regionAnaSBPlain;
 		int nCandsAnaPlain;
@@ -208,22 +208,22 @@ int createTreesClosureTest_xww()
 		int categoriesPlain;
 		double MCmatchAnaPlain;
 		tAnaSigPlain->Branch("nCands" ,         &nCandsAnaPlain ,      "nCands/I");
-        tAnaSigPlain->Branch("event"           ,&neventAnaSigPlain        ,"event/i");
-        tAnaSigPlain->Branch("run"             ,&runAnaPlain           ,"run/i");
-        tAnaSigPlain->Branch("lep"             ,&lepAnaPlain           ,"lep/D"   );  
-        tAnaSigPlain->Branch("nXjets"          ,&nXjetsAnaPlain        ,"nXjets/I");
-        tAnaSigPlain->Branch("vTagPurity"          ,&vTagPurityAnaPlain        ,"vTagPurity/D");
-        tAnaSigPlain->Branch("mZZ"             ,&mZZAnaPlain           ,"mZZ/D"   );  
-        tAnaSigPlain->Branch("mLL"             ,&mLLAnaPlain           ,"mLL/D"  );  
-        tAnaSigPlain->Branch("mJJ"             ,&mJJAnaPlain           ,"mJJ/D");
-        tAnaSigPlain->Branch("mJJNoKinFit"             ,&mJJNoKinFitAnaSigPlain           ,"mJJNoKinFit/D");
-        tAnaSigPlain->Branch("prunedmass"      , &prMJAnaPlain, "prunedmass/D");
-        tAnaSigPlain->Branch("nsubj21"       ,&nsubj21AnaPlain    ,"nsubj21/D");
-        tAnaSigPlain->Branch("PUweight"        ,&PUweightAnaSigPlain            ,"PUweight/D" );
-        tAnaSigPlain->Branch("LumiWeight"      ,&LumiWeightAnaSigPlain         ,"LumiWeight/D"  );  
-        tAnaSigPlain->Branch("GenWeight"      ,&GenWeightAnaSigPlain         ,"GenWeight/D"  );  
-        tAnaSigPlain->Branch("weight"          ,&weightAnaSigPlain             ,"weight/D");
-        tAnaSigPlain->Branch("categories"          ,&categoriesPlain             ,"categories/I");		
+		tAnaSigPlain->Branch("event"           ,&neventAnaSigPlain        ,"event/i");
+		tAnaSigPlain->Branch("run"             ,&runAnaPlain           ,"run/i");
+		tAnaSigPlain->Branch("lep"             ,&lepAnaPlain           ,"lep/D"   );  
+		tAnaSigPlain->Branch("nXjets"          ,&nXjetsAnaPlain        ,"nXjets/I");
+		tAnaSigPlain->Branch("vTagPurity"          ,&vTagPurityAnaPlain        ,"vTagPurity/D");
+		tAnaSigPlain->Branch("mZZ"             ,&mZZAnaPlain           ,"mZZ/D"   );  
+		tAnaSigPlain->Branch("mLL"             ,&mLLAnaPlain           ,"mLL/D"  );  
+		tAnaSigPlain->Branch("mJJ"             ,&mJJAnaPlain           ,"mJJ/D");
+		tAnaSigPlain->Branch("mJJNoKinFit"             ,&mJJNoKinFitAnaSigPlain           ,"mJJNoKinFit/D");
+		tAnaSigPlain->Branch("prunedmass"      , &prMJAnaPlain, "prunedmass/D");
+		tAnaSigPlain->Branch("nsubj21"       ,&nsubj21AnaPlain    ,"nsubj21/D");
+		tAnaSigPlain->Branch("PUweight"        ,&PUweightAnaSigPlain            ,"PUweight/D" );
+		tAnaSigPlain->Branch("LumiWeight"      ,&LumiWeightAnaSigPlain         ,"LumiWeight/D"  );  
+		tAnaSigPlain->Branch("GenWeight"      ,&GenWeightAnaSigPlain         ,"GenWeight/D"  );  
+		tAnaSigPlain->Branch("weight"          ,&weightAnaSigPlain             ,"weight/D");
+		tAnaSigPlain->Branch("categories"          ,&categoriesPlain             ,"categories/I");		
 		tAnaSigPlain->Branch("MCmatch"          ,&MCmatchAnaPlain             ,"MCmatch/D");
 
 		TTree *tA1A2Sig = tAnaSig->CloneTree(0);				
@@ -282,6 +282,13 @@ int createTreesClosureTest_xww()
 				if(nbtagsM[ivec]==0);
 				else continue;
 
+				//b control region
+				//if(nbtagscleanT[ivec]>=1);
+				//else continue;
+
+				//if(ptlep1[ivec]>90&&met>80);//this is a test for muon channel: make the same cuts as electron, ad see closure test A->B
+				//else continue;
+
 				if(lep[ivec]==0){//cut on met in electron channel
 					if(met>80); 
 					else continue;
@@ -329,7 +336,7 @@ int createTreesClosureTest_xww()
 				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A1Low)regionABSB[ivec]=0;  else regionABSB[ivec]=-1;
 				if(mJJNoKinFit[ivec]<BHigh &&mJJNoKinFit[ivec]>BLow )regionABSig[ivec]=1;  else regionABSig[ivec]=-1;
 			}//end of loop over candidates		
-	
+
 			//fill plain tree
 			regionAnaSigPlain=regionAnaSig[0];
 			regionAnaSBPlain=regionAnaSB[0];
@@ -351,7 +358,7 @@ int createTreesClosureTest_xww()
 			weightAnaSigPlain=weightAnaSig;
 			categoriesPlain=categories[0];
 			MCmatchAnaPlain=MCmatchAna[0];				
-	
+
 
 			if(goodevent)
 			{
@@ -361,7 +368,7 @@ int createTreesClosureTest_xww()
 				tA1A2SB->Fill();// sideband A1, signal A2
 				tABSig->Fill();// sideband A, signal B
 				tABSB->Fill();// sideband A, signal B
-			
+
 				tAnaSigPlain->Fill();//signal and sideband as usual
 				tAnaSBPlain->Fill();//signal and sideband as usual
 
