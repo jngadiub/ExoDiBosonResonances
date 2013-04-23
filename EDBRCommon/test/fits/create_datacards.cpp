@@ -33,13 +33,14 @@
 
 
 
-const std::string wsDir="FitSidebandsMJJ_CA8_WW_V14/";
-const std::string datacardDir("DataCards_XWW_V14_blind/");
-float mZZmin_ = 1000.;  // this should be synchronized with startFit in fitBackground.cpp
-const int jetCats =1;  // 1 for only 1jet case and 2 for both
-bool isZZChannel=false;
-bool unblind=false;
-const string leptType="ELE";//"ALL" //"MU" //"ELE"
+const std::string wsDir="FitSidebandsMJJ_ZZ_20130423/";
+const std::string datacardDir("DataCards_XZZ_20130423/");
+float mZZmin_ = 600.0;  // this should be synchronized with startFit in fitBackground.cpp
+float mZZmax_=2600.0;
+const int jetCats =2;  // 1 for only 1jet case and 2 for both
+bool isZZChannel=true;
+bool unblind=true;
+const string lepton_Label="ALL";//"ALL" //"MU" //"ELE"
 
 struct TheorSigParameters {
 
@@ -139,19 +140,19 @@ int main( int argc, char* argv[] ) {
 		sprintf( mkdir_command, "mkdir -p %s/%.0f", datacardDir.c_str(), mass);
 		system(mkdir_command);
 
-		if(leptType=="ELE"||leptType=="ALL")
+		if(lepton_Label=="ELE"||lepton_Label=="ALL")
 		{
 			create_singleDatacard( mass, lumi_ELE, "ELE", 1,1, f1_eff_vs_mass_ELE_1JHP);
 			create_singleDatacard( mass, lumi_ELE, "ELE", 1,0, f1_eff_vs_mass_ELE_1JLP);
 		}
-		if(leptType=="MU"||leptType=="ALL")
+		if(lepton_Label=="MU"||lepton_Label=="ALL")
 		{
 			create_singleDatacard( mass, lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
 			create_singleDatacard( mass, lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
 		}
 		if(jetCats>1&&mass<=800){
-			if(leptType=="ELE"||leptType=="ALL")create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
-			if(leptType=="MU"||leptType=="ALL")create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
+			if(lepton_Label=="ELE"||lepton_Label=="ALL")create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
+			if(lepton_Label=="MU"||lepton_Label=="ALL")create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
 		}
 
 	} //while masses
@@ -184,17 +185,22 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	rename_str += "_"+leptType_str+ssnxj.str()+"J"+pur_str;
 
 	// open fitResults file (all lept types):
-	std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, leptType.c_str() ,wsDir.c_str());
+	std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, lepton_Label.c_str() ,wsDir.c_str());
 	std::cout << "reading results from: "<< fitResultsFileName.c_str() << std::endl;
 	TFile* fitResultsFile = TFile::Open(fitResultsFileName.c_str());
 
 	// fitResultsFile->ls();
 
 	// get fit result:
-	char fitResultName[200]; 
-	//  sprintf( fitResultName, "resultsExpLevelledFit_%dJ_%s_ALL_decorr", nxj ,pur_str.c_str());
+	char fitResultName[200];  
 	//  sprintf( fitResultName, "resultsExpoFit_%dJ_%s",nxj , leptType_str.c_str() );
-	sprintf( fitResultName, "resultsExpoFit_%dJ_%s_%s",nxj,pur_str.c_str(),leptType.c_str() );
+
+	if(pur==1){//simple expo for HP category
+	  sprintf( fitResultName, "resultsExpoFit_%dJ_%s_%s",nxj,pur_str.c_str(),lepton_Label.c_str() );
+	}
+	else {
+	  sprintf( fitResultName, "resultsExpLevelledFit_%dJ_%s_%s_decorr", nxj ,pur_str.c_str(),lepton_Label.c_str());
+	}
 	cout<<"Trying to pick RooFitResult :"<<fitResultName<<endl;
 	RooFitResult* bgFitResult = (RooFitResult*)fitResultsFile->Get(fitResultName);
 	bgFitResult->Print("v");
@@ -202,7 +208,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 	// get workspace:
 	char workspaceName[200];
-	sprintf( workspaceName, "ws_alpha_%dJ_%s_%s", nxj,pur_str.c_str(),leptType.c_str() );
+	sprintf( workspaceName, "ws_alpha_%dJ_%s_%s", nxj,pur_str.c_str(),lepton_Label.c_str() );
 	RooWorkspace* bgws = (RooWorkspace*)fitResultsFile->Get(workspaceName);
 	// cout<<"\n\nPrinting contents of the WorkSpace: "<<endl;
 	//  bgws->Print("v");
@@ -227,7 +233,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 	//// get main variable from input workspace:
 	if(nxj==2)mZZmin_=600.0;//get in sync with was done in fitBackground for 2J category
-	RooRealVar* CMS_xzz_mZZ = new RooRealVar("mZZ","mZZ",mZZmin_,3000.0);//it works
+	RooRealVar* CMS_xzz_mZZ = new RooRealVar("mZZ","mZZ",mZZmin_,mZZmax_);//it works
 	//   RooRealVar* CMS_hzz2l2q_mZZ = bgws->var("mZZ");//it does not work
 	//   RooRealVar* CMS_hzz2l2q_mZZ = mzzws->var("mZZ");//reading it from MZZ-sideband ws works
 	CMS_xzz_mZZ->setMin(mZZmin_); 
@@ -331,20 +337,20 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 	cout<<"Looping on "<<bgPars.getSize()<<" params"<<endl;
 	for( int iVar=0; iVar<bgPars.getSize(); ++iVar ) {
-		RooRealVar* thisVar = dynamic_cast<RooRealVar*>(bgPars.at(iVar));
-		cout<<"Var -> "<<thisVar->GetName()<<flush;
-		double varValue=thisVar->getVal();
-		cout<<"="<<varValue<<flush;
-		double varError=thisVar->getError();
-		cout<<" +/- "<<varError<<endl; 
-		varError=sqrt(varError*varError);//+  alphaErr.at(iVar)->getVal()*alphaErr.at(iVar)->getVal());
-
-		ofs << thisVar->GetName() << "\tparam\t\t" <<varValue  << "\t" << varError << std::endl;
-
-		//    std::cout << thisVar->GetName() << "\tparam\t\t" << varValue << "\t" << thisVar->getError()  <<" & "<<alphaErr.at(iVar)->getVal()<<" -> "<<varError<< std::endl;
-		std::cout << thisVar->GetName() << "\tparam\t\t" << varValue << "\t" << thisVar->getError() <<" -> "<<varError<< std::endl;
+	  RooRealVar* thisVar = dynamic_cast<RooRealVar*>(bgPars.at(iVar));
+	  cout<<"Var -> "<<thisVar->GetName()<<flush;
+	  double varValue=thisVar->getVal();
+	  cout<<"="<<varValue<<flush;
+	  double varError=thisVar->getError();
+	  cout<<" +/- "<<varError<<endl; 
+	  varError=sqrt(varError*varError);//+  alphaErr.at(iVar)->getVal()*alphaErr.at(iVar)->getVal());
+	  
+	  ofs << thisVar->GetName() << "\tparam\t\t" <<varValue  << "\t" << varError << std::endl;
+	  
+	  //    std::cout << thisVar->GetName() << "\tparam\t\t" << varValue << "\t" << thisVar->getError()  <<" & "<<alphaErr.at(iVar)->getVal()<<" -> "<<varError<< std::endl;
+	  std::cout << thisVar->GetName() << "\tparam\t\t" << varValue << "\t" << thisVar->getError() <<" -> "<<varError<< std::endl;
 	}
-
+	
 	ofs.close();
 	fitResultsFile->Close();
 
@@ -371,20 +377,23 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 	// import observed dataset:
 	//dataset_obs->SetName("dataset_obs");
-	//dataset_obs->SetName("dataset_obs");
 	w->import(*dataset_obs_reduced);
 
 	// get BG shape:
-	RooAbsPdf *expo_fit = bgws->pdf("exp_fit");
-	expo_fit->SetName(("background_expo"+rename_str).c_str());
-	// and import it:
-	w->import(*expo_fit, RooFit::RecycleConflictNodes());
-
+	RooAbsPdf *expo_fit =0;
+	RooAbsPdf* background_decorr =0;
+	if(pur==1){
+	  expo_fit =bgws->pdf("exp_fit");
+	  expo_fit->SetName(("background_expo"+rename_str).c_str());
+	  // and import it:
+	  w->import(*expo_fit, RooFit::RecycleConflictNodes());
+	}
+	else{
 	//This if you want ot use the leveled expo
-	//  RooAbsPdf* background_decorr = bgws->pdf("levexp_dcr");
-	// background_decorr->SetName("background_decorr");
-	//  w->import(*background_decorr, RooFit::RecycleConflictNodes());
-
+	  background_decorr = bgws->pdf("levexp_dcr");
+	  background_decorr->SetName("background_decorr");
+	  w->import(*background_decorr, RooFit::RecycleConflictNodes());
+	}
 
 	//// now define signal shape:
 	//// (didn manage to do use get_signalShape without a crash):
@@ -484,56 +493,65 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	bool doPlot=false;
 	if(mass==650||mass==1000||mass==1500||mass==1900||mass==2000||mass==2500)doPlot=true;
 	if(doPlot){
-		const int nBinsTMP=20;
-		const double binsTMP[nBinsTMP]={520,560,600,640,680,720,760,800,840,920,
-			1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
+	  const int nBinsTMP=20;
+	  const double binsTMP[nBinsTMP]={520,560,600,640,680,720,760,800,840,920,
+					  1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
+	  
+	  TCanvas *can1=new TCanvas("canvasCardsMZZ1", "MZZ-cards-CANVAS1",800,800);
+	  can1->cd();
+	  RooPlot *xf=CMS_xzz_mZZ->frame();
+	  //    std::stringstream ssbtag;
+	  //ssbtag << nxj;
+	  std::stringstream ssM;
+	  ssM << mass;
+	  CMS_xzz_mZZ->setRange("plotRange",480,2600) ;
+	  //  std::cout<<"\nNorm range of background_decorr (2): "<<background_decorr->normRange()<<std::endl;
+	  xf->SetTitle(("Sideband fit ("+ ssnxj.str() +"Jet "+ pur_str+", "+leptType_str+" leptons) - M="+ssM.str()+")").c_str());
+	  if(unblind)dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
+	  std::cout<<" 1 "<<std::flush;
+	  if(pur==1){
+	    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	    std::cout<<" 2 "<<std::flush;
+	    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	    std::cout<<" 3 "<<std::flush;
+	  }
+	  else{
+	    background_decorr->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	    std::cout<<" 2 "<<std::flush;
+	    background_decorr->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	    background_decorr->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	    std::cout<<" 3 "<<std::flush;
 
-		TCanvas *can1=new TCanvas("canvasCardsMZZ1", "MZZ-cards-CANVAS1",800,800);
-		can1->cd();
-		RooPlot *xf=CMS_xzz_mZZ->frame();
-		//    std::stringstream ssbtag;
-		//ssbtag << nxj;
-		std::stringstream ssM;
-		ssM << mass;
-		CMS_xzz_mZZ->setRange("plotRange",480,2600) ;
-		//  std::cout<<"\nNorm range of background_decorr (2): "<<background_decorr->normRange()<<std::endl;
-		xf->SetTitle(("Sideband fit ("+ ssnxj.str() +"Jet "+ pur_str+", "+leptType_str+" leptons) - M="+ssM.str()+")").c_str());
-		if(unblind)dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
-		std::cout<<" 1 "<<std::flush;
-		expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
-		std::cout<<" 2 "<<std::flush;
-		expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
-		expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
-		std::cout<<" 3 "<<std::flush;
-
-		if(nxj==1){
-			CB_SIG->plotOn(xf,RooFit::Normalization(MATCH.getVal()*rate_gg*1000.0,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
-		}
-		else{
-			TRI_SMEAR->plotOn(xf,RooFit::Normalization((1-MATCH.getVal())*rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kOrange+3),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
-			signal2J->plotOn(xf,RooFit::Normalization(rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kRed),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
-		}
-		std::cout<<" 4 "<<std::flush;
-		if(unblind)dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
-		std::cout<<" 5 "<<std::flush;
-
-		char mkdir_command[100];
-		sprintf( mkdir_command, "mkdir -p %s/fitPlotCards", datacardDir.c_str());
-		system(mkdir_command);
-		string canvasname= datacardDir+"/fitPlotCards/fitPlotCards_"+ssnxj.str()+"J"+pur_str+"_"+leptType_str;
-		std::cout<<canvasname.c_str()<<std::endl;
-		xf->Draw();
-		can1->SaveAs((canvasname+"_M"+ssM.str()+".eps").c_str());
-		double mymax=nxj==2?100:250.0;
-		double mymin=nxj==2?0.0008:0.003;
-		xf->SetMinimum(mymin);
-		xf->SetMaximum(mymax);
-		gPad->SetLogy();
-		xf->Draw();
-		can1->SaveAs((canvasname+"_M"+ssM.str()+"_log.eps").c_str());
-		delete xf;
-		delete can1;
-
+	  }
+	  if(nxj==1){
+	    CB_SIG->plotOn(xf,RooFit::Normalization(MATCH.getVal()*rate_gg*1000.0,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	  }
+	  else{
+	    TRI_SMEAR->plotOn(xf,RooFit::Normalization((1-MATCH.getVal())*rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kOrange+3),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	    signal2J->plotOn(xf,RooFit::Normalization(rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kRed),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	  }
+	  std::cout<<" 4 "<<std::flush;
+	  if(unblind)dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
+	  std::cout<<" 5 "<<std::flush;
+	  
+	  char mkdir_command[100];
+	  sprintf( mkdir_command, "mkdir -p %s/fitPlotCards", datacardDir.c_str());
+	  system(mkdir_command);
+	  string canvasname= datacardDir+"/fitPlotCards/fitPlotCards_"+ssnxj.str()+"J"+pur_str+"_"+leptType_str;
+	  std::cout<<canvasname.c_str()<<std::endl;
+	  xf->Draw();
+	  can1->SaveAs((canvasname+"_M"+ssM.str()+".eps").c_str());
+	  double mymax=nxj==2?100:250.0;
+	  double mymin=nxj==2?0.0008:0.003;
+	  xf->SetMinimum(mymin);
+	  xf->SetMaximum(mymax);
+	  gPad->SetLogy();
+	  xf->Draw();
+	  can1->SaveAs((canvasname+"_M"+ssM.str()+"_log.eps").c_str());
+	  delete xf;
+	  delete can1;
+	  
 	}//end if doPlot
 
 

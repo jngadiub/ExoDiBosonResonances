@@ -13,29 +13,18 @@
 
 #include "SidebandFitter.h"
 
+//#include "fitSidebandsConfig_XWW.h"
+#include "fitSidebandsConfig_XZZ.h"
+
 void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1,bool ScaleTTbar=0);
 void doAlpha(TTree *chMC, std::string wType);
 
-//##############EDIT THIS PART####################
+/*****************
+ *
+ * All configurations now are in the header file fitSidebandsConfig_XZZ.h and binningFits_XZZ.h
+ *
+ *****************/
 
-const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V15_AB/";
-const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/";
-const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/";
-
-/*
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130422b/";
-const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsig/";
-const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsb/";
-*/
-unsigned int jetCats = 1;//1 for only 1 jet case, 2 for both
-bool isZZChannel=false;//this will change only the file list
-string leptStr="ELE";//"MU" //"ELE"//"ALL"
-const std::string InTreeName="SelectedCandidatesAB";
-const bool useAlphaVV=false;
-//################################################
-
-const int nxjCut=-1;//if negative: no cut
-const std::string tmpTreeName="SelectedCandidatesV2";
 int main( int argc, char* argv[] ) {
 
 	std::string weighting = "weight";
