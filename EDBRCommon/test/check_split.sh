@@ -87,6 +87,7 @@ if test $MERGESAMPLE -eq 1
 	hadd treeEDBR_VV_xww.root treeEDBR_WW_xww.root treeEDBR_WZ_xww.root treeEDBR_ZZ_xww.root
 	hadd treeEDBR_DYJets_xww.root treeEDBR_DYJetsPt*
 	root -l -b -q $CMSSW_BASE/src/ExoDiBosonResonances/EDBRCommon/test/mergeDATA.C\(\"${TREEDIR}\"\)
+	hadd treeEDBR_allBkg_xww.root treeEDBR_DYJets_xww.root treeEDBR_TTBARpowheg_xww.root treeEDBR_VV_xww.root treeEDBR_WJetsPt100_xww.root treeEDBR_SingleTop_xww.root
 fi
 
 
