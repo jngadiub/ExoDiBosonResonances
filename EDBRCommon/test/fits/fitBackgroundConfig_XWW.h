@@ -15,4 +15,4 @@ const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=false;//choose what to plot as main fit function
 const float lumi =19538.85;
 const bool useAlphaVV=false;//to sync with fitSidebands
-
+std::string bkgd_decorr_name="levexp_dcr";
