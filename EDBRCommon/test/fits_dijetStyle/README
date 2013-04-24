@@ -1,0 +1,103 @@
+**************
+Dijet-like fit
+**************
+
+1) Make fits and workspaces
+
+  - Edit : R2JJFitter.cc
+    - Details at [1]
+
+  - Edit : ProduceWorkspaces_local.py
+    - mass range
+    - OUTPUTDIR
+
+  - Run : python ProduceWorkspaces_local.py 
+
+    (wait few minutes...)
+
+2) Combine datacards
+
+  - Move to workdir : cd OUTPUTDIR/datacards (specified at point 1)
+
+  - Edit : make_combined_cards.sh
+  
+  - Edit : masses.txt
+
+  - Run : 
+    BASH: for M in $( cat masses.txt ); do ./make_combined_cards.sh $M ; done 
+    TCSH: foreach M ( `cat masses.txt` ); ./make_combined_cards.sh $M ; end
+
+3) Run "combine" tool
+
+  - Edit : combine_exec.sh
+    - change input directory to match OUTPUTDIR (specified at point 1)
+
+  - Edit : parallelizeCombine.sh
+
+  - Run :
+    BASH: for M in $( cat masses.txt ); do ./parallelizeCombine.sh $M ; done
+    TCSH: foreach M ( `cat masses.txt` ); ./parallelizeCombine.sh $M ; end
+
+    (wait few minutes [for Asymptotic]...)
+
+4) Merge output of "combine" tool
+
+  - Clean directory: rm -f harvestedTrees/*
+    
+  - Edit : mergeCombinationTrees.sh
+    - should be consistent with the settings (i.e. algo, label, datacards) 
+      choosen in combine_exec.sh (at point 3)
+
+  - Run : 
+    BASH: for M in $( cat masses.txt ); do ./mergeCombinationTrees.sh $M ; done
+    TCSH: foreach M ( `cat masses.txt` ); ./mergeCombinationTrees.sh $M ; end
+    
+  - Edit : mergeHarvestedCombinationTrees.sh
+    - should be consistent with the settings (i.e. label)
+      choosen in combine_exec.sh (at point 3) 
+
+  - Run : ./mergeHarvestedCombinationTrees.sh
+
+5) Plot limits
+
+  - Edit : plot_golfcourse_Asymptotic.C
+    - isZZChannel
+    - TFile *fFREQ=new TFile("higgsCombineEXOZZ.Asymptotic.TOTAL.root","READ");
+    - string xsect_file_th="../data/xsect_BulkG_ZZ (or WW) _c0p2_xsect_in_pb.txt"; 
+      - should contain "sigma x BR(VV)" --> if you want to get limits on sigma X BR(VV)
+      - should match with the cross section model used to predict the signal rates in point 1
+    - string xsect_file_interpol2="../data/xsect_BulkG_ZZ_c0p5_xsect_in_pb.txt";
+      - this is just a second cross section file plotted in the final limit
+
+  - Run : 
+    root -b 
+    .L plot_golfcourse_Asymptotic.C+
+    plot_golfcourse_Asymptotic(true) [unblind data]      
+    plot_golfcourse_Asymptotic(false) [blind data]      
+
+--------------------------------------------------------------------------------------
+
+
+[1] Details on R2JJFitter.cc code. Things to possibly edit:
+
+    - the mass variable must be called "mZZ" (or substitute in many places in the code)
+    - NCAT
+    - MMIN, MMAX
+    - defineVariables
+    - TString fileBaseName(TString::Format("Xvv.mX%d_ZZ_8TeV"
+    - TString fileBkgName(TString::Format("Xvv.inputbkg_8TeV"
+    - TString card_name("Xvv_models_Bkg_8TeV_test.rs");
+    - AddSigData 
+      - TString inDir
+      - TFile sigFile1
+      - TString mainCut
+      - Float_t Lum
+      - TTree* sigTree1
+    - AddBkgData   
+      - TString inDir 
+      - TFile dataFile
+      - TString mainCut
+      - TTree* dataTree
+    - BkgModelFitBernstein
+      - decide fit function
+      - PAR3 constant? ((RooRealVar*) w->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c)))->setConstant(true); 
