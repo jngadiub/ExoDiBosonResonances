@@ -450,13 +450,13 @@ int main(){
 
 	if(decorrLevExpo){
 		char diagonalizerName[200];
-		sprintf( diagonalizerName, "expLev_%db", inxj);
+		sprintf( diagonalizerName, "expLev_%dJ", inxj);
 		PdfDiagonalizer diago(diagonalizerName, wstmp, *r_sig_expLev );
 		background_decorr_ =diago.diagonalize(*expLev_fit);//RooAbsPdf
 		background_decorr_->SetName("levexp_dcr");
 		char var1[50],var2[50];
-		sprintf(var1,"expLev_%db_eig0",inxj);
-		sprintf(var2,"expLev_%db_eig1",inxj);
+		sprintf(var1,"expLev_%dJ%s_eig0",inxj,pur_str.c_str());
+		sprintf(var2,"expLev_%dJ%s_eig1",inxj,pur_str.c_str());
 		RooRealVar *f0rot=(RooRealVar*)wstmp->var(var1);
 		RooRealVar *f1rot=(RooRealVar*)wstmp->var(var2);
 		//if only one free par in roolevexpo
@@ -568,8 +568,8 @@ int main(){
 		char var2errA[50];
 		sprintf(var2errA,"DUMMY_%dJ_alphaErr",inxj);
 		if(decorrLevExpo){
-			sprintf(var1errA,"expLev_%db_eig0_alphaErr",inxj);
-			sprintf(var2errA,"expLev_%db_eig1_alphaErr",inxj);
+		  sprintf(var1errA,"expLev_%dJ%s_eig0_alphaErr",inxj,pur_str.c_str());
+		  sprintf(var2errA,"expLev_%dJ%s_eig1_alphaErr",inxj,pur_str.c_str());
 		}
 
 		RooRealVar errV1(var1errA,var1errA,0.0);
@@ -746,8 +746,8 @@ void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char*
 	//reset parameters
 	char var1[50];
 	char var2[50];
-	sprintf(var1,"expLev_%db_eig0",nxj);
-	sprintf(var2,"expLev_%db_eig1",nxj);
+	sprintf(var1,"expLev_%dJ%s_eig0",nxj,pur_str.c_str());
+	sprintf(var2,"expLev_%dJ%s_eig1",nxj,pur_str.c_str());
 	char argname[100];
 	//  if(nxj==2) sprintf(argname,"%s",var1);
 	// else sprintf(argname,"%s,%s",var1,var2);
@@ -968,8 +968,8 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 void pseudoMassgeTwoPars(int nxj , RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2){
 	char var1[50];
 	char var2[50];
-	sprintf(var1,"expLev_%db_eig0",nxj);//this must be equal to what is in fitPseudo
-	sprintf(var2,"expLev_%db_eig1",nxj);//this must be equal to what is in fitPseudo
+	sprintf(var1,"expLev_%dJ%s_eig0",nxj,pur_str.c_str());//this must be equal to what is in fitPseudo
+	sprintf(var2,"expLev_%dJ%s_eig1",nxj,pur_str.c_str());//this must be equal to what is in fitPseudo
 	char argname[100];
 	//  if(nxj==2) sprintf(argname,"%s",var1);
 	// else sprintf(argname,"%s,%s",var1,var2);

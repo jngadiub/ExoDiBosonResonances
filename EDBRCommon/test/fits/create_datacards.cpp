@@ -186,17 +186,17 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	ssnxj << nxj;
 	rename_str += "_"+leptType_str+ssnxj.str()+"J"+pur_str;
 
-	// open fitResults file (all lept types):
+	/////////////
+	//-> open fitResults file (all lept types):
 	std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, lepton_Label.c_str() ,wsDir.c_str());
 	std::cout << "reading results from: "<< fitResultsFileName.c_str() << std::endl;
 	TFile* fitResultsFile = TFile::Open(fitResultsFileName.c_str());
-
 	// fitResultsFile->ls();
 
-	// get fit result:
+	/////////////////////
+	//->  get fit results:
 	char fitResultName[200];  
 	//  sprintf( fitResultName, "resultsExpoFit_%dJ_%s",nxj , leptType_str.c_str() );
-
 	if(pur==1 || (!isZZChannel)){//simple expo for HP category or XWW analysis
 	  sprintf( fitResultName, "resultsExpoFit_%dJ_%s_%s",nxj,pur_str.c_str(),lepton_Label.c_str() );
 	}
@@ -208,14 +208,16 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	bgFitResult->Print("v");
 
 
-	// get workspace:
+	////////////////
+	//->  get workspace:
 	char workspaceName[200];
 	sprintf( workspaceName, "ws_alpha_%dJ_%s_%s", nxj,pur_str.c_str(),lepton_Label.c_str() );
 	RooWorkspace* bgws = (RooWorkspace*)fitResultsFile->Get(workspaceName);
 	// cout<<"\n\nPrinting contents of the WorkSpace: "<<endl;
 	//  bgws->Print("v");
 
-	//get vars containing syst unc on alpha
+	/////////////////////////////////////
+	//-> get vars containing syst unc on alpha
 	std::vector<RooRealVar*>alphaErr;
 	RooArgList bgPars = bgFitResult->floatParsFinal();
 	std::vector<std::string> parname; 
@@ -227,13 +229,15 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 		alphaErr.push_back(bgws->var(parname.at(iVar).c_str()));
 	}
 
-	//get global alpha uncertainty
+	///////////////////////////
+	//-> get global alpha uncertainty
 	//the +0.5 effectively leaves the bkgd normalization free to float when profiling the nuisances
 	double globalAlphaErr =  bgws->var("alphaNormErr")->getVal();//+0.5
 	//std::cout << globalAlphaErr << std::endl;
 	//exit(0);
 
-	//// get main variable from input workspace:
+	//////////////////////////////
+	////->  get main variable from input workspace:
 	if(nxj==2)mZZmin_=600.0;//get in sync with was done in fitBackground for 2J category
 	RooRealVar* CMS_xzz_mZZ = new RooRealVar("mZZ","mZZ",mZZmin_,mZZmax_);//it works
 	//   RooRealVar* CMS_hzz2l2q_mZZ = bgws->var("mZZ");//it does not work
@@ -246,19 +250,23 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	std::string suffix_str(suffix);
 
 
-
+	/////////////////////
+	//////////
+	//->  START TO PRINT THE DATACARD
 	char datacardName[400];
 	sprintf( datacardName, "%s/%.0f/xzz_%s.%.0f.txt", datacardDir.c_str(), mass, suffix, mass);
-
-
 	std::ofstream ofs(datacardName);
+
+	std::string bkgd_shape_name=("background_decorrLevExpo"+rename_str);
+	if(pur==1 || (!isZZChannel)) bkgd_shape_name=("background_expo"+rename_str);
+
 	ofs << "# Card for process XZZ->"<<suffix << std::endl;
 	ofs << "#imax 1  number of channels" << std::endl;
 	ofs << "#jmax 1  number of backgrounds" << std::endl;
 	ofs << "#kmax *  number of nuisance parameters (sources of systematical uncertainties)" << std::endl;
 	ofs << "------------ " << std::endl;
 	ofs << "shapes sig CMS_xzz_" << suffix_str << " xzz_" << suffix_str << ".input.root  w:" <<("signal"+rename_str).c_str()<< std::endl;
-	ofs << "shapes background CMS_xzz_" << suffix_str << " xzz_" << suffix_str << ".input.root w:"<<("background_expo"+rename_str).c_str()  << std::endl;
+	ofs << "shapes background CMS_xzz_" << suffix_str << " xzz_" << suffix_str << ".input.root w:"<<bkgd_shape_name.c_str()  << std::endl;
 	ofs << "shapes data_obs   CMS_xzz_" << suffix_str << " xzz_" << suffix_str << ".input.root w:"<<("dataset_obs"+rename_str).c_str()  << std::endl;
 	ofs << "------------ " << std::endl;
 	ofs << "bin         CMS_xzz_" << suffix << std::endl;
@@ -281,7 +289,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	float eff = f1_eff_vs_mass->Eval(hp.mH);
 	float rate_gg   = eff*hp.XSgg*hp.BRZZto2l2q*lumi; //xsect has both ee and mm
 
-	// compute expected BG yield from observed sideband events:
+	///////////////
+	//->  compute expected BG yield from observed sideband events:
 	Double_t rate_background = DataCardUtils::get_backgroundNormalization(bgws , leptType_str);
 	std::cout <<"Background rate: "<< rate_background << std::endl;
 
@@ -289,8 +298,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	ofs << "rate               " << rate_gg << "\t\t" << rate_background << std::endl;
 	ofs << "------------ " << std::endl;
 
-
-	// and now systematics:
+	////////////////////
+	//->  and now systematics:
 
 	ofs << "lumi\t\t\tlnN\t1.044\t\t\t1.0" << std::endl;
 
@@ -317,7 +326,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 
 
-	// syst done. now finish with parameters:
+	// syst done. now finish with sig and bkg shape parameters:
 
 	double bgNorm = DataCardUtils::get_backgroundNormalization(bgws,leptType_str,nxj,pur,"dsDataSB");
 	char bgNorm_char[100];
@@ -360,40 +369,42 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	std::cout << "+++ DATACARD FOR MASS " << mass << " ( " << nxj << " JETS, "<<pur_str.c_str()<<"   " << leptType_str << " CHANNEL ) IS DONE." << std::endl;
 	std::cout << std::endl;
 
+	/////////////////////////////////
+	//////////////////
 	// datacard is done. now create output workspace and write it to rootfile
 
 	char outfileName[900];
 	sprintf( outfileName, "%s/%.0f/xzz_%s.input.root", datacardDir.c_str(), mass, suffix);
 	TFile* outfile = TFile::Open( outfileName, "RECREATE");
 	outfile->cd();
-
-
 	RooWorkspace* w = new RooWorkspace("w","w");
 	w->addClassDeclImportDir("/afs/cern.ch/cms/slc5_amd64_gcc434/lcg/roofit/5.28.00a-cms3/include/");
 	//w->addClassDeclImportDir("/cmsrm/pc18/pandolf/CMSSW_4_2_3_patch1/src/HZZlljj/HZZlljjAnalyzer/test/analysis/FIT/PDFs");
 
 
-
-	// import variable in output workspace:
+	/////////////////////////////
+	//->  import variable in output workspace:
 	w->import(*CMS_xzz_mZZ);
 
-	// import observed dataset:
+	//////////////////////
+	//-> import observed dataset:
 	//dataset_obs->SetName("dataset_obs");
 	w->import(*dataset_obs_reduced);
 
-	// get BG shape:
+	////////////////////
+	//->  get Bkgd shape:
 	RooAbsPdf *expo_fit =0;
 	RooAbsPdf* background_decorr =0;
 	if(pur==1 || (!isZZChannel)){
 	  expo_fit =bgws->pdf("exp_fit");
-	  expo_fit->SetName(("background_expo"+rename_str).c_str());
+	  expo_fit->SetName(bkgd_shape_name.c_str());
 	  // and import it:
 	  w->import(*expo_fit, RooFit::RecycleConflictNodes());
 	}
 	else{
 	//This if you want ot use the leveled expo
 	  background_decorr = bgws->pdf("levexp_dcr");
-	  background_decorr->SetName("background_decorr");
+	  background_decorr->SetName(bkgd_shape_name.c_str());
 	  w->import(*background_decorr, RooFit::RecycleConflictNodes());
 	}
 
