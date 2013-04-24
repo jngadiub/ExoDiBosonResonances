@@ -129,8 +129,7 @@ int main( int argc, char* argv[] ) {
 	while( ifs.good() ) {
 
 		float mass;
-		ifs >> mass;
-		if(mass != 1500)continue;
+		ifs >> mass;	
 
 		std::cout << std::endl << std::endl;;
 		std::cout << "++++++++++++++++++++++" << std::endl;
