@@ -31,16 +31,13 @@
 
 #include "DataCardUtils.h"
 
+//#include "binningFits_XWW.h"
+//#include "cardsConfig_XWW.h"
+#include "binningFits_XZZ.h"
+#include "cardsConfig_XZZ.h"
 
 
-const std::string wsDir="FitSidebandsMJJ_ZZ_20130423/";
-const std::string datacardDir("DataCards_XZZ_20130423/");
-float mZZmin_ = 600.0;  // this should be synchronized with startFit in fitBackground.cpp
-float mZZmax_=2600.0;
-const int jetCats =2;  // 1 for only 1jet case and 2 for both
-bool isZZChannel=true;
-bool unblind=true;
-const string lepton_Label="ALL";//"ALL" //"MU" //"ELE"
+float mZZmin_ = startFit;  // this should be synchronized with startFit in fitBackground.cpp
 
 struct TheorSigParameters {
 
@@ -111,6 +108,11 @@ int main( int argc, char* argv[] ) {
 	lumi_ELE=19531.85; //pb^-1
 	lumi_MU =19538.85; //pb^-1
 
+	std::cout<<"Starting card creation with the following settings:"<<endl;
+	std::cout<<"InputDir with fits: "<<wsDir.c_str()<<endl;
+	std::cout<<"OutputDir with cards: "<<datacardDir.c_str()<<endl;
+	std::cout<<"Lumi MU="<<lumi_MU<<"  ELE="<<lumi_ELE<<std::endl<<std::endl;
+
 	//first loop over available signal MC files to fit efficiency:
 	TF1* f1_eff_vs_mass_MU_1JHP = get_eff_vs_mass("MU", 1,1, mZZmin_);
 	TF1* f1_eff_vs_mass_MU_1JLP = get_eff_vs_mass("MU", 1,0, mZZmin_);
@@ -128,6 +130,7 @@ int main( int argc, char* argv[] ) {
 
 		float mass;
 		ifs >> mass;
+		if(mass != 1500)continue;
 
 		std::cout << std::endl << std::endl;;
 		std::cout << "++++++++++++++++++++++" << std::endl;
@@ -195,7 +198,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	char fitResultName[200];  
 	//  sprintf( fitResultName, "resultsExpoFit_%dJ_%s",nxj , leptType_str.c_str() );
 
-	if(pur==1){//simple expo for HP category
+	if(pur==1 || (!isZZChannel)){//simple expo for HP category or XWW analysis
 	  sprintf( fitResultName, "resultsExpoFit_%dJ_%s_%s",nxj,pur_str.c_str(),lepton_Label.c_str() );
 	}
 	else {
@@ -382,7 +385,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	// get BG shape:
 	RooAbsPdf *expo_fit =0;
 	RooAbsPdf* background_decorr =0;
-	if(pur==1){
+	if(pur==1 || (!isZZChannel)){
 	  expo_fit =bgws->pdf("exp_fit");
 	  expo_fit->SetName(("background_expo"+rename_str).c_str());
 	  // and import it:
@@ -493,9 +496,11 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	bool doPlot=false;
 	if(mass==650||mass==1000||mass==1500||mass==1900||mass==2000||mass==2500)doPlot=true;
 	if(doPlot){
-	  const int nBinsTMP=20;
-	  const double binsTMP[nBinsTMP]={520,560,600,640,680,720,760,800,840,920,
-					  1000,1100,1250,1400,1600,1800,2000,2200,2400,2600};
+	  const int nBinsTMP=nBins1;
+	  double binsTMP[nBinsTMP];
+	  for(int ibtmp=0;ibtmp<nBinsTMP;ibtmp++){
+	    binsTMP[ibtmp]= bins1[ibtmp];
+	  }
 	  
 	  TCanvas *can1=new TCanvas("canvasCardsMZZ1", "MZZ-cards-CANVAS1",800,800);
 	  can1->cd();
@@ -504,12 +509,12 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	  //ssbtag << nxj;
 	  std::stringstream ssM;
 	  ssM << mass;
-	  CMS_xzz_mZZ->setRange("plotRange",480,2600) ;
+	  CMS_xzz_mZZ->setRange("plotRange",mZZmin_,mZZmax_) ;
 	  //  std::cout<<"\nNorm range of background_decorr (2): "<<background_decorr->normRange()<<std::endl;
 	  xf->SetTitle(("Sideband fit ("+ ssnxj.str() +"Jet "+ pur_str+", "+leptType_str+" leptons) - M="+ssM.str()+")").c_str());
 	  if(unblind)dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
 	  std::cout<<" 1 "<<std::flush;
-	  if(pur==1){
+	  if(pur==1 || (!isZZChannel)){
 	    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
 	    std::cout<<" 2 "<<std::flush;
 	    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
@@ -875,7 +880,7 @@ std::pair<double,double> leptTriggerSyst( const std::string& leptType_str) {
 
 	double syst;
 
-	if( leptType_str=="MU" )  syst = 1.02;
+	if( leptType_str=="MU" )  syst = 1.03;//it is 3% at very large eta, otherwise less
 	if( leptType_str=="ELE" ) syst = 1.01;
 
 	std::pair<double,double> returnPair;
@@ -890,8 +895,8 @@ std::pair<double,double> leptEffSyst( const std::string& leptType_str) {
 
 	double syst;
 
-	if( leptType_str=="MU" )  syst = 1.008;
-	if( leptType_str=="ELE" ) syst = 1.034;
+	if( leptType_str=="MU" )  syst = 1.04;//2% eff from T&P, + 2% conservative for boosted topology
+	if( leptType_str=="ELE" ) syst = 1.03;//from T.Williams
 
 	std::pair<double,double> returnPair;
 	returnPair.first  = syst; //symmetrical for now
@@ -905,7 +910,7 @@ std::pair<double,double> leptScaleSyst( const std::string& leptType_str) {
 
 	double syst;
 
-	if( leptType_str=="MU" )  syst = 1.01;
+	if( leptType_str=="MU" )  syst = 1.04;
 	if( leptType_str=="ELE" ) syst = 1.03;
 
 	std::pair<double,double> returnPair;
@@ -925,9 +930,11 @@ std::pair<double,double> jetScaleSyst( double mass ) {
 	float m0=-3.3649   , m1= 0.006892 ;
 
 	std::pair<double,double> returnPair;
-	returnPair.first  = 1.0 + 0.01*(m0+m1*mass);
-	returnPair.second = 1.0 + 0.01*(p0+p1*mass);
+	returnPair.first  = 1.0 + 0.01*(m0+m1*mass);//upper syst
+	returnPair.second = 1.0 + 0.01*(p0+p1*mass);//lower syst
 
+	returnPair.first   = 1.03;//~1% from JES + 2% because of AK7 JEC on top of CA8 jets
+	returnPair.second  = 0.97;//~1% from JES + 2% because of AK7 JEC on top of CA8 jets
 	return returnPair;
 
 }
