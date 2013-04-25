@@ -31,10 +31,10 @@
 
 #include "DataCardUtils.h"
 
-//#include "binningFits_XWW.h"
-//#include "cardsConfig_XWW.h"
-#include "binningFits_XZZ.h"
-#include "cardsConfig_XZZ.h"
+#include "binningFits_XWW.h"
+#include "Config_XWW.h"
+//#include "Config_XZZ.h"
+//#include "binningFits_XZZ.h"
 
 
 float mZZmin_ = startFit;  // this should be synchronized with startFit in fitBackground.cpp
@@ -109,7 +109,7 @@ int main( int argc, char* argv[] ) {
 	lumi_MU =19538.85; //pb^-1
 
 	std::cout<<"Starting card creation with the following settings:"<<endl;
-	std::cout<<"InputDir with fits: "<<wsDir.c_str()<<endl;
+	std::cout<<"InputDir with fits: "<<myOutDir.c_str()<<endl;
 	std::cout<<"OutputDir with cards: "<<datacardDir.c_str()<<endl;
 	std::cout<<"Lumi MU="<<lumi_MU<<"  ELE="<<lumi_ELE<<std::endl<<std::endl;
 
@@ -142,19 +142,19 @@ int main( int argc, char* argv[] ) {
 		sprintf( mkdir_command, "mkdir -p %s/%.0f", datacardDir.c_str(), mass);
 		system(mkdir_command);
 
-		if(lepton_Label=="ELE"||lepton_Label=="ALL")
+		if(leptType=="ELE"||leptType=="ALL")
 		{
 			create_singleDatacard( mass, lumi_ELE, "ELE", 1,1, f1_eff_vs_mass_ELE_1JHP);
 			create_singleDatacard( mass, lumi_ELE, "ELE", 1,0, f1_eff_vs_mass_ELE_1JLP);
 		}
-		if(lepton_Label=="MU"||lepton_Label=="ALL")
+		if(leptType=="MU"||leptType=="ALL")
 		{
 			create_singleDatacard( mass, lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
 			create_singleDatacard( mass, lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
 		}
 		if(jetCats>1&&mass<=800){
-			if(lepton_Label=="ELE"||lepton_Label=="ALL")create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
-			if(lepton_Label=="MU"||lepton_Label=="ALL")create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
+			if(leptType=="ELE"||leptType=="ALL")create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
+			if(leptType=="MU"||leptType=="ALL")create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
 		}
 
 	} //while masses
@@ -188,7 +188,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 	/////////////
 	//-> open fitResults file (all lept types):
-	std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, lepton_Label.c_str() ,wsDir.c_str());
+	std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, leptType.c_str() ,myOutDir.c_str());
 	std::cout << "reading results from: "<< fitResultsFileName.c_str() << std::endl;
 	TFile* fitResultsFile = TFile::Open(fitResultsFileName.c_str());
 	// fitResultsFile->ls();
@@ -198,10 +198,10 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	char fitResultName[200];  
 	//  sprintf( fitResultName, "resultsExpoFit_%dJ_%s",nxj , leptType_str.c_str() );
 	if(pur==1 || (!isZZChannel)){//simple expo for HP category or XWW analysis
-	  sprintf( fitResultName, "resultsExpoFit_%dJ_%s_%s",nxj,pur_str.c_str(),lepton_Label.c_str() );
+	  sprintf( fitResultName, "resultsExpoFit_%dJ_%s_%s",nxj,pur_str.c_str(),leptType.c_str() );
 	}
 	else {
-	  sprintf( fitResultName, "resultsExpLevelledFit_%dJ_%s_%s_decorr", nxj ,pur_str.c_str(),lepton_Label.c_str());
+	  sprintf( fitResultName, "resultsExpLevelledFit_%dJ_%s_%s_decorr", nxj ,pur_str.c_str(),leptType.c_str());
 	}
 	cout<<"Trying to pick RooFitResult :"<<fitResultName<<endl;
 	RooFitResult* bgFitResult = (RooFitResult*)fitResultsFile->Get(fitResultName);
@@ -211,7 +211,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	////////////////
 	//->  get workspace:
 	char workspaceName[200];
-	sprintf( workspaceName, "ws_alpha_%dJ_%s_%s", nxj,pur_str.c_str(),lepton_Label.c_str() );
+	sprintf( workspaceName, "ws_alpha_%dJ_%s_%s", nxj,pur_str.c_str(),leptType.c_str() );
 	RooWorkspace* bgws = (RooWorkspace*)fitResultsFile->Get(workspaceName);
 	// cout<<"\n\nPrinting contents of the WorkSpace: "<<endl;
 	//  bgws->Print("v");

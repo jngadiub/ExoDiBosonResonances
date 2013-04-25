@@ -36,10 +36,10 @@
 #include "PdfDiagonalizer.h"
 #include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
 
-//#include "fitBackgroundConfig_XWW.h" //all configurations go here
-//#include "binningFits_XWW.h"
-#include "fitBackgroundConfig_XZZ.h" //all configurations go here
-#include "binningFits_XZZ.h"
+#include "Config_XWW.h" 
+#include "binningFits_XWW.h"
+//#include "Config_XZZ.h"
+//#include "binningFits_XZZ.h"
 
 using namespace std ;
 using namespace RooFit ;
@@ -63,18 +63,18 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 int main(){
 	RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING) ;
 	//DEBUG=0, INFO=1, PROGRESS=2, WARNING=3, ERROR=4, FATAL=5
-	ofstream logf((outDir+"./log_fitBackground_"+leptType+".log").c_str(),ios::out);
+	ofstream logf((myOutDir+"./log_fitBackground_"+leptType+".log").c_str(),ios::out);
 
 	TChain* chainData = new TChain(InTreeName.c_str());
 	if(isZZChannel)
 	{
-		chainData->Add( (inDir+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
-		chainData->Add( (inDir+"treeEDBR_DoublePhoton*_Run2012*.root").c_str()  );
-		chainData->Add( (inDir+"treeEDBR_Photon_Run2012*.root").c_str()  );
+		chainData->Add( (inDirSB+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
+		chainData->Add( (inDirSB+"treeEDBR_DoublePhoton*_Run2012*.root").c_str()  );
+		chainData->Add( (inDirSB+"treeEDBR_Photon_Run2012*.root").c_str()  );
 	}
 	else
 	{
-		chainData->Add( (inDir+"treeEDBR_data_xww.root").c_str()  );
+		chainData->Add( (inDirSB+"treeEDBR_data_xww.root").c_str()  );
 	}
 
 	logf<<"In the data chain there are "<<chainData->GetEntries()<<" events"<<endl;
@@ -82,13 +82,13 @@ int main(){
 	TChain* chainDataSig = new TChain(InTreeName.c_str());
 	if(isZZChannel)
 	{
-		chainDataSig->Add( (inDirSig+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
-		chainDataSig->Add( (inDirSig+"treeEDBR_DoublePhoton*_Run2012*.root").c_str()  );
-		chainDataSig->Add( (inDirSig+"treeEDBR_Photon_Run2012*.root").c_str()  );
+		chainDataSig->Add( (inDirSIG+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
+		chainDataSig->Add( (inDirSIG+"treeEDBR_DoublePhoton*_Run2012*.root").c_str()  );
+		chainDataSig->Add( (inDirSIG+"treeEDBR_Photon_Run2012*.root").c_str()  );
 	}
 	else
 	{
-		chainDataSig->Add( (inDirSig+"treeEDBR_data_xww.root").c_str()  );
+		chainDataSig->Add( (inDirSIG+"treeEDBR_data_xww.root").c_str()  );
 	}
 
 
@@ -217,11 +217,11 @@ int main(){
             mZZSBData->Draw();
             cr0->cd(3);
             R0->Draw();
-            cr0->SaveAs((outDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".png").c_str());
-            cr0->SaveAs((outDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root").c_str());
+            cr0->SaveAs((myOutDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".png").c_str());
+            cr0->SaveAs((myOutDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root").c_str());
 	    //got R0
 	    
-	    string alphaFileName=outDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root";
+	    string alphaFileName=myOutDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root";
 	    logf<<"\n\n\n\n****** NEW NXJ = "<<inxj<<" "<< pur_str.c_str()<<" ---> "<<(alphaFileName).c_str() <<std::endl; 
 	    std::cout<<"\n\n\n\n****** NEW NXJ = "<<inxj<<" "<< pur_str.c_str()<<"  ---> "<<(alphaFileName).c_str() <<std::endl; 
 	    TFile *falpha=new TFile( (alphaFileName).c_str() );
@@ -263,7 +263,7 @@ int main(){
 	    
 	    //this is if you have another alpha coming from a different model
 	    //(for example, Sherpa instead of MAdgraph)
-	    //    TFile *falphaAlt=new TFile( (outDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+leptType+".root").c_str() );
+	    //    TFile *falphaAlt=new TFile( (myOutDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+leptType+".root").c_str() );
 	    // double area_MCsigAlt=( (TH1D*)falphaAlt->Get("mX_signalRegion"))->Integral();
 	    // double area_MCsbAlt=( (TH1D*)falphaAlt->Get("mX_sidebands"))->Integral();
 	    //double totAlphaAlt=area_MCsigAlt/area_MCsbAlt;
@@ -350,11 +350,11 @@ int main(){
 	  dsDataSB2->plotOn(mccontrol,MarkerStyle(20),MarkerColor(kBlack));
 	  VVDataSetWeight->plotOn(mccontrol,MarkerStyle(20),MarkerColor(kRed));
 	  mccontrol->Draw();
-	  canX->SaveAs((outDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
+	  canX->SaveAs((myOutDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
 	  mccontrol->SetMinimum(0.00006);
 	  gPad->SetLogy();
 	  mccontrol->Draw();
-	  canX->SaveAs((outDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
+	  canX->SaveAs((myOutDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
 	  delete mccontrol;
 	  delete canX;
 	  cout<<"Finished to add the VV MC to the extrapolated SB."<<endl;
@@ -392,7 +392,7 @@ int main(){
 	char fitResultName_expo[200];
 	sprintf( fitResultName_expo, "resultsExpoFit_%dJ_%s_%s",inxj ,pur_str.c_str(), leptType.c_str() );
 	r_sig2->SetName(fitResultName_expo); 
-	sprintf( fitResultName_expo, "%s/resultsExpoFit_%dJ_%s_%s.txt",outDir.c_str(),inxj ,pur_str.c_str(), leptType.c_str() );
+	sprintf( fitResultName_expo, "%s/resultsExpoFit_%dJ_%s_%s.txt",myOutDir.c_str(),inxj ,pur_str.c_str(), leptType.c_str() );
 	RooArgSet expofitvars( *a0 );
 	expofitvars.writeToFile(fitResultName_expo);
 
@@ -480,7 +480,7 @@ int main(){
 	  logf<<"Sigma= "<<f0->getVal()<<" -> SigmaDecorr="<<f0rot->getVal()<<std::endl;
 	  logf<<"Alphaa= "<<f1->getVal()<<" -> AlphaDecorr="<<f1rot->getVal()<<std::endl;
 	  logf<<"Beta="<<f1b->getVal() <<" m= "<<f2->getVal()<<" Theta="<<f3->getVal()<<std::endl;
-	  sprintf( fitResultName_eig, "%s/resultsExpLevelledFit_%dJ_%s_%s_decorr.txt",outDir.c_str(),inxj ,pur_str.c_str(), leptType.c_str() );
+	  sprintf( fitResultName_eig, "%s/resultsExpLevelledFit_%dJ_%s_%s_decorr.txt",myOutDir.c_str(),inxj ,pur_str.c_str(), leptType.c_str() );
 	  RooArgSet rotvars( *f0rot,*f1rot );
 	  rotvars.writeToFile(fitResultName_eig);
 	  
@@ -499,8 +499,8 @@ int main(){
 	    RooPlot *plot = new RooPlot(*f0,*f1,f0val-2*f0err,f0val+2*f0err,f1val-2*f1err,f1val+2*f1err);
 	    plot->addPlotable(contour);
 	    plot->Draw();
-	    c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
-	    c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
+	    c_rot->SaveAs((myOutDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
+	    c_rot->SaveAs((myOutDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
 	    
 	    f0val=f0rot->getVal();
 	    f1val=f1rot->getVal();
@@ -514,8 +514,8 @@ int main(){
 	    plotRot->addPlotable(contourRot);
 	    plotRot->Draw();
 	    // ContourPlot(f0,f1,r_sig_expLev);
-	    c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_decorrelated.eps").c_str());
-	    c_rot->SaveAs((outDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_decorrelated.png").c_str());
+	    c_rot->SaveAs((myOutDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_decorrelated.eps").c_str());
+	    c_rot->SaveAs((myOutDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_decorrelated.png").c_str());
 	    
 	    delete contour;
 	    delete c_rot;
@@ -524,7 +524,7 @@ int main(){
 	}//edn if decorrLevExpo
 	
 	//save everything in a RooWorkspace
-	TFile *fout=new TFile((outDir+"/workspace_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_new.root").c_str(),"RECREATE");
+	TFile *fout=new TFile((myOutDir+"/workspace_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_new.root").c_str(),"RECREATE");
 	RooWorkspace *wsnew=new RooWorkspace(*ws);
 	wsnew->SetName(("ws_alpha_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType).c_str());
 	logf<<"\n\nName of new WS: "<<wsnew->GetName()<<std::endl;
@@ -657,17 +657,17 @@ int main(){
 	logf<<"Check nromalization: NumEntries of dsDataSIG= "<<dsDataSIG->numEntries() <<"("<<dsDataSIG->sumEntries() <<")    SumEntries of dsDataSB2="<<dsDataSB2->sumEntries()<<"   numEntries="<<dsDataSB2->numEntries()<<"    Nbkg (NORM)="<<NbkgRange->getVal()<<"   Nent="<<Nent->getVal()<<"     Nerr="<<Nerr->getVal() <<std::endl;
 	
 	xf->Draw();
-	can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".root").c_str());
-	can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
-	can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
-	can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".pdf").c_str());
+	can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".root").c_str());
+	can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
+	can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
+	can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".pdf").c_str());
 	xf->SetMinimum(0.06);
 	gPad->SetLogy();
 	xf->Draw();
-	can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.root").c_str());
-	can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.eps").c_str());
-	can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
-	can1->SaveAs((outDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.pdf").c_str());
+	can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.root").c_str());
+	can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.eps").c_str());
+	can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
+	can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.pdf").c_str());
 	delete xf;
 	
 	//don't change this order, for God's sake !
@@ -881,7 +881,7 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 
 
 	char canvasName[400];
-	sprintf( canvasName, "%s/mZZ_fitSidebandData_alphaFromToys_%dJ%s_%s", outDir.c_str(), nxj,inPurStr.c_str(), "ALL");
+	sprintf( canvasName, "%s/mZZ_fitSidebandData_alphaFromToys_%dJ%s_%s", myOutDir.c_str(), nxj,inPurStr.c_str(), "ALL");
 	std::string canvasName_str(canvasName);
 	std::string canvasName_eps = canvasName_str + ".eps";
 	std::string canvasName_png = canvasName_str + ".png";
@@ -960,7 +960,7 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 	  c1->SaveAs(canvasName_png.c_str());
 	  
 	  char dumname[200];
-	  sprintf(dumname,"%s/rooCurves_%dJ%s_ALL.root",outDir.c_str(),nxj,inPurStr.c_str());
+	  sprintf(dumname,"%s/rooCurves_%dJ%s_ALL.root",myOutDir.c_str(),nxj,inPurStr.c_str());
 	  cout<<"Drawing "<<dumname<<endl;
 	  TFile *fdumout=new TFile(dumname ,"RECREATE"); 
 	  char upname[50];
@@ -1021,7 +1021,7 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 	line->DrawLine(x1-e1,histo1->GetMinimum(),x1-e1,histo1->GetMaximum());
 
 
-	sprintf( canvasName, "%s/alphaSystErr_par1_%dJ%s_%s", outDir.c_str(), nxj,inPurStr.c_str(), "ALL");
+	sprintf( canvasName, "%s/alphaSystErr_par1_%dJ%s_%s", myOutDir.c_str(), nxj,inPurStr.c_str(), "ALL");
 	canvasName_str = canvasName;
 	canvasName_eps = canvasName_str + ".eps";
 	canvasName_png = canvasName_str + ".png";
@@ -1109,7 +1109,7 @@ void pseudoMassgeTwoPars(int nxj ,int pur , RooFitResult* r_nominal, RooWorkspac
   
   
   char canvasName[400];
-  sprintf( canvasName, "%s/mZZ_fitSidebandData_alphaFromToys_%dJ%s_%s", outDir.c_str(), nxj,pur_str.c_str(), "ALL");
+  sprintf( canvasName, "%s/mZZ_fitSidebandData_alphaFromToys_%dJ%s_%s", myOutDir.c_str(), nxj,pur_str.c_str(), "ALL");
   std::string canvasName_str(canvasName);
   std::string canvasName_eps = canvasName_str + ".eps";
   std::string canvasName_png = canvasName_str + ".png";
@@ -1188,7 +1188,7 @@ void pseudoMassgeTwoPars(int nxj ,int pur , RooFitResult* r_nominal, RooWorkspac
     c1->SaveAs(canvasName_png.c_str());
     
     char dumname[200];
-	sprintf(dumname,"%s/rooCurves_%dJ%s_ALL.root",outDir.c_str(),nxj,pur_str.c_str());
+	sprintf(dumname,"%s/rooCurves_%dJ%s_ALL.root",myOutDir.c_str(),nxj,pur_str.c_str());
 	cout<<"Drawing "<<dumname<<endl;
 	TFile *fdumout=new TFile(dumname ,"RECREATE"); 
 	char upname[50];
@@ -1265,7 +1265,7 @@ void pseudoMassgeTwoPars(int nxj ,int pur , RooFitResult* r_nominal, RooWorkspac
   line->DrawLine(x1-e1,histo1->GetMinimum(),x1-e1,histo1->GetMaximum());
   
   
-  sprintf( canvasName, "%s/alphaSystErr_par1_%dJ%s_%s", outDir.c_str(), nxj,pur_str.c_str(), "ALL");
+  sprintf( canvasName, "%s/alphaSystErr_par1_%dJ%s_%s", myOutDir.c_str(), nxj,pur_str.c_str(), "ALL");
   canvasName_str = canvasName;
   canvasName_eps = canvasName_str + ".eps";
   canvasName_png = canvasName_str + ".png";
@@ -1280,7 +1280,7 @@ void pseudoMassgeTwoPars(int nxj ,int pur , RooFitResult* r_nominal, RooWorkspac
   line->DrawLine(x2+e2,histo2->GetMinimum(),x2+e2,histo2->GetMaximum());
   line->DrawLine(x2-e2,histo2->GetMinimum(),x2-e2,histo2->GetMaximum());
   
-  sprintf( canvasName, "%s/alphaSystErr_par2_%dJ%s_%s", outDir.c_str(), nxj,pur_str.c_str(), "ALL");
+  sprintf( canvasName, "%s/alphaSystErr_par2_%dJ%s_%s", myOutDir.c_str(), nxj,pur_str.c_str(), "ALL");
   canvasName_str = canvasName;
   canvasName_eps = canvasName_str + ".eps";
   canvasName_png = canvasName_str + ".png";

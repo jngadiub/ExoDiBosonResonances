@@ -13,17 +13,20 @@
 
 #include "SidebandFitter.h"
 
-//#include "fitSidebandsConfig_XWW.h"
-#include "fitSidebandsConfig_XZZ.h"
+#include "Config_XWW.h"
+//#include "Config_XZZ.h"
 
 void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1,bool ScaleTTbar=0);
-void doAlpha(TTree *chMC, std::string wType);
+void doAlpha(TTree *chMC, std::string wType, vector<TH1F> R0_vector);
+vector<TH1F> doR0(TTree* treeSBOther, TTree* treeSBData);
 
 /*****************
  *
  * All configurations now are in the header file fitSidebandsConfig_XZZ.h and binningFits_XZZ.h
  *
  *****************/
+const int nxjCut=-1;//if negative: no cut
+const std::string tmpTreeName="SelectedCandidatesV2";
 
 int main( int argc, char* argv[] ) {
 
@@ -153,14 +156,6 @@ int main( int argc, char* argv[] ) {
 	}//end if unrollSIGTree
 
 
-
-
-	//  TFile *ftree=new TFile(foutn,"READ");
-	// TTree *tTmp=(TTree*)ftree->Get(tmpTreeName.c_str());
-
-	//  sprintf(foutn,"EXOVVTree_forAlpha_%d.root",nxjCut);
-	// TFile *ftree2=new TFile(foutn,"READ");
-
 	TChain *tTmp=new TChain(tmpTreeName.c_str());
 	if(nxjCut>=0) sprintf(foutn,"EXOVVTree_forAlpha_SIG_%dJ.root",nxjCut);
 	else  sprintf(foutn,"EXOVVTree_forAlpha_SIG_NOcut.root");
@@ -168,14 +163,43 @@ int main( int argc, char* argv[] ) {
 	if(nxjCut>=0) sprintf(foutn,"EXOVVTree_forAlpha_SB_%dJ.root",nxjCut);
 	else  sprintf(foutn,"EXOVVTree_forAlpha_SB_NOcut.root");
 	tTmp->Add(foutn);
-	doAlpha(tTmp,weighting);
+
+
+	/////////////////do R0/////////////	
+	//get sidebband Other
+	TChain *treeSBOther = new TChain(tmpTreeName.c_str());
+	treeSBOther->Add("EXOVVTree_MCVV_SB_NOcut.root");
+
+	//get sideband data
+	TChain * chainSBData = new TChain (InTreeName.c_str());
+    if(isZZChannel)
+    {    
+        chainSBData->Add( (inDirSB+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
+        chainSBData->Add( (inDirSB+"treeEDBR_DoublePhoton*_Run2012*.root").c_str()  );
+        chainSBData->Add( (inDirSB+"treeEDBR_Photon_Run2012*.root").c_str()  );
+    }    
+    else 
+    {    
+        chainSBData->Add( (inDirSB+"treeEDBR_data_xww.root").c_str() );
+    }	
+	CopyTreeVecToPlain(chainSBData,weighting,"EXOVVTree_DaTa__SB_NOcut.root",tmpTreeName,nxjCut);
+	delete chainSBData;
+
+	TChain *treeSBData=new TChain(tmpTreeName.c_str());
+	treeSBData->Add("EXOVVTree_DaTa__SB_NOcut.root");
+
+
+	//calculate R0
+	vector<TH1F> R0_vector  = doR0 (treeSBOther,treeSBData);
+	doAlpha(tTmp,weighting,R0_vector);
 
 	delete tTmp;
+
 	return 0;
 
 }//end main
 
-void doAlpha(TTree *chMC, std::string wType){
+void doAlpha(TTree *chMC, std::string wType, vector<TH1F> R0_vector){
 
 
 	TRandom3* randomGen = new TRandom3(13);
@@ -217,23 +241,23 @@ void doAlpha(TTree *chMC, std::string wType){
 			if(purityCut==1)pur_str="HP";
 
 
-			outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"J_"+pur_str+"_"+leptStr+".root";
+			outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"J_"+pur_str+"_"+leptType+".root";
 			sf->setOutFile(outFileName);
 			sf->setCanvasLabel("_Madgraph");
-			RooWorkspace* alpha_nxj = sf->getAlphaFit( treeMC_nxj , inxj,  leptStr, purityCut,true);
+			RooWorkspace* alpha_nxj = sf->getAlphaFit( treeMC_nxj , inxj,  leptType, purityCut,true);
 
 
 
 			// now estimate stat errors by throwing toys
 			// 1: get the histos produced before and saved in the output file
 			cout<<"\n*** Throwing toys for category "<<inxj<<"Jet "<< pur_str.c_str()<<" ***"<<endl<<endl;
-			//  outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"J_"+pur_str+"_"+leptStr+".root";
+			//  outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"J_"+pur_str+"_"+leptType+".root";
 			TFile *fWS=new TFile(outFileName.c_str(),"UPDATE");
 			// fWS->ls();
 			TH1D *myalpha=(TH1D*)fWS->Get("h_alpha_smoothened");
 
 			/*
-			   outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"btag_"+leptStr+".root";
+			   outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"btag_"+leptType+".root";
 			   TFile *fWS=new TFile(outFileName.c_str(),"UPDATE");
 			// fWS->ls();
 			TH1D *myalpha=(TH1D*)fWS->Get("h_alpha_smoothened");
@@ -265,9 +289,9 @@ void doAlpha(TTree *chMC, std::string wType){
 			myalpha->GetFunction("fitPolyRooFit")->SetBit(TF1::kNotDraw);
 			myalpha->Draw("PE0");
 			char canvasName[400];
-			sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.eps", myOutDir.c_str(), inxj,pur_str.c_str(), leptStr.c_str());
+			sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.eps", myOutDir.c_str(), inxj,pur_str.c_str(), leptType.c_str());
 			calphaAVG->SaveAs( canvasName  );
-			sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.pdf", myOutDir.c_str(), inxj,pur_str.c_str(), leptStr.c_str());
+			sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.pdf", myOutDir.c_str(), inxj,pur_str.c_str(), leptType.c_str());
 			calphaAVG->SaveAs( canvasName  );
 			delete calphaAVG;
 
@@ -465,3 +489,39 @@ void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name,std::s
 
 	//  cout<<"returning"<<endl;
 }
+
+
+vector<TH1F> doR0(TTree* treeSBOther, TTree* treeSBData)
+{
+	//Here I do not consider 2 jet case
+	vector<TH1F> R0_vector;
+/*
+	double purityCut=-1;
+	for(int iP=0;iP<=1;iP++)
+	{	//loop over purity categories
+		purityCut=iP;
+		int nBins=nBins1;
+		const double* bins=bins1;
+        TString pur_str="";
+        if(purityCut==0)pur_str="LP";
+        if(purityCut==1)pur_str="HP";
+
+		double lepCut=-2;
+		TString leptType=leptType.c_str();
+        if(leptType=="ELE")lepCut=0;
+        if(leptType=="MU")lepCut=1;
+        if(leptType=="ALL")lepCut=-1;
+
+        TString lepTS = Form ("(lep==%.0f)",lepCut );
+        if(lepCut==-1)lepTS="1";
+		int inxj=1;////Here I do not consider 2 jet case 
+        TString nXjetsTS = Form ("(nXjets==%d)",inxj );
+        TString vTagPurityTS = Form ("(vTagPurity==%.0f)",purityCut );
+        TString totalWeight = Form("weight*%f",lumi);
+        TString Cut = lepTS+"*"+nXjetsTS+"*"+vTagPurityTS;
+
+	}
+*/
+	return R0_vector;
+}
+

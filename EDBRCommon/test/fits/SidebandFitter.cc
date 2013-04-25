@@ -42,9 +42,8 @@
 
 #include "TMath.h"
 
-
-//#include "binningFits_XWW.h"
-#include "binningFits_XZZ.h"
+#include "binningFits_XWW.h"
+//#include "binningFits_XZZ.h"
 
 using namespace RooFit;
 
