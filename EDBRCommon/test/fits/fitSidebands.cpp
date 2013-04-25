@@ -10,15 +10,16 @@
 #include "TString.h"
 #include "TROOT.h"
 #include "TCanvas.h"
+#include <iostream>
 
 #include "SidebandFitter.h"
-
 #include "Config_XWW.h"
 //#include "Config_XZZ.h"
+using namespace std;
 
 void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1,bool ScaleTTbar=0);
-void doAlpha(TTree *chMC, std::string wType, vector<TH1F> R0_vector);
-vector<TH1F> doR0(TTree* treeSBOther, TTree* treeSBData);
+void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector);
+vector<TH1D> doR0(TTree* treeSBOther, TTree* treeSBData);
 
 /*****************
  *
@@ -27,7 +28,7 @@ vector<TH1F> doR0(TTree* treeSBOther, TTree* treeSBData);
  *****************/
 const int nxjCut=-1;//if negative: no cut
 const std::string tmpTreeName="SelectedCandidatesV2";
-
+ofstream loga((myOutDir+"./log_fitSidebands_"+leptType+".log").c_str(),ios::out);
 int main( int argc, char* argv[] ) {
 
 	std::string weighting = "weight";
@@ -172,16 +173,16 @@ int main( int argc, char* argv[] ) {
 
 	//get sideband data
 	TChain * chainSBData = new TChain (InTreeName.c_str());
-    if(isZZChannel)
-    {    
-        chainSBData->Add( (inDirSB+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
-        chainSBData->Add( (inDirSB+"treeEDBR_DoublePhoton*_Run2012*.root").c_str()  );
-        chainSBData->Add( (inDirSB+"treeEDBR_Photon_Run2012*.root").c_str()  );
-    }    
-    else 
-    {    
-        chainSBData->Add( (inDirSB+"treeEDBR_data_xww.root").c_str() );
-    }	
+	if(isZZChannel)
+	{    
+		chainSBData->Add( (inDirSB+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
+		chainSBData->Add( (inDirSB+"treeEDBR_DoublePhoton*_Run2012*.root").c_str()  );
+		chainSBData->Add( (inDirSB+"treeEDBR_Photon_Run2012*.root").c_str()  );
+	}    
+	else 
+	{    
+		chainSBData->Add( (inDirSB+"treeEDBR_data_xww.root").c_str() );
+	}	
 	CopyTreeVecToPlain(chainSBData,weighting,"EXOVVTree_DaTa__SB_NOcut.root",tmpTreeName,nxjCut);
 	delete chainSBData;
 
@@ -190,7 +191,7 @@ int main( int argc, char* argv[] ) {
 
 
 	//calculate R0
-	vector<TH1F> R0_vector  = doR0 (treeSBOther,treeSBData);
+	vector<TH1D> R0_vector  = doR0 (treeSBOther,treeSBData);
 	doAlpha(tTmp,weighting,R0_vector);
 
 	delete tTmp;
@@ -199,7 +200,7 @@ int main( int argc, char* argv[] ) {
 
 }//end main
 
-void doAlpha(TTree *chMC, std::string wType, vector<TH1F> R0_vector){
+void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 
 
 	TRandom3* randomGen = new TRandom3(13);
@@ -254,7 +255,40 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1F> R0_vector){
 			//  outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"J_"+pur_str+"_"+leptType+".root";
 			TFile *fWS=new TFile(outFileName.c_str(),"UPDATE");
 			// fWS->ls();
-			TH1D *myalpha=(TH1D*)fWS->Get("h_alpha_smoothened");
+			//TH1D *myalpha=(TH1D*)fWS->Get("h_alpha_smoothened");
+			TH1D *alpha_ORI=(TH1D*)fWS->Get("h_alpha_smoothened");
+
+			//add R0 to alpha
+			TH1D * alpha_Final = (TH1D*)alpha_ORI->Clone("h_alpha_smoothened_Final");
+			TH1D * R0=0;
+			if(iP==0)R0=&R0_vector.at(0);//LP
+			else if(iP==1)R0=&R0_vector.at(1);//HP
+			/* //a test to see we get what they are
+			   TCanvas * cr1 = new TCanvas();
+			   R0->Draw();
+			   TString r0test = Form("test_%d_R0_test.png",iP);
+			   cr1->SaveAs( r0test );
+			 */
+
+			//do alpha_Final = (1-R0) * alpha_ORI
+			alpha_Final->Reset();
+			for (int iBin = 1 ; iBin <= alpha_Final->GetNbinsX() ; ++iBin)
+			{
+				double alpha_ORI_c = alpha_ORI->GetBinContent(iBin);
+				double alpha_ORI_e = alpha_ORI->GetBinError(iBin);
+				double R0_c = R0->GetBinContent(iBin);
+				double R0_e = R0->GetBinError(iBin);
+				double alpha_Final_c = (1-R0_c)*alpha_ORI_c;
+				double alpha_Final_e = sqrt(alpha_ORI_c*alpha_ORI_c*R0_e*R0_e+(1-R0_c)*(1-R0_c)*alpha_ORI_e*alpha_ORI_e);
+				alpha_Final->SetBinContent(iBin,alpha_Final_c);
+				alpha_Final->SetBinError(iBin,alpha_Final_e);
+			}
+
+			TH1D *myalpha= alpha_Final;
+			//save R0 and alpha_Final in the same file
+			R0->Write();
+			alpha_Final->Write();	
+		
 
 			/*
 			   outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"btag_"+leptType+".root";
@@ -491,37 +525,65 @@ void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name,std::s
 }
 
 
-vector<TH1F> doR0(TTree* treeSBOther, TTree* treeSBData)
+vector<TH1D> doR0(TTree* treeSBOther, TTree* treeSBData)
 {
 	//Here I do not consider 2 jet case
-	vector<TH1F> R0_vector;
-/*
+	vector<TH1D> R0_vector;
+
 	double purityCut=-1;
 	for(int iP=0;iP<=1;iP++)
 	{	//loop over purity categories
 		purityCut=iP;
 		int nBins=nBins1;
 		const double* bins=bins1;
-        TString pur_str="";
-        if(purityCut==0)pur_str="LP";
-        if(purityCut==1)pur_str="HP";
+		TString pur_str="";
+		if(purityCut==0)pur_str="LP";
+		if(purityCut==1)pur_str="HP";
 
 		double lepCut=-2;
-		TString leptType=leptType.c_str();
-        if(leptType=="ELE")lepCut=0;
-        if(leptType=="MU")lepCut=1;
-        if(leptType=="ALL")lepCut=-1;
+		TString leptType_=leptType.c_str();
+		if(leptType_=="ELE")lepCut=0;
+		if(leptType_=="MU")lepCut=1;
+		if(leptType_=="ALL")lepCut=-1;
 
-        TString lepTS = Form ("(lep==%.0f)",lepCut );
-        if(lepCut==-1)lepTS="1";
+		TString lepTS = Form ("(lep==%.0f)",lepCut );
+		if(lepCut==-1)lepTS="1";
 		int inxj=1;////Here I do not consider 2 jet case 
-        TString nXjetsTS = Form ("(nXjets==%d)",inxj );
-        TString vTagPurityTS = Form ("(vTagPurity==%.0f)",purityCut );
-        TString totalWeight = Form("weight*%f",lumi);
-        TString Cut = lepTS+"*"+nXjetsTS+"*"+vTagPurityTS;
+		TString nXjetsTS = Form ("(nXjets==%d)",inxj );
+		TString vTagPurityTS = Form ("(vTagPurity==%.0f)",purityCut );
+		TString totalWeight = Form("weight*%f",lumi);
+		TString Cut = lepTS+"*"+nXjetsTS+"*"+vTagPurityTS;			
+		loga<<Cut<<endl;
 
+		TH1D * mZZSBOther = new TH1D ("mZZSBOther","mZZSBOther",nBins-1,bins);
+		TH1D * mZZSBData = new TH1D ("mZZSBData","mZZSBData",nBins-1,bins);
+		mZZSBOther->Sumw2();
+		mZZSBData->Sumw2();
+		treeSBOther->Draw("mZZ>>mZZSBOther",Cut+"*"+totalWeight);
+		treeSBData->Draw("mZZ>>mZZSBData",Cut);
+		TH1D * R0 = (TH1D *) mZZSBOther->Clone("R0");
+		R0->Reset();
+		R0->Divide(mZZSBOther,mZZSBData);
+		R0->SetName("R0_1J_"+pur_str+"_"+leptType_);
+		R0->SetTitle("R0_1J_"+pur_str+"_"+leptType_);
+
+		TCanvas * cr0 = new TCanvas("cr0","cr0",600,800);
+		cr0->Divide(1,3);
+		cr0->cd(1);
+		mZZSBOther->Draw();
+		cr0->cd(2);
+		mZZSBData->Draw();
+		cr0->cd(3);
+		R0->Draw();
+		cr0->SaveAs(myOutDir+"/R0_1J_"+pur_str+"_"+leptType+".png");
+		cr0->SaveAs(myOutDir+"/R0_1J_"+pur_str+"_"+leptType+".root");
+		//got R0
+
+		R0_vector.push_back(*R0);
+		delete mZZSBOther;
+		delete mZZSBData;
+		delete R0;
 	}
-*/
 	return R0_vector;
 }
 
