@@ -117,10 +117,6 @@ int main(){
 	TFile *ftreeSig=new TFile(foutSig,"READ");
 	TTree *treeDATA_sig=(TTree*)ftreeSig->Get(tmpSigTreeName.c_str());
 
-	//get SBVV 
-	TFile *ftreeSBVV=new TFile("EXOVVTree_MCVV_SB_NOcut.root","READ");
-	TTree *treeSBVV=(TTree*)ftreeSBVV->Get(tmpTreeName.c_str());
-
 	TFile *ftreeVV=0;
 	TTree *treeVV_sig=0;
 
@@ -182,44 +178,6 @@ int main(){
 	    if(purityCut==0)pur_str="LP";
 	    if(purityCut==1)pur_str="HP";
 	    
-	    //now trying to get R0
-	    double lepCut=-1;
-	    if(leptType=="ELE")lepCut=0;
-	    if(leptType=="MU")lepCut=1;
-	    if(leptType=="ALL")lepCut=-1; 
-	    
-	    TString lepTS = Form ("(lep==%.0f)",lepCut );
-	    if(lepCut==-1)lepTS="1";
-	    TString nXjetsTS = Form ("(nXjets==%d)",inxj );
-	    TString vTagPurityTS = Form ("(vTagPurity==%.0f)",purityCut );
-	    if(purityCut==-1) vTagPurityTS="1";
-	    TString totalWeight = Form("weight*%f",lumi);
-	    TString Cut = lepTS+"*"+nXjetsTS+"*"+vTagPurityTS;
-	    
-	    
-            TH1D * mZZSBVV = new TH1D ("mZZSBVV","mZZSBVV",nBins-1,bins);
-            TH1D * mZZSBData = new TH1D ("mZZSBData","mZZSBData",nBins-1,bins);
-            mZZSBVV->Sumw2();
-            mZZSBData->Sumw2();
-            treeSBVV->Draw("mZZ>>mZZSBVV",Cut+"*"+totalWeight);
-            treeDATA_tmp->Draw("mZZ>>mZZSBData",Cut);
-            TH1D * R0 = (TH1D *) mZZSBVV->Clone("R0");
-            R0->Reset();
-            R0->Divide(mZZSBVV,mZZSBData);
-            string dummm = "";
-            R0->SetTitle((dummm+"R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType).c_str());
-
-            TCanvas * cr0 = new TCanvas("cr0","cr0",800,600);
-            cr0->Divide(1,3);
-            cr0->cd(1);
-            mZZSBVV->Draw();
-            cr0->cd(2);
-            mZZSBData->Draw();
-            cr0->cd(3);
-            R0->Draw();
-            cr0->SaveAs((myOutDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".png").c_str());
-            cr0->SaveAs((myOutDir+"/R0_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root").c_str());
-	    //got R0
 	    
 	    string alphaFileName=myOutDir+"/Workspaces_alpha_"+ssnxj.str()+"J_"+pur_str+"_"+leptType+".root";
 	    logf<<"\n\n\n\n****** NEW NXJ = "<<inxj<<" "<< pur_str.c_str()<<" ---> "<<(alphaFileName).c_str() <<std::endl; 
@@ -228,30 +186,7 @@ int main(){
 	    char alphahname[50];
 	    //    sprintf(alphahname,"nominal_alpha_%dnxj",inxj);//histo with fit to alpha
 	    sprintf(alphahname,"h_alpha_smoothened");
-	    //read original alpha
-	    TH1D * alpha_ORI = (TH1D*)falpha->Get(alphahname);	
-	    TH1D * alpha_Final = (TH1D*)alpha_ORI->Clone("h_alpha_smoothened_Final");
-	    
-	    if(!useAlphaVV)
-	      {
-		alpha_Final->Reset();
-		
-		// alpha_Final = (1-R0) * alpha_ORI
-		
-		for (int iBin = 1 ; iBin <= alpha_Final->GetNbinsX() ; ++iBin)
-		  {
-		    double alpha_ORI_c = alpha_ORI->GetBinContent(iBin);
-		    double alpha_ORI_e = alpha_ORI->GetBinError(iBin);
-		    double R0_c = R0->GetBinContent(iBin);
-		    double R0_e = R0->GetBinError(iBin);
-		    double alpha_Final_c = (1-R0_c)*alpha_ORI_c;
-		    double alpha_Final_e = sqrt(alpha_ORI_c*alpha_ORI_c*R0_e*R0_e+(1-R0_c)*(1-R0_c)*alpha_ORI_e*alpha_ORI_e);
-		    alpha_Final->SetBinContent(iBin,alpha_Final_c);
-		    alpha_Final->SetBinError(iBin,alpha_Final_e);
-		  }
-	      }
-	    
-	    TTree* weightedData = weightTree(treeDATA_tmp , alpha_Final  ,"alphaWeightedTree" );
+	    TTree* weightedData = weightTree(treeDATA_tmp , (TH1D*)falpha->Get(alphahname)  ,"alphaWeightedTree" );
 	    
 	    //stat uncertainty on alpha normalization
 	    
