@@ -974,6 +974,9 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//if(fabs(etalep1[ivec])<1.442);
 					//else continue;
 
+					if(wantMuons_||(wantElectrons_&&met>80));
+					else continue;
+
 					//b veto cut
 					if(nbtagsM[ivec]==0) ;
 					else continue;
@@ -982,8 +985,12 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//if(nbtagscleanT[ivec]>=1) ;
 					//else continue;
 
-					//nsubjettiness cut
+					//nsubjettiness HP
 					//if(nsubj21[ivec]<0.5) ;
+					//else continue;
+
+					//nsubjettiness LP
+					//if(nsubj21[ivec]>0.5&&nsubj21[ivec]<0.75);
 					//else continue;
 				}
 
