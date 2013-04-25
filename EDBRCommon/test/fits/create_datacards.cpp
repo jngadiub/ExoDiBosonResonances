@@ -222,11 +222,12 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	RooArgList bgPars = bgFitResult->floatParsFinal();
 	std::vector<std::string> parname; 
 	parname.reserve(bgPars.getSize());
+	std::cout<<"List of RooRealVars storing syst unc on bkgd shape parameters:"<<std::endl;
 	for( int iVar=0; iVar<bgPars.getSize(); ++iVar ) {
-		parname.push_back(bgPars.at(iVar)->GetName());
-		parname.at(iVar)+="_alphaErr";
-		std::cout<<"Var "<<iVar<<"  Parname: "<<parname.at(iVar).c_str()<<std::endl;
-		alphaErr.push_back(bgws->var(parname.at(iVar).c_str()));
+	  parname.push_back(bgPars.at(iVar)->GetName());
+	  parname.at(iVar)+="_alphaErr";
+	  std::cout<<"Var "<<iVar<<"  Parname: "<<parname.at(iVar).c_str()<<endl;//" read from ws:  "  << bgws->var(parname.at(iVar).c_str())->GetName()<<std::endl;
+	  alphaErr.push_back(bgws->var(parname.at(iVar).c_str()));
 	}
 
 	///////////////////////////
@@ -346,15 +347,16 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 	//  RooArgList bgPars = bgFitResult->floatParsFinal();
 
-	cout<<"Looping on "<<bgPars.getSize()<<" params"<<endl;
+	cout<<"Looping on "<<bgPars.getSize()<<" background shape params"<<endl;
 	for( int iVar=0; iVar<bgPars.getSize(); ++iVar ) {
 	  RooRealVar* thisVar = dynamic_cast<RooRealVar*>(bgPars.at(iVar));
 	  cout<<"Var -> "<<thisVar->GetName()<<flush;
 	  double varValue=thisVar->getVal();
 	  cout<<"="<<varValue<<flush;
 	  double varError=thisVar->getError();
-	  cout<<" +/- "<<varError<<endl; 
-	  varError=sqrt(varError*varError);//+  alphaErr.at(iVar)->getVal()*alphaErr.at(iVar)->getVal());
+	  double systError=alphaErr.at(iVar)->getVal();//error on alpha from MC stats, estimated with pseudo-exp
+	  cout<<" +/- "<<varError<<" +/- "<<systError <<endl; 
+	  varError=sqrt(varError*varError +  systError*systError);
 	  
 	  ofs << thisVar->GetName() << "\tparam\t\t" <<varValue  << "\t" << varError << std::endl;
 	  

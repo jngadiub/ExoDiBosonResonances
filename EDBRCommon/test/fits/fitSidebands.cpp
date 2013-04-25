@@ -176,7 +176,7 @@ int main( int argc, char* argv[] ) {
 }//end main
 
 void doAlpha(TTree *chMC, std::string wType){
-	unsigned int nToys = 500;
+
 
 	TRandom3* randomGen = new TRandom3(13);
 

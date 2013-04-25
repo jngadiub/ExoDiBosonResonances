@@ -8,7 +8,7 @@ bool isZZChannel=true;//this will change only the file list
 string leptStr="ALL";//"MU" //"ELE"//"ALL"
 const std::string InTreeName="SelectedCandidates";
 const bool useAlphaVV=false;
-
+const unsigned int nToys = 500;
 
 const int nxjCut=-1;//if negative: no cut
 const std::string tmpTreeName="SelectedCandidatesV2";

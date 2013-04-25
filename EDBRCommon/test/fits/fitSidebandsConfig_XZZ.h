@@ -1,5 +1,5 @@
 
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130424/";
+const std::string myOutDir="FitSidebandsMJJ_ZZ_20130424test/";
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsb/";
 
@@ -8,7 +8,7 @@ bool isZZChannel=true;//this will change only the file list
 string leptStr="ALL";//"MU" //"ELE"//"ALL"
 const std::string InTreeName="SelectedCandidates";
 const bool useAlphaVV=false;
-
+const unsigned int nToys = 500;
 
 const int nxjCut=-1;//if negative: no cut
 const std::string tmpTreeName="SelectedCandidatesV2";
