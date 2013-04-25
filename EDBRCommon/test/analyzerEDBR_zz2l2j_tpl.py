@@ -86,10 +86,10 @@ elif "WW"=="<SAMPLE>" or "WW_xww" == "<SAMPLE>" :
     process.ANEDBR.xsec=cms.double(57.1097)
 elif "WZ"=="<SAMPLE>" or "WZ_xww"=="<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(1910000)
-    process.ANEDBR.xsec=cms.double(22.88)
+    process.ANEDBR.xsec=cms.double(33.21)
 elif "ZZ"=="<SAMPLE>" or "ZZ_xww"=="<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(485716)
-    process.ANEDBR.xsec=cms.double(5.196)
+    process.ANEDBR.xsec=cms.double(8.059)
     process.ANEDBR.FillGenLevelCode=cms.uint32(3)
 elif "WJetsPt50To70" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(24950166)
