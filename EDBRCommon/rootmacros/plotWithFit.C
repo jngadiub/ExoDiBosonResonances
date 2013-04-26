@@ -25,8 +25,15 @@
 double mySpecIntegral(TF1 *f1,TH1 *h1,double minVal, double maxVal);
 Double_t simpleExpo(Double_t *x, Double_t *par)
    {
-      Float_t xx =x[0]-par[2];
-      Double_t f = (par[0])*TMath::Exp(par[1]*xx);//(par[0]/fabs(par[1]))*TMath::Exp(par[1]*xx);
+      Float_t xx =x[0]-par[1];
+      Double_t f = (par[0])*TMath::Exp(par[2]*xx);//(par[0]/fabs(par[1]))*TMath::Exp(par[1]*xx);
+      return f;
+   }
+
+Double_t levExpo(Double_t *x, Double_t *par)
+   {
+      Float_t xx =x[0]-par[1];
+      Double_t f = (par[0])*TMath::Exp( (-1.0*xx) / (par[2]+par[3]*xx));//(par[0]/fabs(par[1]))*TMath::Exp(par[1]*xx);
       return f;
    }
 
@@ -34,15 +41,18 @@ void plotWithFit(){
 
   //steering
   string leptType[2]={"ELE","MU"};
-  string purType[2]={"1JLP","1JHP"};
+  string purType[3]={"1JLP","1JHP","2J"};
   const double targetLumi=19538.0;//in pb
 
-  const double bkgNorm[2][2]={{263, 221},//ee1JLP, ee1JHP
-			      {410, 302}//mm1JLP, mm1JHP
+  const double bkgNorm[2][3]={{263.1, 226.5,618.37},//ee1JLP, ee1JHP, ee2J
+			      {407.5, 302.2,986.37}//mm1JLP, mm1JHP, mm2J			      
   };
   
-  const double bkgPar1[2][2]={{-4.6E-03,-5.2E-03},//ee1JLP, ee1JHP
-			      {-4.6E-03,-5.2E-03}//mm1JLP, mm1JHP
+  const double bkgPar1[2][3]={{195.9, -5.1E-03, 85.94},//ee1JLP, ee1JHP, ee2J
+			      {195.9, -5.1E-03, 85.94}//mm1JLP, mm1JHP,mm2J
+  };
+  const double bkgPar2[2][3]={{0.019, 0.0, 0.05976},//ee1JLP, ee1JHP
+			      {0.019, 0.0, 0.05976},//mm1JLP, mm1JHP
   };
   double fitLow=600;
   double fitHigh=2400;
@@ -50,19 +60,22 @@ void plotWithFit(){
 
   //  take histos done by loopPlot and EDBRHistoMaker
   int ilep=0; int ipur=0;
-  const int nDATA=12;//set to zero if you don't want to plot
-  std::string dataLabels[nDATA]={"DoubleMu_Run2012A_13Jul2012",
-				 "DoubleMu_Run2012A_recover",
-  				 "DoubleMu_Run2012B_13Jul2012",
-				 "DoubleMu_Run2012C_24Aug2012",
-  				 "DoubleMu_Run2012C_PRv2",
-  				 "DoubleMu_Run2012D_PRv1","Photon_Run2012A_13Jul2012",
-  				 "Photon_Run2012A_recover",
-  				 "DoublePhotonHighPt_Run2012B_13Jul2012",
-				 "DoublePhotonHighPt_Run2012C_24Aug2012",
-				 "DoublePhotonHighPt_Run2012C_PRv2",
-				 "DoublePhotonHighPt_Run2012D_PRv1"
-				 };
+  const int nDATA=6;//set to zero if you don't want to plot
+  std::string dataLabelsMu[nDATA]={
+     "DoubleMu_Run2012A_13Jul2012",
+     "DoubleMu_Run2012A_recover",
+     "DoubleMu_Run2012B_13Jul2012",
+     "DoubleMu_Run2012C_24Aug2012",
+     "DoubleMu_Run2012C_PRv2",
+     "DoubleMu_Run2012D_PRv1"};
+  std::string dataLabelsEle[nDATA]={
+    "Photon_Run2012A_13Jul2012",
+    "Photon_Run2012A_recover",
+    "DoublePhotonHighPt_Run2012B_13Jul2012",
+    "DoublePhotonHighPt_Run2012C_24Aug2012",
+    "DoublePhotonHighPt_Run2012C_PRv2",
+    "DoublePhotonHighPt_Run2012D_PRv1"
+  };
    
   const int nMC=7;//set to zero if you don't want to plot
   std::string mcLabels[nMC]={"TTBARpowheg",
@@ -87,17 +100,25 @@ void plotWithFit(){
   fColorsMC.push_back(kBlue-9);
 
   for(ilep=0;ilep<2;ilep++){
-    for(ipur=0;ipur<2;ipur++){
+    for(ipur=0;ipur<3;ipur++){
 
-  cout<<"Starting with lep="<<leptType[ilep]<<"  Pur="<<purType[ipur]<<endl;
-  string inDir="plots_productionv1d_fullsig_"+purType[ipur]+"_"+leptType[ilep]+"/";
-
+      //   if(ipur!=1)continue;
+      if(ipur==2)fitHigh=1400.0;
+      else fitHigh=2400.0;
+      cout<<"Starting with lep="<<leptType[ilep]<<"  Pur="<<purType[ipur]<<endl;
+      string inDir="plots_productionv1e_fullsig_"+purType[ipur]+"_"+leptType[ilep]+"/";
+      
 
   //sum up data
   std::vector<TH1D*> datahistos;
   for(int i=0; i!= nDATA; ++i) {
-    TFile *fData=new TFile((inDir+"histos_"+dataLabels[i]+".root").c_str(),"READ");
-    cout<<"Take data file from "<<(inDir+"histos_"+dataLabels[i]+".root").c_str()<<endl;
+
+    string dataLabelTMP=dataLabelsMu[i];
+    if(ilep==0) dataLabelTMP=dataLabelsEle[i];
+    string fDataName="histos_"+dataLabelTMP+".root";
+   
+    TFile *fData=new TFile((inDir+fDataName).c_str(),"READ");
+    cout<<"Take data file from "<<(inDir+fDataName).c_str()<<endl;
     TH1D* histo = (TH1D*)(fData->Get("h_mZZ"));
     histo->Rebin(2);
     for(int j=1;j<=histo->GetNbinsX();j++){
@@ -107,7 +128,7 @@ void plotWithFit(){
       histo->SetBinError(j,binErrNew);
     }
 
-    datahistos.push_back((TH1D*)histo->Clone(("h_mZZ_"+dataLabels[i]).c_str()));
+    datahistos.push_back((TH1D*)histo->Clone(("h_mZZ_"+dataLabelTMP).c_str()));
   // delete histo;
   //  delete fData;
   }//end loop on data files
@@ -176,34 +197,67 @@ void plotWithFit(){
     sighistos.push_back((TH1D*)histo->Clone(("h_mZZ_"+mcLabelsSig[i]).c_str()));
 
   }
-  //Fit function is a simple expo
 
-  TF1 *fit1=new TF1("fitfunc1",simpleExpo,fitLow,fitHigh,2);
+  TF1 *fit1=0;
+  if(ipur==1){//1JHP
+  //Fit function is a simple expo
+  fit1=new TF1("fitfunc1",simpleExpo,fitLow,fitHigh,3);
   fit1->SetParName(0,"Normalization");
-  fit1->SetParName(1,"Slope");
-  fit1->SetParName(2,"Shift");
+  fit1->SetParName(1,"Shift");
+  fit1->SetParName(2,"Slope");
   fit1->SetParameter(0,1.0);
-  fit1->SetParameter(1,bkgPar1[ilep][ipur]);
-  fit1->SetParameter(2,0.0);//fitLow);
-  cout<<"Simple expo params (1): "<<fit1->GetParName(0)<<"="<<fit1->GetParameter(0)<<"   "<<fit1->GetParName(1)<<"="<<fit1->GetParameter(1)<<endl;
+  fit1->SetParameter(1,0.0);//fitLow);
+  fit1->SetParameter(2,bkgPar1[ilep][ipur]);
+  cout<<"Simple expo params (1): "<<fit1->GetParName(0)<<"="<<fit1->GetParameter(0)<<"   "<<fit1->GetParName(1)<<"="<<fit1->GetParameter(1)<<"  "<<fit1->GetParName(2)<<"="<<fit1->GetParameter(2)<<endl;
 
   double fitValLow=fit1->Eval(fitLow);
   double fitValHigh=fit1->Eval(fitHigh);
   double fit1Int0=fit1->Integral(fitLow,fitHigh);//
   double deltaMZZ=fitHigh-fitLow;
-  double fit1Int0b=(fitValLow-fitValHigh)/fabs(fit1->GetParameter(1));//+fitValHigh*deltaMZZ;
-  cout<<"Integral by hand="<<fit1Int0b<<endl;
+  double fit1Int0b=(fitValLow-fitValHigh)/fabs(fit1->GetParameter(2));//+fitValHigh*deltaMZZ;
+  cout<<"Integral with TF1="<<fit1Int0<<"  Integral by hand="<<fit1Int0b<<endl;
   fit1->SetParameter(0,bkgNorm[ilep][ipur]/fit1Int0b);
  
-  cout<<"Simple expo params (2): "<<fit1->GetParName(0)<<"="<<fit1->GetParameter(0)<<"   "<<fit1->GetParName(1)<<"="<<fit1->GetParameter(1)<<endl;
+  cout<<"Simple expo params (2): "<<fit1->GetParName(0)<<"="<<fit1->GetParameter(0)<<"   "<<fit1->GetParName(2)<<"="<<fit1->GetParameter(2)<<endl;
   cout<<"Integral of fit func is "<<fit1->Integral(fitLow,fitHigh)<<endl;
  cout<<"BACKGROUND INTEGRAL with TF1 built in. Before rescaling:"<< fit1Int0<<"  after:"<<fit1->Integral(fitLow,fitHigh)<<endl;
+
+  }//end if ipur==1
+  else{//1JLP or 2J
+
+    //Fit function is a simple expo
+    fit1=new TF1("fitfunc2",levExpo,fitLow,fitHigh,4);
+    fit1->SetParName(0,"Normalization");
+    fit1->SetParName(1,"Shift");
+    fit1->SetParName(2,"Sigma");
+    fit1->SetParName(3,"P0");
+    fit1->SetParameter(0,1.0);
+    fit1->SetParameter(1,490.0);//fitLow);
+    fit1->SetParameter(2,bkgPar1[ilep][ipur]);
+    fit1->SetParameter(3,bkgPar2[ilep][ipur]);
+    cout<<"Lev expo params (1): "<<fit1->GetParName(0)<<"="<<fit1->GetParameter(0)<<"   "<<fit1->GetParName(1)<<"="<<fit1->GetParameter(1)<<"  "<<fit1->GetParName(2)<<"="<<fit1->GetParameter(2)<<"  "<<fit1->GetParName(3)<<"="<<fit1->GetParameter(3)<<endl;
+
+    double fitValLow=fit1->Eval(fitLow);
+    double fitValHigh=fit1->Eval(fitHigh);
+    double fit1Int0=fit1->Integral(fitLow,fitHigh);//
+    double deltaMZZ=fitHigh-fitLow;
+    double fit1Int0b=(fitValLow-fitValHigh)/fabs(fit1->GetParameter(2));//+fitValHigh*deltaMZZ;
+    cout<<"Integral with TF1="<<fit1Int0<<"  Integral by hand="<<fit1Int0b<<endl;
+    fit1->SetParameter(0,bkgNorm[ilep][ipur]/fit1Int0);
+ 
+    cout<<"Lev expo params (2): "<<fit1->GetParName(0)<<"="<<fit1->GetParameter(0)<<"   "<<fit1->GetParName(2)<<"="<<fit1->GetParameter(2)<<"   "<<fit1->GetParName(3)<<"="<<fit1->GetParameter(3)<<endl;
+    cout<<"Integral of fit func is "<<fit1->Integral(fitLow,fitHigh)<<endl;
+    cout<<"BACKGROUND INTEGRAL with TF1 built in. Before rescaling:"<< fit1Int0<<"  after:"<<fit1->Integral(fitLow,fitHigh)<<endl;
+
+  }//end if ipur different from 1
+
   //find max
   double maxData=hData->GetBinContent(hData->GetMaximumBin());
   double maxMC=hMCTOT->GetBinContent(hMCTOT->GetMaximumBin());
   double mymax=maxData;
   if(maxMC>maxData)mymax=maxMC;
-  mymax*=1.15;
+  if(ipur==2)mymax*=2.5;//1.45;
+  else mymax*=1.15;
   double mymin=0.002;
 
   string canName="plot_mzz_"+leptType[ilep]+purType[ipur];
@@ -224,6 +278,7 @@ void plotWithFit(){
   hs->SetMaximum(mymax);
  
   hs->Draw("HIST");
+  if(ipur==2)hs->GetXaxis()->SetRangeUser(0.0,1370.0);
   hs->GetXaxis()->SetTitle("m_{ZZ} [GeV]");
   hs->GetYaxis()->SetTitle("events / GeV"); 
   hs->GetXaxis()->SetLabelSize(0.035);
