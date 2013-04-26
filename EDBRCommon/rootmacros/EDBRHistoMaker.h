@@ -957,9 +957,8 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					else continue;
 					
 					//mt cut 30
-					if(mt[ivec]>30);
-					else continue;
-
+					//if(mt[ivec]>30);
+					//else continue;
 
 					//cut on mjj
 					//if(mJJNoKinFit[ivec]<50)continue;	
@@ -997,6 +996,22 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//nsubjettiness LP
 					//if(nsubj21[ivec]>0.5&&nsubj21[ivec]<0.75);
 					//else continue;
+
+					//-- END of ALL CUTS --
+
+					//Printout for debugging
+					/*
+					if(mZZ[ivec]>1800)
+					  {
+					    cout << event             << " " << run           << " " << mZZ[ivec]       << " " 
+						 << ptlep1[ivec]      << " " << etalep1[ivec] << " " << philep1[ivec]   << " "   
+						 << met               << " " << philep2[ivec] << " " << mt[ivec]        << " " 
+						 << ptZll[ivec]                                                         << " "
+					         << ptjet1[ivec]      << " " << etajet1[ivec] << " " << phijet1[ivec]   << " " 
+					         << mJJNoKinFit[ivec] << " " << nsubj21[ivec] << endl; 
+					  }
+					*/
+					
 				}
 
 				/// Here go the histograms that must be filled only once per event.
