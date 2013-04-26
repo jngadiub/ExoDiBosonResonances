@@ -26,13 +26,20 @@ If you have a different format of the trees, see at the end of
 these instructions. When you are ready with it, come back to this
 point.
 
-Inside fitSidebands.cpp, edit the paths to the TTrees ("inDir") and 
-to the output directory ("myOutDir"). When it fills the TChain called
-chainMC, make sure that you load the TTrees that you want (i.e.,
+b) Inside Config_XZZ.h and Config_XWW.h (depends on what you are doing), 
+edit the paths to the TTrees ("inDir") and 
+to the output directory ("myOutDir"). Plus, there are more steering 
+flags and parameters that you want ot make sure are set to what you need.
+When it fills the TChain called chainMC, make sure that you 
+load the TTrees that you want (i.e.,
 use the W+jets for XWW, the DY+jets for XZZ).
 
-b) check the section of these instructions called "Other tunable 
+Check the section of these instructions called "Other tunable 
 things in the alpha calculation"
+
+IMPORTANT: if you already compiled once, and you change only the Config,
+you must delete the executable and recompile if you want that your changes
+take over.
 
 c) compile and execute. From the command line:
 
@@ -42,7 +49,6 @@ c) compile and execute. From the command line:
 Ignore error messages like 
 Error in <TTree::Fill>: Failed filling branch:SelectedCandidatesV2.region, nbytes=-1, entry=19940
  This error is symptomatic of a Tree created as a memory-resident Tree
-
 
 d) the code loops over the nXjet categories ( ==> 1-Jet and 2-Jet topologies)
 and for each of them saves in the output directory:
@@ -73,9 +79,10 @@ analysis framework containing the data in the sideband region.
 Same considerations as 1.a) on the format of the trees apply.
 The workspaces produced by fitSidebands (i.e., part 1)
 
-b) inside fitBackgrounds.cpp, set the path to the trees 
-with the data, the output directory (must match the one 
-set in fitSidebands.cpp). The code attempts by default
+b) Configurations and binnings are read from the same
+Config_XZZ.h and binning_XZZ.h ised for the first step.
+Again, review the values in the config files. 
+The code attempts by default
 a fit using two functions: simple exponential and levelled
 exponential. If you want to change this, you must edit
 this in the main() function. Also, the fit is performed
@@ -105,8 +112,8 @@ sideband and the fit to them, including the error bands on the fit.
 ****** Other tunable things in the alpha calculation **********
 
 
-In SidebandFitter, at the top, there are some arrays with 
-the binning of the histograms, one for each event category.
+In binningFits_XZZ.h and binningFits_XWW.h  (iot depends on the analysis you do)
+there are some arrays with the binning of the histograms, one for each event category.
 Tune them to your wishes.
 
 Inside void SidebandFitter::alphaFit the code tries to fit

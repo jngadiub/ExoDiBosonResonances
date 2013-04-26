@@ -1,5 +1,5 @@
 
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130424test/";
+const std::string myOutDir="FitSidebandsMJJ_ZZ_20130424/";
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsb/";
 
@@ -19,6 +19,6 @@ const bool plotDecorrLevExpoMain=false;//choose what to plot as main fit functio
 std::string bkgd_decorr_name="levexp_dcr";
 
 
-const std::string datacardDir("DataCards_XZZ_20130425/");
+const std::string datacardDir("DataCards_XZZ_20130426/");
 float mZZmax_=2600;
 
