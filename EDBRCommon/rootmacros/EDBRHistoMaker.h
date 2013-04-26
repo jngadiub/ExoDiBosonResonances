@@ -955,6 +955,11 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//cut from fermilab
 					if(deltaR_LJ>1.57 && deltaPhi_JMET>2. && deltaPhi_JWL>2.);
 					else continue;
+					
+					//mt cut 30
+					if(mt[ivec]>30);
+					else continue;
+
 
 					//cut on mjj
 					//if(mJJNoKinFit[ivec]<50)continue;	
