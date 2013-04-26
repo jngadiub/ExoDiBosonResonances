@@ -261,14 +261,17 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 			//add R0 to alpha
 			TH1D * alpha_Final = (TH1D*)alpha_ORI->Clone("h_alpha_smoothened_Final");
 			TH1D * R0=0;
-			if(iP==0)R0=&R0_vector.at(0);//LP
-			else if(iP==1)R0=&R0_vector.at(1);//HP
-			/* //a test to see we get what they are
-			   TCanvas * cr1 = new TCanvas();
-			   R0->Draw();
-			   TString r0test = Form("test_%d_R0_test.png",iP);
-			   cr1->SaveAs( r0test );
-			 */
+			if(inxj==1&&iP==0)R0=&R0_vector.at(0);//1JLP
+			else if(inxj==1&&iP==1)R0=&R0_vector.at(1);//1JHP
+			else if(inxj==2)R0=&R0_vector.at(2);//2J
+			
+			/*
+			//a test to see we get what they are
+			TCanvas * cr1 = new TCanvas();
+			R0->Draw();
+			TString r0test = Form("test_%dJ_%d_R0_test.png",inxj,iP);
+			cr1->SaveAs( r0test );
+			*/
 
 			//do alpha_Final = (1-R0) * alpha_ORI
 			alpha_Final->Reset();
@@ -285,10 +288,12 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 			}
 
 			TH1D *myalpha= alpha_Final;
+			//TH1D *myalpha= alpha_ORI;
+
 			//save R0 and alpha_Final in the same file
 			R0->Write();
 			alpha_Final->Write();	
-		
+
 
 			/*
 			   outFileName=myOutDir+"/Workspaces_alpha_"+ss.str()+"btag_"+leptType+".root";
@@ -319,8 +324,9 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 			myalpha->SetMarkerColor(kBlue);
 			myalpha->SetXTitle("m_{ZZ} [GeV]");
 			myalpha->SetYTitle("#alpha");
-			myalpha->GetFunction("ratio_fit_expo")->SetBit(TF1::kNotDraw);
-			myalpha->GetFunction("fitPolyRooFit")->SetBit(TF1::kNotDraw);
+			//myalpha->GetFunction("ratio_fit_expo")->SetBit(TF1::kNotDraw);
+			//myalpha->GetFunction("fitPolyRooFit")->SetBit(TF1::kNotDraw);
+			myalpha->GetFunction("alpha_fitfunc")->SetBit(TF1::kNotDraw);
 			myalpha->Draw("PE0");
 			char canvasName[400];
 			sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.eps", myOutDir.c_str(), inxj,pur_str.c_str(), leptType.c_str());
@@ -328,7 +334,6 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 			sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.pdf", myOutDir.c_str(), inxj,pur_str.c_str(), leptType.c_str());
 			calphaAVG->SaveAs( canvasName  );
 			delete calphaAVG;
-
 			cout<<"Generating toys"<<endl;
 			//2: use it as template for generating toys
 			TH1D *h_dist_p0=new TH1D("h_dist_p0","Distribution of par0 of fit to alpha for 500 toys",1000,-5.0,5.0);
@@ -527,63 +532,83 @@ void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name,std::s
 
 vector<TH1D> doR0(TTree* treeSBOther, TTree* treeSBData)
 {
-	//Here I do not consider 2 jet case
+	//do R0 for 3 categories
+	//0 1J LP; 1 1JHP; 2 2J ALLP
 	vector<TH1D> R0_vector;
+	for( unsigned int inxj=1; inxj<=jetCats; inxj++ ) 
+	{
+		double purityCut=-1;
+		for(int iP=0;iP<=1;iP++)
+		{	//loop over purity categories
 
-	double purityCut=-1;
-	for(int iP=0;iP<=1;iP++)
-	{	//loop over purity categories
-		purityCut=iP;
-		int nBins=nBins1;
-		const double* bins=bins1;
-		TString pur_str="";
-		if(purityCut==0)pur_str="LP";
-		if(purityCut==1)pur_str="HP";
+			purityCut=(double)iP;
+			if(inxj==2)
+			{
+				purityCut=-1;//do all purity
+				if(iP==1)break;//for 2jet, do it once.
+			}
+			int nBins=0;
+			const double* bins=0;
+			if(inxj==2){
+				nBins = nBins2;
+				bins = bins2;
+			}    
+			else if(inxj==1){
+				nBins = nBins1;
+				bins = bins1;
+			}
+			loga<<inxj<<" "<<iP<<endl;
+			TString pur_str="";
+			if(purityCut==0)pur_str="LP";
+			if(purityCut==1)pur_str="HP";
+			if(purityCut==-1)pur_str="ALLP";
 
-		double lepCut=-2;
-		TString leptType_=leptType.c_str();
-		if(leptType_=="ELE")lepCut=0;
-		if(leptType_=="MU")lepCut=1;
-		if(leptType_=="ALL")lepCut=-1;
+			double lepCut=-2;
+			TString leptType_=leptType.c_str();
+			if(leptType_=="ELE")lepCut=0;
+			if(leptType_=="MU")lepCut=1;
+			if(leptType_=="ALL")lepCut=-1;
 
-		TString lepTS = Form ("(lep==%.0f)",lepCut );
-		if(lepCut==-1)lepTS="1";
-		int inxj=1;////Here I do not consider 2 jet case 
-		TString nXjetsTS = Form ("(nXjets==%d)",inxj );
-		TString vTagPurityTS = Form ("(vTagPurity==%.0f)",purityCut );
-		TString totalWeight = Form("weight*%f",lumi);
-		TString Cut = lepTS+"*"+nXjetsTS+"*"+vTagPurityTS;			
-		loga<<Cut<<endl;
+			//make cut string
+			TString lepTS = Form ("(lep==%.0f)",lepCut );
+			if(lepCut==-1)lepTS="1";
+			TString nXjetsTS = Form ("(nXjets==%d)",inxj );
+			TString vTagPurityTS = Form ("(vTagPurity==%.0f)",purityCut );
+			if(inxj==2)vTagPurityTS="1";//do not cut on purity in 2 jet case
+			TString totalWeight = Form("weight*%f",lumi);
+			TString Cut = lepTS+"*"+nXjetsTS+"*"+vTagPurityTS;			
+			loga<<Cut<<endl;
 
-		TH1D * mZZSBOther = new TH1D ("mZZSBOther","mZZSBOther",nBins-1,bins);
-		TH1D * mZZSBData = new TH1D ("mZZSBData","mZZSBData",nBins-1,bins);
-		mZZSBOther->Sumw2();
-		mZZSBData->Sumw2();
-		treeSBOther->Draw("mZZ>>mZZSBOther",Cut+"*"+totalWeight);
-		treeSBData->Draw("mZZ>>mZZSBData",Cut);
-		TH1D * R0 = (TH1D *) mZZSBOther->Clone("R0");
-		R0->Reset();
-		R0->Divide(mZZSBOther,mZZSBData);
-		R0->SetName("R0_1J_"+pur_str+"_"+leptType_);
-		R0->SetTitle("R0_1J_"+pur_str+"_"+leptType_);
+			TH1D * mZZSBOther = new TH1D ("mZZSBOther","mZZSBOther",nBins-1,bins);
+			TH1D * mZZSBData = new TH1D ("mZZSBData","mZZSBData",nBins-1,bins);
+			mZZSBOther->Sumw2();
+			mZZSBData->Sumw2();
+			treeSBOther->Draw("mZZ>>mZZSBOther",Cut+"*"+totalWeight);
+			treeSBData->Draw("mZZ>>mZZSBData",Cut);
+			TH1D * R0 = (TH1D *) mZZSBOther->Clone("R0");
+			R0->Reset();
+			R0->Divide(mZZSBOther,mZZSBData);
+			R0->SetName(Form("R0_%dJ_"+pur_str+"_"+leptType_,inxj));
+			R0->SetTitle(Form("R0_%dJ_"+pur_str+"_"+leptType_,inxj));
 
-		TCanvas * cr0 = new TCanvas("cr0","cr0",600,800);
-		cr0->Divide(1,3);
-		cr0->cd(1);
-		mZZSBOther->Draw();
-		cr0->cd(2);
-		mZZSBData->Draw();
-		cr0->cd(3);
-		R0->Draw();
-		cr0->SaveAs(myOutDir+"/R0_1J_"+pur_str+"_"+leptType+".png");
-		cr0->SaveAs(myOutDir+"/R0_1J_"+pur_str+"_"+leptType+".root");
-		//got R0
+			TCanvas * cr0 = new TCanvas("cr0","cr0",600,800);
+			cr0->Divide(1,3);
+			cr0->cd(1);
+			mZZSBOther->Draw();
+			cr0->cd(2);
+			mZZSBData->Draw();
+			cr0->cd(3);
+			R0->Draw();
+			cr0->SaveAs(Form(myOutDir+"/R0_%dJ_"+pur_str+"_"+leptType+".png",inxj));
+			cr0->SaveAs(Form(myOutDir+"/R0_%dJ_"+pur_str+"_"+leptType+".root",inxj));
+			//got R0
 
-		R0_vector.push_back(*R0);
-		delete mZZSBOther;
-		delete mZZSBData;
-		delete R0;
+			R0_vector.push_back(*R0);
+			delete cr0;
+			delete mZZSBOther;
+			delete mZZSBData;
+			delete R0;
+		}
 	}
 	return R0_vector;
 }
-

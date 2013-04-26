@@ -562,7 +562,7 @@ void SidebandFitter::alphaFit( TH1D* alpha_hist , std::vector<double> & fitpars,
 TH1D* SidebandFitter::shuffle( TH1D* inhist, TRandom3* random, char *histName, TH1D* inhist2) {
 
   TH1D* outhist = (TH1D*) inhist->Clone(histName);
-  TF1 *ftmp=(TF1*)outhist->GetFunction((fitfuncName_+"_LowRange").c_str());
+  //TF1 *ftmp=(TF1*)outhist->GetFunction((fitfuncName_+"_LowRange").c_str());
   for(int i=1 ; i <= outhist->GetNbinsX() ; i++) {
 
     float val = outhist->GetBinContent(i);
@@ -570,8 +570,8 @@ TH1D* SidebandFitter::shuffle( TH1D* inhist, TRandom3* random, char *histName, T
     //comment by AB: honestly, I don't remember why we were doing such a thing...
     if (inhist2) err=sqrt(inhist2->GetBinContent(i) *inhist2->GetBinContent(i) +outhist->GetBinError(i)*outhist->GetBinError(i)); 
     else err=outhist->GetBinError(i);//comment by AB: this is what I would have expected to do
-    float valfit=ftmp->Eval(outhist->GetBinCenter(i));
-    float errfit =TMath::Max(float(fabs(val-valfit)),float(inhist->GetBinError(i))) ;  //outhist->GetBinError(i);
+    //float valfit=ftmp->Eval(outhist->GetBinCenter(i));
+    //float errfit =TMath::Max(float(fabs(val-valfit)),float(inhist->GetBinError(i))) ;  //outhist->GetBinError(i);
 
     //use val/err for shuffling around actual alpha hist, valfit/errfit for shuffling around the fit
 
