@@ -88,8 +88,14 @@ else
 
 fi
 
+## calc limit
 
+# - with systematics
 combine -M $algo -n ${label} -m $mass  -s $myrand -d ${datacard}.txt -H $hint --rMax $maxBoundary --rMin $minBoundary
+# - without systematics
+#combine -M $algo -n ${label} -m $mass  -s $myrand -d ${datacard}.txt -H $hint --rMax $maxBoundary --rMin $minBoundary -S 0
+# - without systematics + pseudo data
+#combine -M $algo -n ${label} -m $mass  -s $myrand -d ${datacard}.txt -H $hint --rMax $maxBoundary --rMin $minBoundary -S 0 -t 1
 
 echo "Calculating the significances."
 

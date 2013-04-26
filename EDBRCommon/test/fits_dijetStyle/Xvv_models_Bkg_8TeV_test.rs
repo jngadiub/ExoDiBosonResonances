@@ -73,7 +73,7 @@ mgg_bkg_8TeV_slope3_cat1[0.0,-10.0, 10.0];
 
 mgg_bkg_8TeV_slope_cat2[4000.0,0, 10000000];
 mgg_bkg_8TeV_slope1_cat2[13.0, -100.0, 500.0];
-mgg_bkg_8TeV_slope2_cat2[25.7,0.0, 1000.0];
+mgg_bkg_8TeV_slope2_cat2[25.7,0.0, 100.0];
 mgg_bkg_8TeV_slope3_cat2[0.0,-10.0, 10.0];
 
 mgg_bkg_8TeV_slope_cat3[4000.0,0, 10000000];

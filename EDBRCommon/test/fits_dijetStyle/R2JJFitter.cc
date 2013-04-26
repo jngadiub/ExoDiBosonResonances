@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.5 2013/03/19 17:24:54 hinzmann Exp $
+ * $Id: R2JJFitter.cc,v 1.1 2013/04/24 06:19:18 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -131,10 +131,10 @@ void SetConstantParams(const RooArgSet* params);
 
 RooArgSet* defineVariables()
 {
+
   // define variables of the input ntuple
   RooRealVar* mZZ  = new RooRealVar("mZZ","M(VV)",MMIN,MMAX,"GeV");
   RooRealVar* weight   = new RooRealVar("weight","Reweightings",0,100000,"");
-  //RooRealVar* normWeight  = new RooRealVar("normWeight","Additionnal Weight",0,10000000,"");
   RooRealVar* region   = new RooRealVar("region","jet mass region",-3,3,"");
   RooCategory* categories = new RooCategory("categories","event category 4") ;
   categories->defineType("VV_mass_ele_LP",0);
@@ -144,7 +144,6 @@ RooArgSet* defineVariables()
   //   categories->defineType("dijet_mass_1mtag_1mdtag",4);
   //   categories->defineType("dijet_mass_0mtag",5);
 
-  //RooArgSet* ntplVars = new RooArgSet(*mZZ, *categories, *weight, *normWeight);
   RooArgSet* ntplVars = new RooArgSet(*mZZ, *categories, *weight, *region);
  
   return ntplVars;
@@ -362,15 +361,16 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 void AddBkgData(RooWorkspace* w) {
 
   //TString inDir   = "./MiniTrees/Data_VV/";
-  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/"; 
-  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/"; 
+  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/"; 
+  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/"; 
 
   //TFile dataFile(inDir+"dijetWtag_Moriond_Mar6_miniTree.root");   
-  TFile dataFile(inDir+"treeEDBR_data_xww.root");   
+  //TFile dataFile(inDir+"treeEDBR_data_xww.root");   
+  TFile dataFile(inDir+"treeEDBR_allBkg_xww.root");   
 
   // common preselection cut
   //TString mainCut("1");
-  TString mainCut("region==0 && categories>=0 && categories<4"); //sideband + ignore 2jet categories (for the moment)
+  TString mainCut("region==1 && categories>=0 && categories<4"); //sideband + ignore 2jet categories (for the moment)
 
   Int_t ncat = NCAT;
   Float_t minMassFit(MMIN),maxMassFit(MMAX); 
@@ -384,8 +384,30 @@ void AddBkgData(RooWorkspace* w) {
   cout << "=========" << endl;
   cout << "========= Data" << endl;
   cout << "=========" << endl;
-  RooDataSet Data("Data","dataset",dataTree,*ntplVars,mainCut,"weight");
-  Data->Print("v");
+
+  //============== IMPORTANT ==========================
+
+  //--
+  // For real data
+  //RooDataSet Data("Data","dataset",dataTree,*ntplVars,mainCut,"weight");
+  //--
+
+  //--
+  // For MC background
+  Float_t LumForBkg = 19500.0;
+  RooRealVar lumiForBkg ("lumiForBkg","lumiForBkg",LumForBkg);  
+
+  RooRealVar *weightOriginal = (RooRealVar*) (*ntplVars)["weight"] ;
+  RooFormulaVar *weightNormLumiFormula = new RooFormulaVar("weightNormLumiFormula","","@0*@1",RooArgList(*weightOriginal, lumiForBkg));    
+
+  RooDataSet *DataNoWeight = new RooDataSet("DataNoWeight","DataNoWeight",dataTree,*ntplVars,mainCut);
+  RooRealVar *weightFinal = (RooRealVar*) DataNoWeight->addColumn(*weightNormLumiFormula) ;
+  RooDataSet Data("Data","dataset",DataNoWeight,*DataNoWeight->get(),mainCut,weightFinal->GetName());
+  //--
+
+  //====================================================
+
+  Data.Print("v");
 
   // split into NCAT  categories;  
   cout << "=========" << endl;
@@ -578,6 +600,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     MggBkgTmp.plotOn(plotMggBkg[c],LineColor(kBlue),Range("fitrange"),NormRange("fitrange")); 
     MggBkgTmp.paramOn(plotMggBkg[c],data[c],"",2,"NELU",0.356855,0.877016,0.741525);
     plotMggBkg[c]->Draw();
+    plotMggBkg[c]->SetMinimum(0.1);    
 
     Double_t chi2 = plotMggBkg[c]->chiSquare(3);
     char Chi2Text[55]; 
