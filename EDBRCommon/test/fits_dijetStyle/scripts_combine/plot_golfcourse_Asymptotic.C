@@ -56,6 +56,9 @@ const float intLumi=19.5;
 const float BRZZ2l2q=isZZChannel?0.0941:0.2882464;
 void plot_golfcourse_Asymptotic(bool unblind){
 
+  double ScaleFactorSignal=1.; //???? doesn't work for the moment
+  //double ScaleFactorSignal=500.; //same used when creating the datacards
+
   bool useNewStyle=true;
   if(useNewStyle)  setFPStyle();
 
@@ -220,13 +223,13 @@ void plot_golfcourse_Asymptotic(bool unblind){
 
     mass[nMassEff]=v_mh.at(im);
     //if( mass[nMassEff]==600.0)cout<<"=============> 600 !!!"<<endl;
-    obs_lim_cls[nMassEff]=v_obs.at(im)*fl_xs;
+    obs_lim_cls[nMassEff]=v_obs.at(im)*fl_xs*ScaleFactorSignal;
     nMassEff++;
     if(!excl){
       mass1[nMassEff1]=v_mh.at(im);
-      medianD[nMassEff1]=v_median.at(im)*fl_xs;
-      up68err[nMassEff1]=(v_68h.at(im)-v_median.at(im))*fl_xs;
-      down68err[nMassEff1]=(v_median.at(im)-v_68l.at(im))*fl_xs;
+      medianD[nMassEff1]=v_median.at(im)*fl_xs*ScaleFactorSignal;
+      up68err[nMassEff1]=(v_68h.at(im)-v_median.at(im))*fl_xs*ScaleFactorSignal;
+      down68err[nMassEff1]=(v_median.at(im)-v_68l.at(im))*fl_xs*ScaleFactorSignal;
       cout<<"M="<<mass1[nMassEff1]<<"  Median="<<medianD[nMassEff1]<<endl;
       
       //scale factor 100 for making the xsect visible
@@ -248,9 +251,9 @@ void plot_golfcourse_Asymptotic(bool unblind){
       
       if(skip95 )continue;
       mass95[nM95]=v_mh.at(im);
-      median95[nM95]=v_median.at(im)*fl_xs;
-      up95err[nM95]=(v_95h.at(im)-v_median.at(im))*fl_xs;
-      down95err[nM95]=(v_median.at(im)-v_95l.at(im))*fl_xs;
+      median95[nM95]=v_median.at(im)*fl_xs*ScaleFactorSignal;
+      up95err[nM95]=(v_95h.at(im)-v_median.at(im))*fl_xs*ScaleFactorSignal;
+      down95err[nM95]=(v_median.at(im)-v_95l.at(im))*fl_xs*ScaleFactorSignal;
    
       //  cout<<"M95: "<< mass95[nM95]<<" "<<median95[nM95]<<" +"<<up95err[nM95]<<"   -"<< down95err[nM95]<<
       //	" ("<<v_95h.at(im) <<" - "<<v_median.at(im) <<")"<<endl;
