@@ -18,8 +18,8 @@
 #include "TPaveText.h"
 
 void plot_Significance(bool unblind=false);
-const float intLumi=19.5;
 
+const float intLumi=19.5;
 
 void plot_Significance(bool unblind){
 
@@ -27,6 +27,8 @@ void plot_Significance(bool unblind){
   gROOT->ProcessLine(".x tdrstyle.cc");
   gStyle->SetPadLeftMargin(0.16);
  
+  double XMIN=1000;
+  double XMAX=2500;
 
 
   //take tree with exp significance for all masses
@@ -69,7 +71,7 @@ void plot_Significance(bool unblind){
   // cout<<"Check order: "<<iMH<<" -> "<<v_mhTMP.at(iMH)<<endl;
   //iMH++;
   // }
- iMH=0;
+  iMH=0;
   while(iMH<nMH){
     double mhTMP=v_mhTMP.at(iMH);
     cout<<"Check "<<mhTMP<<endl;
@@ -113,7 +115,7 @@ void plot_Significance(bool unblind){
   grExp->SetLineStyle(kDashed);
   grObs->SetLineStyle(kSolid);
 
-  TLegend *l=new TLegend(0.25,0.20,0.65,0.30);
+  TLegend *l=new TLegend(0.19,0.14,0.59,0.24);
   l->AddEntry(grExp,"Expected Significance","L");
   if(unblind)l->AddEntry(grObs,"Observed Significance","LP");
   l->SetFillColor(kWhite);
@@ -121,9 +123,11 @@ void plot_Significance(bool unblind){
   TCanvas *cS=new TCanvas("canSig","Significance EXO-VV",800,800);
   cS->cd();
 
-  double fr_left=590.0, fr_down=1e-06,fr_right=2220.0,fr_up=0.6;
-  grExp->GetXaxis()->SetTitle("M_{1} [GeV]");
+  double fr_left=XMIN, fr_down=1e-06,fr_right=XMAX,fr_up=0.6;
+  grExp->GetXaxis()->SetTitle("M_{VV} [GeV]");
   grExp->GetYaxis()->SetTitle("p-value");// #rightarrow 2l2q
+  grExp->GetYaxis()->SetTitleOffset(1.4);// #rightarrow 2l2q
+  grExp->SetTitle("");
 
   grExp->Draw("AL");
   if(unblind)  grObs->Draw("LP");
@@ -138,55 +142,76 @@ void plot_Significance(bool unblind){
   const double quant3sigma=1.34989803163009588e-03;
   const double quant4sigma=3.16712418331199785e-05;
 
-   TLine *l1=new TLine();
+  TLine *l1=new TLine();
   l1->SetLineStyle(2);
   l1->SetLineWidth(3.0);
   l1->SetLineColor(kRed);
-  l1->DrawLine(600.0,quant1sigma,2000.0,quant1sigma);
+  l1->DrawLine(XMIN,quant1sigma,XMAX,quant1sigma);
   TLine *l2=new TLine();
   l2->SetLineStyle(2);
   l2->SetLineWidth(3.0);
   l2->SetLineColor(kRed);
-  l2->DrawLine(600.0,quant2sigma,2000.0,quant2sigma);
+  l2->DrawLine(XMIN,quant2sigma,XMAX,quant2sigma);
   TLine *l3=new TLine();
   l3->SetLineStyle(2);
   l3->SetLineWidth(3.0);
   l3->SetLineColor(kRed);
-  l3->DrawLine(600.0,quant3sigma,2000.0,quant3sigma);
+  l3->DrawLine(XMIN,quant3sigma,XMAX,quant3sigma);
   TLine *l4=new TLine();
   l4->SetLineStyle(2);
   l4->SetLineWidth(3.0);
   l4->SetLineColor(kRed);
-  l4->DrawLine(600.0,quant4sigma,2000.0,quant4sigma);
+  l4->DrawLine(XMIN,quant4sigma,XMAX,quant4sigma);
 
+  TLatex *tex = new TLatex(1025,0.0890157,"1 #sigma");
+  tex->SetTextColor(2);
+  tex->SetTextSize(18);
+  tex->SetTextSize(0.02821317);
+  tex->SetLineWidth(2);
+  tex->Draw();
+  tex = new TLatex(1025,0.0119609,"2 #sigma");
+  tex->SetTextColor(2);
+  tex->SetTextSize(0.02821317);
+  tex->SetLineWidth(2);
+  tex->Draw();
+  tex = new TLatex(1025,0.000697899,"3 #sigma");
+  tex->SetTextColor(2);
+  tex->SetTextSize(0.02821317);
+  tex->SetLineWidth(2);
+  tex->Draw();
+  tex = new TLatex(1025,1.7683e-05,"4 #sigma");
+  tex->SetTextColor(2);
+  tex->SetTextSize(0.02821317);
+  tex->SetLineWidth(2);
+  tex->Draw();
 
   TPaveText* cmslabel = new TPaveText( 0.145, 0.953, 0.6, 0.975, "brNDC");
-   cmslabel->SetFillColor(kWhite);
-   cmslabel->SetTextSize(0.038);
-   cmslabel->SetTextAlign(11);
-   cmslabel->SetTextFont(62);
-   cmslabel->SetBorderSize(0);
-   //   std::string leftText = "CMS Preliminary 2011";
-   std::string leftText = "CMS";
-   std::string units = "fb ^{-1}";
-   char lumiText[300];
-   sprintf( lumiText, "%.1f %s", intLumi, units.c_str());
-   cmslabel->AddText(Form("%s,  #sqrt{s} = 8 TeV, %s", leftText.c_str(), lumiText));
-   //cmslabel->Draw();
+  cmslabel->SetFillColor(kWhite);
+  cmslabel->SetTextSize(0.038);
+  cmslabel->SetTextAlign(11);
+  cmslabel->SetTextFont(62);
+  cmslabel->SetBorderSize(0);
+  //   std::string leftText = "CMS Preliminary 2011";
+  std::string leftText = "CMS";
+  std::string units = "fb ^{-1}";
+  char lumiText[300];
+  sprintf( lumiText, "%.1f %s", intLumi, units.c_str());
+  cmslabel->AddText(Form("%s,  #sqrt{s} = 8 TeV, %s", leftText.c_str(), lumiText));
+  //cmslabel->Draw();
 
-   TPaveText* label_sqrt = new TPaveText(0.4,0.953,0.96,0.975, "brNDC");
-   label_sqrt->SetFillColor(kWhite);
-   label_sqrt->SetBorderSize(0);
-   label_sqrt->SetTextSize(0.038);
-   label_sqrt->SetTextFont(62);   
-   label_sqrt->SetTextAlign(31); // align right
-   // label_sqrt->AddText("#sqrt{s} = 7 TeV");
-   label_sqrt->AddText(Form("%s, L = %s at  #sqrt{s} = 8 TeV", leftText.c_str(), lumiText));
-   label_sqrt->Draw();
+  TPaveText* label_sqrt = new TPaveText(0.4,0.953,0.96,0.975, "brNDC");
+  label_sqrt->SetFillColor(kWhite);
+  label_sqrt->SetBorderSize(0);
+  label_sqrt->SetTextSize(0.038);
+  label_sqrt->SetTextFont(62);   
+  label_sqrt->SetTextAlign(31); // align right
+  // label_sqrt->AddText("#sqrt{s} = 7 TeV");
+  label_sqrt->AddText(Form("%s, L = %s at  #sqrt{s} = 8 TeV", leftText.c_str(), lumiText));
+  label_sqrt->Draw();
 
 
-   cS->SaveAs("EXOZZ_2l2q_Significance.root");
-   cS->SaveAs("EXOZZ_2l2q_Significance.eps");
-   cS->SaveAs("EXOZZ_2l2q_Significance.png");
+  cS->SaveAs("EXOZZ_2l2q_Significance.root");
+  cS->SaveAs("EXOZZ_2l2q_Significance.eps");
+  cS->SaveAs("EXOZZ_2l2q_Significance.png");
 
 }
