@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.1 2013/04/24 06:19:18 santanas Exp $
+ * $Id: R2JJFitter.cc,v 1.2 2013/04/26 09:55:14 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -1303,6 +1303,8 @@ Double_t effSigma(TH1 *hist) {
 
 void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char* fileBkgName, int iChan, float mass) {
 
+  double ScaleFactorSignal = 1.;
+  //double ScaleFactorSignal = 500.; // Such that we expect ~10 events for Bulk Graviton, M=2 TeV, c=0.2
 
   TString cardDir = TString::Format("datacards/%d/",int(mass));
   Int_t ncat = NCAT;
@@ -1379,7 +1381,7 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   outFile << "process                 MggSig     MggBkg     " << endl;
   outFile << "process                    0          1          " << endl;
   outFile <<  "rate                      " 
-	  << "  " << signal[iChan]->sumEntries()*lumi->getVal() << "  " << 1 << endl;
+	  << "  " << signal[iChan]->sumEntries()*lumi->getVal()*ScaleFactorSignal << "  " << 1 << endl;
   //<< "  " << signal[iChan]->sumEntries()/signal[2]->sumEntries()*20  << "  " << 1 << endl;
   //should we put the correct rate of events?
   outFile << "--------------------------------" << endl;
