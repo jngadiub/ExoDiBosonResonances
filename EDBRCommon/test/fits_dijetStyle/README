@@ -75,7 +75,7 @@ Dijet-like fit
 
   - Edit : plot_golfcourse_Asymptotic.C
     - ScaleFactorSignal  
-      - much be the same defined at point 1) in R2JJFitter.cc
+      - must be the same defined at point 1) in R2JJFitter.cc
     - isZZChannel
     - TFile *fFREQ=new TFile("higgsCombineEXOZZ.Asymptotic.TOTAL.root","READ");
     - string xsect_file_th="../data/xsect_BulkG_ZZ (or WW) _c0p2_xsect_in_pb.txt"; 
@@ -119,7 +119,7 @@ Dijet-like fit
       - decide fit function
       - PAR3 constant? ((RooRealVar*) w->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c)))->setConstant(true); 
     - MakeDataCard_1Channel
-      - ScaleFactorSignal ????? does not work... to be checked...
+      - ScaleFactorSignal
 
 
 [2] Things to fix/check
