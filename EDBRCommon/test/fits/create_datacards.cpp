@@ -354,7 +354,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	  double varValue=thisVar->getVal();
 	  cout<<"="<<varValue<<flush;
 	  double varError=thisVar->getError();
-	  double systError=alphaErr.at(iVar)->getVal();//error on alpha from MC stats, estimated with pseudo-exp
+	  double systError=0.0;
+	  if(doPseudoExp) systError=alphaErr.at(iVar)->getVal();//error on alpha from MC stats, estimated with pseudo-exp
 	  cout<<" +/- "<<varError<<" +/- "<<systError <<endl; 
 	  varError=sqrt(varError*varError +  systError*systError);
 	  
