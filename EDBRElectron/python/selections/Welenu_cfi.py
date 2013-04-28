@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms 
 
 Welenu_kinematics = cms.PSet(
-    mass = cms.string('mass() >= 77.4 && mass() < 83.4'),
+    #mass = cms.string('mass() >= 77.4 && mass() < 83.4'),
     pt = cms.string('leg1().pt() > 90 && leg2().pt() > 40 '),
 )
 Welenu_quality  = cms.PSet(
