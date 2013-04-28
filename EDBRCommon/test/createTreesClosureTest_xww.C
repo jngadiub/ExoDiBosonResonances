@@ -43,10 +43,10 @@ int createTreesClosureTest_xww()
 {
 	//########EDIT THIS PART###########
 	TString inTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange";
-	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv";
-	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv";
+	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from40_noConv";
+	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from40_noConv";
 
-	const double A1Low=50.0;
+	const double A1Low=40.0;
 	const double A1High=58.0;
 
 	const double A2Low=58.0;
@@ -104,6 +104,7 @@ int createTreesClosureTest_xww()
 		double phiZll[99];
 		double ptZjj[99];
 		double lep[99];
+		double mt[99];
 		int    nXjets[99];
 		int nLooseEle;
 		int nLooseMu;
@@ -145,6 +146,7 @@ int createTreesClosureTest_xww()
 		tIn->SetBranchAddress("met", &met);
 		tIn->SetBranchAddress("nXjets", nXjets);
 		tIn->SetBranchAddress("lep", lep);
+		tIn->SetBranchAddress("mt", mt);
 		tIn->SetBranchAddress("region", region);
 		tIn->SetBranchAddress("nsubj21", nsubj21);
 		tIn->SetBranchAddress("PUweight", &PUweight);
@@ -196,8 +198,8 @@ int createTreesClosureTest_xww()
 		tAnaSig->Branch("categories"          ,&categories             ,"categories[nCands]/I");
 		tAnaSig->Branch("MCmatch"          ,&MCmatchAna             ,"MCmatch[nCands]/D");
 
-		double regionAnaSigPlain;
-		double regionAnaSBPlain;
+		double regionAnaSigPlain,regionA1A2SigPlain,regionABSigPlain;
+		double regionAnaSBPlain,regionA1A2SBPlain,regionABSBPlain;
 		int nCandsAnaPlain;
 		unsigned int neventAnaSigPlain, runAnaPlain;
 		double lepAnaPlain,mZZAnaPlain,mJJAnaPlain;
@@ -231,19 +233,30 @@ int createTreesClosureTest_xww()
 		TTree *tABSig = tAnaSig->CloneTree(0);			
 		tABSig->SetName("SelectedCandidatesAB");
 
+        TTree *tA1A2SigPlain = tAnaSigPlain->CloneTree(0);    
+        tA1A2SigPlain->SetName("SelectedCandidatesA1A2Plain");
+        TTree *tABSigPlain = tAnaSigPlain->CloneTree(0);    
+        tABSigPlain->SetName("SelectedCandidatesABPlain");		
+		
 		fOutSB->cd();
 		TTree *tAnaSB = tAnaSig->CloneTree(0);
 		TTree *tA1A2SB = tA1A2Sig->CloneTree(0);
 		TTree *tABSB = tABSig->CloneTree(0);	
-		TTree *tAnaSBPlain = tAnaSigPlain->CloneTree(0);	
+		TTree *tAnaSBPlain = tAnaSigPlain->CloneTree(0);
+		TTree *tA1A2SBPlain = tA1A2SigPlain->CloneTree(0);
+		TTree *tABSBPlain = tABSigPlain->CloneTree(0);	
 		tAnaSB->Branch("region"             ,&regionAnaSB           ,"region[nCands]/D"   );
 		tA1A2SB->Branch("region"             ,&regionA1A2SB           ,"region[nCands]/D"   );
 		tABSB->Branch("region"             ,&regionABSB           ,"region[nCands]/D"   );
 		tAnaSBPlain->Branch("region"             ,&regionAnaSBPlain           ,"region/D"   );
+		tA1A2SBPlain->Branch("region"             ,&regionA1A2SBPlain           ,"region/D"   );
+		tABSBPlain->Branch("region"             ,&regionABSBPlain           ,"region/D"   );
 		tAnaSig->Branch("region"             ,&regionAnaSig           ,"region[nCands]/D"   );  
 		tA1A2Sig->Branch("region"             ,&regionA1A2Sig           ,"region[nCands]/D"   );  
 		tABSig->Branch("region"             ,&regionABSig           ,"region[nCands]/D"   );
 		tAnaSigPlain->Branch("region"             ,&regionAnaSigPlain           ,"region/D"   );
+		tA1A2SigPlain->Branch("region"             ,&regionA1A2SigPlain           ,"region/D"   );
+		tABSigPlain->Branch("region"             ,&regionABSigPlain           ,"region/D"   );
 
 
 		for(int i=0;i<tIn->GetEntries();i++){
@@ -281,6 +294,10 @@ int createTreesClosureTest_xww()
 				//b tag veto
 				if(nbtagsM[ivec]==0);
 				else continue;
+
+				//mt cut
+				//if(mt[ivec]>30);
+				//else continue;
 
 				//b control region
 				//if(nbtagscleanT[ivec]>=1);
@@ -339,7 +356,12 @@ int createTreesClosureTest_xww()
 
 			//fill plain tree
 			regionAnaSigPlain=regionAnaSig[0];
+			regionA1A2SigPlain=regionA1A2Sig[0];
+			regionABSigPlain=regionABSig[0];
 			regionAnaSBPlain=regionAnaSB[0];
+			regionA1A2SBPlain=regionA1A2SB[0];
+			regionABSBPlain=regionABSB[0];
+
 			nCandsAnaPlain=nCandsAna;
 			neventAnaSigPlain=neventAnaSig;
 			runAnaPlain=runAna;
@@ -371,6 +393,10 @@ int createTreesClosureTest_xww()
 
 				tAnaSigPlain->Fill();//signal and sideband as usual
 				tAnaSBPlain->Fill();//signal and sideband as usual
+                tA1A2SigPlain->Fill();// sideband A1, signal A2
+                tA1A2SBPlain->Fill();// sideband A1, signal A2
+                tABSigPlain->Fill();// sideband A, signal B
+                tABSBPlain->Fill();// sideband A, signal B
 
 			}
 		}//end of loop over input tree
@@ -383,6 +409,8 @@ int createTreesClosureTest_xww()
 		tA1A2Sig->Write();
 		tABSig->Write();
 		tAnaSigPlain->Write();
+        tA1A2SigPlain->Write();
+        tABSigPlain->Write();
 		fOutSig->Close();
 		delete fOutSig;
 
@@ -392,6 +420,8 @@ int createTreesClosureTest_xww()
 		tA1A2SB->Write();
 		tABSB->Write();
 		tAnaSBPlain->Write();
+        tA1A2SBPlain->Write();
+        tABSBPlain->Write();
 		fOutSB->Close();
 		delete fOutSB;
 
