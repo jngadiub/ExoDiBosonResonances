@@ -71,7 +71,7 @@ HLTWeightsMergedMu =cms.EDProducer("HLTWeightProducer2012WmunuSingleJet",
                                                        cms.PSet( lumi = cms.double(19532.0),#Run2012
                                                                  lep1 = globMuIdSF_Run2012,
                                                                  lep2 = globMuIdSF_Run2012,
-                                                                 hlt = doubleMuTrigSF_Run2012 
+                                                                 hlt = singleMuTrigSF_Run2012 
                                                                  )   
                                                        #  dummyHLTMuEffWeights
                                                        )# end ranges
