@@ -47,13 +47,17 @@ int createTreesClosureTest_xww()
 	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from40_noConv";
 
 	const double A1Low=40.0;
-	const double A1High=58.0;
+	const double A1High=55.0;
 
-	const double A2Low=58.0;
+	const double A2Low=55.0;
 	const double A2High=65.0;
 
-	const double BLow=105;
-	const double BHigh=130;
+	const double BLow=100;
+	const double BHigh=115;
+
+	const double SigLow=65;
+	const double SigHigh=105;
+
 
 	//#########################
 
@@ -343,9 +347,10 @@ int createTreesClosureTest_xww()
 				else if(lepAna[ivec]==1&&nXjetsAna[ivec]==2)categories[ivec]=5;//5 mu 2J
 				else categories[ivec]=-1;
 
-				//signal A2Hihg to BLow, sideband A+B
-				if(  (mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A1Low)  || (mJJNoKinFit[ivec]<BHigh &&mJJNoKinFit[ivec]>BLow)  )regionAnaSB[ivec]=0;  else regionAnaSB[ivec]=-1;
-				if(mJJNoKinFit[ivec]<BLow&&mJJNoKinFit[ivec]>A2High)regionAnaSig[ivec]=1; else regionAnaSig[ivec]=-1;
+				//signal SigLow SigHigh, sideband A
+				//if(  (mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A1Low)  || (mJJNoKinFit[ivec]<BHigh &&mJJNoKinFit[ivec]>BLow)  )regionAnaSB[ivec]=0;  else regionAnaSB[ivec]=-1;
+				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A1Low)regionAnaSB[ivec]=0;  else regionAnaSB[ivec]=-1;
+				if(mJJNoKinFit[ivec]<SigHigh&&mJJNoKinFit[ivec]>SigLow)regionAnaSig[ivec]=1; else regionAnaSig[ivec]=-1;
 				// sideband A1, signal A2
 				if(mJJNoKinFit[ivec]<A1High&&mJJNoKinFit[ivec]>A1Low)regionA1A2SB[ivec]=0;  else regionA1A2SB[ivec]=-1;
 				if(mJJNoKinFit[ivec]<A2High&&mJJNoKinFit[ivec]>A2Low)regionA1A2Sig[ivec]=1; else regionA1A2Sig[ivec]=-1;
