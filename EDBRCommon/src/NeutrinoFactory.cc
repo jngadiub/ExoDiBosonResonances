@@ -263,7 +263,7 @@ TLorentzVector cmg::NeutrinoFactory::neutrinoP4(TLorentzVector* met, TLorentzVec
 		tmpp2.SetPxPyPzE(nu_pt2 * cos(metphi), nu_pt2 * sin(metphi), pz, sqrt(nu_pt2*nu_pt2 + pz*pz) );
 		TLorentzVector lepton;
 		lepton.SetPxPyPzE(pxl,pyl,pzl,El);
-		if ( fabs((lepton+tmpp1).M()-80.4) < fabs((lepton+tmpp2).M()-80.4) ) return tmpp1;
+		if ( fabs((lepton+tmpp1).M()-MW_) < fabs((lepton+tmpp2).M()-MW_) ) return tmpp1;
 		else return tmpp2;
 	}
 	else
