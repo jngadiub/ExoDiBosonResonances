@@ -31,7 +31,7 @@ class NeutrinoFactory : public Factory<cmg::Neutrino>{
 	
   private:
 
-    TLorentzVector neutrinoP4(TLorentzVector* met, TLorentzVector* lep);
+    TLorentzVector neutrinoP4(TLorentzVector* met, TLorentzVector* lep, int lepType);//0 ele, 1 mu
 
     bool isEleNeutrino_;
     edm::InputTag leptonLabel_;   
