@@ -71,6 +71,11 @@ For WW:
                        3) remove W mass cut 77.3, 83.3
                        4) changed Pz assignment (using type-2 from FNAL group, i.e. 
                            choosing the smallest of the two real roots + correction for complex roots)
+/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_30_04_2013_ForUnblinding/AnaSigTree_from40_noConv
+/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_30_04_2013_ForUnblinding/AnaSBTree_from40_noConv
+	date         : 20130430
+	updates      : for analysis: const double A1Low=40.0; const double A1High=55.0; const double A2Low=55.0; const double A2High=65.0; 
+                                     const double BLow=100; const double BHigh=115; const double SigLow=65; const double SigHigh=105;
 
 
 ###################################################################################################################
