@@ -62,6 +62,17 @@ For WW:
                        1) for the bestCandidate we are using now the highest pt jet
                        2) fullrange ptWL changed to 200
 
+/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_30_04_2013_ForUnblinding/fullallrange/:
+	date         : 20130430
+	cmgtuple     : cmgTuple_0429_CA8/
+	updates      : update from /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange/, 
+                       1) for the bestCandidate we are using now the highest pt jet
+                       2) fullrange ptWL changed to 200
+                       3) remove W mass cut 77.3, 83.3
+                       4) changed Pz assignment (using type-2 from FNAL group, i.e. 
+                           choosing the smallest of the two real roots + correction for complex roots)
+
+
 ###################################################################################################################
 
 For ZZ:
