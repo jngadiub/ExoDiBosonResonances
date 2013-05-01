@@ -201,6 +201,8 @@ TLorentzVector cmg::NeutrinoFactory::neutrinoP4(TLorentzVector* met, TLorentzVec
 		double tmpsolpt1 = (-BB + TMath::Sqrt(tmpdisc))/(2.0*AA);
 		double tmpsolpt2 = (-BB - TMath::Sqrt(tmpdisc))/(2.0*AA);
 
+		//should rejetc negative root
+
 		if ( fabs( tmpsolpt1 - ptnu ) < fabs( tmpsolpt2 - ptnu) ) { newPtneutrino1_ = tmpsolpt1; newPtneutrino2_ = tmpsolpt2;}
 		else { newPtneutrino1_ = tmpsolpt2; newPtneutrino2_ = tmpsolpt1; }
 
@@ -217,7 +219,7 @@ TLorentzVector cmg::NeutrinoFactory::neutrinoP4(TLorentzVector* met, TLorentzVec
 			if (TMath::Abs(tmpsol2-pzl) < TMath::Abs(tmpsol1-pzl)) { pz = tmpsol2; otherSol_ = tmpsol1;}
 			else { pz = tmpsol1; otherSol_ = tmpsol2; }
 			// if pz is > 300 pick the most central root
-			if ( pz > 300. ) {
+			if ( abs(pz) > 300. ) {
 				if (TMath::Abs(tmpsol1)<TMath::Abs(tmpsol2) ) { pz = tmpsol1; otherSol_ = tmpsol2; }
 				else { pz = tmpsol2; otherSol_ = tmpsol1; }
 			}
@@ -251,7 +253,7 @@ TLorentzVector cmg::NeutrinoFactory::neutrinoP4(TLorentzVector* met, TLorentzVec
 		}//end of type3
 
 	}//endl of if real root
-
+/*
 	if(isComplex_)//complex root, correct the pt
 	{
 		double nu_pt1=newPtneutrino1_;
@@ -271,5 +273,9 @@ TLorentzVector cmg::NeutrinoFactory::neutrinoP4(TLorentzVector* met, TLorentzVec
 		TLorentzVector outP4(px,py,pz,sqrt(px*px+py*py+pz*pz));
 		return outP4;
 	}
+*/
+	//dont correct pt neutrino	
+	TLorentzVector outP4(px,py,pz,sqrt(px*px+py*py+pz*pz));
+	return outP4;
 
 }//end neutrinoP4
