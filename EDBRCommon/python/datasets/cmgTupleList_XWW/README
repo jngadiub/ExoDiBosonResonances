@@ -30,7 +30,14 @@ cmgTuple_0429_CA8/     : update from cmgTuple_0314_CA8,
 						2) fullrange ptWL changed to 200
                                                 3) remove W mass cut 77.3, 83.3
                                                 4) changed Pz assignment (using type-2 from FNAL group, i.e. 
-                                                   choosing the smallest of the two real roots + correction for complex roots) 
+                                                   choosing the smallest of the two real roots + neutrino PT correction for complex roots) 
+
+cmgTuple_0428_CA8/     : update from cmgTuple_0314_CA8, 
+						1) for the bestCandidate we are using now the highest pt jet
+						2) fullrange ptWL changed to 200
+                                                3) remove W mass cut 77.3, 83.3
+                                                4) changed Pz assignment (using type-2 from FNAL group by default, i.e. 
+                                                   choosing the smallest of the two real roots + NO neutrino PT correction for complex roots) 
 
 
 
