@@ -1003,14 +1003,18 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					/*
 					if(mZZ[ivec]>1800)
 					  {
-					    cout << event             << " " << run           << " " << mZZ[ivec]       << " " 
-						 << ptlep1[ivec]      << " " << etalep1[ivec] << " " << philep1[ivec]   << " "   
-						 << met               << " " << philep2[ivec] << " " << mt[ivec]        << " " 
-						 << ptZll[ivec]                                                         << " "
-					         << ptjet1[ivec]      << " " << etajet1[ivec] << " " << phijet1[ivec]   << " " 
-					         << mJJNoKinFit[ivec] << " " << nsubj21[ivec] << endl; 
+					    //RunNumber:LumiSection:EvtNumber
+					    //cout << run << ":" << ls << ":" << event << endl;
+					    
+					    cout << event             << " * " << run           << " * " << mZZ[ivec]       << " * " 
+						 << ptlep1[ivec]      << " * " << etalep1[ivec] << " * " << philep1[ivec]   << " * "   
+						 << met               << " * " << philep2[ivec] << " * " << mt[ivec]        << " * " 
+						 << ptZll[ivec]                                                         << " * "
+					         << ptjet1[ivec]      << " * " << etajet1[ivec] << " * " << phijet1[ivec]   << " * " 
+					         << mJJNoKinFit[ivec] << " * " << nsubj21[ivec] << endl; 					    
 					  }
 					*/
+				       
 					
 				}
 
