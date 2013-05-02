@@ -94,6 +94,18 @@ For WW:
 	updates      : for analysis: const double A1Low=40.0; const double A1High=55.0; const double A2Low=55.0; const double A2High=65.0; 
                                      const double BLow=100; const double BHigh=115; const double SigLow=65; const double SigHigh=105;
 
+/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/
+	date         : 20130502
+	cmgtuple     : cmgTuple_0428_CA8/
+	updates      : update from /afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_30_04_2013_ForUnblinding/fullallrange/, 
+                       0) fixed sideband definition
+                       1) for the bestCandidate we are using now the highest pt jet
+                       2) fullrange ptWL changed to 200
+                       3) remove W mass cut 77.3, 83.3
+                       4) changed Pz assignment (using type-2 from FNAL group, i.e. 
+                           choosing the smallest of the two real roots + NO correction for complex roots)
+                       5) storing many different values of mWW, Pz 
+                       6) storing metphi, and PT_neutrino_corrected
 
 
 ###################################################################################################################
