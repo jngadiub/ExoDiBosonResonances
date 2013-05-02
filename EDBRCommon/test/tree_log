@@ -111,6 +111,13 @@ For WW:
 	date         : 20130502
 	updates      : for analysis: const double A1Low=40.0; const double A1High=55.0; const double A2Low=55.0; const double A2High=65.0; 
                                      const double BLow=100; const double BHigh=115; const double SigLow=65; const double SigHigh=105;
+                                     ==> Pz neutrino Type 2, NO PT neutrino correction
+/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected
+/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSBTree_mWW_Type2_corrected
+	date         : 20130502
+	updates      : for analysis: const double A1Low=40.0; const double A1High=55.0; const double A2Low=55.0; const double A2High=65.0; 
+                                     const double BLow=100; const double BHigh=115; const double SigLow=65; const double SigHigh=105;
+                                     ==> Pz neutrino Type 2, WITH PT neutrino correction
 
 
 ###################################################################################################################
