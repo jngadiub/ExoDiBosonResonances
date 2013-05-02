@@ -72,20 +72,20 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
 	//use these for X->ZZ analysis
-	        
+	/*        
 	typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
 	typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
 	typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
 	typedef  cmg::DiMuonDiJetEDBR         cmgMuDiJetEDBR  ;
-	
+	*/
 
 	//use these for X->WW analysis
-	/*
+	
     typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
 	typedef  cmg::WmunuSingleJetEDBR  cmgMuSingleJetEDBR  ; 
 	typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
 	typedef  cmg::WmunuDiJetEDBR      cmgMuDiJetEDBR  ;
-	*/
+	
 	
 	nEvt++;
 
@@ -190,6 +190,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 				analyzeSingleJet(edbrM,ih);        
 				analyzeMuon(edbrM,ih);
 				analyzeVBF(edbrM,ih, vbfTest);
+				if(VType_=="W")CalculateMWW(edbrM,ih,1);
 
 				ih++;
 			}//end loop on candidates
@@ -232,6 +233,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 				analyzeDoubleJet(edbrM,ih,goodKinFit);        
 				analyzeMuon(edbrM,ih);
 				analyzeVBF(edbrM,ih, vbfTest);
+				if(VType_=="W")CalculateMWW(edbrM,ih,1);
 
 				ih++;
 			}//end loop on candidates
@@ -278,6 +280,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 				analyzeSingleJet(edbrE,ih);        
 				analyzeElectron(edbrE,ih);
 				analyzeVBF(edbrE,ih, vbfTest);
+				if(VType_=="W")CalculateMWW(edbrE,ih,0);
 
 				ih++;
 			}//end loop on candidates
@@ -332,6 +335,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 				analyzeDoubleJet(edbrE, ih,goodKinFit);        
 				analyzeElectron(edbrE,ih);
 				analyzeVBF(edbrE,ih, vbfTest);
+				if(VType_=="W")CalculateMWW(edbrE,ih,0);
 
 				ih++;
 			}//end loop on candidates
@@ -543,6 +547,25 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("Ngen"            ,&Ngen_         ,"Ngen/I"                 );
 	outTree_->Branch("xsec"            ,&xsec_         ,"xsec/D"                 );
 
+	outTree_->Branch("mZZ_type0"             ,&mZZ_type0           ,"mZZ_type0[nCands]/D"          );
+	outTree_->Branch("mZZ_type1"             ,&mZZ_type1           ,"mZZ_type1[nCands]/D"          );
+	outTree_->Branch("mZZ_type2"             ,&mZZ_type2           ,"mZZ_type2[nCands]/D"          );
+	outTree_->Branch("mZZ_type3"             ,&mZZ_type3           ,"mZZ_type3[nCands]/D"          );
+	outTree_->Branch("mZZ_type4"             ,&mZZ_type4           ,"mZZ_type4[nCands]/D"          );
+
+    outTree_->Branch("mZZ_type0_ptUncorrected"             ,&mZZ_type0_ptUncorrected           ,"mZZ_type_ptUncorrected[nCands]/D"          );  
+    outTree_->Branch("mZZ_type1_ptUncorrected"             ,&mZZ_type1_ptUncorrected           ,"mZZ_type_ptUncorrected[nCands]/D"          );  
+    outTree_->Branch("mZZ_type2_ptUncorrected"             ,&mZZ_type2_ptUncorrected           ,"mZZ_type_ptUncorrected[nCands]/D"          );  
+    outTree_->Branch("mZZ_type3_ptUncorrected"             ,&mZZ_type3_ptUncorrected           ,"mZZ_type_ptUncorrected[nCands]/D"          );  
+    outTree_->Branch("mZZ_type4_ptUncorrected"             ,&mZZ_type4_ptUncorrected           ,"mZZ_type_ptUncorrected[nCands]/D"          );
+
+    outTree_->Branch("pz_type0"             ,&pz_type0           ,"pz_type0[nCands]/D"          );  
+    outTree_->Branch("pz_type1"             ,&pz_type1           ,"pz_type1[nCands]/D"          );  
+    outTree_->Branch("pz_type2"             ,&pz_type2           ,"pz_type2[nCands]/D"          );  
+    outTree_->Branch("pz_type3"             ,&pz_type3           ,"pz_type3[nCands]/D"          );  
+    outTree_->Branch("pz_type4"             ,&pz_type4           ,"pz_type4[nCands]/D"          );
+
+
 	if(triggerNames_.size()>0){
 		if(debug_)cout<<"Adding branches with trigger names"<<endl;
 		//flags for telling if the event passed a certain trig path
@@ -605,6 +628,11 @@ void AnalyzerEDBR::initDataMembers(){
 		muondXY[i]=-99., muondZ[i]=-99.;
 
 		nXjets[i]=-99.;	
+
+		pz_type0[i]=-99., pz_type1[i]=-99., pz_type2[i]=-99., pz_type3[i]=-99., pz_type4[i]=-99.;
+		mZZ_type0[i]=-99.,mZZ_type1[i]=-99.,mZZ_type2[i]=-99.,mZZ_type3[i]=-99.,mZZ_type4[i]=-99.;
+		mZZ_type0_ptUncorrected[i]=-99.,mZZ_type1_ptUncorrected[i]=-99.,mZZ_type2_ptUncorrected[i]=-99.,mZZ_type3_ptUncorrected[i]=-99.,mZZ_type4_ptUncorrected[i]=-99.;
+
 	} 
 
 

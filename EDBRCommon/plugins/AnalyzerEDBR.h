@@ -40,7 +40,8 @@
 #include "TFile.h"
 #include "TH1F.h"
 
-
+#include "TVector3.h"
+#include "TLorentzVector.h"
 using namespace std;
 
 
@@ -221,7 +222,6 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
      PUB = -99.0;
    }
    
-
   //  if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric finishing Cand #" <<ih<<endl;
   
   }//end analyzeGeneric
@@ -230,6 +230,156 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   /////////////////////////////////////
   //////////////////////////////////////
   /////////////////////////////////////
+
+
+
+  template < typename T > void  CalculateMWW(T edbr,int& ih,int lepType){
+
+	double MW_=VMass_;
+
+	double leppt = edbr->leg1().leg1().pt();
+	double lepphi = edbr->leg1().leg1().phi();
+	double lepeta = edbr->leg1().leg1().eta();
+
+	double metpt = edbr->leg1().leg2().pt();
+	double metphi = edbr->leg1().leg2().phi();
+
+    double  pxj= edbr->leg2().px();
+    double  pyj= edbr->leg2().py();
+    double  pzj= edbr->leg2().pz();
+	double  Ej = edbr->leg2().energy();	
+
+	double	px = metpt*cos(metphi);
+	double	py = metpt*sin(metphi);
+	double  pz = 0;
+	double	pxl= leppt*cos(lepphi);
+	double	pyl= leppt*sin(lepphi);
+	double	pzl= leppt*sinh(lepeta);
+	double	El = edbr->leg1().leg1().energy();
+	double	a = pow(MW_,2) + pow(px+pxl,2) + pow(py+pyl,2) - px*px - py*py - El*El + pzl*pzl;
+	double	b = 2.*pzl;   
+	double	A = b*b -4.*El*El;
+	double	B = 2.*a*b;
+	double	C = a*a-4.*(px*px+py*py)*El*El;
+
+    TLorentzVector lepP4(pxl,pyl,pzl,El);
+    TLorentzVector jetP4(pxj,pyj,pzj,Ej);
+	TLorentzVector neuP4;
+	TLorentzVector neuP4_ptUncorrected;
+	///////////////////////////pz for fnal
+	double M_mu =  0; 
+	if(lepType==1)M_mu=0.105658367;//mu
+	if(lepType==0)M_mu=0.00051099891;//electron
+
+	double otherSol_ = 0.; 
+
+	a = MW_*MW_ - M_mu*M_mu + 2.0*pxl*px + 2.0*pyl*py;
+	A = 4.0*(El*El - pzl*pzl);
+	B = -4.0*a*pzl;
+	C = 4.0*El*El*(px*px + py*py) - a*a;
+
+	double newPtneutrino_=0;
+	double tmproot = B*B - 4.0*A*C;
+
+	if (tmproot<0) {
+		pz = - B/(2*A); // take real part of complex roots
+		otherSol_ = pz;
+		// recalculate the neutrino pT
+		// solve quadratic eq. discriminator = 0 for pT of nu
+		double pnu = metpt;
+		double Delta = (MW_*MW_ - M_mu*M_mu);
+		double alpha = (pxl*px/pnu + pyl*py/pnu);
+		double AA = 4.*pzl*pzl - 4*El*El + 4*alpha*alpha;//note this is alwawys <0
+		double BB = 4.*alpha*Delta;
+		double CC = Delta*Delta;//note this is always >0
+
+		double tmpdisc = BB*BB - 4.0*AA*CC; // always >0, and one root positive, one root negative
+		double tmpsolpt1 = (-BB + TMath::Sqrt(tmpdisc))/(2.0*AA);
+		double tmpsolpt2 = (-BB - TMath::Sqrt(tmpdisc))/(2.0*AA);
+
+		//reject negative root
+		if(tmpsolpt1<0)newPtneutrino_=tmpsolpt2;
+		else newPtneutrino_=tmpsolpt1;
+		//save pz
+		pz_type0[ih]=pz_type1[ih]=pz_type2[ih]=pz_type3[ih]=pz_type4[ih]=pz;
+		//save mWW
+	    //new pt	
+		double neu_pt = newPtneutrino_;
+		neuP4.SetPxPyPzE(neu_pt* cos(metphi), neu_pt * sin(metphi), pz, sqrt(neu_pt*neu_pt + pz*pz) );
+		//old pt
+		neu_pt = metpt;
+		neuP4_ptUncorrected.SetPxPyPzE(neu_pt* cos(metphi), neu_pt * sin(metphi), pz, sqrt(neu_pt*neu_pt + pz*pz) );
+		mZZ_type0[ih]=mZZ_type1[ih]=mZZ_type2[ih]=mZZ_type3[ih]=mZZ_type4[ih]=(lepP4+neuP4+jetP4).M();
+		mZZ_type0_ptUncorrected[ih]=mZZ_type1_ptUncorrected[ih]=mZZ_type2_ptUncorrected[ih]=mZZ_type3_ptUncorrected[ih]=mZZ_type4_ptUncorrected[ih]=(lepP4+neuP4_ptUncorrected+jetP4).M();
+	}
+	else {
+		double tmpsol1 = (-B + TMath::Sqrt(tmproot))/(2.0*A);
+		double tmpsol2 = (-B - TMath::Sqrt(tmproot))/(2.0*A);
+
+		//std::cout << " Neutrino Solutions: " << tmpsol1 << ", " << tmpsol2 << std::endl;
+	  for(int type=0;type<=4;type++)
+	  {
+		if (type == 0 ) {
+			// two real roots, pick the one closest to pz of muon
+			if (TMath::Abs(tmpsol2-pzl) < TMath::Abs(tmpsol1-pzl)) { pz = tmpsol2; otherSol_ = tmpsol1;}
+			else { pz = tmpsol1; otherSol_ = tmpsol2; }
+			// if pz is > 300 pick the most central root
+			if ( abs(pz) > 300. ) {
+				if (TMath::Abs(tmpsol1)<TMath::Abs(tmpsol2) ) { pz = tmpsol1; otherSol_ = tmpsol2; }
+				else { pz = tmpsol2; otherSol_ = tmpsol1; }
+			}
+			pz_type0[ih]=pz;
+			neuP4.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
+			mZZ_type0[ih]=mZZ_type0_ptUncorrected[ih]=(lepP4+neuP4+jetP4).M();
+		}
+		if (type == 1 ) {
+			// two real roots, pick the one closest to pz of muon
+			if (TMath::Abs(tmpsol2-pzl) < TMath::Abs(tmpsol1-pzl)) { pz = tmpsol2; otherSol_ = tmpsol1; }
+			else {pz = tmpsol1; otherSol_ = tmpsol2; }
+			pz_type1[ih]=pz;
+            neuP4.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
+            mZZ_type1[ih]=mZZ_type1_ptUncorrected[ih]=(lepP4+neuP4+jetP4).M();
+		}
+		if (type == 2 ) {
+			// pick the most central root.
+			if (TMath::Abs(tmpsol1)<TMath::Abs(tmpsol2) ) { pz = tmpsol1; otherSol_ = tmpsol2; }
+			else { pz = tmpsol2; otherSol_ = tmpsol1; }
+			pz_type2[ih]=pz;
+            neuP4.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
+            mZZ_type2[ih]=mZZ_type2_ptUncorrected[ih]=(lepP4+neuP4+jetP4).M();
+		}
+		if (type == 3 ) {
+			// pick the largest value of the cosine
+			TVector3 p3w, p3mu;
+			p3w.SetXYZ(pxl+px, pyl+py, pzl+ tmpsol1);
+			p3mu.SetXYZ(pxl, pyl, pzl );
+
+			double sinthcm1 = 2.*(p3mu.Perp(p3w))/MW_;
+			p3w.SetXYZ(pxl+px, pyl+py, pzl+ tmpsol2);
+			double sinthcm2 = 2.*(p3mu.Perp(p3w))/MW_;
+
+			double costhcm1 = TMath::Sqrt(1. - sinthcm1*sinthcm1);
+			double costhcm2 = TMath::Sqrt(1. - sinthcm2*sinthcm2);
+
+			if ( costhcm1 > costhcm2 ) { pz = tmpsol1; otherSol_ = tmpsol2; }
+			else { pz = tmpsol2;otherSol_ = tmpsol1; }
+			pz_type3[ih]=pz;
+            neuP4.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
+            mZZ_type3[ih]=mZZ_type3_ptUncorrected[ih]=(lepP4+neuP4+jetP4).M();
+		}//end of type3
+		if (type == 4 ) {
+			// pick the larger abs root.
+			if (TMath::Abs(tmpsol1)>TMath::Abs(tmpsol2) ) { pz = tmpsol1; otherSol_ = tmpsol2; }
+			else { pz = tmpsol2; otherSol_ = tmpsol1; }
+			pz_type4[ih]=pz;
+            neuP4.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
+            mZZ_type4[ih]=mZZ_type4_ptUncorrected[ih]=(lepP4+neuP4+jetP4).M();
+		}//endl of type4
+	  }//endl of loop over type
+	}//endl of if real root
+
+  }
+
 
   //functions specific for boosted and not-boosted topologies  
   template < typename T > void  analyzeSingleJet(T edbr,int& ih){
@@ -452,6 +602,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     //dummy for muons 
     eleMVAId1[ih] = -1.0;
     eleMVAId2[ih] = -1.0;
+
   }//end analyzeMuon
 
 
@@ -515,6 +666,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 	muondZ[ih] = -1;
 	
     if(debug_)    std::cout<<"leg1.eleMVA="<<eleMVAId1[ih]<<"  leg2.eleMVA="<<eleMVAId2[ih]<<std::endl;
+	
   }//end analyzeElectron
 
 
@@ -660,6 +812,11 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   //variables of muon id
   int globalMuon[nMaxCand], nTrackerLayers[nMaxCand], nPixelHits[nMaxCand], nMuonHits[nMaxCand], nMatches[nMaxCand];
   double muondXY[nMaxCand], muondZ[nMaxCand];
+
+  //different type of pz and mWW
+  double pz_type0[nMaxCand], pz_type1[nMaxCand], pz_type2[nMaxCand], pz_type3[nMaxCand], pz_type4[nMaxCand];
+  double mZZ_type0[nMaxCand],mZZ_type1[nMaxCand],mZZ_type2[nMaxCand],mZZ_type3[nMaxCand],mZZ_type4[nMaxCand];
+  double mZZ_type0_ptUncorrected[nMaxCand],mZZ_type1_ptUncorrected[nMaxCand],mZZ_type2_ptUncorrected[nMaxCand],mZZ_type3_ptUncorrected[nMaxCand],mZZ_type4_ptUncorrected[nMaxCand];
 
 };//end class AnalyzerEDBR 
 
