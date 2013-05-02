@@ -130,6 +130,7 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 	iEvent.getByLabel("patMETs", metHandle);
 	met     = metHandle->at(0).pt();
 	metSign = metHandle->at(0).significance(); 
+	metPhi  = metHandle->at(0).phi();
 
 	analyzeTrigger(iEvent, eventSetup);
 
@@ -436,6 +437,7 @@ void AnalyzerEDBR::initTree(){
 	outTree_->Branch("mJJNoKinFit"     ,&mjjNoKinFit   ,"mJJNoKinFit[nCands]/D"  );
 	outTree_->Branch("met"             ,&met           ,"met/D"                  );
 	outTree_->Branch("metSign"         ,&metSign       ,"metSign/D"              );
+	outTree_->Branch("metPhi"         ,&metPhi       ,"metPhi/D"              );
 	//outTree_->Branch("nBTags"          ,&btag          ,"nBTags[nCands]/D"       );
 	outTree_->Branch("btagjet1"         ,&btagjet1       ,"btagjet1/D"              );
 	outTree_->Branch("btagjet2"         ,&btagjet2       ,"btagjet2/D"              );
@@ -564,7 +566,8 @@ void AnalyzerEDBR::initTree(){
     outTree_->Branch("pz_type2"             ,&pz_type2           ,"pz_type2[nCands]/D"          );  
     outTree_->Branch("pz_type3"             ,&pz_type3           ,"pz_type3[nCands]/D"          );  
     outTree_->Branch("pz_type4"             ,&pz_type4           ,"pz_type4[nCands]/D"          );
-
+    outTree_->Branch("pt_neutrino"             ,&pt_neutrino           ,"pt_neutrino[nCands]/D"          );
+	outTree_->Branch("pt_neutrino_corrected"             ,&pt_neutrino_corrected           ,"pt_neutrino_corrected[nCands]/D"          );
 
 	if(triggerNames_.size()>0){
 		if(debug_)cout<<"Adding branches with trigger names"<<endl;
@@ -594,7 +597,7 @@ void AnalyzerEDBR::initDataMembers(){
 	nLooseEle=-1;
 	nLooseMu=-1;
 
-	met=0; metSign=0;            // MET and its significance
+	met=0; metSign=0;  metPhi=0;          // MET and its significance
 	//reset arrays
 	for(int i =0 ; i < nMaxCand ; i++){
 
@@ -632,6 +635,7 @@ void AnalyzerEDBR::initDataMembers(){
 		pz_type0[i]=-99., pz_type1[i]=-99., pz_type2[i]=-99., pz_type3[i]=-99., pz_type4[i]=-99.;
 		mZZ_type0[i]=-99.,mZZ_type1[i]=-99.,mZZ_type2[i]=-99.,mZZ_type3[i]=-99.,mZZ_type4[i]=-99.;
 		mZZ_type0_ptUncorrected[i]=-99.,mZZ_type1_ptUncorrected[i]=-99.,mZZ_type2_ptUncorrected[i]=-99.,mZZ_type3_ptUncorrected[i]=-99.,mZZ_type4_ptUncorrected[i]=-99.;
+		pt_neutrino[i]=-99., pt_neutrino_corrected[i]=-99.;
 
 	} 
 

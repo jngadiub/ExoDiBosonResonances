@@ -305,9 +305,11 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 		//save mWW
 	    //new pt	
 		double neu_pt = newPtneutrino_;
+		pt_neutrino_corrected[ih] = newPtneutrino_;
 		neuP4.SetPxPyPzE(neu_pt* cos(metphi), neu_pt * sin(metphi), pz, sqrt(neu_pt*neu_pt + pz*pz) );
 		//old pt
 		neu_pt = metpt;
+		pt_neutrino[ih]=metpt;
 		neuP4_ptUncorrected.SetPxPyPzE(neu_pt* cos(metphi), neu_pt * sin(metphi), pz, sqrt(neu_pt*neu_pt + pz*pz) );
 		mZZ_type0[ih]=mZZ_type1[ih]=mZZ_type2[ih]=mZZ_type3[ih]=mZZ_type4[ih]=(lepP4+neuP4+jetP4).M();
 		mZZ_type0_ptUncorrected[ih]=mZZ_type1_ptUncorrected[ih]=mZZ_type2_ptUncorrected[ih]=mZZ_type3_ptUncorrected[ih]=mZZ_type4_ptUncorrected[ih]=(lepP4+neuP4_ptUncorrected+jetP4).M();
@@ -315,7 +317,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 	else {
 		double tmpsol1 = (-B + TMath::Sqrt(tmproot))/(2.0*A);
 		double tmpsol2 = (-B - TMath::Sqrt(tmproot))/(2.0*A);
-
+		pt_neutrino[ih]=pt_neutrino_corrected[ih]=metpt;
 		//std::cout << " Neutrino Solutions: " << tmpsol1 << ", " << tmpsol2 << std::endl;
 	  for(int type=0;type<=4;type++)
 	  {
@@ -757,7 +759,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double ptZll[nMaxCand], ptZjj[nMaxCand], yZll[nMaxCand], yZjj[nMaxCand], deltaRleplep[nMaxCand], deltaRjetjet[nMaxCand];
   double phiZll[nMaxCand];//={init};
   double phiZjj[nMaxCand];//={init};
-  double met, metSign;            // MET and its significance
+  double met, metSign, metPhi;            // MET and its significance
   double btagjet1[nMaxCand],btagjet2[nMaxCand], lep[nMaxCand], reg[nMaxCand];    // b-tags, lep category, region (sig, sideband)
   double qgjet1[nMaxCand], qgjet2[nMaxCand], qgProduct[nMaxCand];    // QG likelihoods
   double betajet1[nMaxCand],betajet2[nMaxCand],puMvajet1[nMaxCand],puMvajet2[nMaxCand];//jet ID 
@@ -817,6 +819,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double pz_type0[nMaxCand], pz_type1[nMaxCand], pz_type2[nMaxCand], pz_type3[nMaxCand], pz_type4[nMaxCand];
   double mZZ_type0[nMaxCand],mZZ_type1[nMaxCand],mZZ_type2[nMaxCand],mZZ_type3[nMaxCand],mZZ_type4[nMaxCand];
   double mZZ_type0_ptUncorrected[nMaxCand],mZZ_type1_ptUncorrected[nMaxCand],mZZ_type2_ptUncorrected[nMaxCand],mZZ_type3_ptUncorrected[nMaxCand],mZZ_type4_ptUncorrected[nMaxCand];
+
+  //pt of neutrino before and after the correction
+  double pt_neutrino[nMaxCand], pt_neutrino_corrected[nMaxCand];
 
 };//end class AnalyzerEDBR 
 
