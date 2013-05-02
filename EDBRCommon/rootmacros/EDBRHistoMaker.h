@@ -188,6 +188,23 @@ class EDBRHistoMaker {
 		Double_t        eleid_e5x5[99];  //[nCands] 
 		Double_t        eleid_e1x5Over5x5[99];  //[nCands] 
 		Double_t        eleid_e2x5MaxOver5x5[99];  //[nCands]
+		Double_t        mZZ_type0[99]; //[nCands]
+		Double_t        mZZ_type1[99]; //[nCands]
+		Double_t        mZZ_type2[99]; //[nCands]
+		Double_t        mZZ_type3[99]; //[nCands]
+		Double_t        mZZ_type4[99]; //[nCands]
+		Double_t		mZZ_type0_ptUncorrected[99]; //[nCands]
+		Double_t        mZZ_type1_ptUncorrected[99]; //[nCands]
+		Double_t        mZZ_type2_ptUncorrected[99]; //[nCands]
+		Double_t        mZZ_type3_ptUncorrected[99]; //[nCands]
+		Double_t        mZZ_type4_ptUncorrected[99]; //[nCands]
+		Double_t		pz_type0[99]; //[nCands]
+		Double_t        pz_type1[99]; //[nCands]
+		Double_t        pz_type2[99]; //[nCands]
+		Double_t        pz_type3[99]; //[nCands]
+		Double_t        pz_type4[99]; //[nCands]
+		Double_t        pt_neutrino[99]; //[nCands]
+		Double_t        pt_neutrino_corrected[99]; //[nCands]
 
 		// List of branches
 		TBranch        *b_nCands;   //!
@@ -540,6 +557,24 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("eleid_e5x5",eleid_e5x5);
 	fChain->SetBranchAddress("eleid_e1x5Over5x5",eleid_e1x5Over5x5);
 	fChain->SetBranchAddress("eleid_e2x5MaxOver5x5",eleid_e2x5MaxOver5x5);
+
+	fChain->SetBranchAddress("mZZ_type0",mZZ_type0);
+	fChain->SetBranchAddress("mZZ_type1",mZZ_type1);
+	fChain->SetBranchAddress("mZZ_type2",mZZ_type2);
+	fChain->SetBranchAddress("mZZ_type3",mZZ_type3);
+	fChain->SetBranchAddress("mZZ_type4",mZZ_type4);
+	fChain->SetBranchAddress("mZZ_type0_ptUncorrected",mZZ_type0_ptUncorrected);
+	fChain->SetBranchAddress("mZZ_type1_ptUncorrected",mZZ_type1_ptUncorrected);
+	fChain->SetBranchAddress("mZZ_type2_ptUncorrected",mZZ_type2_ptUncorrected);
+	fChain->SetBranchAddress("mZZ_type3_ptUncorrected",mZZ_type3_ptUncorrected);
+	fChain->SetBranchAddress("mZZ_type4_ptUncorrected",mZZ_type4_ptUncorrected);
+	fChain->SetBranchAddress("pz_type0",pz_type0);
+	fChain->SetBranchAddress("pz_type1",pz_type1);
+	fChain->SetBranchAddress("pz_type2",pz_type2);
+	fChain->SetBranchAddress("pz_type3",pz_type3);
+	fChain->SetBranchAddress("pz_type4",pz_type4);
+	fChain->SetBranchAddress("pt_neutrino",pt_neutrino);
+	fChain->SetBranchAddress("pt_neutrino_corrected",pt_neutrino_corrected);
 }
 
 EDBRHistoMaker::EDBRHistoMaker(TTree* tree, 
@@ -614,7 +649,7 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("phi",100,-3.7,3.7);
 	hs.setHisto("phiStar1",100,-3.7,3.7);
 	hs.setHisto("ptlep1",50,0,500);//50       0       500
-	hs.setHisto("ptlep2",50,0,500);
+	hs.setHisto("ptlep2",35,0,600);
 	hs.setHisto("ptjet1",50,0,500);
 	hs.setHisto("ptjet2",50,0,500);
 	hs.setHisto("ptZll",40,200,800);//40    200      800
@@ -726,6 +761,24 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("eleid_e5x5",100,0,2000); 
 	hs.setHisto("eleid_e1x5Over5x5",50,0.2,1.4); 
 	hs.setHisto("eleid_e2x5MaxOver5x5",50,0.2,1.4);
+
+	hs.setHisto("mZZ_type0",56,200,3000);
+	hs.setHisto("mZZ_type1",56,200,3000);
+	hs.setHisto("mZZ_type2",56,200,3000);
+	hs.setHisto("mZZ_type3",56,200,3000);
+	hs.setHisto("mZZ_type4",56,200,3000);
+	hs.setHisto("mZZ_type0_ptUncorrected",56,200,3000);
+	hs.setHisto("mZZ_type1_ptUncorrected",56,200,3000);
+	hs.setHisto("mZZ_type2_ptUncorrected",56,200,3000);
+	hs.setHisto("mZZ_type3_ptUncorrected",56,200,3000);
+	hs.setHisto("mZZ_type4_ptUncorrected",56,200,3000);
+	hs.setHisto("pz_type0",100,-1000,1000);
+	hs.setHisto("pz_type1",100,-1000,1000);
+	hs.setHisto("pz_type2",100,-1000,1000);
+	hs.setHisto("pz_type3",100,-1000,1000);
+	hs.setHisto("pz_type4",100,-1000,1000);
+	hs.setHisto("pt_neutrino",35,0,600);
+	hs.setHisto("pt_neutrino_corrected",35,0,600);
 
 
 	char buffer[256];
@@ -1110,6 +1163,24 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["eleid_e1x5Over5x5"])->Fill(eleid_e1x5Over5x5[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["eleid_e2x5MaxOver5x5"])->Fill(eleid_e2x5MaxOver5x5[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 
+				(theHistograms["mZZ_type0"])->Fill(mZZ_type0[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mZZ_type1"])->Fill(mZZ_type1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mZZ_type2"])->Fill(mZZ_type2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mZZ_type3"])->Fill(mZZ_type3[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mZZ_type4"])->Fill(mZZ_type4[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mZZ_type0_ptUncorrected"])->Fill(mZZ_type0_ptUncorrected[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mZZ_type1_ptUncorrected"])->Fill(mZZ_type1_ptUncorrected[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mZZ_type2_ptUncorrected"])->Fill(mZZ_type2_ptUncorrected[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mZZ_type3_ptUncorrected"])->Fill(mZZ_type3_ptUncorrected[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["mZZ_type4_ptUncorrected"])->Fill(mZZ_type4_ptUncorrected[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["pz_type0"])->Fill(pz_type0[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["pz_type1"])->Fill(pz_type1[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["pz_type2"])->Fill(pz_type2[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["pz_type3"])->Fill(pz_type3[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["pz_type4"])->Fill(pz_type4[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["pt_neutrino"])->Fill(pt_neutrino[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["pt_neutrino_corrected"])->Fill(pt_neutrino_corrected[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				
 				/// Also, once per event we check if the event is interesting...
 				/// What's interesting?
 				/// * nCands > 10
@@ -1132,7 +1203,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 	if(isZZchannel_==0)//WW channel, change the names, which will be the plot lable
 	{
 		(theHistograms["ptlep1"])->SetName("h_ptlepton");
-		(theHistograms["ptlep2"])->SetName("h_ptneutrino");
+		//(theHistograms["ptlep2"])->SetName("h_ptneutrino");
 		(theHistograms["ptZll"])->SetName("h_ptWL");
 		(theHistograms["ptZjj"])->SetName("h_ptWjj");
 		(theHistograms["yZll"])->SetName("h_yWL");
