@@ -1053,18 +1053,19 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//-- END of ALL CUTS --
 
 					//Printout for debugging
+					
 					/*
-					if(mZZ[ivec]>1800)
+					if(mZZ_type2[ivec]>1800)
 					  {
 					    //RunNumber:LumiSection:EvtNumber
-					    //cout << run << ":" << ls << ":" << event << endl;
+					    cout << run << ":" << ls << ":" << event << endl;
 					    
 					    cout << event             << " * " << run           << " * " << mZZ[ivec]       << " * " 
 						 << ptlep1[ivec]      << " * " << etalep1[ivec] << " * " << philep1[ivec]   << " * "   
 						 << met               << " * " << philep2[ivec] << " * " << mt[ivec]        << " * " 
 						 << ptZll[ivec]                                                         << " * "
 					         << ptjet1[ivec]      << " * " << etajet1[ivec] << " * " << phijet1[ivec]   << " * " 
-					         << mJJNoKinFit[ivec] << " * " << nsubj21[ivec] << endl; 					    
+					         << mJJNoKinFit[ivec] << " * " << nsubj21[ivec] << endl << endl; 					    
 					  }
 					*/
 				       
