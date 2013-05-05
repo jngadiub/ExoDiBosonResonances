@@ -37,7 +37,7 @@ cmgJetAK5Clean = cms.EDProducer("cmgPFJetCleaner",
                                                                            requireNoOverlaps = cms.bool(True)
                                                                        ),
                                                     
-                                                    eleIso= cms.PSet( src = cms.InputTag("electronPresel"),
+                                                    eleIso= cms.PSet( src = cms.InputTag("electronPreselLoose"),
                                                                            preselection        = cms.string(""),  
                                                                            deltaR              = cms.double(0.5),
                                                                            checkRecoComponents = cms.bool(False), 
