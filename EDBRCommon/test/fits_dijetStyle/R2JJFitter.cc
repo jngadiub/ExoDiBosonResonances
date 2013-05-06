@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.2 2013/04/26 09:55:14 santanas Exp $
+ * $Id: R2JJFitter.cc,v 1.3 2013/04/27 13:34:27 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -189,7 +189,7 @@ void runfits(const Float_t mass=1000, bool isWW = true, Bool_t dobands = false)
   int ncat = NCAT;
   for (int c = 0; c < ncat; c++) 
     MakeDataCard_1Channel(w, fileBaseName, fileBkgName, c, mass);
-  
+
   /*
   // Make plots for data and fit results
   MakePlots(w, mass, fitresults, isWW);
@@ -203,8 +203,8 @@ void runfits(const Float_t mass=1000, bool isWW = true, Bool_t dobands = false)
 void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 
   //TString inDir   = "./MiniTrees/Signal_VV/";
-  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/"; 
-  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/"; 
+  //TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSBTree_mWW_Type2_corrected/"; 
+  TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/"; 
 
   int iMass = abs(mass);       
   /*
@@ -361,12 +361,12 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 void AddBkgData(RooWorkspace* w) {
 
   //TString inDir   = "./MiniTrees/Data_VV/";
-  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/"; 
-  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/"; 
+  //TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSBTree_mWW_Type2_corrected/"; 
+  TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/"; 
 
   //TFile dataFile(inDir+"dijetWtag_Moriond_Mar6_miniTree.root");   
-  //TFile dataFile(inDir+"treeEDBR_data_xww.root");   
-  TFile dataFile(inDir+"treeEDBR_allBkg_xww.root");   
+  TFile dataFile(inDir+"treeEDBR_data_xww.root");   
+  //TFile dataFile(inDir+"treeEDBR_allBkg_xww.root");   
 
   // common preselection cut
   //TString mainCut("1");
@@ -389,11 +389,12 @@ void AddBkgData(RooWorkspace* w) {
 
   //--
   // For real data
-  //RooDataSet Data("Data","dataset",dataTree,*ntplVars,mainCut,"weight");
+  RooDataSet Data("Data","dataset",dataTree,*ntplVars,mainCut,"weight");
   //--
 
   //--
   // For MC background
+  /*
   Float_t LumForBkg = 19500.0;
   RooRealVar lumiForBkg ("lumiForBkg","lumiForBkg",LumForBkg);  
 
@@ -403,6 +404,7 @@ void AddBkgData(RooWorkspace* w) {
   RooDataSet *DataNoWeight = new RooDataSet("DataNoWeight","DataNoWeight",dataTree,*ntplVars,mainCut);
   RooRealVar *weightFinal = (RooRealVar*) DataNoWeight->addColumn(*weightNormLumiFormula) ;
   RooDataSet Data("Data","dataset",DataNoWeight,*DataNoWeight->get(),mainCut,weightFinal->GetName());
+  */
   //--
 
   //====================================================
@@ -450,7 +452,7 @@ void SigModelFit(RooWorkspace* w, Float_t mass) {
 
   // Fit Signal 
   for (int c = 0; c < ncat; ++c) {
-  //for (int c = 1; c < 4; ++c) {
+  //for (int c = 3; c < 4; ++c) {
 
     cout << "---------- category = " << c << endl;
     //    sigToFit[c]   = (RooDataSet*) w->data(TString::Format("Sig_cat%d",c));
