@@ -9,7 +9,7 @@ startdir=$( pwd )
 # EDIT HERE
 
 #set CMSSW environment
-RELEASEDIR=/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_7_StatisticsTools_ExoDiBosonResonances/src/
+RELEASEDIR=/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_3_patch3_CMGrel_V5_10_0_ExoDiBosonResonances_Analysis/CMSSW_5_3_3_patch3/src/
 
 #algo="MarkovChainMC"
 algo="Asymptotic"
@@ -19,16 +19,16 @@ hint="ProfileLikelihood" # before the algo method, run the hint method for restr
 label="EXOZZ"
 ntoys=1000
 
-WORKDIR=${RELEASEDIR}/CMGTools/StatTools/MacrosCombine-VV/Test_mWWFit_Sideband_23_04_2013/datacards/${mass}
-BKGFILE=${RELEASEDIR}/CMGTools/StatTools/MacrosCombine-VV/Test_mWWFit_Sideband_23_04_2013/workspaces/Xvv.inputbkg_8TeV.root
-SIGNALFILE=${RELEASEDIR}/CMGTools/StatTools/MacrosCombine-VV/Test_mWWFit_Sideband_23_04_2013/workspaces/Xvv.mX${mass}_WW_8TeV.inputsig.root
+WORKDIR=${RELEASEDIR}/ExoDiBosonResonances/EDBRCommon/test/fits_dijetStyle/mWWFit_DATA_06_05_2013_Scale1_From1000_v1/datacards/${mass}
+BKGFILE=${RELEASEDIR}/ExoDiBosonResonances/EDBRCommon/test/fits_dijetStyle/mWWFit_DATA_06_05_2013_Scale1_From1000_v1/workspaces/Xvv.inputbkg_8TeV.root
+SIGNALFILE=${RELEASEDIR}/ExoDiBosonResonances/EDBRCommon/test/fits_dijetStyle/mWWFit_DATA_06_05_2013_Scale1_From1000_v1/workspaces/Xvv.mX${mass}_WW_8TeV.inputsig.root
 
 # choose datacard, can be on of those : 
 # comb_xzz , comb_xzz_2l1JHP , comb_xzz_2l1JLP , comb_xzz_ee1J , comb_xzz_mm1J
 # comb_xzz_2l1JELEHP, comb_xzz_2l1JELELP, comb_xzz_2l1JMUHP, comb_xzz_2l1JMULP
 #--
-#datacard="comb_xzz" 
-datacard="comb_xzz_2l1JELELP" 
+datacard="comb_xzz" 
+#datacard="comb_xzz_2l1JELELP" 
 
 #--------------------------------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ fi
 ## calc limit
 
 # - with systematics 
-combine -M $algo -n ${label} -m $mass  -s $myrand -d ${datacard}.txt -H $hint 
+combine -M $algo -n ${label} -m $mass  -s $myrand -d ${datacard}.txt -H $hint --rMax $maxBoundary --rMin $minBoundary
 #combine -M $algo -n ${label} -m $mass  -s $myrand -d ${datacard}.txt -H $hint --rMax $maxBoundary --rMin $minBoundary
 # - without systematics
 #combine -M $algo -n ${label} -m $mass  -s $myrand -d ${datacard}.txt -H $hint -S 0
