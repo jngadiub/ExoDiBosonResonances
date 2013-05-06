@@ -762,23 +762,47 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("eleid_e1x5Over5x5",50,0.2,1.4); 
 	hs.setHisto("eleid_e2x5MaxOver5x5",50,0.2,1.4);
 
-	hs.setHisto("mZZ_type0",56,200,3000);
-	hs.setHisto("mZZ_type1",56,200,3000);
-	hs.setHisto("mZZ_type2",56,200,3000);
-	hs.setHisto("mZZ_type3",56,200,3000);
-	hs.setHisto("mZZ_type4",56,200,3000);
-	hs.setHisto("mZZ_type0_ptUncorrected",56,200,3000);
-	hs.setHisto("mZZ_type1_ptUncorrected",56,200,3000);
-	hs.setHisto("mZZ_type2_ptUncorrected",56,200,3000);
-	hs.setHisto("mZZ_type3_ptUncorrected",56,200,3000);
-	hs.setHisto("mZZ_type4_ptUncorrected",56,200,3000);
-	hs.setHisto("pz_type0",100,-1000,1000);
-	hs.setHisto("pz_type1",100,-1000,1000);
-	hs.setHisto("pz_type2",100,-1000,1000);
-	hs.setHisto("pz_type3",100,-1000,1000);
-	hs.setHisto("pz_type4",100,-1000,1000);
-	hs.setHisto("pt_neutrino",35,0,600);
-	hs.setHisto("pt_neutrino_corrected",35,0,600);
+	hs.setHisto("mZZ_type0",50,200,3000);
+	hs.setHisto("mZZ_type1",50,200,3000);
+	hs.setHisto("mZZ_type2",50,200,3000);
+	hs.setHisto("mZZ_type3",50,200,3000);
+	hs.setHisto("mZZ_type4",50,200,3000);
+	hs.setHisto("mZZ_type0_ptUncorrected",50,200,3000);
+	hs.setHisto("mZZ_type1_ptUncorrected",50,200,3000);
+	hs.setHisto("mZZ_type2_ptUncorrected",50,200,3000);
+	hs.setHisto("mZZ_type3_ptUncorrected",50,200,3000);
+	hs.setHisto("mZZ_type4_ptUncorrected",50,200,3000);
+	hs.setHisto("pz_type0",60,-500,500);
+	hs.setHisto("pz_type1",60,-500,500);
+	hs.setHisto("pz_type2",60,-500,500);
+	hs.setHisto("pz_type3",60,-500,500);
+	hs.setHisto("pz_type4",60,-500,500);
+	hs.setHisto("pt_neutrino",35,0,500);
+	hs.setHisto("pt_neutrino_corrected",35,0,500);
+
+
+	if(isZZchannel_==0)//WW channel, use special binning in sync with FNAL
+	  {
+	    hs.setHisto("ptlep1",50,0,600);
+	    hs.setHisto("etalep1",25,-2.1,2.1);	    
+	    hs.setHisto("philep1",30,-3.14,3.14);
+	    hs.setHisto("ptZll",40,200,600);
+	    hs.setHisto("mt",50,0,150);
+	    hs.setHisto("met",35,0,500);
+	    hs.setHisto("philep2",30,-3.14,3.14);
+	    hs.setHisto("nVtx",40,0,40);
+	    hs.setHisto("ptZjj",40,200,600);
+	    hs.setHisto("ptjet1",40,200,600);
+	    hs.setHisto("etajet1",30,-2.5,2.5);
+	    hs.setHisto("phijet1",40,-3.14,3.14);
+	    hs.setHisto("mJJ",28,0,140);
+	    hs.setHisto("prunedmass",28,0,140);
+	    hs.setHisto("mJJNoKinFit",28,0,140);
+	    hs.setHisto("mdrop",35,0.1,1.15);
+	    hs.setHisto("nsubj21",35,0.1,1.);
+	    hs.setHisto("qjet",35,0,1);
+	  }
+
 
 
 	char buffer[256];
@@ -1052,22 +1076,20 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 					//-- END of ALL CUTS --
 
-					//Printout for debugging
-					
-					/*
+					//Printout for debugging						       		       
 					if(mZZ_type2[ivec]>1800)
 					  {
 					    //RunNumber:LumiSection:EvtNumber
 					    cout << run << ":" << ls << ":" << event << endl;
 					    
-					    cout << event             << " * " << run           << " * " << mZZ[ivec]       << " * " 
+					    cout << event             << " * " << run           << " * " << mZZ_type2[ivec] << " * " 
 						 << ptlep1[ivec]      << " * " << etalep1[ivec] << " * " << philep1[ivec]   << " * "   
 						 << met               << " * " << philep2[ivec] << " * " << mt[ivec]        << " * " 
 						 << ptZll[ivec]                                                         << " * "
 					         << ptjet1[ivec]      << " * " << etajet1[ivec] << " * " << phijet1[ivec]   << " * " 
 					         << mJJNoKinFit[ivec] << " * " << nsubj21[ivec] << endl << endl; 					    
 					  }
-					*/
+					
 				       
 					
 				}
