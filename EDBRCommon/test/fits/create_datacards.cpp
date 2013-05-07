@@ -93,7 +93,7 @@ std::pair<double,double> leptScaleSyst( const std::string& leptType_str);
 
 std::pair<double,double> jetScaleSyst( double mass );
 std::pair<double,double> puSyst( double mass );
-std::pair<double,double> VTagEffSyst( const std::string& leptType_str, int nxj, double mass );
+std::pair<double,double> VTagEffSyst( const std::string& leptType_str, int nxj, double mass , int purity);
 std::pair<double,double> bTagEffSyst( const std::string& leptType_str, int nbtag, double mass );
 
 //double backgroundNorm( const std::string& dataset, const std::string& leptType_str, int nxj );
@@ -302,7 +302,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	////////////////////
 	//->  and now systematics:
 
-	ofs << "lumi\t\t\tlnN\t1.044\t\t\t1.0" << std::endl;
+	ofs << "lumi_8TeV\t\t\tlnN\t1.044\t\t\t1.0" << std::endl;
 
 	//std::pair<double,double> pdf_gg  = theorSyst( hp.XSpdfgg_m, hp.XSpdfgg_p, 0.04, 0.015 );
 	//ofs << "pdf_gg\t\tlnN\t" << systString(pdf_gg) << "\t1.0" << std::endl;
@@ -318,7 +318,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 	ofs << "CMS_scale_j\t\tlnN\t" << systString(jetScaleSyst(hp.mH)) <<  "\t1.0" << std::endl;
 
-	ofs << "CMS_eff_vtag\t\tlnN\t" << systString(VTagEffSyst(leptType_str, nxj, hp.mH)) << "\t1.0" << std::endl;
+	ofs << "CMS_eff_vtag\t\tlnN\t" << systString(VTagEffSyst(leptType_str, nxj, hp.mH,pur),-1.) << "\t1.0" << std::endl;
 
 	ofs << "CMS_xzz_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
 	std::cout << "CMS_xzz_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
@@ -966,12 +966,16 @@ std::pair<double,double> puSyst( double mass ) {
 }
 
 
-std::pair<double,double> VTagEffSyst( const std::string& leptType_str, int nxj, double mass ) {
+std::pair<double,double> VTagEffSyst( const std::string& leptType_str, int nxj, double mass, int purity ) {
 
 	std::pair<double,double> returnPair;
-	returnPair.first  = 1.1;
-	returnPair.second = 0.9; 
-
+	returnPair.first  = 0.9;
+	returnPair.second = 1.1; 
+	if(purity == 1){
+	  returnPair.first  = 1.1;
+	  returnPair.second = 0.9; 
+	}
+	
 	return returnPair;
 
 }
