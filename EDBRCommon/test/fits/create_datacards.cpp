@@ -31,10 +31,10 @@
 
 #include "DataCardUtils.h"
 
-//#include "binningFits_XWW.h"
-//#include "Config_XWW.h"
-#include "Config_XZZ.h"
-#include "binningFits_XZZ.h"
+#include "binningFits_XWW.h"
+#include "Config_XWW.h"
+//#include "Config_XZZ.h"
+//#include "binningFits_XZZ.h"
 
 
 float mZZmin_ = startFit;  // this should be synchronized with startFit in fitBackground.cpp
@@ -197,7 +197,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	//->  get fit results:
 	char fitResultName[200];  
 	//  sprintf( fitResultName, "resultsExpoFit_%dJ_%s",nxj , leptType_str.c_str() );
-	if(pur==1 || (!isZZChannel)){//simple expo for HP category or XWW analysis
+	if(pur==1&&isZZChannel){//simple expo for HP category of XZZ analysis
 	  sprintf( fitResultName, "resultsExpoFit_%dJ_%s_%s",nxj,pur_str.c_str(),leptType.c_str() );
 	}
 	else {
@@ -259,7 +259,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	std::ofstream ofs(datacardName);
 
 	std::string bkgd_shape_name=("background_decorrLevExpo"+rename_str);
-	if(pur==1 || (!isZZChannel)) bkgd_shape_name=("background_expo"+rename_str);
+	if(pur==1 && isZZChannel) bkgd_shape_name=("background_expo"+rename_str);
 
 	ofs << "# Card for process XZZ->"<<suffix << std::endl;
 	ofs << "#imax 1  number of channels" << std::endl;
@@ -398,7 +398,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	//->  get Bkgd shape:
 	RooAbsPdf *expo_fit =0;
 	RooAbsPdf* background_decorr =0;
-	if(pur==1 || (!isZZChannel)){
+	if(pur==1&&isZZChannel){
 	  expo_fit =bgws->pdf("exp_fit");
 	  expo_fit->SetName(bkgd_shape_name.c_str());
 	  // and import it:
@@ -527,7 +527,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	  xf->SetTitle(("Sideband fit ("+ ssnxj.str() +"Jet "+ pur_str+", "+leptType_str+" leptons) - M="+ssM.str()+")").c_str());
 	  if(unblind)dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
 	  std::cout<<" 1 "<<std::flush;
-	  if(pur==1 || (!isZZChannel)){
+	  if(pur==1&&isZZChannel){
 	    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
 	    std::cout<<" 2 "<<std::flush;
 	    expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
