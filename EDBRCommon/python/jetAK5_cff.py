@@ -31,7 +31,7 @@ cmgJetAK5Clean = cms.EDProducer("cmgPFJetCleaner",
                           preselection = cms.string(''),
                           checkOverlaps = cms.PSet( muonIso= cms.PSet( src = cms.InputTag("muonPreselLoose"),
                                                                            preselection        = cms.string(""),  
-                                                                           deltaR              = cms.double(0.5),
+                                                                           deltaR              = cms.double(0.3),
                                                                            checkRecoComponents = cms.bool(False), 
                                                                            pairCut             = cms.string(""),
                                                                            requireNoOverlaps = cms.bool(True)
@@ -39,7 +39,7 @@ cmgJetAK5Clean = cms.EDProducer("cmgPFJetCleaner",
                                                     
                                                     eleIso= cms.PSet( src = cms.InputTag("electronPreselLoose"),
                                                                            preselection        = cms.string(""),  
-                                                                           deltaR              = cms.double(0.5),
+                                                                           deltaR              = cms.double(0.3),
                                                                            checkRecoComponents = cms.bool(False), 
                                                                            pairCut             = cms.string(""),
                                                                            requireNoOverlaps = cms.bool(True)
