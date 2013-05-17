@@ -31,10 +31,11 @@ isFullRange = cms.PSet(
 
 ### used for merged jet topology
 mergedJetKinematics = cms.PSet(
-    pt = cms.string('pt() > 50.0'),
+    pt = cms.string('pt() > 80.0'),
     eta = cms.string('abs(eta()) < 2.4'),
     phi = cms.string('abs(phi()) < 3.2'),
-    prunedMass = cms.string('prunedMass()>40.0&&prunedMass()<130.0')
+	prunedMass = cms.string('prunedMass()>0.0')
+    #prunedMass = cms.string('prunedMass()>40.0&&prunedMass()<130.0')
 ###    prunedMass = cms.string('prunedMass()>0.0&&prunedMass()<999.0')
     )
 
@@ -60,7 +61,7 @@ isMergedWSideband = cms.PSet(
     prunedMass = cms.string('(prunedMass()>50.0&&prunedMass()<70.0) || prunedMass()>100.0')
     )
 isMergedFullRange  = cms.PSet(
-	prunedMass = cms.string('prunedMass()>40.0&&prunedMass()<130.0')
+	prunedMass = cms.string('prunedMass()>0.0')
 	)
 
 
