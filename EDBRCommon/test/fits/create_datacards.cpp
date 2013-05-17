@@ -31,10 +31,10 @@
 
 #include "DataCardUtils.h"
 
-#include "binningFits_XWW.h"
-#include "Config_XWW.h"
-//#include "Config_XZZ.h"
-//#include "binningFits_XZZ.h"
+//#include "binningFits_XWW.h"
+//#include "Config_XWW.h"
+#include "Config_XZZ.h"
+#include "binningFits_XZZ.h"
 
 
 float mZZmin_ = startFit;  // this should be synchronized with startFit in fitBackground.cpp

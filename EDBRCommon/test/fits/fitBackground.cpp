@@ -2,6 +2,7 @@
 #include <sstream>
 #include <fstream>
 #include <Riostream.h>
+#include <iostream>
 
 #include "TTree.h"
 #include "TFile.h"
@@ -36,18 +37,19 @@
 #include "PdfDiagonalizer.h"
 #include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
 
-#include "Config_XWW.h" 
-#include "binningFits_XWW.h"
-//#include "Config_XZZ.h"
-//#include "binningFits_XZZ.h"
+//#include "Config_XWW.h" 
+//#include "binningFits_XWW.h"
+#include "Config_XZZ.h"
+#include "binningFits_XZZ.h"
 
 using namespace std ;
 using namespace RooFit ;
 
+
 //ROOT::gErrorIgnoreLevel=kWarning;
 
 RooPlot* ContourPlot(RooRealVar* var1,RooRealVar* var2, RooFitResult* r);
-TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verbose=false);
+TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verbose=false,double corrFactor=1.0);
 void fitPseudoOnePar( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* initialvalues, int nxj,std::string inPurStr);
 void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* initialvalues, int nxj, int pur);
 void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1);
@@ -59,7 +61,6 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
  * All configurations now are in the header file fitBackgroundConfig_XZZ.h
  *
  *****************/
-
 int main(){
 	RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING) ;
 	//DEBUG=0, INFO=1, PROGRESS=2, WARNING=3, ERROR=4, FATAL=5
@@ -191,7 +192,7 @@ int main(){
 			sprintf(alphahname,"h_alpha_smoothened_Final");//alpha with R0
 			
 			
-			TTree* weightedData = weightTree(treeDATA_tmp , (TH1D*)falpha->Get(alphahname)  ,"alphaWeightedTree" );
+			TTree* weightedData = weightTree(treeDATA_tmp , (TH1D*)falpha->Get(alphahname)  ,"alphaWeightedTreetmp" );
 
 			//stat uncertainty on alpha normalization
 
@@ -240,8 +241,15 @@ int main(){
 
 			//select the data in the sidebands, convert it in a RooDataSet
 			//weight events by the alpha function
-			string cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>"+strmcut.str()+lepCutStr+vtagcutstr;
-			string cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>"+ strmcut.str()+lepCutStr+vtagcutstr;
+			string cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>800&&mZZ<2800"+lepCutStr+vtagcutstr;
+			string cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>800&&mZZ<2800"+lepCutStr+vtagcutstr;
+			
+			if(isZZChannel)
+			{
+ 				cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>"+strmcut.str()+lepCutStr+vtagcutstr;
+ 				cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>"+ strmcut.str()+lepCutStr+vtagcutstr;	
+			}
+		
 			string cutDum="nXjets=="+ssnxj.str()+" && mZZ>"+ strmcut.str()+lepCutStr+vtagcutstr;
 
 
@@ -258,8 +266,43 @@ int main(){
 			logf<<"===> MZZ="<<mZZ->getVal()<<"    ALPHA (fromFIT)="<<alphaWeight->getVal()<<std::endl;
 			logf<<"=================================\n"<<std::endl;
 
-			std::string name_datasb2="dsDataSB2";//"_"+ssnxj.str()+"J"+pur_str;
-			RooDataSet *dsDataSB2=new RooDataSet(name_datasb2.c_str(),name_datasb2.c_str(),weightedData,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
+			std::string name_datasb2="dsDataSB2tmp";//"_"+ssnxj.str()+"J"+pur_str;
+			RooDataSet *dsDataSB2tmp=new RooDataSet(name_datasb2.c_str(),name_datasb2.c_str(),weightedData,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
+
+			double normalizationOLD=dsDataSB2tmp->sumEntries();
+			delete weightedData;delete dsDataSB2tmp;
+			// assign wjets normalization
+			double normalizationNEW=normalizationOLD;
+
+			if(!isZZChannel&&inxj==1)
+			{
+				/*
+				// for A->B
+				if(leptType=="ELE"&&purityCut==0)normalizationNEW=84.8322;
+				if(leptType=="ELE"&&purityCut==1)normalizationNEW=116.602;
+				if(leptType=="MU"&&purityCut==0)normalizationNEW=167.612;
+				if(leptType=="MU"&&purityCut==1)normalizationNEW=192.596;
+				*/
+	
+				/*
+				//for Ana 100
+                if(leptType=="ELE"&&purityCut==0)normalizationNEW=515.374;
+                if(leptType=="ELE"&&purityCut==1)normalizationNEW=344.849;
+                if(leptType=="MU"&&purityCut==0)normalizationNEW=802.572;
+                if(leptType=="MU"&&purityCut==1)normalizationNEW=518.888;
+				*/
+                //for Ana 180
+                if(leptType=="ELE"&&purityCut==0)normalizationNEW=515.374;
+                if(leptType=="ELE"&&purityCut==1)normalizationNEW=333.799;
+                if(leptType=="MU"&&purityCut==0)normalizationNEW=802.572;
+                if(leptType=="MU"&&purityCut==1)normalizationNEW=523.247;
+			}
+						
+			logf<<" normalizationNEW "<<normalizationNEW<<" normalizationOLD  "<<normalizationOLD<<endl;
+
+			name_datasb2="dsDataSB2";
+			TTree* weightedData2 = weightTree(treeDATA_tmp , (TH1D*)falpha->Get(alphahname)  ,"alphaWeightedTree2",false,normalizationNEW/normalizationOLD );
+			RooDataSet *dsDataSB2=new RooDataSet(name_datasb2.c_str(),name_datasb2.c_str(),weightedData2,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
 			std::string name_datasig="dsDataSIG";//"_"+ssnxj.str()+"J"+pur_str;
 			RooDataSet *dsDataSIG=new RooDataSet(name_datasig.c_str(),name_datasig.c_str(),(TTree*)treeDATA_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity),cutSIG.c_str()) ;//real data in signal region; cuts on mjj and nXjets
 			logf<<"Number of events in OBSERVED datasets:"<<std::endl;
@@ -322,7 +365,8 @@ int main(){
 			if(inxj==2)inislope=-0.25;
 			//	char slopePar_name[32];
 			//	sprintf(slopePar_name,"a0_%dJ",inxj);
-			std::string slopePar_name="expoFit_"+ssnxj.str()+"J"+pur_str+"_p0";
+			std::string slopePar_name="expoFit_"+leptType+"_"+ssnxj.str()+"J"+pur_str+"_p0";
+			//logf<<slopePar_name.c_str()<<endl;
 			RooRealVar *a0=new RooRealVar(slopePar_name.c_str(),slopePar_name.c_str(),inislope,-10.0,0.0);
 			RooExponential *expo_fit=new RooExponential("exp_fit","exp_fit",*mZZ,*a0);
 			//  RooRealVar *exp_norm=new RooRealVar("exp_N","exp_N",0.0,10000.0);
@@ -395,15 +439,17 @@ int main(){
 
 			if(decorrLevExpo){
 				char diagonalizerName[200];
-				sprintf( diagonalizerName, "expLev_%dJ%s", inxj,pur_str.c_str());
+				sprintf( diagonalizerName, "expLev_%s_%dJ%s", leptType.c_str(),inxj,pur_str.c_str());
 				PdfDiagonalizer diago(diagonalizerName, wstmp, *r_sig_expLev );
 				background_decorr_ =diago.diagonalize(*expLev_fit);//RooAbsPdf
 				background_decorr_->SetName(bkgd_decorr_name.c_str());
 				char var1[96],var2[96];
 				//the first part of the name of these vairables var1 and var2 MUST 
 				//match the name of diagonalizerName
-				sprintf(var1,"expLev_%dJ%s_eig0",inxj,pur_str.c_str());
-				sprintf(var2,"expLev_%dJ%s_eig1",inxj,pur_str.c_str());
+				sprintf(var1,"expLev_%s_%dJ%s_eig0",leptType.c_str(),inxj,pur_str.c_str());
+				sprintf(var2,"expLev_%s_%dJ%s_eig1",leptType.c_str(),inxj,pur_str.c_str());
+				//sprintf(var1,"expLev_%dJ%s_eig0",inxj,pur_str.c_str());
+				//sprintf(var2,"expLev_%dJ%s_eig1",inxj,pur_str.c_str());
 				RooRealVar *f0rot=(RooRealVar*)wstmp->var(var1);
 				RooRealVar *f1rot=(RooRealVar*)wstmp->var(var2);
 				logf<<"Decorr vars: "<<f0rot->getVal()<<"  "<<f1rot->getVal()<<endl;
@@ -492,14 +538,14 @@ int main(){
 			}
 			logf<<"Everything imported. Saving."<<std::endl;
 			r_sig2->Write();
-			weightedData->Write();
+			weightedData2->Write();
 
 
 			if(doPseudoExp){
 				char tmpTname[32];
 				char fitResultNamePseudo[128];
 				bool doPseudoTwoPars=true;//use lev expo for ZZ, only 1JLP and 2J
-				if(purityCut==1||(!isZZChannel)){//XWW or XZZ-1JHP : simple expo with only one param
+				if(purityCut==1&&isZZChannel){//XZZ-1JHP : simple expo with only one param
 					doPseudoTwoPars=false;
 				}
 				if(doPseudoTwoPars) sprintf(fitResultNamePseudo,"%s", fitResultName_expo);
@@ -523,12 +569,12 @@ int main(){
 					delete weightedPseudo;
 				}
 				char var1errA[50];
-				sprintf(var1errA,"expoFit_%dJ%s_p0_alphaErr",inxj,pur_str.c_str());
+				sprintf(var1errA,"expoFit_%s_%dJ%s_p0_alphaErr",leptType.c_str(),inxj,pur_str.c_str());
 				char var2errA[50];
 				sprintf(var2errA,"DUMMY_%dJ_alphaErr",inxj);
 				if(doPseudoTwoPars &&decorrLevExpo){
-					sprintf(var1errA,"expLev_%dJ%s_eig0_alphaErr",inxj,pur_str.c_str());
-					sprintf(var2errA,"expLev_%dJ%s_eig1_alphaErr",inxj,pur_str.c_str());
+					sprintf(var1errA,"expLev_%s_%dJ%s_eig0_alphaErr",leptType.c_str(),inxj,pur_str.c_str());
+					sprintf(var2errA,"expLev_%s_%dJ%s_eig1_alphaErr",leptType.c_str(),inxj,pur_str.c_str());
 				}
 
 				RooRealVar errV1(var1errA,var1errA,0.0);
@@ -562,7 +608,7 @@ int main(){
 			if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
 
 
-			if(plotDecorrLevExpoMain&&purityCut==0&&(isZZChannel)){
+			if(plotDecorrLevExpoMain){
 				//plot error bands of fit			  
 				background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
 				background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
@@ -654,7 +700,7 @@ RooPlot* ContourPlot(RooRealVar* var1,RooRealVar* var2, RooFitResult* r){
 
 }
 
-TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verbose){
+TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verbose,double corrFactor){
 	gROOT->cd(); //magic!
 
 
@@ -681,6 +727,10 @@ TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verb
 			alpha = h1_alpha->GetBinContent( alphabin );
 
 		//	alpha=999.0;
+		//alpha=alpha*184.302/72.429;
+		alpha=alpha*corrFactor;//205.437/111.167;
+		//ofstream logT("Test.txt");
+		if(verbose)std::cout<<"weightTree corrFactor = "<<corrFactor<<endl;
 		newTree->Fill();
 
 	}
@@ -692,7 +742,7 @@ TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verb
 void fitPseudoOnePar( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char* initialvalues , int nxj,std::string inPurStr) {
 	//reset parameters
 	char var1[50];
-	sprintf(var1,"expoFit_%dJ%s_p0",nxj,inPurStr.c_str());
+	sprintf(var1,"expoFit_%s_%dJ%s_p0",leptType.c_str(),nxj,inPurStr.c_str());
 	char argname[100];
 	sprintf(argname,"%s",var1);
 	ws.argSet(argname).readFromFile(initialvalues);
@@ -713,8 +763,8 @@ void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char*
 	//reset parameters
 	char var1[50];
 	char var2[50];
-	sprintf(var1,"expLev_%dJ%s_eig0",nxj,pur_str.c_str());
-	sprintf(var2,"expLev_%dJ%s_eig1",nxj,pur_str.c_str());
+	sprintf(var1,"expLev_%s_%dJ%s_eig0",leptType.c_str(),nxj,pur_str.c_str());
+	sprintf(var2,"expLev_%s_%dJ%s_eig1",leptType.c_str(),nxj,pur_str.c_str());
 	char argname[100];
 	//  if(nxj==2) sprintf(argname,"%s",var1);
 	// else sprintf(argname,"%s,%s",var1,var2);
@@ -769,7 +819,7 @@ void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char*
 void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1){
 	char var1[50];
 
-	sprintf(var1,"expoFit_%dJ%s_p0",nxj,inPurStr.c_str());//this must be equal to what is in fitPseudo
+	sprintf(var1,"expoFit_%s_%dJ%s_p0",leptType.c_str(),nxj,inPurStr.c_str());//this must be equal to what is in fitPseudo
 	char argname[100];
 	sprintf(argname,"%s",var1);
 
@@ -982,8 +1032,8 @@ void pseudoMassgeTwoPars(int nxj ,int pur , RooFitResult* r_nominal, RooWorkspac
 
 	char var1[50];
 	char var2[50];
-	sprintf(var1,"expLev_%dJ%s_eig0",nxj,pur_str.c_str());//this must be equal to what is in fitPseudo
-	sprintf(var2,"expLev_%dJ%s_eig1",nxj,pur_str.c_str());//this must be equal to what is in fitPseudo
+	sprintf(var1,"expLev_%s_%dJ%s_eig0",leptType.c_str(),nxj,pur_str.c_str());//this must be equal to what is in fitPseudo
+	sprintf(var2,"expLev_%s_%dJ%s_eig1",leptType.c_str(),nxj,pur_str.c_str());//this must be equal to what is in fitPseudo
 	char argname[100];
 	//  if(nxj==2) sprintf(argname,"%s",var1);
 	// else sprintf(argname,"%s,%s",var1,var2);

@@ -13,8 +13,8 @@
 #include <iostream>
 
 #include "SidebandFitter.h"
-#include "Config_XWW.h"
-//#include "Config_XZZ.h"
+//#include "Config_XWW.h"
+#include "Config_XZZ.h"
 using namespace std;
 
 void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1,bool ScaleTTbar=0);
@@ -63,8 +63,8 @@ int main( int argc, char* argv[] ) {
 		if(isZZChannel==false)
 		{
 			chainMC->Add( (inDir+"treeEDBR_DYJets_xww.root").c_str());
-			chainMC->Add( (inDir+"treeEDBR_WJetsPt100_xww.root").c_str());
-			////chainMC->Add( (inDir+"treeEDBR_WJetsPt180_xww.root").c_str());
+			//chainMC->Add( (inDir+"treeEDBR_WJetsPt100_xww.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_WJetsPt180_xww.root").c_str());
 			if(useAlphaVV){
 				chainMC->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
 				chainMC->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
@@ -123,8 +123,8 @@ int main( int argc, char* argv[] ) {
 		if(isZZChannel==false)
 		{   
 			chainMC->Add( (inDir+"treeEDBR_DYJets_xww.root").c_str());
-			chainMC->Add( (inDir+"treeEDBR_WJetsPt100_xww.root").c_str());
-			////chainMC->Add( (inDir+"treeEDBR_WJetsPt180_xww.root").c_str());
+			//chainMC->Add( (inDir+"treeEDBR_WJetsPt100_xww.root").c_str());
+			chainMC->Add( (inDir+"treeEDBR_WJetsPt180_xww.root").c_str());
 			if(useAlphaVV){
 				chainMC->Add( (inDir+"treeEDBR_TTBARpowheg_xww.root").c_str());
 				chainMC->Add( (inDir+"treeEDBR_VV_xww.root").c_str());
@@ -484,13 +484,21 @@ void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name,std::s
 			if(ScaleTTbar)
 			{
 				double ttbar_scale =0;
-				double tttar_scale_error=0;
-				if(vTagPurity_2==1&&leptType_2==1){ttbar_scale = 0.85468 ; tttar_scale_error = 0.0286928;}
-				if(vTagPurity_2==1&&leptType_2==0){ttbar_scale = 0.894486; tttar_scale_error = 0.0415022;}
-				if(vTagPurity_2==0&&leptType_2==1){ttbar_scale = 1.02822 ; tttar_scale_error = 0.0566702;}
-				if(vTagPurity_2==0&&leptType_2==0){ttbar_scale = 1.21061; tttar_scale_error = 0.0927729;}
-
-
+				//double tttar_scale_error=0;
+				
+				//for the analysis
+				if(vTagPurity_2==1&&leptType_2==1)ttbar_scale = 0.947391;
+				if(vTagPurity_2==1&&leptType_2==0)ttbar_scale = 0.948701;
+				if(vTagPurity_2==0&&leptType_2==1)ttbar_scale =  1.13451;
+				if(vTagPurity_2==0&&leptType_2==0)ttbar_scale = 1.21555;
+				
+				/*
+				//for closure test A->B
+				if(vTagPurity_2==1&&leptType_2==1)ttbar_scale =  1.06193;
+				if(vTagPurity_2==1&&leptType_2==0)ttbar_scale =   1.14417 ; 
+				if(vTagPurity_2==0&&leptType_2==1)ttbar_scale =  1.53171; 
+				if(vTagPurity_2==0&&leptType_2==0)ttbar_scale =  1.6139; 
+				*/
 				TString filename = t1->GetFile()->GetEndpointUrl()->GetUrl();
 				//cout<<filename<<endl;
 				if(filename.Contains("TTBAR"))
