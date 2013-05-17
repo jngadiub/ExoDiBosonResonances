@@ -203,7 +203,7 @@ TLorentzVector cmg::NeutrinoFactory::neutrinoP4(TLorentzVector* met, TLorentzVec
 
 		//should rejetc negative root
 
-		if ( fabs( tmpsolpt1 - ptnu ) < fabs( tmpsolpt2 - ptnu) ) { newPtneutrino1_ = tmpsolpt1; newPtneutrino2_ = tmpsolpt2;}
+		if ( tmpsolpt1 >0 ) { newPtneutrino1_ = tmpsolpt1; newPtneutrino2_ = tmpsolpt2;}
 		else { newPtneutrino1_ = tmpsolpt2; newPtneutrino2_ = tmpsolpt1; }
 
 	}
@@ -257,16 +257,9 @@ TLorentzVector cmg::NeutrinoFactory::neutrinoP4(TLorentzVector* met, TLorentzVec
 	if(isComplex_)//complex root, correct the pt
 	{
 		double nu_pt1=newPtneutrino1_;
-		double nu_pt2=newPtneutrino2_;
-
 		TLorentzVector tmpp1; 
 		tmpp1.SetPxPyPzE(nu_pt1 * cos(metphi), nu_pt1 * sin(metphi), pz, sqrt(nu_pt1*nu_pt1 + pz*pz) );
-		TLorentzVector tmpp2; 
-		tmpp2.SetPxPyPzE(nu_pt2 * cos(metphi), nu_pt2 * sin(metphi), pz, sqrt(nu_pt2*nu_pt2 + pz*pz) );
-		TLorentzVector lepton;
-		lepton.SetPxPyPzE(pxl,pyl,pzl,El);
-		if ( fabs((lepton+tmpp1).M()-MW_) < fabs((lepton+tmpp2).M()-MW_) ) return tmpp1;
-		else return tmpp2;
+		return tmpp1;
 	}
 	else
 	{
