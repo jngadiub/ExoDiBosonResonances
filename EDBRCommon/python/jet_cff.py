@@ -38,18 +38,14 @@ genSelectorZAQDaughter = cms.EDFilter("GenParticleSelector",# matches anti-quark
 
 
 
-from  CMGTools.External.pujetidsequence_cff import puJetId, puJetMva
-from CMGTools.External.pujetidproducer_cfi import  stdalgos_4x, stdalgos_5x, stdalgos, cutbased, chsalgos_4x, chsalgos_5x, chsalgos
-## puJetIdCustom = puJetId.clone( jets = 'selectedPatJets')
-##puJetIdCustom = puJetId.clone( jets = 'selectedPatJetsCA8CHSwithQjets')
-puJetMvaCustom= puJetMva.clone(
-    jetids = cms.InputTag("puJetIdCA8CHS"),
-#    jetids = cms.InputTag("puJetIdCustom"),
-    jets ='selectedPatJetsCA8CHSwithQjets',
-    algos =  chsalgos
-    )
-###puJetIdSequence = cms.Sequence(puJetIdCustom*puJetMvaCustom)
-puJetIdSequence = cms.Sequence(puJetMvaCustom)
+# from  CMGTools.External.pujetidsequence_cff import puJetId, puJetMva
+# from CMGTools.External.pujetidproducer_cfi import  stdalgos_4x, stdalgos_5x, stdalgos, cutbased, chsalgos_4x, chsalgos_5x, chsalgos
+# puJetMvaCustom= puJetMva.clone(
+#     jetids = cms.InputTag("puJetIdCA8CHS"),
+#     jets ='selectedPatJetsCA8CHSwithQjets',
+#     algos =  chsalgos
+#     )
+# puJetIdSequence = cms.Sequence(puJetMvaCustom)
 
 
 
@@ -153,8 +149,7 @@ jetSequence = cms.Sequence(
 #    highPtJets*jetCountFilter
     genSelectorZDaughter*genSelectorZQDaughter
 #    + kt6PFJetsForIso*ak5PFJetsL1FastL2L3*qglAK5PF
-    #+customJets
-    + puJetIdSequence
+##    + puJetIdSequence
 #    + ak5PFJets*ak5PFJetsL1FastL2L3 *qglAK5PF 
     + cmgJetRaw
     + cmgJet
@@ -167,7 +162,7 @@ mergedJetSequence = cms.Sequence(
     genSelectorZQQ
     + genSelectorZRQDaughter
     + genSelectorZAQDaughter
-    + puJetIdSequence
+  ##  + puJetIdSequence
     + cmgJetStructuredRaw
     + cmgJetStructured
 )

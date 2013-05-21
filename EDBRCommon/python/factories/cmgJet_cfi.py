@@ -7,14 +7,14 @@ pfJetFactory = cms.PSet(
        useConstituents=cms.bool(False),
        puVariables=cms.InputTag("puJetId"), #puJetIdAK5NoPUSub
        puMvas=cms.VInputTag(
-                            "puJetMvaCustom:fullDiscriminant", #puJetMvaAK5NoPUSub
-                            "puJetMvaCustom:simpleDiscriminant"
-                            #"puJetMvaCustom:cutbasedDiscriminant",
+                            "puJetMvaCA8CHS:fullDiscriminant", #puJetMvaAK5NoPUSub
+                            "puJetMvaCA8CHS:simpleDiscriminant"
+                            #"puJetMvaCA8CHS:cutbasedDiscriminant",
                             ),
        puIds=cms.VInputTag(
-                           "puJetMvaCustom:fullId",
-                           "puJetMvaCustom:simpleId"
-                           #"puJetMvaCustom:cutbasedId",
+                           "puJetMvaCA8CHS:fullId",
+                           "puJetMvaCA8CHS:simpleId"
+                           #"puJetMvaCA8CHS:cutbasedId",
                            )
        )
 
@@ -55,13 +55,13 @@ structJetFactory = cms.PSet(
        pfJetFactory = pfJetFactory.clone(),
        useConstituents=cms.bool(False),
        puVariables=cms.InputTag("puJetId"), #puJetIdAK5NoPUSub
-       puMvas=cms.VInputTag("puJetMvaCustom:cutbasedDiscriminant",
-                            "puJetMvaCustom:simpleDiscriminant", #puJetMvaAK5NoPUSub
-                            "puJetMvaCustom:fullDiscriminant"
+       puMvas=cms.VInputTag("puJetMvaCA8CHS:cutbasedDiscriminant",
+                            "puJetMvaCA8CHS:simpleDiscriminant", #puJetMvaAK5NoPUSub
+                            "puJetMvaCA8CHS:fullDiscriminant"
                             ),
-       puIds=cms.VInputTag("puJetMvaCustom:cutbasedId",
-                           "puJetMvaCustom:simpleId",
-                           "puJetMvaCustom:fullId",                           
+       puIds=cms.VInputTag("puJetMvaCA8CHS:cutbasedId",
+                           "puJetMvaCA8CHS:simpleId",
+                           "puJetMvaCA8CHS:fullId",                           
                            ),
        verbose = cms.untracked.bool( True )
        )
@@ -84,7 +84,7 @@ cmgStructuredJet = cms.EDFilter(
     isZSideband = isMergedSideband.clone(),
     isWSignal = isMergedWSignal.clone(),
     isWSideband = isMergedWSideband.clone(),
-	isFullRange = isMergedFullRange.clone(),
+    isFullRange = isMergedFullRange.clone(),
     genP = cms.PSet( genLepton = cms.string("sourcePtr().get().hasOverlaps('genJets')"))
  #      recoLepton = cms.PSet( recoLepton = cms.string("sourcePtr().get().hasOverlaps('recoLeptons')")),
        )

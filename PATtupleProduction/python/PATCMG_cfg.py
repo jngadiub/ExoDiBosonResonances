@@ -21,7 +21,7 @@ print 'querying database for source files'
 createPATtuple = True
 createCMGtuple = False
 skimEvents = True
-runOnMC    = False
+runOnMC    = True
 runOld5XGT = False
 runOnFastSim = False
 runQJets = True
@@ -38,7 +38,7 @@ METLEPTON_KINCUT = ("pt > 80.0")
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 20
 
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
@@ -46,23 +46,20 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Input files
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
-     'CMS',
-     '/DoubleElectron/Run2012A-13Jul2012-v1/AOD'
-    # '/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM',
-    # '/DoubleMu/Run2012C-PromptReco-v2/AOD'
-    # '/DoubleMu/Run2012B-PromptReco-v1/AOD'
-    # '/TTH_HToBB_M-135_8TeV-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',
-    # '/BTag/Run2012B-PromptReco-v1/RECO', 
-    #'cmgtools_group',
-    #'/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
-   )
+     'CMS',    
+     #     '/DoubleElectron/Run2012A-13Jul2012-v1/AOD'
+     '/DYJetsToLL_PtZ-100_TuneZ2star_8TeV_ext-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM'
+      )
 
 process.source.fileNames = process.source.fileNames[:20]
 # If you want you can overwrite the previous input filenames like this:
-#process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/group/cmgtools/CMG/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PFAOD_0.root']
+#####process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/group/cmgtools/CMG/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PFAOD_0.root']
+#process.source.fileNames = ['file:root://eoscms//eos/cms/store/data/Run2012C/DoublePhotonHighPt/AOD/PromptReco-v2/000/200/600/0AA4E2BB-2BE5-E111-B3A8-00237DDC5C24.root']
+##process.source.fileNames = ['file:root://eoscms//eos/cms/store/mc/Summer12_DR53X/DYJetsToLL_PtZ-100_TuneZ2star_8TeV_ext-madgraph-tarball/DQM/PU_S10_START53_V7C-v1/00000/DE1C7C73-8439-E211-BF96-003048FFD71E.root']
+process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/bonato/patTuple/2012/EXOVVtest/BulkG_ZZllqq_M1000_c0p2_STEP3_AODSIM_24_1_fvt.root']
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(50) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 print sep_line
 print process.source.fileNames
@@ -138,7 +135,7 @@ patEventContentCMG+=['drop patJets_selectedPatJetsCA8CHSwithNsub_*_*']
 
 ######ADD PU JET ID
 
-from  CMGTools.External.pujetidsequence_cff import puJetId
+from  CMGTools.External.pujetidsequence_cff import puJetId, puJetMva
 process.puJetIdAK7CHS = puJetId.clone(
     jets ='selectedPatJetsAK7CHSwithQjets',
     jec = 'AK7chs'
@@ -149,8 +146,40 @@ process.puJetIdCA8CHS = puJetId.clone(
     jets ='selectedPatJetsCA8CHSwithQjets',
     jec = 'AK7chs'
     )
-process.PATCMGSequence += process.puJetIdCA8CHS
+
+from CMGTools.External.pujetidproducer_cfi import  stdalgos_4x, stdalgos_5x, stdalgos, cutbased, chsalgos_4x, chsalgos_5x, chsalgos
+
+process.puJetMvaAK5CHS= puJetMva.clone(
+    jetids = cms.InputTag("puJetIdCHS"),
+####    jets ='selectedPatJetsCHS',
+    jets ='patJetsWithVarCHS',
+    algos =  chsalgos
+    )
+
+process.puJetMvaAK7CHS= puJetMva.clone(
+    jetids = cms.InputTag("puJetIdAK7CHS"),
+    jets ='selectedPatJetsAK7CHSwithQjets',
+    algos =  chsalgos
+    )
+
+process.puJetMvaCA8CHS= puJetMva.clone(
+    jetids = cms.InputTag("puJetIdCA8CHS"),
+    jets ='selectedPatJetsCA8CHSwithQjets',
+    algos =  chsalgos
+    )
+
+process.puJetIdAK5Sequence = cms.Sequence(                      process.puJetMvaAK5CHS)
+process.puJetIdAK7Sequence = cms.Sequence(process.puJetIdAK7CHS+process.puJetMvaAK7CHS)
+process.puJetIdCA8Sequence = cms.Sequence(process.puJetIdCA8CHS+process.puJetMvaCA8CHS)
+#### these are moved down below this same cfg, after having built AK5 CHS jets
+#process.PATCMGSequence += process.puJetIdAK5Sequence
+#process.PATCMGSequence += process.puJetIdAK7Sequence
+#process.PATCMGSequence += process.puJetIdCA8Sequence
+patEventContentCMG+=['keep *_puJetIdAK7CHS_*_*']
 patEventContentCMG+=['keep *_puJetIdCA8CHS_*_*']
+patEventContentCMG+=['keep *_puJetMvaAK5CHS_*_*']
+patEventContentCMG+=['keep *_puJetMvaAK7CHS_*_*']
+patEventContentCMG+=['keep *_puJetMvaCA8CHS_*_*']
 
 if runOnMC is False:
     # removing MC stuff
@@ -299,8 +328,11 @@ process.load('CMGTools.Common.PAT.addFilterPaths_cff')
 process.p = cms.Path(
     process.prePathCounter + 
     process.PATCMGSequence +
-    process.PATCMGJetCHSSequence
+    process.PATCMGJetCHSSequence+
+    process.puJetIdAK5Sequence+process.puJetIdAK7Sequence+process.puJetIdCA8Sequence
     )
+
+
 
 process.p += process.postPathCounter
 
@@ -428,6 +460,13 @@ process.out = cms.OutputModule("PoolOutputModule",
                                )
 # needed to override the CMG format, which drops the pat taus
 process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
+
+#### drop collections not used by EXO-VV analysis
+process.out.outputCommands.append('drop *_cmg*_*_*')
+process.out.outputCommands.append('drop *_particleFlow*_*_*')
+process.out.outputCommands.append('drop *_pfNoPileUp_*_*')
+process.out.outputCommands.append('drop *_pfSelectedPhotons_*_*')
+
 
 #FIXME now keeping the whole event content...
 # process.out.outputCommands.append('keep *_*_*_*')

@@ -96,7 +96,7 @@ void cmg::VJetFactory::set(const edm::Event& iEvent, const edm::EventSetup& iSet
     output->puMvas_[ii] = (*puMvasTMP[ii])[input];
   } 
 
-  pfJetFactory_.setPFproperties(*input,output,true);
+  pfJetFactory_.setPFproperties(*input,output,useConstituents_);
 
 
   //Fill VJet specific
