@@ -45,11 +45,16 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 ## Input files
 from CMGTools.Production.datasetToSource import *
+
+datasetInfo = (
+    'CMS',
+    '/DYJetsToLL_PtZ-100_TuneZ2star_8TeV_ext-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM',
+    '.*root')
 process.source = datasetToSource(
-     'CMS',    
-     #     '/DoubleElectron/Run2012A-13Jul2012-v1/AOD'
-     '/DYJetsToLL_PtZ-100_TuneZ2star_8TeV_ext-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM'
-      )
+    *datasetInfo
+    )
+
+
 
 process.source.fileNames = process.source.fileNames[:20]
 # If you want you can overwrite the previous input filenames like this:
@@ -197,23 +202,23 @@ if runOnMC is False:
     process.patJets.addGenJetMatch = False
     process.patJets.addGenPartonMatch = False
 
-    if isNewerThan('CMSSW_5_2_0'):
-        process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
-        process.patJetsCHSpruned.addGenJetMatch = False
-        process.patJetsCHSpruned.addGenPartonMatch = False
-        process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
-        process.patJetsAK7CHS.addGenJetMatch = False
-        process.patJetsAK7CHS.addGenPartonMatch = False
-        process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
-        process.patJetsAK7CHSpruned.addGenJetMatch = False
-        process.patJetsAK7CHSpruned.addGenPartonMatch = False
-        process.PATCMGJetSequenceCA8CHS.remove( process.jetMCSequenceCA8CHS )
-        process.patJetsCA8CHS.addGenJetMatch = False
-        process.patJetsCA8CHS.addGenPartonMatch = False
-        process.PATCMGJetSequenceCA8CHSpruned.remove( process.jetMCSequenceCA8CHSpruned )
-        process.patJetsCA8CHSpruned.addGenJetMatch = False
-        process.patJetsCA8CHSpruned.addGenPartonMatch = False
-
+   #### if isNewerThan('CMSSW_5_2_0'):
+    process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
+    process.patJetsCHSpruned.addGenJetMatch = False
+    process.patJetsCHSpruned.addGenPartonMatch = False
+    process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
+    process.patJetsAK7CHS.addGenJetMatch = False
+    process.patJetsAK7CHS.addGenPartonMatch = False
+    process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
+    process.patJetsAK7CHSpruned.addGenJetMatch = False
+    process.patJetsAK7CHSpruned.addGenPartonMatch = False
+    process.PATCMGJetSequenceCA8CHS.remove( process.jetMCSequenceCA8CHS )
+    process.patJetsCA8CHS.addGenJetMatch = False
+    process.patJetsCA8CHS.addGenPartonMatch = False
+    process.PATCMGJetSequenceCA8CHSpruned.remove( process.jetMCSequenceCA8CHSpruned )
+    process.patJetsCA8CHSpruned.addGenJetMatch = False
+    process.patJetsCA8CHSpruned.addGenPartonMatch = False
+    
     process.PATCMGTauSequence.remove( process.tauGenJets )
     process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
     process.PATCMGTauSequence.remove( process.tauGenJetMatch )
@@ -232,13 +237,14 @@ if runOnMC is False:
 
     # adding L2L3Residual corrections
     process.patJetCorrFactors.levels.append('L2L3Residual')
-    if isNewerThan('CMSSW_5_2_0'):
-        process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
-        process.patJetCorrFactorsAK7CHS.levels.append('L2L3Residual')
-        process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
-        process.patJetCorrFactorsCA8CHS.levels.append('L2L3Residual')
-        process.patJetCorrFactorsCA8CHSpruned.levels.append('L2L3Residual')
 
+     ###   if isNewerThan('CMSSW_5_2_0'):
+    process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
+    process.patJetCorrFactorsAK7CHS.levels.append('L2L3Residual')
+    process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
+    process.patJetCorrFactorsCA8CHS.levels.append('L2L3Residual')
+    process.patJetCorrFactorsCA8CHSpruned.levels.append('L2L3Residual')
+    
 
 #### Adding HEEP and modified isolation
 ### Boosted electrons isolation
@@ -314,7 +320,11 @@ process.PATCMGJetCHSSequence.insert( 0, process.ak5PFJetsCHS )
 from CMGTools.Common.Tools.visitorUtils import replaceSrc
 replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
 replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
-process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
+jecPayload = 'AK5PFchs'
+process.patJetsWithVarCHS.payload = jecPayload
+process.patJetCorrFactorsCHS.payload = jecPayload
+process.puJetIdCHS.jec = jecPayload
+process.cmgPUJetMvaCHS.jec = jecPayload
 process.selectedPatJetsCHS.cut = 'pt()>10'
 
 
@@ -331,8 +341,6 @@ process.p = cms.Path(
     process.PATCMGJetCHSSequence+
     process.puJetIdAK5Sequence+process.puJetIdAK7Sequence+process.puJetIdCA8Sequence
     )
-
-
 
 process.p += process.postPathCounter
 
@@ -502,11 +510,29 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
-from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
+### Set the global tag from
+### https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions#Winter13_2012_A_B_C_D_datasets_r
+EXOVV_GT= 'START53_V7G::All'
+if runOnMC:
+    if 'START53' in datasetInfo[1]:
+        EXOVV_GT = 'START53_V21::All' 
+    elif 'START52' in datasetInfo[1]:
+        EXOVV_GT = 'START52_V9F::All'
+else :
+    if 'Run2012D' in datasetInfo[1]:
+        EXOVV_GT = 'FT_53_V21_AN3::All'
+    else:
+        EXOVV_GT = 'FT_53_V21_AN3::All'
+        
+process.GlobalTag.globaltag = EXOVV_GT  ###cms.string("START53_V21::All")
 
-process.GlobalTag.globaltag = getGlobalTag( runOnMC, runOld5XGT )
+### do it like CMGTools (but tags in getGlobalTag are not the latest for Jan22nd)
+#from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
+### OLD way: process.GlobalTag.globaltag = getGlobalTag( runOnMC, runOld5XGT )
+#process.GlobalTag.globaltag = getGlobalTagByDataset( runOnMC, datasetInfo[1])
+
 print 'Global tag       : ', process.GlobalTag.globaltag
-
+###
 
 ########################################################
 ## Below, stuff that you probably don't want to modify
@@ -524,6 +550,15 @@ process.schedule.append( process.WToENUskimPath )
 process.schedule.append( process.WToMUNUskimPath )
 ## Close the schedule
 process.schedule.append( process.outpath )
+
+## MessageLogger
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.suppressWarning = cms.untracked.vstring('ecalLaserCorrFilter')
+## Options and Output Report
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+
+
 ## Print the schedule
 print process.schedule
 
