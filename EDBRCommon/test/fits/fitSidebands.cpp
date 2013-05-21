@@ -13,8 +13,8 @@
 #include <iostream>
 
 #include "SidebandFitter.h"
-//#include "Config_XWW.h"
-#include "Config_XZZ.h"
+#include "Config_XWW.h"
+//#include "Config_XZZ.h"
 using namespace std;
 
 void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1,bool ScaleTTbar=0);

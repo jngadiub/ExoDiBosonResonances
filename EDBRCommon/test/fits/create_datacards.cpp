@@ -124,7 +124,11 @@ int main( int argc, char* argv[] ) {
 	TF1* f1_eff_vs_mass_ELE_2J   = 0;
 	if(jetCats>1)f1_eff_vs_mass_ELE_2J = get_eff_vs_mass("ELE", 2,-1, mZZmin_);
 
-	std::ifstream ifs("masses.txt");
+	std::ifstream ifs;
+	if(isZZChannel)
+	  ifs.open("masses.txt");
+	else
+	  ifs.open("masses_xww.txt");
 
 	while( ifs.good() ) {
 
@@ -184,11 +188,11 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	string rename_str="";
 	std::stringstream ssnxj;
 	ssnxj << nxj;
-	rename_str += "_"+leptType_str+ssnxj.str()+"J"+pur_str;
+	rename_str += "_"+channel_marker+"_"+leptType_str+ssnxj.str()+"J"+pur_str;
 
 	/////////////
 	//-> open fitResults file (all lept types):
-	std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, leptType.c_str() ,myOutDir.c_str());
+	std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, leptType.c_str() ,myOutDir.c_str(),channel_marker);
 	std::cout << "reading results from: "<< fitResultsFileName.c_str() << std::endl;
 	TFile* fitResultsFile = TFile::Open(fitResultsFileName.c_str());
 	// fitResultsFile->ls();
@@ -197,11 +201,11 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	//->  get fit results:
 	char fitResultName[200];  
 	//  sprintf( fitResultName, "resultsExpoFit_%dJ_%s",nxj , leptType_str.c_str() );
-	if(pur==1&&isZZChannel){//simple expo for HP category of XZZ analysis
-	  sprintf( fitResultName, "resultsExpoFit_%dJ_%s_%s",nxj,pur_str.c_str(),leptType.c_str() );
+	if(pur==1 && isZZChannel ){//simple expo for HP category or XWW analysis
+	  sprintf( fitResultName, "resultsExpoFit_%s_%dJ_%s_%s",channel_marker.c_str(),nxj,pur_str.c_str(),leptType.c_str() );
 	}
 	else {
-	  sprintf( fitResultName, "resultsExpLevelledFit_%dJ_%s_%s_decorr", nxj ,pur_str.c_str(),leptType.c_str());
+	  sprintf( fitResultName, "resultsExpLevelledFit_%s_%dJ_%s_%s_decorr",channel_marker.c_str(), nxj ,pur_str.c_str(),leptType.c_str());
 	}
 	cout<<"Trying to pick RooFitResult :"<<fitResultName<<endl;
 	RooFitResult* bgFitResult = (RooFitResult*)fitResultsFile->Get(fitResultName);
@@ -211,7 +215,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	////////////////
 	//->  get workspace:
 	char workspaceName[200];
-	sprintf( workspaceName, "ws_alpha_%dJ_%s_%s", nxj,pur_str.c_str(),leptType.c_str() );
+	sprintf( workspaceName, "ws_alpha_%s_%dJ_%s_%s",channel_marker.c_str(), nxj,pur_str.c_str(),leptType.c_str() );
 	RooWorkspace* bgws = (RooWorkspace*)fitResultsFile->Get(workspaceName);
 	// cout<<"\n\nPrinting contents of the WorkSpace: "<<endl;
 	//  bgws->Print("v");
@@ -255,7 +259,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	//////////
 	//->  START TO PRINT THE DATACARD
 	char datacardName[400];
-	sprintf( datacardName, "%s/%.0f/xzz_%s.%.0f.txt", datacardDir.c_str(), mass, suffix, mass);
+	sprintf( datacardName, "%s/%.0f/%s_%s.%.0f.txt", datacardDir.c_str(), mass, channel_marker.c_str(),suffix, mass);
 	std::ofstream ofs(datacardName);
 
 	std::string bkgd_shape_name=("background_decorrLevExpo"+rename_str);
@@ -266,11 +270,11 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	ofs << "#jmax 1  number of backgrounds" << std::endl;
 	ofs << "#kmax *  number of nuisance parameters (sources of systematical uncertainties)" << std::endl;
 	ofs << "------------ " << std::endl;
-	ofs << "shapes sig CMS_xzz_" << suffix_str << " xzz_" << suffix_str << ".input.root  w:" <<("signal"+rename_str).c_str()<< std::endl;
-	ofs << "shapes background CMS_xzz_" << suffix_str << " xzz_" << suffix_str << ".input.root w:"<<bkgd_shape_name.c_str()  << std::endl;
-	ofs << "shapes data_obs   CMS_xzz_" << suffix_str << " xzz_" << suffix_str << ".input.root w:"<<("dataset_obs"+rename_str).c_str()  << std::endl;
+	ofs << "shapes sig"<< channel_marker <<" CMS_"<< channel_marker <<"_" << suffix_str << " "<< channel_marker <<"_" << suffix_str << ".input.root  w:" <<("signal"+rename_str).c_str()<< std::endl;
+	ofs << "shapes background"<< channel_marker <<" CMS_"<< channel_marker <<"_" << suffix_str << " "<< channel_marker <<"_" << suffix_str << ".input.root w:"<<bkgd_shape_name.c_str()  << std::endl;
+	ofs << "shapes data_obs   CMS_"<< channel_marker <<"_" << suffix_str << " "<< channel_marker <<"_" << suffix_str << ".input.root w:"<<("dataset_obs"+rename_str).c_str()  << std::endl;
 	ofs << "------------ " << std::endl;
-	ofs << "bin         CMS_xzz_" << suffix << std::endl;
+	ofs << "bin         CMS_"<< channel_marker <<"_" << suffix << std::endl;
 
 	std::string name_dataobs="dsDataSIG";//+"_"+ssnxj.str()+"J_"+pur_str+"_"+leptType_str;
 	RooDataSet* dataset_obs = DataCardUtils::get_observedDataset( bgws , leptType_str, nxj,pur, name_dataobs );
@@ -283,8 +287,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 	ofs << "observation   " << observedYield << std::endl;
 	ofs << "------------ " << std::endl;
-	ofs << "bin                CMS_xzz_" << suffix <<  "\tCMS_xzz_" << suffix << std::endl;
-	ofs << "process            sig\t\t\tbackground" << std::endl;
+	ofs << "bin                CMS_"<< channel_marker <<"_" << suffix <<  "\tCMS_"<< channel_marker <<"_" << suffix << std::endl;
+	ofs << "process            sig"<< channel_marker <<"\t\t\tbackground"<< channel_marker  << std::endl;
 	ofs << "process            0\t\t\t1" << std::endl;
 
 	float eff = f1_eff_vs_mass->Eval(hp.mH);
@@ -320,10 +324,10 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 	ofs << "CMS_eff_vtag\t\tlnN\t" << systString(VTagEffSyst(leptType_str, nxj, hp.mH,pur),-1.) << "\t1.0" << std::endl;
 
-	ofs << "CMS_xzz_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
-	std::cout << "CMS_xzz_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
+	ofs << "CMS_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
+	std::cout << "CMS_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
 
-	ofs << "CMS_xzz_alphanorm"<<nxj<<"b\t\tlnN\t 1.0 "<<"\t\t\t" << 1.+globalAlphaErr << std::endl;
+	ofs << "CMS_"<< channel_marker <<"_alphanorm"<<nxj<<"b\t\tlnN\t 1.0 "<<"\t\t\t" << 1.+globalAlphaErr << std::endl;
 
 
 
@@ -340,7 +344,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	std::string alpha_str(alpha_char);
 
 	char bgNormName[200];
-	sprintf( bgNormName, "CMS_xzz_bkg%dJ%s%s%sp0", nxj,pur_str.c_str(), (DataCardUtils::leptType_datacards(leptType_str)).c_str(), (DataCardUtils::leptType_datacards(leptType_str)).c_str() );
+	sprintf( bgNormName, "CMS_%s_bkg%dJ%s%s%sp0",channel_marker.c_str(), nxj,pur_str.c_str(), (DataCardUtils::leptType_datacards(leptType_str)).c_str(), (DataCardUtils::leptType_datacards(leptType_str)).c_str() );
 	std::string bgNormName_str(bgNormName);
 	ofs << bgNormName_str << "\tgmN " << bgNorm_str << "\t---\t" << alpha_str << std::endl;
 	//std::cout << bgNormName_str << "\tgmN " << bgNorm_str << "\t-----\t-----\t" << alpha_str << std::endl;
@@ -377,7 +381,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	// datacard is done. now create output workspace and write it to rootfile
 
 	char outfileName[900];
-	sprintf( outfileName, "%s/%.0f/xzz_%s.input.root", datacardDir.c_str(), mass, suffix);
+	sprintf( outfileName, "%s/%.0f/%s_%s.input.root", datacardDir.c_str(), mass,channel_marker.c_str(), suffix);
 	TFile* outfile = TFile::Open( outfileName, "RECREATE");
 	outfile->cd();
 	RooWorkspace* w = new RooWorkspace("w","w");
@@ -398,15 +402,16 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	//->  get Bkgd shape:
 	RooAbsPdf *expo_fit =0;
 	RooAbsPdf* background_decorr =0;
-	if(pur==1&&isZZChannel){
-	  expo_fit =bgws->pdf("exp_fit");
+	bgws->Print("v");
+	if(pur==1 && isZZChannel){	  
+	  expo_fit =bgws->pdf(("exp_fit_"+channel_marker).c_str());
 	  expo_fit->SetName(bkgd_shape_name.c_str());
 	  // and import it:
 	  w->import(*expo_fit, RooFit::RecycleConflictNodes());
 	}
 	else{
 	//This if you want ot use the leveled expo
-	  background_decorr = bgws->pdf("levexp_dcr");
+	  background_decorr = bgws->pdf(("levexp_dcr_"+channel_marker).c_str());
 	  background_decorr->SetName(bkgd_shape_name.c_str());
 	  w->import(*background_decorr, RooFit::RecycleConflictNodes());
 	}
@@ -424,12 +429,12 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	char sigp4name[200];//pow coeff of left pow law
 	char sigp5name[200];//junction point of right pow law
 	char sigp6name[200];//pow coeff of right pow law
-	sprintf(sigp1name,"CMS_xzz_sig%dJ%s%s_p1",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
-	sprintf(sigp2name,"CMS_xzz_sig%dJ%s%s_p2",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
-	sprintf(sigp3name,"CMS_xzz_sig%dJ%s%s_p3",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
-	sprintf(sigp4name,"CMS_xzz_sig%dJ%s%s_p4",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
-	sprintf(sigp5name,"CMS_xzz_sig%dJ%s%s_p5",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str()); 
-	sprintf(sigp6name,"CMS_xzz_sig%dJ%s%s_p6",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str()); 
+	sprintf(sigp1name,"CMS_%s_sig%dJ%s%s_p1",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigp2name,"CMS_%s_sig%dJ%s%s_p2",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigp3name,"CMS_%s_sig%dJ%s%s_p3",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigp4name,"CMS_%s_sig%dJ%s%s_p4",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigp5name,"CMS_%s_sig%dJ%s%s_p5",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str()); 
+	sprintf(sigp6name,"CMS_%s_sig%dJ%s%s_p6",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str()); 
 	RooRealVar CB_mean(sigp1name,sigp1name, get_signalParameter(nxj,pur_str,leptType_str, massH,"mean_match"));
 	RooRealVar CB_sigma(sigp2name,sigp2name,get_signalParameter(nxj,pur_str,leptType_str,massH,"sigma_match"));
 	RooRealVar CB_alpha1(sigp3name,sigp3name,get_signalParameter(nxj,pur_str,leptType_str,massH,"alpha1_match"));
@@ -446,10 +451,10 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	char sigUMp2name[200];//width of CB
 	char sigUMp3name[200];//junction point of pow law 
 	char sigUMp4name[200];//pow coeff of pow law
-	sprintf(sigUMp1name,"CMS_xzz_sig%dJ%s%s_UnM_p1",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
-	sprintf(sigUMp2name,"CMS_xzz_sig%dJ%s%s_UnM_p2",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
-	sprintf(sigUMp3name,"CMS_xzz_sig%dJ%s%s_UnM_p3",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
-	sprintf(sigUMp4name,"CMS_xzz_sig%dJ%s%s_UnM_p4",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigUMp1name,"CMS_%s_sig%dJ%s%s_UnM_p1",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigUMp2name,"CMS_%s_sig%dJ%s%s_UnM_p2",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigUMp3name,"CMS_%s_sig%dJ%s%s_UnM_p3",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigUMp4name,"CMS_%s_sig%dJ%s%s_UnM_p4",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
 
 	RooRealVar CB_UMmean(sigUMp1name,sigUMp1name, get_signalParameter(nxj,pur_str,leptType_str,massH,"mean_unmatch"));
 	RooRealVar CB_UMsigma(sigUMp2name,sigUMp2name,get_signalParameter(nxj,pur_str,leptType_str,massH,"sigma_unmatch"));
@@ -460,9 +465,9 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	char sigUMp5name[200];//left vertex of triangle
 	char sigUMp6name[200];//top vertex of triangle
 	char sigUMp7name[200];//right vertex of triangle
-	sprintf(sigUMp1name,"CMS_xzz_sig%dJ%s%s_UnM_p5",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
-	sprintf(sigUMp2name,"CMS_xzz_sig%dJ%s%s_UnM_p6",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
-	sprintf(sigUMp3name,"CMS_xzz_sig%dJ%s%s_UnM_p7",nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigUMp1name,"CMS_%s_sig%dJ%s%s_UnM_p5",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigUMp2name,"CMS_%s_sig%dJ%s%s_UnM_p6",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigUMp3name,"CMS_%s_sig%dJ%s%s_UnM_p7",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
 	RooRealVar TRI_start(sigUMp5name,sigUMp5name, get_signalParameter(nxj,pur_str,leptType_str,massH,"unmatched_Mass_start"));
 	RooRealVar TRI_turn(sigUMp6name,sigUMp6name, get_signalParameter(nxj,pur_str,leptType_str,massH,"unmatched_Mass_turn"));
 	RooRealVar TRI_stop(sigUMp7name,sigUMp7name, get_signalParameter(nxj,pur_str,leptType_str,massH,"unmatched_Mass_stop"));
@@ -556,7 +561,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	  char mkdir_command[100];
 	  sprintf( mkdir_command, "mkdir -p %s/fitPlotCards", datacardDir.c_str());
 	  system(mkdir_command);
-	  string canvasname= datacardDir+"/fitPlotCards/fitPlotCards_"+ssnxj.str()+"J"+pur_str+"_"+leptType_str;
+	  string canvasname= datacardDir+"/fitPlotCards/fitPlotCards_"+channel_marker.c_str() +"_"+ssnxj.str()+"J"+pur_str+"_"+leptType_str;
 	  std::cout<<canvasname.c_str()<<std::endl;
 	  xf->Draw();
 	  can1->SaveAs((canvasname+"_M"+ssM.str()+".eps").c_str());
@@ -585,7 +590,12 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
 
 	TH1F::AddDirectory(kTRUE);
 
-	ifstream ifsMC("efficiencies_MCSig.txt"); //the points at which we have MC samples
+	ifstream ifsMC;
+	if(isZZChannel)
+	  ifsMC.open("efficiencies_MCSig.txt"); //the points at which we have MC samples
+	else
+	  ifsMC.open("efficiencies_MCSig_xww.txt"); //the points at which we have MC samples
+	  
 
 	TGraph* gr_eff_vs_mass = new TGraph(0);
 
@@ -656,9 +666,9 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
 	system( mkdirCommand ); 
 
 	char canvasName[500];
-	sprintf( canvasName, "%s/effFit_%s_%dJ%s.eps", effDirName, leptType_str.c_str(), nxj,purType_forlabel.c_str());
+	sprintf( canvasName, "%s/effFit_%s_%s_%dJ%s.eps", effDirName,channel_marker.c_str() ,leptType_str.c_str(), nxj,purType_forlabel.c_str());
 	c1->SaveAs(canvasName);
-	sprintf( canvasName, "%s/effFit_%s_%dJ%s.pdf", effDirName, leptType_str.c_str(), nxj,purType_forlabel.c_str());
+	sprintf( canvasName, "%s/effFit_%s_%s_%dJ%s.pdf", effDirName,channel_marker.c_str() , leptType_str.c_str(), nxj,purType_forlabel.c_str());
 	c1->SaveAs(canvasName);
 
 	delete c1;

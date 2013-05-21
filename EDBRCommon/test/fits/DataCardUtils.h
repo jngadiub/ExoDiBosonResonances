@@ -20,9 +20,9 @@ public:
   
   static std::string leptType_datacards( const std::string& leptType_str );
   
-  static std::string get_fitResultsRootFileName( const int nxjCategory, const std::string& leptType );
-  static std::string get_fitResultsRootFileName( const int nxjCategory, const std::string& purType ,const std::string& leptType , std::string myDir);
-  static std::string get_fitResultsRootFileName(double mass, int nxjCategory, const std::string& purType ,const std::string& leptType, std::string myDir) ;
+  static std::string get_fitResultsRootFileName( const int nxjCategory, const std::string& leptType, const std::string& channel_marker );
+  static std::string get_fitResultsRootFileName( const int nxjCategory, const std::string& purType ,const std::string& leptType , std::string myDir, const std::string& channel_marker );
+  static std::string get_fitResultsRootFileName(double mass, int nxjCategory, const std::string& purType ,const std::string& leptType, std::string myDir, const std::string& channel_marker ) ;
   static RooDataSet* get_observedDataset(  RooWorkspace* bgws  ,  std::string leptType_str,  int nxj, int purity,std::string datasetName="" );
   static double get_backgroundNormalization(  RooWorkspace* bgws  ,  std::string leptType_str,  int nxj ,int purity ,std::string BkgDatasetName="");
   static double get_backgroundNormalization(  RooWorkspace* bgws ,  std::string leptType_str);

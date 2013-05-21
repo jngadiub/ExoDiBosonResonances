@@ -14,8 +14,8 @@
 
 #include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
 
-//#include "binningFits_XWW.h"
-#include "binningFits_XZZ.h"
+#include "binningFits_XWW.h"
+//#include "binningFits_XZZ.h"
 
 class SidebandFitter {
 

@@ -37,10 +37,10 @@
 #include "PdfDiagonalizer.h"
 #include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
 
-//#include "Config_XWW.h" 
-//#include "binningFits_XWW.h"
-#include "Config_XZZ.h"
-#include "binningFits_XZZ.h"
+#include "Config_XWW.h" 
+#include "binningFits_XWW.h"
+//#include "Config_XZZ.h"
+//#include "binningFits_XZZ.h"
 
 using namespace std ;
 using namespace RooFit ;
@@ -50,10 +50,10 @@ using namespace RooFit ;
 
 RooPlot* ContourPlot(RooRealVar* var1,RooRealVar* var2, RooFitResult* r);
 TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verbose=false,double corrFactor=1.0);
-void fitPseudoOnePar( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* initialvalues, int nxj,std::string inPurStr);
-void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* initialvalues, int nxj, int pur);
-void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1);
-void pseudoMassgeTwoPars(int nxj, int pur  , RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2);
+void fitPseudoOnePar( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* initialvalues, int nxj,std::string inPurStr,const std::string& leptType);
+void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* initialvalues, int nxj, int pur,const std::string& leptType);
+void pseudoMassgeOnePar(int nxj ,std::string inPurStr,const std::string& leptType, RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1);
+void pseudoMassgeTwoPars(int nxj, int pur ,const std::string& leptType, RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2);
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::string t2Name,int nxjCut=-1);
 
 /*****************
@@ -333,11 +333,11 @@ int main(){
 				dsDataSB2->plotOn(mccontrol,MarkerStyle(20),MarkerColor(kBlack));
 				VVDataSetWeight->plotOn(mccontrol,MarkerStyle(20),MarkerColor(kRed));
 				mccontrol->Draw();
-				canX->SaveAs((myOutDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
+				canX->SaveAs((myOutDir+"/mccontrol_"+channel_marker.c_str()+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
 				mccontrol->SetMinimum(0.00006);
 				gPad->SetLogy();
 				mccontrol->Draw();
-				canX->SaveAs((myOutDir+"/mccontrol_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
+				canX->SaveAs((myOutDir+"/mccontrol_"+channel_marker.c_str()+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
 				delete mccontrol;
 				delete canX;
 				cout<<"Finished to add the VV MC to the extrapolated SB."<<endl;
@@ -365,18 +365,19 @@ int main(){
 			if(inxj==2)inislope=-0.25;
 			//	char slopePar_name[32];
 			//	sprintf(slopePar_name,"a0_%dJ",inxj);
-			std::string slopePar_name="expoFit_"+leptType+"_"+ssnxj.str()+"J"+pur_str+"_p0";
+			std::string slopePar_name="expoFit_"+channel_marker+"_"+leptType+"_"+ssnxj.str()+"J"+pur_str+"_p0";
 			//logf<<slopePar_name.c_str()<<endl;
+
 			RooRealVar *a0=new RooRealVar(slopePar_name.c_str(),slopePar_name.c_str(),inislope,-10.0,0.0);
-			RooExponential *expo_fit=new RooExponential("exp_fit","exp_fit",*mZZ,*a0);
+			RooExponential *expo_fit=new RooExponential(("exp_fit_"+channel_marker).c_str(),"exp_fit",*mZZ,*a0);
 			//  RooRealVar *exp_norm=new RooRealVar("exp_N","exp_N",0.0,10000.0);
 
 			//  RooFitResult* r_sig = expo_fit->fitTo(*dsDataSB,Save(kTRUE),Range("fitRange")) ;
 			RooFitResult* r_sig2 = expo_fit->fitTo(*dsDataSB2,Save(kTRUE),SumW2Error(kTRUE),RooFit::PrintLevel(-1),Range("fitRange")) ;
 			char fitResultName_expo[200];
-			sprintf( fitResultName_expo, "resultsExpoFit_%dJ_%s_%s",inxj ,pur_str.c_str(), leptType.c_str() );
+			sprintf( fitResultName_expo, "resultsExpoFit_%s_%dJ_%s_%s",channel_marker.c_str(),inxj ,pur_str.c_str(), leptType.c_str() );
 			r_sig2->SetName(fitResultName_expo); 
-			sprintf( fitResultName_expo, "%s/resultsExpoFit_%dJ_%s_%s.txt",myOutDir.c_str(),inxj ,pur_str.c_str(), leptType.c_str() );
+			sprintf( fitResultName_expo, "%s/resultsExpoFit_%s_%dJ_%s_%s.txt",myOutDir.c_str(),channel_marker.c_str(),inxj ,pur_str.c_str(), leptType.c_str() );
 			RooArgSet expofitvars( *a0 );
 			expofitvars.writeToFile(fitResultName_expo);
 
@@ -435,21 +436,20 @@ int main(){
 			RooAbsPdf  *background_decorr_=0;
 			RooFitResult *r_sig_expLev_decorr =0;
 			char fitResultName_eig[200];
-			sprintf( fitResultName_eig, "DUMMYExpLevelledFit_%dJ_%s_decorr",inxj , leptType.c_str() );
+			sprintf( fitResultName_eig, "DUMMYExpLevelledFit_%s_%dJ_%s_decorr",channel_marker.c_str(),inxj , leptType.c_str() );
 
 			if(decorrLevExpo){
 				char diagonalizerName[200];
-				sprintf( diagonalizerName, "expLev_%s_%dJ%s", leptType.c_str(),inxj,pur_str.c_str());
+				sprintf( diagonalizerName, "expLev_%s_%s_%dJ%s",channel_marker.c_str(),leptType.c_str(), inxj,pur_str.c_str());
 				PdfDiagonalizer diago(diagonalizerName, wstmp, *r_sig_expLev );
 				background_decorr_ =diago.diagonalize(*expLev_fit);//RooAbsPdf
 				background_decorr_->SetName(bkgd_decorr_name.c_str());
 				char var1[96],var2[96];
 				//the first part of the name of these vairables var1 and var2 MUST 
 				//match the name of diagonalizerName
-				sprintf(var1,"expLev_%s_%dJ%s_eig0",leptType.c_str(),inxj,pur_str.c_str());
-				sprintf(var2,"expLev_%s_%dJ%s_eig1",leptType.c_str(),inxj,pur_str.c_str());
-				//sprintf(var1,"expLev_%dJ%s_eig0",inxj,pur_str.c_str());
-				//sprintf(var2,"expLev_%dJ%s_eig1",inxj,pur_str.c_str());
+				sprintf(var1,"expLev_%s_%s_%dJ%s_eig0",channel_marker.c_str(),leptType.c_str(),inxj,pur_str.c_str());
+				sprintf(var2,"expLev_%s_%s_%dJ%s_eig1",channel_marker.c_str(),leptType.c_str(),inxj,pur_str.c_str());
+
 				RooRealVar *f0rot=(RooRealVar*)wstmp->var(var1);
 				RooRealVar *f1rot=(RooRealVar*)wstmp->var(var2);
 				logf<<"Decorr vars: "<<f0rot->getVal()<<"  "<<f1rot->getVal()<<endl;
@@ -461,12 +461,12 @@ int main(){
 				//refit to get a new covariance matrix to check that this has worked
 				r_sig_expLev_decorr = background_decorr_->fitTo(*dsDataSB2, Save(),SumW2Error(kTRUE),RooFit::PrintLevel(-1),Range("fitRange"));
 				//    char fitResultName_eig[200];
-				sprintf( fitResultName_eig, "resultsExpLevelledFit_%dJ_%s_%s_decorr",inxj ,pur_str.c_str(), leptType.c_str() );
+				sprintf( fitResultName_eig, "resultsExpLevelledFit_%s_%dJ_%s_%s_decorr",channel_marker.c_str(),inxj ,pur_str.c_str(), leptType.c_str() );
 				r_sig_expLev_decorr->SetName(fitResultName_eig); 
 				logf<<"Sigma= "<<f0->getVal()<<" -> SigmaDecorr="<<f0rot->getVal()<<std::endl;
 				logf<<"Alphaa= "<<f1->getVal()<<" -> AlphaDecorr="<<f1rot->getVal()<<std::endl;
 				logf<<"Beta="<<f1b->getVal() <<" m= "<<f2->getVal()<<" Theta="<<f3->getVal()<<std::endl;
-				sprintf( fitResultName_eig, "%s/resultsExpLevelledFit_%dJ_%s_%s_decorr.txt",myOutDir.c_str(),inxj ,pur_str.c_str(), leptType.c_str() );
+				sprintf( fitResultName_eig, "%s/resultsExpLevelledFit_%s_%dJ_%s_%s_decorr.txt",myOutDir.c_str(),channel_marker.c_str(),inxj ,pur_str.c_str(), leptType.c_str() );
 				RooArgSet rotvars( *f0rot,*f1rot );
 				rotvars.writeToFile(fitResultName_eig);
 
@@ -485,8 +485,8 @@ int main(){
 					RooPlot *plot = new RooPlot(*f0,*f1,f0val-2*f0err,f0val+2*f0err,f1val-2*f1err,f1val+2*f1err);
 					plot->addPlotable(contour);
 					plot->Draw();
-					c_rot->SaveAs((myOutDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
-					c_rot->SaveAs((myOutDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
+					c_rot->SaveAs((myOutDir+"/checkRotation_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
+					c_rot->SaveAs((myOutDir+"/checkRotation_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
 
 					f0val=f0rot->getVal();
 					f1val=f1rot->getVal();
@@ -500,8 +500,8 @@ int main(){
 					plotRot->addPlotable(contourRot);
 					plotRot->Draw();
 					// ContourPlot(f0,f1,r_sig_expLev);
-					c_rot->SaveAs((myOutDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_decorrelated.eps").c_str());
-					c_rot->SaveAs((myOutDir+"/checkRotation_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_decorrelated.png").c_str());
+					c_rot->SaveAs((myOutDir+"/checkRotation_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_decorrelated.eps").c_str());
+					c_rot->SaveAs((myOutDir+"/checkRotation_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_decorrelated.png").c_str());
 
 					delete contour;
 					delete c_rot;
@@ -510,9 +510,9 @@ int main(){
 			}//edn if decorrLevExpo
 
 			//save everything in a RooWorkspace
-			TFile *fout=new TFile((myOutDir+"/workspace_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_new.root").c_str(),"RECREATE");
+			TFile *fout=new TFile((myOutDir+"/workspace_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_new.root").c_str(),"RECREATE");
 			RooWorkspace *wsnew=new RooWorkspace(*ws);
-			wsnew->SetName(("ws_alpha_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType).c_str());
+			wsnew->SetName(("ws_alpha_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType).c_str());
 			logf<<"\n\nName of new WS: "<<wsnew->GetName()<<std::endl;
 			wsnew->import(*Nbkg);
 			wsnew->import(*NbkgELE);
@@ -555,33 +555,37 @@ int main(){
 					//get alternative weights
 					if(n%50==0)std::cout<<"Throwing toy #"<<n<<"/"<<nToys<<" "<<std::endl;
 					sprintf(alphahname,"tmp_%d",n);
-					sprintf(tmpTname,"pseudoTree_%s",alphahname);     
+					sprintf(tmpTname,"pseudoTree_%s",alphahname);    
 					TTree* weightedPseudo = weightTree(treeDATA_tmp ,(TH1D*)falpha->Get(alphahname), tmpTname);
 					RooDataSet pseudoSB2("pseudoSB2","pseudoSB2",weightedPseudo,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*alphaWeight,*vTagPurity),cutSB.c_str(),"alphaWeight") ;
 					pseudoSB2.append(*VVDataSetWeight);
+					//std::cout << "XXX " <<doPseudoTwoPars << "  " <<decorrLevExpo <<std::endl;
 					if(doPseudoTwoPars && decorrLevExpo){//actually do it only if you already decorrelated the two par func
-						fitPseudoTwoPars(pseudoSB2,*wsnew,n,fitResultNamePseudo,inxj,purityCut);
+					  fitPseudoTwoPars(pseudoSB2,*wsnew,n,fitResultNamePseudo,inxj,purityCut,leptType);
 					}
 					else{
-						fitPseudoOnePar(pseudoSB2,*wsnew,n,fitResultNamePseudo,inxj,pur_str);
+					  fitPseudoOnePar(pseudoSB2,*wsnew,n,fitResultNamePseudo,inxj,pur_str,leptType);
 					}
-					//      cout<<"Deleting tree #"<<n<<"  "<<weightedPseudo->GetName()<<endl;
+					//      cout<<"Deleting tree #"<<n<<"  "<<weightedPseuo->GetName()<<endl;
 					delete weightedPseudo;
 				}
+				//std::cout << "XXX" << std::endl;
 				char var1errA[50];
-				sprintf(var1errA,"expoFit_%s_%dJ%s_p0_alphaErr",leptType.c_str(),inxj,pur_str.c_str());
+				sprintf(var1errA,"expoFit_%s_%s_%dJ%s_p0_alphaErr",channel_marker.c_str(),leptType.c_str(),inxj,pur_str.c_str());
+
 				char var2errA[50];
 				sprintf(var2errA,"DUMMY_%dJ_alphaErr",inxj);
 				if(doPseudoTwoPars &&decorrLevExpo){
-					sprintf(var1errA,"expLev_%s_%dJ%s_eig0_alphaErr",leptType.c_str(),inxj,pur_str.c_str());
-					sprintf(var2errA,"expLev_%s_%dJ%s_eig1_alphaErr",leptType.c_str(),inxj,pur_str.c_str());
+					sprintf(var1errA,"expLev_%s_%s_%dJ%s_eig0_alphaErr",channel_marker.c_str(),leptType.c_str(),inxj,pur_str.c_str());
+					sprintf(var2errA,"expLev_%s_%s_%dJ%s_eig1_alphaErr",channel_marker.c_str(),leptType.c_str(),inxj,pur_str.c_str());
+
 				}
 
 				RooRealVar errV1(var1errA,var1errA,0.0);
 				RooRealVar errV2(var2errA,var2errA,0.0);
 				std::cout<<"Starting pseudoMassge"<<std::endl;
-				if(doPseudoTwoPars && decorrLevExpo) pseudoMassgeTwoPars( inxj ,purityCut,r_sig_expLev,*wsnew,fitResultName_eig, Nerr->getVal(), errV1, errV2);
-				else  pseudoMassgeOnePar( inxj,pur_str  ,r_sig2,*wsnew,fitResultName_expo, Nerr->getVal(), errV1);
+				if(doPseudoTwoPars && decorrLevExpo) pseudoMassgeTwoPars( inxj ,purityCut,leptType,r_sig_expLev,*wsnew,fitResultName_eig, Nerr->getVal(), errV1, errV2);
+				else  pseudoMassgeOnePar( inxj,pur_str, leptType  ,r_sig2,*wsnew,fitResultName_expo, Nerr->getVal(), errV1);
 
 				wsnew->import(errV1);
 				logf<<"Saving in the ws the error on shape param due to alpha stat: errPar1="<<errV1.getVal()<<std::flush;
@@ -643,17 +647,17 @@ int main(){
 			logf<<"Check nromalization: NumEntries of dsDataSIG= "<<dsDataSIG->numEntries() <<"("<<dsDataSIG->sumEntries() <<")    SumEntries of dsDataSB2="<<dsDataSB2->sumEntries()<<"   numEntries="<<dsDataSB2->numEntries()<<"    Nbkg (NORM)="<<NbkgRange->getVal()<<"   Nent="<<Nent->getVal()<<"     Nerr="<<Nerr->getVal() <<std::endl;
 
 			xf->Draw();
-			can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".root").c_str());
-			can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
-			can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
-			can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".pdf").c_str());
+			can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".root").c_str());
+			can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
+			can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
+			can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".pdf").c_str());
 			xf->SetMinimum(0.06);
 			gPad->SetLogy();
 			xf->Draw();
-			can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.root").c_str());
-			can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.eps").c_str());
-			can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
-			can1->SaveAs((myOutDir+"/fitPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.pdf").c_str());
+			can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.root").c_str());
+			can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.eps").c_str());
+			can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.png").c_str());
+			can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+"_log.pdf").c_str());
 			delete xf;
 
 			//don't change this order, for God's sake !
@@ -739,32 +743,32 @@ TTree* weightTree(TTree* tree, TH1D* h1_alpha,const std::string& name ,bool verb
 	return newTree;
 
 }
-void fitPseudoOnePar( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char* initialvalues , int nxj,std::string inPurStr) {
+void fitPseudoOnePar( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char* initialvalues , int nxj,std::string inPurStr, const std::string& leptType){
 	//reset parameters
 	char var1[50];
-	sprintf(var1,"expoFit_%s_%dJ%s_p0",leptType.c_str(),nxj,inPurStr.c_str());
+	sprintf(var1,"expoFit_%s_%s_%dJ%s_p0",channel_marker.c_str(),leptType.c_str(),nxj,inPurStr.c_str());
 	char argname[100];
 	sprintf(argname,"%s",var1);
 	ws.argSet(argname).readFromFile(initialvalues);
-	RooFitResult* r_pseudo = ws.pdf("exp_fit")->fitTo(ModSideband, SumW2Error(kTRUE), Save(),RooFit::PrintLevel(-1),Range("fitRange") );
+	RooFitResult* r_pseudo = ws.pdf(("exp_fit_"+channel_marker).c_str())->fitTo(ModSideband, SumW2Error(kTRUE), Save(),RooFit::PrintLevel(-1),Range("fitRange") );
 
 	char indexstring[200];
-	sprintf(indexstring,"TMPResult_%dJ%s_%d",nxj,inPurStr.c_str(),seed);
+	sprintf(indexstring,"TMPResult_%s_%s_%dJ%s_%d",channel_marker.c_str(),leptType.c_str(),nxj,inPurStr.c_str(),seed);
 	RooArgSet tmpset(r_pseudo->floatParsFinal());
 	tmpset.writeToFile(indexstring);
 
 }
 
 
-void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char* initialvalues , int nxj, int pur) {
+void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char* initialvalues , int nxj, int pur , const std::string& leptType ) {
 	std::string pur_str="";
 	if(pur==0)pur_str="LP";
 	if(pur==1)pur_str="HP";
 	//reset parameters
 	char var1[50];
 	char var2[50];
-	sprintf(var1,"expLev_%s_%dJ%s_eig0",leptType.c_str(),nxj,pur_str.c_str());
-	sprintf(var2,"expLev_%s_%dJ%s_eig1",leptType.c_str(),nxj,pur_str.c_str());
+	sprintf(var1,"expLev_%s_%s_%dJ%s_eig0",channel_marker.c_str(),leptType.c_str(),nxj,pur_str.c_str());
+	sprintf(var2,"expLev_%s_%s_%dJ%s_eig1",channel_marker.c_str(),leptType.c_str(),nxj,pur_str.c_str());
 	char argname[100];
 	//  if(nxj==2) sprintf(argname,"%s",var1);
 	// else sprintf(argname,"%s,%s",var1,var2);
@@ -774,7 +778,7 @@ void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char*
 	RooFitResult* r_pseudo = ws.pdf(bkgd_decorr_name.c_str())->fitTo(ModSideband, SumW2Error(kTRUE), Save(),RooFit::PrintLevel(-1),Range("fitRange") );
 	// RooFitResult* r_pseudo2 =ws.pdf("levelled_exp_fit")->fitTo(ModSideband, SumW2Error(kTRUE), Save(),RooFit::PrintLevel(-1),Range("fitRange") );
 	char indexstring[200];
-	sprintf(indexstring,"TMPResult_%dJ%s_%d",nxj,pur_str.c_str(),seed);
+	sprintf(indexstring,"TMPResult_%s_%s_%dJ%s_%d",channel_marker.c_str(),leptType.c_str(),nxj,pur_str.c_str(),seed);
 	RooArgSet tmpset(r_pseudo->floatParsFinal());
 	tmpset.writeToFile(indexstring);
 
@@ -805,7 +809,7 @@ void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char*
 
 		cout<<"CP6 "<<endl;
 		char canName1[128];
-		sprintf(canName1,"TMPFit_%dJ%s_%d.png",nxj,pur_str.c_str(),seed);
+		sprintf(canName1,"TMPFit_%s_%s_%dJ%s_%d.png",channel_marker.c_str(),leptType.c_str(),nxj,pur_str.c_str(),seed);
 		canX->SaveAs(canName1);
 		// delete mZZtmp;
 		delete tmpfitfr;
@@ -816,10 +820,10 @@ void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char*
 
 }
 
-void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1){
+void pseudoMassgeOnePar(int nxj ,std::string inPurStr, const std::string & leptType, RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1){
 	char var1[50];
 
-	sprintf(var1,"expoFit_%s_%dJ%s_p0",leptType.c_str(),nxj,inPurStr.c_str());//this must be equal to what is in fitPseudo
+	sprintf(var1,"expoFit_%s_%s_%dJ%s_p0",channel_marker.c_str(),leptType.c_str(),nxj,inPurStr.c_str());//this must be equal to what is in fitPseudo
 	char argname[100];
 	sprintf(argname,"%s",var1);
 
@@ -842,7 +846,7 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 	cout<<"pseudoMassgeOnePar starts to loop over "<<nToys<<" toys with initial value "<<x1<<"+/-"<<e1<<endl;
 
 	for(unsigned i =0 ; i < nToys ; i++){
-		sprintf(indexstring,"TMPResult_%dJ%s_%d",nxj,inPurStr.c_str(),i);
+	  sprintf(indexstring,"TMPResult_%s_%s_%dJ%s_%d",channel_marker.c_str(),leptType.c_str(),nxj,inPurStr.c_str(),i);
 		//  ifstream testFile(indexstring,ios::in);
 		// if(! testFile.good())continue;
 		ws.argSet(argname).readFromFile(indexstring);
@@ -854,7 +858,7 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 
 		if(plotEnvelope ){
 			cout<<"(in pseudoMassgeOnePar) Plot expo #"<<i<<" with "<<var1<<"="<<ws.var(var1)->getVal()<<endl;
-			ws.pdf("exp_fit")->plotOn(plot_MCbkg,LineWidth(1),LineColor(1));
+			ws.pdf(("exp_fit_"+channel_marker).c_str())->plotOn(plot_MCbkg,LineWidth(1),LineColor(1));
 			cout<<"Finished to Plot expo fit #"<<i<<endl;
 			// char nameTmpFit[64];
 			// sprintf(nameTmpFit,"%s_%d",bkgd_decorr_name.c_str(),i);
@@ -871,7 +875,7 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 
 
 	char canvasName[400];
-	sprintf( canvasName, "%s/mZZ_fitSidebandData_alphaFromToys_%dJ%s_%s", myOutDir.c_str(), nxj,inPurStr.c_str(), "ALL");
+	sprintf( canvasName, "%s/mZZ_fitSidebandData_alphaFromToys_%s_%s_%dJ%s_%s", myOutDir.c_str(),leptType.c_str(),channel_marker.c_str(), nxj,inPurStr.c_str(), "ALL");
 	std::string canvasName_str(canvasName);
 	std::string canvasName_eps = canvasName_str + ".eps";
 	std::string canvasName_png = canvasName_str + ".png";
@@ -910,11 +914,11 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 		upper->SetLineColor(2);
 
 		cout<<"Plotting with pseudo experiments for "<<nxj<<"-J topology "<<endl;
-		ws.pdf("exp_fit")->plotOn(plot_MCbkg,VisualizeError(*r_nominal,2.0,kFALSE),FillColor(kYellow));
-		ws.pdf("exp_fit")->plotOn(plot_MCbkg,VisualizeError(*r_nominal,1.0,kFALSE),FillColor(kGreen));
-		ws.pdf("exp_fit")->plotOn(plot_MCbkg);
-		ws.pdf("exp_fit")->plotOn(plot_MCbkg, LineColor(kViolet-2), LineStyle(kDashed), Normalization(1.0+NormRelErr,RooAbsReal::Relative));
-		ws.pdf("exp_fit")->plotOn(plot_MCbkg, LineColor(kViolet-2), LineStyle(kDashed), Normalization(1.0-NormRelErr,RooAbsReal::Relative));
+		ws.pdf(("exp_fit_"+channel_marker).c_str())->plotOn(plot_MCbkg,VisualizeError(*r_nominal,2.0,kFALSE),FillColor(kYellow));
+		ws.pdf(("exp_fit_"+channel_marker).c_str())->plotOn(plot_MCbkg,VisualizeError(*r_nominal,1.0,kFALSE),FillColor(kGreen));
+		ws.pdf(("exp_fit_"+channel_marker).c_str())->plotOn(plot_MCbkg);
+		ws.pdf(("exp_fit_"+channel_marker).c_str())->plotOn(plot_MCbkg, LineColor(kViolet-2), LineStyle(kDashed), Normalization(1.0+NormRelErr,RooAbsReal::Relative));
+		ws.pdf(("exp_fit_"+channel_marker).c_str())->plotOn(plot_MCbkg, LineColor(kViolet-2), LineStyle(kDashed), Normalization(1.0-NormRelErr,RooAbsReal::Relative));
 		plot_MCbkg->addPlotable(lower);
 		plot_MCbkg->addPlotable(upper);
 
@@ -950,7 +954,7 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 		c1->SaveAs(canvasName_png.c_str());
 
 		char dumname[200];
-		sprintf(dumname,"%s/rooCurves_%dJ%s_ALL.root",myOutDir.c_str(),nxj,inPurStr.c_str());
+		sprintf(dumname,"%s/rooCurves_%s_%s_%dJ%s_ALL.root",myOutDir.c_str(),leptType.c_str(),channel_marker.c_str(),nxj,inPurStr.c_str());
 		cout<<"Drawing "<<dumname<<endl;
 		TFile *fdumout=new TFile(dumname ,"RECREATE"); 
 		char upname[50];
@@ -1011,7 +1015,7 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 	line->DrawLine(x1-e1,histo1->GetMinimum(),x1-e1,histo1->GetMaximum());
 
 
-	sprintf( canvasName, "%s/alphaSystErr_par1_%dJ%s_%s", myOutDir.c_str(), nxj,inPurStr.c_str(), "ALL");
+	sprintf( canvasName, "%s/alphaSystErr_par1_%s_%s_%dJ%s_%s", myOutDir.c_str(),leptType.c_str(),channel_marker.c_str(), nxj,inPurStr.c_str(), "ALL");
 	canvasName_str = canvasName;
 	canvasName_eps = canvasName_str + ".eps";
 	canvasName_png = canvasName_str + ".png";
@@ -1025,15 +1029,15 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, RooFitResult* r_nominal, 
 }//end pseudoMassgeOnePar
 
 
-void pseudoMassgeTwoPars(int nxj ,int pur , RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2){
+void pseudoMassgeTwoPars(int nxj ,int pur, const std::string& leptType , RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2){
 	std::string pur_str="";
 	if(pur==0)pur_str="LP";
 	if(pur==1)pur_str="HP";
 
 	char var1[50];
 	char var2[50];
-	sprintf(var1,"expLev_%s_%dJ%s_eig0",leptType.c_str(),nxj,pur_str.c_str());//this must be equal to what is in fitPseudo
-	sprintf(var2,"expLev_%s_%dJ%s_eig1",leptType.c_str(),nxj,pur_str.c_str());//this must be equal to what is in fitPseudo
+	sprintf(var1,"expLev_%s_%s_%dJ%s_eig0",channel_marker.c_str(),leptType.c_str(),nxj,pur_str.c_str());//this must be equal to what is in fitPseudo
+	sprintf(var2,"expLev_%s_%s_%dJ%s_eig1",channel_marker.c_str(),leptType.c_str(),nxj,pur_str.c_str());//this must be equal to what is in fitPseudo
 	char argname[100];
 	//  if(nxj==2) sprintf(argname,"%s",var1);
 	// else sprintf(argname,"%s,%s",var1,var2);
@@ -1061,7 +1065,7 @@ void pseudoMassgeTwoPars(int nxj ,int pur , RooFitResult* r_nominal, RooWorkspac
 
 	cout<<"pseudoMassgeTwoPars starts to loop over "<<nToys<<" toys"<<endl;
 	for(unsigned i =0 ; i < nToys ; i++){
-		sprintf(indexstring,"TMPResult_%dJ%s_%d",nxj,pur_str.c_str(),i);
+	  sprintf(indexstring,"TMPResult_%s_%s_%dJ%s_%d",channel_marker.c_str(),leptType.c_str(),nxj,pur_str.c_str(),i);
 		//    sprintf(indexstring,"TMPResult_%dtag_%d",nxj,i);
 		//  ifstream testFile(indexstring,ios::in);
 		// if(! testFile.good())continue;
@@ -1099,7 +1103,7 @@ void pseudoMassgeTwoPars(int nxj ,int pur , RooFitResult* r_nominal, RooWorkspac
 
 
 	char canvasName[400];
-	sprintf( canvasName, "%s/mZZ_fitSidebandData_alphaFromToys_%dJ%s_%s", myOutDir.c_str(), nxj,pur_str.c_str(), "ALL");
+	sprintf( canvasName, "%s/mZZ_fitSidebandData_alphaFromToys_%s_%s_%dJ%s_%s", myOutDir.c_str(),channel_marker.c_str(),leptType.c_str(), nxj,pur_str.c_str(), "ALL");
 	std::string canvasName_str(canvasName);
 	std::string canvasName_eps = canvasName_str + ".eps";
 	std::string canvasName_png = canvasName_str + ".png";
@@ -1178,7 +1182,7 @@ void pseudoMassgeTwoPars(int nxj ,int pur , RooFitResult* r_nominal, RooWorkspac
 		c1->SaveAs(canvasName_png.c_str());
 
 		char dumname[200];
-		sprintf(dumname,"%s/rooCurves_%dJ%s_ALL.root",myOutDir.c_str(),nxj,pur_str.c_str());
+		sprintf(dumname,"%s/rooCurves_%s_%s_%dJ%s_ALL.root",myOutDir.c_str(),channel_marker.c_str(),leptType.c_str(),nxj,pur_str.c_str());
 		cout<<"Drawing "<<dumname<<endl;
 		TFile *fdumout=new TFile(dumname ,"RECREATE"); 
 		char upname[50];
@@ -1255,7 +1259,7 @@ void pseudoMassgeTwoPars(int nxj ,int pur , RooFitResult* r_nominal, RooWorkspac
 	line->DrawLine(x1-e1,histo1->GetMinimum(),x1-e1,histo1->GetMaximum());
 
 
-	sprintf( canvasName, "%s/alphaSystErr_par1_%dJ%s_%s", myOutDir.c_str(), nxj,pur_str.c_str(), "ALL");
+	sprintf( canvasName, "%s/alphaSystErr_par1_%s_%s_%dJ%s_%s", myOutDir.c_str(),channel_marker.c_str(),leptType.c_str(), nxj,pur_str.c_str(), "ALL");
 	canvasName_str = canvasName;
 	canvasName_eps = canvasName_str + ".eps";
 	canvasName_png = canvasName_str + ".png";
@@ -1270,7 +1274,7 @@ void pseudoMassgeTwoPars(int nxj ,int pur , RooFitResult* r_nominal, RooWorkspac
 	line->DrawLine(x2+e2,histo2->GetMinimum(),x2+e2,histo2->GetMaximum());
 	line->DrawLine(x2-e2,histo2->GetMinimum(),x2-e2,histo2->GetMaximum());
 
-	sprintf( canvasName, "%s/alphaSystErr_par2_%dJ%s_%s", myOutDir.c_str(), nxj,pur_str.c_str(), "ALL");
+	sprintf( canvasName, "%s/alphaSystErr_par2_%s_%s_%dJ%s_%s", myOutDir.c_str(),channel_marker.c_str(),leptType.c_str(), nxj,pur_str.c_str(), "ALL");
 	canvasName_str = canvasName;
 	canvasName_eps = canvasName_str + ".eps";
 	canvasName_png = canvasName_str + ".png";

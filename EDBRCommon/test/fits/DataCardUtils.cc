@@ -25,10 +25,10 @@ std::string DataCardUtils::leptType_datacards( const std::string& leptType_str )
 
 }
 
-std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory, const std::string& leptType ) {
+std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory, const std::string& leptType , const std::string&  channel_marker) {
   
   char fitResultsFileName[500];              
-  sprintf( fitResultsFileName, "FitSidebands_MJJ/workspace_%dJ%s_new.root", nxjCategory, leptType.c_str() );
+  sprintf( fitResultsFileName, "FitSidebands_MJJ/workspace_%s_%dJ%s_new.root",channel_marker.c_str(), nxjCategory, leptType.c_str() );
   
   std::string fitResultsFileName_str(fitResultsFileName);
   
@@ -36,10 +36,10 @@ std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory, const st
   
 }
 
-std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory,const std::string& purType , const std::string& leptType , std::string myDir) {
+std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory,const std::string& purType , const std::string& leptType , std::string myDir ,const std::string&  channel_marker) {
   
   char fitResultsFileName[500];              
-  sprintf( fitResultsFileName, "/workspace_%dJ_%s_%s_new.root", nxjCategory,purType.c_str(), leptType.c_str() );
+  sprintf( fitResultsFileName, "/workspace_%s_%dJ_%s_%s_new.root",channel_marker.c_str(), nxjCategory,purType.c_str(), leptType.c_str() );
   
   std::string fitResultsFileName_str(myDir+fitResultsFileName);
   
@@ -47,10 +47,10 @@ std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory,const std
   
 }
 
-std::string DataCardUtils::get_fitResultsRootFileName(double mass, int nxjCategory,const std::string& purType , const std::string& leptType , std::string myDir) {
+std::string DataCardUtils::get_fitResultsRootFileName(double mass, int nxjCategory,const std::string& purType , const std::string& leptType , std::string myDir ,const std::string&  channel_marker) {
   
   char fitResultsFileName[500];              
-  sprintf( fitResultsFileName, "/workspace_M%d_%dJ_%s_%s_new.root", int(mass), nxjCategory,purType.c_str(), leptType.c_str() );
+  sprintf( fitResultsFileName, "/workspace_%s_M%d_%dJ_%s_%s_new.root",channel_marker.c_str(), int(mass), nxjCategory,purType.c_str(), leptType.c_str() );
   
   std::string fitResultsFileName_str(myDir+fitResultsFileName);
   

@@ -12,13 +12,16 @@ const unsigned int nToys = 500;
 const float lumi =19538.85;
 
 
-const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
-const bool unblind=false;//default is not to plot the data in signal region
+const bool doPseudoExp=true; //if true, for for different psuedo-alpha 
+const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=false;//choose what to plot as main fit function
-std::string bkgd_decorr_name="levexp_dcr";
+
+std::string channel_marker="xzz";
+
+std::string bkgd_decorr_name="levexp_dcr_xzz";
 
 
-const std::string datacardDir("DataCards_XZZ_20130426/");
+const std::string datacardDir("DataCards_XZZ_EXPERIMENTAL/");
 float mZZmax_=2600;
 
