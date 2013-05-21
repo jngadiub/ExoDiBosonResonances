@@ -118,7 +118,7 @@ HLTlistEle = cms.vstring("HLT_DoubleEle33_*") # triggers for DoubleElectron PD
 #HLTlistSM  = cms.vstring("HLT_Mu40_* AND NOT HLT_Mu17_Mu8* AND NOT HLT_Mu22_TkMu22*")
 
 HLTlistSE = cms.vstring("HLT_Ele80_CaloIdVT_*")
-HLTlistSM  = cms.vstring("HLT_Mu40_eta2p1")
+HLTlistSM  = cms.vstring("HLT_Mu40_eta2p1*")
 
 process.hltHighLevelEle = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
