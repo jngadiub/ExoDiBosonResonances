@@ -474,7 +474,7 @@ process.out.outputCommands.append('drop *_cmg*_*_*')
 process.out.outputCommands.append('drop *_particleFlow*_*_*')
 process.out.outputCommands.append('drop *_pfNoPileUp_*_*')
 process.out.outputCommands.append('drop *_pfSelectedPhotons_*_*')
-
+process.out.outputCommands.append('drop *_phPFIsoDeposit*_*_*')
 
 #FIXME now keeping the whole event content...
 # process.out.outputCommands.append('keep *_*_*_*')
