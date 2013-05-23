@@ -1,28 +1,20 @@
 import FWCore.ParameterSet.Config as cms
 
 
-from  CMGTools.External.pujetidsequence_cff import puJetId, puJetMva
-from CMGTools.External.pujetidproducer_cfi import  stdalgos_4x, stdalgos_5x, stdalgos, cutbased, chsalgos_4x, chsalgos_5x, chsalgos
-puJetMvaAK5= puJetMva.clone(
-    jetids = cms.InputTag("puJetIdCHS"),
-    jets ='selectedPatJetsCHS',
-    algos =  chsalgos
-    )
-##
 
 from ExoDiBosonResonances.EDBRCommon.factories.cmgJet_cfi import cmgJet as cmgJetDummyName
 cmgJetRawAK5 = cmgJetDummyName.clone()
-cmgJetRawAK5.cfg.inputCollection=cms.InputTag('selectedPatJetsCHS')#"selectedPatJets")
+cmgJetRawAK5.cfg.inputCollection=cms.InputTag('patJetsWithVarCHS')#"selectedPatJetsCHS")
 cmgJetRawAK5.cfg.puVariables=cms.InputTag("puJetIdCHS")
 cmgJetRawAK5.cfg.puMvas=cms.VInputTag(
-                                      "puJetMvaAK5:cutbasedDiscriminant",
-                                      "puJetMvaAK5:simpleDiscriminant", #puJetMvaAK5NoPUSub
-                                      "puJetMvaAK5:fullDiscriminant"
+                                      "puJetMvaAK5CHS:cutbasedDiscriminant",
+                                      "puJetMvaAK5CHS:simpleDiscriminant", #puJetMvaAK5NoPUSub
+                                      "puJetMvaAK5CHS:fullDiscriminant"
                                       )
 cmgJetRawAK5.cfg.puIds=cms.VInputTag(
-                                      "puJetMvaAK5:cutbasedId",
-                                      "puJetMvaAK5:simpleId",
-                                      "puJetMvaAK5:fullId"                          
+                                      "puJetMvaAK5CHS:cutbasedId",
+                                      "puJetMvaAK5CHS:simpleId",
+                                      "puJetMvaAK5CHS:fullId"                          
                                       )
 
 
@@ -56,4 +48,4 @@ jetAK5 = cms.EDFilter(
     )
 
 
-jetAK5Sequence = cms.Sequence(puJetMvaAK5+cmgJetRawAK5+cmgJetAK5Clean+jetAK5 )
+jetAK5Sequence = cms.Sequence(cmgJetRawAK5+cmgJetAK5Clean+jetAK5 )
