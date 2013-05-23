@@ -38,7 +38,7 @@ METLEPTON_KINCUT = ("pt > 80.0")
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 20
+process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
@@ -60,8 +60,7 @@ process.source.fileNames = process.source.fileNames[:20]
 # If you want you can overwrite the previous input filenames like this:
 #####process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/group/cmgtools/CMG/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PFAOD_0.root']
 #process.source.fileNames = ['file:root://eoscms//eos/cms/store/data/Run2012C/DoublePhotonHighPt/AOD/PromptReco-v2/000/200/600/0AA4E2BB-2BE5-E111-B3A8-00237DDC5C24.root']
-##process.source.fileNames = ['file:root://eoscms//eos/cms/store/mc/Summer12_DR53X/DYJetsToLL_PtZ-100_TuneZ2star_8TeV_ext-madgraph-tarball/DQM/PU_S10_START53_V7C-v1/00000/DE1C7C73-8439-E211-BF96-003048FFD71E.root']
-process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/bonato/patTuple/2012/EXOVVtest/BulkG_ZZllqq_M1000_c0p2_STEP3_AODSIM_24_1_fvt.root']
+##process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/bonato/patTuple/2012/EXOVVtest/BulkG_ZZllqq_M1000_c0p2_STEP3_AODSIM_24_1_fvt.root']
 
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
