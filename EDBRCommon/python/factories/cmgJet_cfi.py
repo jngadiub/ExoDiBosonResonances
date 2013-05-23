@@ -76,10 +76,10 @@ structJetFactory = cms.PSet(
        applyResolution = cms.bool(False),
        resolutionFile = cms.FileInPath("CondFormats/JetMETObjects/data/Spring10_PtResolution_AK5PF.txt"), 
        resolutionOverride = cms.double(-1.),# negative => use default
-       applyScale = cms.bool(True),
-       applyScaleFromDB= cms.bool(True),
+       applyScale = cms.bool(False),
+       applyScaleFromDB= cms.bool(False),
        scaleFile = cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/DUMMY_GR_R_42_V19_AK5PF_DUMMY_Uncertainty_DUMMY.txt"), 
-       nSigmaScale = cms.double(-2.0) # vary scale by n sigma
+       nSigmaScale = cms.double(0.0) # vary scale by n sigma
        )
 
 cmgStructuredJet = cms.EDFilter(
