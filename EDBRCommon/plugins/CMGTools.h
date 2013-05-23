@@ -4,15 +4,16 @@
 #include "ExoDiBosonResonances/EDBRCommon/interface/CompoundFactories.h"
 #include "ExoDiBosonResonances/EDBRCommon/interface/VJetFactory.h"
 #include "ExoDiBosonResonances/EDBRCommon/interface/NeutrinoFactory.h"
-//#include "ExoDiBosonResonances/EDBRCommon/interface/PFJetSmearFactory.h"
+#include "ExoDiBosonResonances/EDBRCommon/interface/PFJetSmearFactory.h"  //ANIELLO
 #include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
 #include "CMGTools/Common/interface/GenericPhysicsObjectSelectorDefinition.h"
 #include "CommonTools/UtilAlgos/interface/StringCutObjectSelector.h"
 #include "CommonTools/UtilAlgos/interface/SingleObjectSelector.h"
 #include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
+
 typedef PhysicsObjectProducer<cmg::VJetFactory> VJetPOProducer;
-//typedef PhysicsObjectProducer<cmg::PFJetSmearFactory> PFJetSmearPOProducer;
+typedef PhysicsObjectProducer<cmg::PFJetSmearFactory> PFJetSmearPOProducer; //ANIELLO
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::VJet> > CmgVJetSelector;
 
 typedef PhysicsObjectProducer<cmg::NeutrinoFactory> NeutrinoPOProducer;

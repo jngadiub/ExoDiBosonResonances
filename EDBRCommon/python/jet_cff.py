@@ -54,8 +54,8 @@ genSelectorZAQDaughter = cms.EDFilter("GenParticleSelector",# matches anti-quark
 # and they are done with the PAT-jets in PAT-tuples.
 from ExoDiBosonResonances.EDBRCommon.factories.cmgJet_cfi import cmgJet as cmgJetDummyName
 cmgJetRaw = cmgJetDummyName.clone()
-cmgJetRaw.cfg.inputCollection=cms.InputTag('selectedPatJetsCA8CHSwithQjets')#"selectedPatJets")
-cmgJetRaw.cfg.puVariables=cms.InputTag("puJetIdCA8CHS")
+cmgJetRaw.cfg.PFJetFactory.inputCollection=cms.InputTag('selectedPatJetsCA8CHSwithQjets')#"selectedPatJets")
+cmgJetRaw.cfg.PFJetFactory.puVariables=cms.InputTag("puJetIdCA8CHS")
 #cmgJet = cmgJetRaw.clone()
 
 

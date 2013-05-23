@@ -1,9 +1,8 @@
 #include "ExoDiBosonResonances/EDBRCommon/plugins/CMGTools.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-
 DEFINE_FWK_MODULE(VJetPOProducer);
-//DEFINE_FWK_MODULE(PFJetSmearPOProducer);
+DEFINE_FWK_MODULE(PFJetSmearPOProducer); //ANIELLO
 DEFINE_FWK_MODULE(CmgVJetSelector);
 
 DEFINE_FWK_MODULE(NeutrinoPOProducer);

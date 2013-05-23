@@ -4,14 +4,14 @@ import FWCore.ParameterSet.Config as cms
 
 from ExoDiBosonResonances.EDBRCommon.factories.cmgJet_cfi import cmgJet as cmgJetDummyName
 cmgJetRawAK5 = cmgJetDummyName.clone()
-cmgJetRawAK5.cfg.inputCollection=cms.InputTag('patJetsWithVarCHS')#"selectedPatJetsCHS")
-cmgJetRawAK5.cfg.puVariables=cms.InputTag("puJetIdCHS")
-cmgJetRawAK5.cfg.puMvas=cms.VInputTag(
+cmgJetRawAK5.cfg.PFJetFactory.inputCollection=cms.InputTag('patJetsWithVarCHS')#"selectedPatJetsCHS")
+cmgJetRawAK5.cfg.PFJetFactory.puVariables=cms.InputTag("puJetIdCHS")
+cmgJetRawAK5.cfg.PFJetFactory.puMvas=cms.VInputTag(
                                       "puJetMvaAK5CHS:cutbasedDiscriminant",
                                       "puJetMvaAK5CHS:simpleDiscriminant", #puJetMvaAK5NoPUSub
                                       "puJetMvaAK5CHS:fullDiscriminant"
                                       )
-cmgJetRawAK5.cfg.puIds=cms.VInputTag(
+cmgJetRawAK5.cfg.PFJetFactory.puIds=cms.VInputTag(
                                       "puJetMvaAK5CHS:cutbasedId",
                                       "puJetMvaAK5CHS:simpleId",
                                       "puJetMvaAK5CHS:fullId"                          

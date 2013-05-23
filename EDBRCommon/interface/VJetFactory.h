@@ -31,6 +31,16 @@ class VJetFactory : public Factory<cmg::VJet>{
     std::vector< edm::InputTag > puMvasTag_, puIdsTag_,puNamesTag_;
     const bool useConstituents_;
     const bool verbose_;
+
+    //------------------------------ANIELLO------------------------------//
+    const bool applyResolution_;
+    const std::string resolutionFile_;
+    const double resolutionOverride_;
+    
+    const bool applyScale_, applyScaleDB_;
+    const std::string scaleFile_;
+    const double nSigmaScale_;
+    //------------------------------ANIELLO------------------------------//
   };
 
 }
