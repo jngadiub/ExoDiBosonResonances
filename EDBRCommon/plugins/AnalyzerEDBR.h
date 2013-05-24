@@ -392,10 +392,10 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     mzzNoKinFit[ih]=edbr->mass();
     mjj[ih]=edbr->leg2().prunedMass();
     mjjNoKinFit[ih]=mjj[ih];
-	//40-65 -- 65-105 -- 105-130
-	if(VType_=="W"&&(mjjNoKinFit[ih]>65&&mjjNoKinFit[ih]<105)) reg[ih]=1;
-	else if(VType_=="W"&&( (mjjNoKinFit[ih]>40&&mjjNoKinFit[ih]<65) || (mjjNoKinFit[ih]>105&&mjjNoKinFit[ih]<130)) ) reg[ih]=0;
-	else if(VType_=="W") reg[ih]=-1;
+    //40-65 -- 65-105 -- 105-130
+    if(VType_=="W"&&(mjjNoKinFit[ih]>65&&mjjNoKinFit[ih]<105)) reg[ih]=1;
+    else if(VType_=="W"&&( (mjjNoKinFit[ih]>40&&mjjNoKinFit[ih]<65) || (mjjNoKinFit[ih]>105&&mjjNoKinFit[ih]<130)) ) reg[ih]=0;
+    else if(VType_=="W") reg[ih]=-1;
     ptmzzNoKinFit[ih]=edbr->pt();
     ptjjNoKinFit[ih]=edbr->leg2().pt();
     ////fill jet kine vars: first jet vars refer to jet used for building EDBR,
@@ -409,7 +409,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       etajet2[ih]=-99.0;
       phijet1[ih]=edbr->leg2().phi();
       phijet2[ih]=-99.0;
-      
+      massjet1[ih]=edbr->leg2().mass();
+      massjet2[ih]=-99.0;
       
       betajet1[ih] = edbr->leg2().beta(); 
       betajet2[ih] = -1.0;
@@ -482,7 +483,10 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       etajet2[ih]=edbr->leg2().leg2().eta();
       phijet1[ih]=edbr->leg2().leg1().phi();
       phijet2[ih]=edbr->leg2().leg2().phi();
+      massjet1[ih]=edbr->leg2().leg1().mass();
+      massjet2[ih]=edbr->leg2().leg2().mass();
       
+
       betajet1[ih] = edbr->leg2().leg1().beta(); 
       betajet2[ih] = edbr->leg2().leg2().beta(); 
       puMvajet1[ih] = edbr->leg2().leg1().puMva("full"); 
@@ -753,7 +757,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double mzz[nMaxCand], mll[nMaxCand], mjj[nMaxCand]; // masses
   double ptmzz[nMaxCand];
   double ptlep1[nMaxCand], ptlep2[nMaxCand], etalep1[nMaxCand], etalep2[nMaxCand], philep1[nMaxCand], philep2[nMaxCand];  // lepton kinematics
-  double ptjet1[nMaxCand], ptjet2[nMaxCand], etajet1[nMaxCand], etajet2[nMaxCand], phijet1[nMaxCand], phijet2[nMaxCand];  // jet kinematicse
+  double ptjet1[nMaxCand], ptjet2[nMaxCand], etajet1[nMaxCand], etajet2[nMaxCand];
+  double phijet1[nMaxCand], phijet2[nMaxCand], massjet1[nMaxCand],massjet2[nMaxCand];  // jet kinematicse
   double  ptmzzNoKinFit[nMaxCand],  mzzNoKinFit[nMaxCand], mjjNoKinFit[nMaxCand],ptjjNoKinFit[nMaxCand],etajjNoKinFit[nMaxCand],phijjNoKinFit[nMaxCand];
   double deltaREDBR[nMaxCand];
   double ptZll[nMaxCand], ptZjj[nMaxCand], yZll[nMaxCand], yZjj[nMaxCand], deltaRleplep[nMaxCand], deltaRjetjet[nMaxCand];
@@ -775,12 +780,12 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   int VBFTag[nMaxCand];
   double VBFmJJ[nMaxCand],VBFdeltaEta[nMaxCand],VBFptjet1[nMaxCand],VBFptjet2[nMaxCand],VBFetajet1[nMaxCand],VBFetajet2[nMaxCand],VBFphijet1[nMaxCand],VBFphijet2[nMaxCand];
 
-  double massGenX, ptGenX,yGenX, phiGenX;
-  double massGenZll, ptGenZll,yGenZll, phiGenZll;
-  double massGenZqq, ptGenZqq,yGenZqq, phiGenZqq;
-  double ptGenq1,etaGenq1, phiGenq1,ptGenq2,etaGenq2, phiGenq2 ;
-  double ptGenl1,etaGenl1, phiGenl1,ptGenl2,etaGenl2, phiGenl2 ;
-  int pdgIdGenX,flavGenq1,flavGenq2,flavGenl1,flavGenl2;
+  double genMassX, genPTX,genYX, genPhiX;
+  double genMassZll, genPTZll,genYZll, genPhiZll;
+  double genMassZqq, genPTZqq,genYZqq, genPhiZqq;
+  double genPTqP,genEtaqP,genPhiqP,genPTqM,genEtaqM, genPhiqM ;
+  double genPTlP,genEtalP, genPhilP,genPTlM,genEtalM, genPhilM ;
+  int pdgIdGenX,genFlavqP,genFlavqM,genFlavlP,genFlavlM;
 
 
 
