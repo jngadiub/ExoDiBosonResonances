@@ -72,20 +72,20 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
   //use these for X->ZZ analysis
-  /*        
-	    typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
-	    typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
-	    typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
-	    typedef  cmg::DiMuonDiJetEDBR         cmgMuDiJetEDBR  ;
-  */
+          
+  typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
+  typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
+  typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
+  typedef  cmg::DiMuonDiJetEDBR         cmgMuDiJetEDBR  ;
+  
 
   //use these for X->WW analysis
-	
-  typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
-  typedef  cmg::WmunuSingleJetEDBR  cmgMuSingleJetEDBR  ; 
-  typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
-  typedef  cmg::WmunuDiJetEDBR      cmgMuDiJetEDBR  ;
-	
+  /*
+    typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
+    typedef  cmg::WmunuSingleJetEDBR  cmgMuSingleJetEDBR  ; 
+    typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
+    typedef  cmg::WmunuDiJetEDBR      cmgMuDiJetEDBR  ;
+  */
 	
   nEvt++;
 
@@ -800,38 +800,41 @@ void AnalyzerEDBR::analyzeGenLevel(edm::Event const& iEvent, edm::EventSetup con
 
     if(abs(pdgId)==VpdgId_ &&ndau>1 && status==3){//found the V->ll
 
-      if  (abs(pdgId_2)>=11&&abs(pdgId_2)<=14) { 
-	foundZll=true;   
-	genMassZll=genP->mass();
-	genPTZll=genP->pt();
-	genYZll=genP->rapidity();
-	genPhiZll=genP->phi();
-      }
-      else if(abs(pdgId_2)==15 || abs(pdgId_2)==16){// Z->tautau or W->taunu
-	foundZll=true;  
-      }
 
-      if(genP->daughter(0)->charge()>0){//dau #0 is the positively charged quark
-	genPTlP=genP->daughter(0)->pt();
-	genEtalP=genP->daughter(0)->eta();
-	genPhilP=genP->daughter(0)->phi();
-	genFlavlP=genP->daughter(0)->pdgId();
-	genPTlM=genP->daughter(1)->pt();
-	genEtalM=genP->daughter(1)->eta();
-	genPhilM=genP->daughter(1)->phi();
-	genFlavlM=genP->daughter(1)->pdgId();
-      }
-      else{
-	genPTlP=genP->daughter(1)->pt();
-	genEtalP=genP->daughter(1)->eta();
-	genPhilP=genP->daughter(1)->phi();
-	genFlavlP=genP->daughter(1)->pdgId();
-	genPTlM=genP->daughter(0)->pt();
-	genEtalM=genP->daughter(0)->eta();
-	genPhilM=genP->daughter(0)->phi();
-	genFlavlM=genP->daughter(0)->pdgId();
-      }
+      if  (abs(pdgId_2)>=11&& abs(pdgId_2)<=16){
+	if  (abs(pdgId_2)>=11&&abs(pdgId_2)<=14) { 
+	  foundZll=true;   
+	  genMassZll=genP->mass();
+	  genPTZll=genP->pt();
+	  genYZll=genP->rapidity();
+	  genPhiZll=genP->phi();
+	}
+	else if(abs(pdgId_2)==15 || abs(pdgId_2)==16){// Z->tautau or W->taunu
+	  foundZll=true;  
+	}
 
+	if(genP->daughter(0)->charge()>0){//dau #0 is the positively charged quark
+	  genPTlP=genP->daughter(0)->pt();
+	  genEtalP=genP->daughter(0)->eta();
+	  genPhilP=genP->daughter(0)->phi();
+	  genFlavlP=genP->daughter(0)->pdgId();
+	  genPTlM=genP->daughter(1)->pt();
+	  genEtalM=genP->daughter(1)->eta();
+	  genPhilM=genP->daughter(1)->phi();
+	  genFlavlM=genP->daughter(1)->pdgId();
+	}
+	else{
+	  genPTlP=genP->daughter(1)->pt();
+	  genEtalP=genP->daughter(1)->eta();
+	  genPhilP=genP->daughter(1)->phi();
+	  genFlavlP=genP->daughter(1)->pdgId();
+	  genPTlM=genP->daughter(0)->pt();
+	  genEtalM=genP->daughter(0)->eta();
+	  genPhilM=genP->daughter(0)->phi();
+	  genFlavlM=genP->daughter(0)->pdgId();
+	}
+
+      }
     }
 
 
