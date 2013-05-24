@@ -13,7 +13,7 @@
 //
 // Original Author:  Thiago Tomei Fernandez,40 2-B15,+41227671625,
 //         Created:  Tue May 21 23:24:55 CEST 2013
-// $Id$
+// $Id: HPTMNewTunePAnalyzer.cc,v 1.1 2013/05/22 19:11:35 tomei Exp $
 //
 //
 
@@ -32,7 +32,7 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
-#include "DataFormats/MuonReco/interface/MuonSelectors.h"
+//#include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/MuonReco/interface/MuonCocktails.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -42,8 +42,33 @@
 // class declaration
 //
 
-/// Will add the TRACKER muon here
+/// This is a poor-mans-backporting from CMSSW_5_3_10
 namespace muon {
+  enum TunePType{defaultTuneP, improvedTuneP};
+
+  /// High-pt muon
+  bool isHighPtMuon(const reco::Muon& muon, const reco::Vertex& vtx, TunePType tunePType){
+    
+    bool muID =  muon.isGlobalMuon() && muon.globalTrack()->hitPattern().numberOfValidMuonHits() >0 && (muon.numberOfMatchedStations() > 1);
+    if(!muID) return false;
+    
+    if(tunePType == improvedTuneP){ 
+      // Get the optimized track
+      reco::TrackRef cktTrack = (muon::tevOptimized(muon, 200, 17., 40., 0.25)).first;
+      bool momQuality = cktTrack->ptError()/cktTrack->pt() < 0.3;
+      bool hits = muon.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5 && muon.innerTrack()->hitPattern().numberOfValidPixelHits() > 0;
+      bool ip = fabs(cktTrack->dxy(vtx.position())) < 0.2 && fabs(cktTrack->dz(vtx.position())) < 0.5;
+      return muID && hits && momQuality && ip;}
+    else if(tunePType == defaultTuneP){
+      // Get the optimized track
+      reco::TrackRef cktTrack = (muon::tevOptimized(muon, 200, 4., 6., -1)).first;
+      bool hits = muon.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 8 && muon.innerTrack()->hitPattern().numberOfValidPixelHits() > 0; 
+      bool ip = fabs(cktTrack->dxy(vtx.position())) < 0.2 && fabs(cktTrack->dz(vtx.position())) < 0.5;
+      return muID && hits && ip;} 
+    
+    else return false;
+  }
+  
   bool isTrackerMuon(const reco::Muon& muon, const reco::Vertex& vtx, TunePType tunePType){
     
     bool muID =  muon.isTrackerMuon() && (muon.numberOfMatchedStations() > 1);
@@ -157,7 +182,6 @@ HPTMNewTunePAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       
       /// Compare kinematics
       double deltaPt = (origMu.pt() - modiMu.pt());
-      double deltaPtOverPt = deltaPt/origMu.pt();
       double deltaEta = (origMu.eta() - modiMu.eta());
       double dPhi = deltaPhi(origMu.phi(),modiMu.phi());
       h_deltaPt->Fill(deltaPt/origMu.pt());
@@ -170,6 +194,39 @@ HPTMNewTunePAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       if(fabs(deltaPt/origMu.pt()) > 0.10) {
 	h_origPt->Fill(origMu.pt());
 	h_modiPt->Fill(modiMu.pt());
+      }
+      /// Even more!
+      if(fabs(deltaPt/origMu.pt()) > 0.60) {
+	double originalPt  = origMu.pt();
+	double originalEta = origMu.eta();
+	double originalPhi = origMu.phi();
+	double originalSigmaPtOverPt = origMu.track()->ptError()/origMu.pt();
+	double modifiedSigmaPtOverPt = modiMu.track()->ptError()/modiMu.pt();
+	bool isGlobalMu = origMu.isGlobalMuon();
+	int nPixelHits = origMu.innerTrack()->hitPattern().numberOfValidPixelHits();
+	int nTrkHits = origMu.track()->hitPattern().trackerLayersWithMeasurement();
+	int nMatchedMuonHits = origMu.numberOfMatchedStations();
+	double dxy = origMu.muonBestTrack()->dxy(vertex.position());
+	double dz =  origMu.muonBestTrack()->dz(vertex.position());
+	printf("********************\n"
+	       "Original_Pt \t%g\n"
+	       "Original_Eta\t%g\n"
+	       "Original_Phi\t%g\n"
+	       "Delta_Pt    \t%g\n"
+	       "Delta_Eta   \t%g\n"
+	       "Delta_Phi   \t%g\n"
+	       "Original_(SigmaPt/Pt) \t%g\n"
+	       "New_(SigmaPt/Pt)      \t%g\n"
+	       "IsGlobalMu  \t%i\n"
+	       "NPixelHits  \t%i\n"
+	       "NTrkHits    \t%i\n"
+	       "NMatchedMuonHits \t%i\n"
+	       "dxy         \t%g\n"
+	       "dz          \t%g\n",
+	       originalPt,originalEta,originalPhi,
+	       -deltaPt,-deltaEta,dPhi,
+	       originalSigmaPtOverPt,modifiedSigmaPtOverPt,
+	       isGlobalMu,nPixelHits,nTrkHits,nMatchedMuonHits,dxy,dz);
       }
 	
     }// End pt > 20
