@@ -53,10 +53,10 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
 
   virtual ~AnalyzerEDBR(){
-  cout << "AnalyzerEDBR destructor..." << endl;
-  outFile_->cd();
-  outTree_->Write();
-  outFile_->Close();
+    cout << "AnalyzerEDBR destructor..." << endl;
+    outFile_->cd();
+    outTree_->Write();
+    outFile_->Close();
   }
 
   ///Method where the analysis is done.
@@ -73,7 +73,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   void analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup);
   
 
-// /// //void analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup);
+  // /// //void analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup);
 
 
 
@@ -98,131 +98,131 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double deltaR(reco::LeafCandidate p1,reco::LeafCandidate p2);
   double deltaR(double phi1,double eta1,double phi2,double eta2);
 
-   //////////////////////////////////////
-   /////////////////////////////////////
-   //////////////////////////////////////
-   /////////////////////////////////////
+  //////////////////////////////////////
+  /////////////////////////////////////
+  //////////////////////////////////////
+  /////////////////////////////////////
 
 
   template < typename T > void analyzeGeneric(T edbr,int& ih){
 
  
-   //example for the future
-   //   if(edbr->getSelection("cuts_btags_btag2")){
-   //  btag[ih] = 2;
-   // }	
+    //example for the future
+    //   if(edbr->getSelection("cuts_btags_btag2")){
+    //  btag[ih] = 2;
+    // }	
 
-   MCmatch[ih] = edbr->getSelection("cuts_genMatch");
-   deltaREDBR[ih] = 0.0;//deltaR(edbr->phi(),edbr->eta(),genEDBR.phi(),genEDBR.eta());
-
-
+    MCmatch[ih] = edbr->getSelection("cuts_genMatch");
+    deltaREDBR[ih] = 0.0;//deltaR(edbr->phi(),edbr->eta(),genEDBR.phi(),genEDBR.eta());
 
 
-   // if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric "<<ih<<" "<<flush;
-   //if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSignal"))) reg[ih]=1;
-   //if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSideband"))) reg[ih]=0;
 
-   if(VType_=="Z")reg[ih]=(edbr->leg2().getSelection("cuts_isZSignal")? 1.0 : 0.0 );
-   mzz[ih]=edbr->mass();
-   ptmzz[ih]=edbr->pt();
+
+    // if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric "<<ih<<" "<<flush;
+    //if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSignal"))) reg[ih]=1;
+    //if(VType_=="W"&&(edbr->leg2().getSelection("cuts_isWSideband"))) reg[ih]=0;
+
+    if(VType_=="Z")reg[ih]=(edbr->leg2().getSelection("cuts_isZSignal")? 1.0 : 0.0 );
+    mzz[ih]=edbr->mass();
+    ptmzz[ih]=edbr->pt();
   
-   if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric mzz="<<mzz[ih]<<"  pT_mzz="<<ptmzz[ih] <<endl;
+    if(debug_)cout<<"Inside AnalyzerEDBR::analyzeGeneric mzz="<<mzz[ih]<<"  pT_mzz="<<ptmzz[ih] <<endl;
 
-   hs[ih]     = edbr->costhetastar();
-   h1[ih]     = edbr->helcosthetaZl1();
-   h2[ih]     = edbr->helcosthetaZl2();
-   phi[ih]    = edbr->helphiZl1();
-   phiS1[ih]  = edbr->phistarZl1(); 
-   LD[ih] = edbr->userFloat("LD");
+    hs[ih]     = edbr->costhetastar();
+    h1[ih]     = edbr->helcosthetaZl1();
+    h2[ih]     = edbr->helcosthetaZl2();
+    phi[ih]    = edbr->helphiZl1();
+    phiS1[ih]  = edbr->phistarZl1(); 
+    LD[ih] = edbr->userFloat("LD");
   
  
 
-   //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling mLL" <<endl;
-   mll[ih]=edbr->leg1().mass();
+    //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling mLL" <<endl;
+    mll[ih]=edbr->leg1().mass();
  
-   ptZll[ih]=edbr->leg1().pt();
-   ptZjj[ih]=edbr->leg2().pt();
-   yZll[ih]=edbr->leg1().rapidity();
-   yZjj[ih]=edbr->leg2().rapidity();
-   phiZll[ih]=edbr->leg1().phi();
-   phiZjj[ih]=edbr->leg2().phi();
+    ptZll[ih]=edbr->leg1().pt();
+    ptZjj[ih]=edbr->leg2().pt();
+    yZll[ih]=edbr->leg1().rapidity();
+    yZjj[ih]=edbr->leg2().rapidity();
+    phiZll[ih]=edbr->leg1().phi();
+    phiZjj[ih]=edbr->leg2().phi();
 
-   //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling leptons" <<endl;
+    //   if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric filling leptons" <<endl;
 
-   bool highptLep1=true;
-   if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
-   if(VType_=="W")highptLep1=true;//for ww case, we don't compare pt of lepton and neutrino
+    bool highptLep1=true;
+    if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
+    if(VType_=="W")highptLep1=true;//for ww case, we don't compare pt of lepton and neutrino
    
-   if(highptLep1){
-     ptlep1[ih]=edbr->leg1().leg1().pt();
-     ptlep2[ih]=edbr->leg1().leg2().pt();
-     etalep1[ih]=edbr->leg1().leg1().eta();
-     etalep2[ih]=edbr->leg1().leg2().eta();
-     philep1[ih]=edbr->leg1().leg1().phi();
-     philep2[ih]=edbr->leg1().leg2().phi();
-     isolep1[ih]=edbr->leg1().leg1().relIso();
-     isolep2[ih]=edbr->leg1().leg2().relIso();
-   }
-   else{
-     ptlep1[ih]=edbr->leg1().leg2().pt();
-     ptlep2[ih]=edbr->leg1().leg1().pt();
-     etalep1[ih]=edbr->leg1().leg2().eta();
-     etalep2[ih]=edbr->leg1().leg1().eta();
-     philep1[ih]=edbr->leg1().leg2().phi();
-     philep2[ih]=edbr->leg1().leg1().phi();
-     isolep1[ih]=edbr->leg1().leg2().relIso();
-     isolep2[ih]=edbr->leg1().leg1().relIso();
-   }
+    if(highptLep1){
+      ptlep1[ih]=edbr->leg1().leg1().pt();
+      ptlep2[ih]=edbr->leg1().leg2().pt();
+      etalep1[ih]=edbr->leg1().leg1().eta();
+      etalep2[ih]=edbr->leg1().leg2().eta();
+      philep1[ih]=edbr->leg1().leg1().phi();
+      philep2[ih]=edbr->leg1().leg2().phi();
+      isolep1[ih]=edbr->leg1().leg1().relIso();
+      isolep2[ih]=edbr->leg1().leg2().relIso();
+    }
+    else{
+      ptlep1[ih]=edbr->leg1().leg2().pt();
+      ptlep2[ih]=edbr->leg1().leg1().pt();
+      etalep1[ih]=edbr->leg1().leg2().eta();
+      etalep2[ih]=edbr->leg1().leg1().eta();
+      philep1[ih]=edbr->leg1().leg2().phi();
+      philep2[ih]=edbr->leg1().leg1().phi();
+      isolep1[ih]=edbr->leg1().leg2().relIso();
+      isolep2[ih]=edbr->leg1().leg1().relIso();
+    }
 
 
-   deltaRleplep[ih]=deltaR(edbr->leg1().leg1().phi(),
-			   edbr->leg1().leg1().eta(),
-			   edbr->leg1().leg2().phi(),
-			   edbr->leg1().leg2().eta());
+    deltaRleplep[ih]=deltaR(edbr->leg1().leg1().phi(),
+			    edbr->leg1().leg1().eta(),
+			    edbr->leg1().leg2().phi(),
+			    edbr->leg1().leg2().eta());
 
-   mt[ih] = sqrt( 2*edbr->leg1().leg1().pt()*edbr->leg1().leg2().pt()*( 1-cos(edbr->leg1().leg1().phi()-edbr->leg1().leg2().phi()) ) );
-   nbtagsL[ih] = edbr->userFloat("nbtagsL");
-   nbtagsM[ih] = edbr->userFloat("nbtagsM");
-   nbtagsT[ih] = edbr->userFloat("nbtagsT");
-   nbtagscleanL[ih] = edbr->userFloat("nbtagscleanL"); 
-   nbtagscleanM[ih] = edbr->userFloat("nbtagscleanM"); 
-   nbtagscleanT[ih] = edbr->userFloat("nbtagscleanT"); 
+    mt[ih] = sqrt( 2*edbr->leg1().leg1().pt()*edbr->leg1().leg2().pt()*( 1-cos(edbr->leg1().leg1().phi()-edbr->leg1().leg2().phi()) ) );
+    nbtagsL[ih] = edbr->userFloat("nbtagsL");
+    nbtagsM[ih] = edbr->userFloat("nbtagsM");
+    nbtagsT[ih] = edbr->userFloat("nbtagsT");
+    nbtagscleanL[ih] = edbr->userFloat("nbtagscleanL"); 
+    nbtagscleanM[ih] = edbr->userFloat("nbtagscleanM"); 
+    nbtagscleanT[ih] = edbr->userFloat("nbtagscleanT"); 
   
 
-   //if(finalM_||sbM_||finalE_||sbE_){//with this if condition, presel will have PU weights==1
+    //if(finalM_||sbM_||finalE_||sbE_){//with this if condition, presel will have PU weights==1
 
-   // THESE WEIGHTS=1 FOR REAL DATA
-   HLTSF = edbr->userFloat("HLTWeight");
-   if(edbr->hasUserFloat("PUWeights")){
-     //if(preselM_ || preselM1J_ ||preselE_ ||preselE1J_ ){
-     //   std::cout<<"Event passes presel path"<<std::endl;
-     PU  = edbr->userFloat("PUWeights");
-     PUA = edbr->userFloat("PUWeights2012A");
-     PUB = edbr->userFloat("PUWeights2012B");
-   }
-   else if(edbr->hasUserFloat("PUWeightsFullE")){
-     //else if( finalE_ || sbE_|| finalE1J_ || sbE1J_){   
-     if(!elePath_)std::cout<<"Warning from AnalyzerEDBR::analyzeGeneric Run "<<run<<" Event "<<nevent<<" : EDBR cand  has userfloat PUWeightsFullE but elePath_==false . This could be an indication of something not properly right."<<std::endl;
+    // THESE WEIGHTS=1 FOR REAL DATA
+    HLTSF = edbr->userFloat("HLTWeight");
+    if(edbr->hasUserFloat("PUWeights")){
+      //if(preselM_ || preselM1J_ ||preselE_ ||preselE1J_ ){
+      //   std::cout<<"Event passes presel path"<<std::endl;
+      PU  = edbr->userFloat("PUWeights");
+      PUA = edbr->userFloat("PUWeights2012A");
+      PUB = edbr->userFloat("PUWeights2012B");
+    }
+    else if(edbr->hasUserFloat("PUWeightsFullE")){
+      //else if( finalE_ || sbE_|| finalE1J_ || sbE1J_){   
+      if(!elePath_)std::cout<<"Warning from AnalyzerEDBR::analyzeGeneric Run "<<run<<" Event "<<nevent<<" : EDBR cand  has userfloat PUWeightsFullE but elePath_==false . This could be an indication of something not properly right."<<std::endl;
      
-     PU  = edbr->userFloat("PUWeightsFullE");
-     PUA = edbr->userFloat("PUWeights2012AFullE");
-     PUB = edbr->userFloat("PUWeights2012BFullE");
-   }
-   else if(edbr->hasUserFloat("PUWeightsFullM")){
-     //else if( finalM_ || sbM_|| finalM1J_ || sbM1J_){
+      PU  = edbr->userFloat("PUWeightsFullE");
+      PUA = edbr->userFloat("PUWeights2012AFullE");
+      PUB = edbr->userFloat("PUWeights2012BFullE");
+    }
+    else if(edbr->hasUserFloat("PUWeightsFullM")){
+      //else if( finalM_ || sbM_|| finalM1J_ || sbM1J_){
      
-     if(!muPath_)std::cout<<"Warning from AnalyzerEDBR::analyzeGeneric Run "<<run<<" Event "<<nevent<<" : EDBR cand  has userfloat PUWeightsFullM but muPath_==false . This could be an indication of something not properly right."<<std::endl;
-     PU  = edbr->userFloat("PUWeightsFullM");
-     PUA = edbr->userFloat("PUWeights2012AFullM");
-     PUB = edbr->userFloat("PUWeights2012BFullM");
-   }
-   else{
-     PU  = -99.0;
-     PUA = -99.0;
-     PUB = -99.0;
-   }
+      if(!muPath_)std::cout<<"Warning from AnalyzerEDBR::analyzeGeneric Run "<<run<<" Event "<<nevent<<" : EDBR cand  has userfloat PUWeightsFullM but muPath_==false . This could be an indication of something not properly right."<<std::endl;
+      PU  = edbr->userFloat("PUWeightsFullM");
+      PUA = edbr->userFloat("PUWeights2012AFullM");
+      PUB = edbr->userFloat("PUWeights2012BFullM");
+    }
+    else{
+      PU  = -99.0;
+      PUA = -99.0;
+      PUB = -99.0;
+    }
    
-  //  if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric finishing Cand #" <<ih<<endl;
+    //  if(debug_)cout<<"AnalyzerEDBR::analyzeGeneric finishing Cand #" <<ih<<endl;
   
   }//end analyzeGeneric
 
@@ -235,150 +235,153 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
   template < typename T > void  CalculateMWW(T edbr,int& ih,int lepType){
 
-	double MW_=VMass_;
+    double MW_=VMass_;
 
-	double leppt = edbr->leg1().leg1().pt();
-	double lepphi = edbr->leg1().leg1().phi();
-	double lepeta = edbr->leg1().leg1().eta();
+    double leppt = edbr->leg1().leg1().pt();
+    double lepphi = edbr->leg1().leg1().phi();
+    double lepeta = edbr->leg1().leg1().eta();
 
-	double metpt = edbr->leg1().leg2().pt();
-	double metphi = edbr->leg1().leg2().phi();
+    double metpt = edbr->leg1().leg2().pt();
+    double metphi = edbr->leg1().leg2().phi();
 
     double  pxj= edbr->leg2().px();
     double  pyj= edbr->leg2().py();
     double  pzj= edbr->leg2().pz();
-	double  Ej = edbr->leg2().energy();	
+    double  Ej = edbr->leg2().energy();	
 
-	double	px = metpt*cos(metphi);
-	double	py = metpt*sin(metphi);
-	double  pz = 0;
-	double	pxl= leppt*cos(lepphi);
-	double	pyl= leppt*sin(lepphi);
-	double	pzl= leppt*sinh(lepeta);
-	double	El = edbr->leg1().leg1().energy();
-	double	a = pow(MW_,2) + pow(px+pxl,2) + pow(py+pyl,2) - px*px - py*py - El*El + pzl*pzl;
-	double	b = 2.*pzl;   
-	double	A = b*b -4.*El*El;
-	double	B = 2.*a*b;
-	double	C = a*a-4.*(px*px+py*py)*El*El;
+    double	px = metpt*cos(metphi);
+    double	py = metpt*sin(metphi);
+    double  pz = 0;
+    double	pxl= leppt*cos(lepphi);
+    double	pyl= leppt*sin(lepphi);
+    double	pzl= leppt*sinh(lepeta);
+    double	El = edbr->leg1().leg1().energy();
+    double	a = pow(MW_,2) + pow(px+pxl,2) + pow(py+pyl,2) - px*px - py*py - El*El + pzl*pzl;
+    double	b = 2.*pzl;   
+    double	A = b*b -4.*El*El;
+    double	B = 2.*a*b;
+    double	C = a*a-4.*(px*px+py*py)*El*El;
 
     TLorentzVector lepP4(pxl,pyl,pzl,El);
     TLorentzVector jetP4(pxj,pyj,pzj,Ej);
-	TLorentzVector neuP4;
-	TLorentzVector neuP4_ptUncorrected;
-	///////////////////////////pz for fnal
-	double M_mu =  0; 
-	if(lepType==1)M_mu=0.105658367;//mu
-	if(lepType==0)M_mu=0.00051099891;//electron
+    TLorentzVector neuP4;
+    TLorentzVector neuP4_ptUncorrected;
+    ///////////////////////////pz for fnal
+    double M_mu =  0; 
+    if(lepType==1)M_mu=0.105658367;//mu
+    if(lepType==0)M_mu=0.00051099891;//electron
 
-	double otherSol_ = 0.; 
+    //    double otherSol_ = 0.; 
 
-	a = MW_*MW_ - M_mu*M_mu + 2.0*pxl*px + 2.0*pyl*py;
-	A = 4.0*(El*El - pzl*pzl);
-	B = -4.0*a*pzl;
-	C = 4.0*El*El*(px*px + py*py) - a*a;
+    a = MW_*MW_ - M_mu*M_mu + 2.0*pxl*px + 2.0*pyl*py;
+    A = 4.0*(El*El - pzl*pzl);
+    B = -4.0*a*pzl;
+    C = 4.0*El*El*(px*px + py*py) - a*a;
 
-	double newPtneutrino_=0;
-	double tmproot = B*B - 4.0*A*C;
+    double newPtneutrino_=0;
+    double tmproot = B*B - 4.0*A*C;
 
-	if (tmproot<0) {
-		pz = - B/(2*A); // take real part of complex roots
-		otherSol_ = pz;
-		// recalculate the neutrino pT
-		// solve quadratic eq. discriminator = 0 for pT of nu
-		double pnu = metpt;
-		double Delta = (MW_*MW_ - M_mu*M_mu);
-		double alpha = (pxl*px/pnu + pyl*py/pnu);
-		double AA = 4.*pzl*pzl - 4*El*El + 4*alpha*alpha;//note this is alwawys <0
-		double BB = 4.*alpha*Delta;
-		double CC = Delta*Delta;//note this is always >0
+    if (tmproot<0) {
+      pz = - B/(2*A); // take real part of complex roots
+      // double otherSol_ = pz;
 
-		double tmpdisc = BB*BB - 4.0*AA*CC; // always >0, and one root positive, one root negative
-		double tmpsolpt1 = (-BB + TMath::Sqrt(tmpdisc))/(2.0*AA);
-		double tmpsolpt2 = (-BB - TMath::Sqrt(tmpdisc))/(2.0*AA);
+      // recalculate the neutrino pT
+      // solve quadratic eq. discriminator = 0 for pT of nu
+      double pnu = metpt;
+      double Delta = (MW_*MW_ - M_mu*M_mu);
+      double alpha = (pxl*px/pnu + pyl*py/pnu);
+      double AA = 4.*pzl*pzl - 4*El*El + 4*alpha*alpha;//note this is alwawys <0
+      double BB = 4.*alpha*Delta;
+      double CC = Delta*Delta;//note this is always >0
 
-		//reject negative root
-		if(tmpsolpt1<0)newPtneutrino_=tmpsolpt2;
-		else newPtneutrino_=tmpsolpt1;
-		//save pz
-		pz_type0[ih]=pz_type1[ih]=pz_type2[ih]=pz_type3[ih]=pz_type4[ih]=pz;
-		//save mWW
-	    //new pt	
-		double neu_pt = newPtneutrino_;
-		pt_neutrino_corrected[ih] = newPtneutrino_;
-		neuP4.SetPxPyPzE(neu_pt* cos(metphi), neu_pt * sin(metphi), pz, sqrt(neu_pt*neu_pt + pz*pz) );
-		//old pt
-		neu_pt = metpt;
-		pt_neutrino[ih]=metpt;
-		neuP4_ptUncorrected.SetPxPyPzE(neu_pt* cos(metphi), neu_pt * sin(metphi), pz, sqrt(neu_pt*neu_pt + pz*pz) );
-		mZZ_type0[ih]=mZZ_type1[ih]=mZZ_type2[ih]=mZZ_type3[ih]=mZZ_type4[ih]=(lepP4+neuP4+jetP4).M();
-		mZZ_type0_ptUncorrected[ih]=mZZ_type1_ptUncorrected[ih]=mZZ_type2_ptUncorrected[ih]=mZZ_type3_ptUncorrected[ih]=mZZ_type4_ptUncorrected[ih]=(lepP4+neuP4_ptUncorrected+jetP4).M();
-	}
-	else {
-		double tmpsol1 = (-B + TMath::Sqrt(tmproot))/(2.0*A);
-		double tmpsol2 = (-B - TMath::Sqrt(tmproot))/(2.0*A);
-		pt_neutrino[ih]=pt_neutrino_corrected[ih]=metpt;
-		//std::cout << " Neutrino Solutions: " << tmpsol1 << ", " << tmpsol2 << std::endl;
-	  for(int type=0;type<=4;type++)
-	  {
-		if (type == 0 ) {
-			// two real roots, pick the one closest to pz of muon
-			if (TMath::Abs(tmpsol2-pzl) < TMath::Abs(tmpsol1-pzl)) { pz = tmpsol2; otherSol_ = tmpsol1;}
-			else { pz = tmpsol1; otherSol_ = tmpsol2; }
-			// if pz is > 300 pick the most central root
-			if ( abs(pz) > 300. ) {
-				if (TMath::Abs(tmpsol1)<TMath::Abs(tmpsol2) ) { pz = tmpsol1; otherSol_ = tmpsol2; }
-				else { pz = tmpsol2; otherSol_ = tmpsol1; }
-			}
-			pz_type0[ih]=pz;
-			neuP4.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
-			mZZ_type0[ih]=mZZ_type0_ptUncorrected[ih]=(lepP4+neuP4+jetP4).M();
-		}
-		if (type == 1 ) {
-			// two real roots, pick the one closest to pz of muon
-			if (TMath::Abs(tmpsol2-pzl) < TMath::Abs(tmpsol1-pzl)) { pz = tmpsol2; otherSol_ = tmpsol1; }
-			else {pz = tmpsol1; otherSol_ = tmpsol2; }
-			pz_type1[ih]=pz;
+      double tmpdisc = BB*BB - 4.0*AA*CC; // always >0, and one root positive, one root negative
+      double tmpsolpt1 = (-BB + TMath::Sqrt(tmpdisc))/(2.0*AA);
+      double tmpsolpt2 = (-BB - TMath::Sqrt(tmpdisc))/(2.0*AA);
+
+      //reject negative root
+      if(tmpsolpt1<0)newPtneutrino_=tmpsolpt2;
+      else newPtneutrino_=tmpsolpt1;
+      //save pz
+      pz_type0[ih]=pz_type1[ih]=pz_type2[ih]=pz_type3[ih]=pz_type4[ih]=pz;
+      //save mWW
+      //new pt	
+      double neu_pt = newPtneutrino_;
+      pt_neutrino_corrected[ih] = newPtneutrino_;
+      neuP4.SetPxPyPzE(neu_pt* cos(metphi), neu_pt * sin(metphi), pz, sqrt(neu_pt*neu_pt + pz*pz) );
+      //old pt
+      neu_pt = metpt;
+      pt_neutrino[ih]=metpt;
+      neuP4_ptUncorrected.SetPxPyPzE(neu_pt* cos(metphi), neu_pt * sin(metphi), pz, sqrt(neu_pt*neu_pt + pz*pz) );
+      mZZ_type0[ih]=mZZ_type1[ih]=mZZ_type2[ih]=mZZ_type3[ih]=mZZ_type4[ih]=(lepP4+neuP4+jetP4).M();
+      mZZ_type0_ptUncorrected[ih]=mZZ_type1_ptUncorrected[ih]=mZZ_type2_ptUncorrected[ih]=mZZ_type3_ptUncorrected[ih]=mZZ_type4_ptUncorrected[ih]=(lepP4+neuP4_ptUncorrected+jetP4).M();
+    }
+    else {
+      //double otherSol_ = 0.; 
+      double tmpsol1 = (-B + TMath::Sqrt(tmproot))/(2.0*A);
+      double tmpsol2 = (-B - TMath::Sqrt(tmproot))/(2.0*A);
+      pt_neutrino[ih]=pt_neutrino_corrected[ih]=metpt;
+      //std::cout << " Neutrino Solutions: " << tmpsol1 << ", " << tmpsol2 << std::endl;
+      for(int type=0;type<=4;type++)
+	{
+	  if (type == 0 ) {
+	    // two real roots, pick the one closest to pz of muon
+	    if (TMath::Abs(tmpsol2-pzl) < TMath::Abs(tmpsol1-pzl)) { pz = tmpsol2; }//otherSol_ = tmpsol1;
+	    else { pz = tmpsol1; }// otherSol_ = tmpsol2;
+	    // if pz is > 300 pick the most central root
+	    if ( abs(pz) > 300. ) {
+	      if (TMath::Abs(tmpsol1)<TMath::Abs(tmpsol2) ) { pz = tmpsol1; }// otherSol_ = tmpsol2;
+	      else { pz = tmpsol2; } // otherSol_ = tmpsol1;
+	    }
+	    pz_type0[ih]=pz;
+	    neuP4.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
+	    mZZ_type0[ih]=mZZ_type0_ptUncorrected[ih]=(lepP4+neuP4+jetP4).M();
+	  }
+	  if (type == 1 ) {
+	    // two real roots, pick the one closest to pz of muon
+	    if (TMath::Abs(tmpsol2-pzl) < TMath::Abs(tmpsol1-pzl)) { pz = tmpsol2; }// otherSol_ = tmpsol1;
+	    else {pz = tmpsol1; }// otherSol_ = tmpsol2;
+	    pz_type1[ih]=pz;
             neuP4.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
             mZZ_type1[ih]=mZZ_type1_ptUncorrected[ih]=(lepP4+neuP4+jetP4).M();
-		}
-		if (type == 2 ) {
-			// pick the most central root.
-			if (TMath::Abs(tmpsol1)<TMath::Abs(tmpsol2) ) { pz = tmpsol1; otherSol_ = tmpsol2; }
-			else { pz = tmpsol2; otherSol_ = tmpsol1; }
-			pz_type2[ih]=pz;
+	  }
+	  if (type == 2 ) {
+	    // pick the most central root.
+	    if (TMath::Abs(tmpsol1)<TMath::Abs(tmpsol2) ) { pz = tmpsol1;} // otherSol_ = tmpsol2; 
+	    else { pz = tmpsol2; }// otherSol_ = tmpsol1;
+	    pz_type2[ih]=pz;
             neuP4.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
             mZZ_type2[ih]=mZZ_type2_ptUncorrected[ih]=(lepP4+neuP4+jetP4).M();
-		}
-		if (type == 3 ) {
-			// pick the largest value of the cosine
-			TVector3 p3w, p3mu;
-			p3w.SetXYZ(pxl+px, pyl+py, pzl+ tmpsol1);
-			p3mu.SetXYZ(pxl, pyl, pzl );
+	  }
+	  if (type == 3 ) {
+	    // pick the largest value of the cosine
+	    TVector3 p3w, p3mu;
+	    p3w.SetXYZ(pxl+px, pyl+py, pzl+ tmpsol1);
+	    p3mu.SetXYZ(pxl, pyl, pzl );
 
-			double sinthcm1 = 2.*(p3mu.Perp(p3w))/MW_;
-			p3w.SetXYZ(pxl+px, pyl+py, pzl+ tmpsol2);
-			double sinthcm2 = 2.*(p3mu.Perp(p3w))/MW_;
+	    double sinthcm1 = 2.*(p3mu.Perp(p3w))/MW_;
+	    p3w.SetXYZ(pxl+px, pyl+py, pzl+ tmpsol2);
+	    double sinthcm2 = 2.*(p3mu.Perp(p3w))/MW_;
 
-			double costhcm1 = TMath::Sqrt(1. - sinthcm1*sinthcm1);
-			double costhcm2 = TMath::Sqrt(1. - sinthcm2*sinthcm2);
+	    double costhcm1 = TMath::Sqrt(1. - sinthcm1*sinthcm1);
+	    double costhcm2 = TMath::Sqrt(1. - sinthcm2*sinthcm2);
 
-			if ( costhcm1 > costhcm2 ) { pz = tmpsol1; otherSol_ = tmpsol2; }
-			else { pz = tmpsol2;otherSol_ = tmpsol1; }
-			pz_type3[ih]=pz;
+	    if ( costhcm1 > costhcm2 ) { pz = tmpsol1;} // otherSol_ = tmpsol2; 
+	    else { pz = tmpsol2; }//otherSol_ = tmpsol1;
+	    pz_type3[ih]=pz;
             neuP4.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
             mZZ_type3[ih]=mZZ_type3_ptUncorrected[ih]=(lepP4+neuP4+jetP4).M();
-		}//end of type3
-		if (type == 4 ) {
-			// pick the larger abs root.
-			if (TMath::Abs(tmpsol1)>TMath::Abs(tmpsol2) ) { pz = tmpsol1; otherSol_ = tmpsol2; }
-			else { pz = tmpsol2; otherSol_ = tmpsol1; }
-			pz_type4[ih]=pz;
+	  }//end of type3
+	  if (type == 4 ) {
+	    // pick the larger abs root.
+	    if (TMath::Abs(tmpsol1)>TMath::Abs(tmpsol2) ) { pz = tmpsol1; }// otherSol_ = tmpsol2;
+	    else { pz = tmpsol2; }// otherSol_ = tmpsol1;
+	    pz_type4[ih]=pz;
             neuP4.SetPxPyPzE(px,py,pz,sqrt(px*px+py*py+pz*pz));
             mZZ_type4[ih]=mZZ_type4_ptUncorrected[ih]=(lepP4+neuP4+jetP4).M();
-		}//endl of type4
-	  }//endl of loop over type
-	}//endl of if real root
+	  }//endl of type4
+	  
+	}//endl of loop over type
+    }//endl of if real root
 
   }
 
@@ -433,7 +436,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     if(nsubj21[ih]<nsubjcut) vTagPurity[ih]=1.0;
     else if(nsubj21[ih]<0.75) vTagPurity[ih]=0.0;
     else  vTagPurity[ih]=-1.0;
-      //( edbr->getSelection("tag_SingleJetHP")? 1.0 : 0.0 );
+    //( edbr->getSelection("tag_SingleJetHP")? 1.0 : 0.0 );
     // nsubj21[ih]<0.45 -> 1.0  //nsubj21[ih]>0.45 &&  nsubj21[ih]<0.75 -> 0.0
 
 
@@ -465,9 +468,9 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     mjjNoKinFit[ih]=edbr->userFloat("nokinfitMJJ");
     if(VType_=="W"&&(mjjNoKinFit[ih]>65&&mjjNoKinFit[ih]<105)) reg[ih]=1;
     else if(VType_=="W"&&( (mjjNoKinFit[ih]>40&&mjjNoKinFit[ih]<65) || (mjjNoKinFit[ih]>105&&mjjNoKinFit[ih]<130)) ) reg[ih]=0;
-	else if(VType_=="W") reg[ih]=-1;
-    	//  double isomu1mod[nMaxCand], isomu2mod[nMaxCand]; // modified tracker iso for muons
-	//  double isoele1trk[nMaxCand], isoele2trk[nMaxCand], isoele1calo[nMaxCand], isoele2calo[nMaxCand]; // modified isos for ele
+    else if(VType_=="W") reg[ih]=-1;
+    //  double isomu1mod[nMaxCand], isomu2mod[nMaxCand]; // modified tracker iso for muons
+    //  double isoele1trk[nMaxCand], isoele2trk[nMaxCand], isoele1calo[nMaxCand], isoele2calo[nMaxCand]; // modified isos for ele
 
     ptjjNoKinFit[ih]=edbr->userFloat("nokinfitPTJJ");
     etajjNoKinFit[ih]=edbr->userFloat("nokinfitEtaJJ");
@@ -520,7 +523,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 			    edbr->leg2().leg2().eta());
 
     //jet sub-structure is dummy for double jet
-  //jet sub-structure 
+    //jet sub-structure 
     prunedmass[ih]=-99.0;
     mdrop[ih]=-999.0;
     qjet[ih]=-999.0;
@@ -539,24 +542,24 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
 
   
-  //  if(finalM_||sbM_||finalE_||sbE_){
-  //  if(readQGFromUserFloat_) qgProduct[ih] = edbr->userFloat("QG");
-  //  else {  // pandolfi to be blamed for this
-  //    edm::ProductID prodId = edbr->leg2().leg2().sourcePtr()->id(); //should be the same for both legs
-  //    size_t index1 = edbr->leg2().leg1().sourcePtr()->key();
-  //    size_t index2 = edbr->leg2().leg2().sourcePtr()->key();
-  //    
-  //    // QG LIKELIHOOD FROM JETS
-  //    qgProduct[ih] = qgmap->get(prodId,index2) * qgmap->get(prodId,index1);
-  //    if(edbr->leg2().leg1().pt()>edbr->leg2().leg2().pt()){
-  //	qgjet1[ih] = qgmap->get(prodId,index1);
-  //	qgjet2[ih] = qgmap->get(prodId,index2);
-  //    } else {
-  //	qgjet1[ih] = qgmap->get(prodId,index2);
-  //	qgjet2[ih] = qgmap->get(prodId,index1);
-  //   }
-  //  }// end else recalculate qgProd
-  //  }//end if finalM_||sbM_||finalE_||sbE_
+    //  if(finalM_||sbM_||finalE_||sbE_){
+    //  if(readQGFromUserFloat_) qgProduct[ih] = edbr->userFloat("QG");
+    //  else {  // pandolfi to be blamed for this
+    //    edm::ProductID prodId = edbr->leg2().leg2().sourcePtr()->id(); //should be the same for both legs
+    //    size_t index1 = edbr->leg2().leg1().sourcePtr()->key();
+    //    size_t index2 = edbr->leg2().leg2().sourcePtr()->key();
+    //    
+    //    // QG LIKELIHOOD FROM JETS
+    //    qgProduct[ih] = qgmap->get(prodId,index2) * qgmap->get(prodId,index1);
+    //    if(edbr->leg2().leg1().pt()>edbr->leg2().leg2().pt()){
+    //	qgjet1[ih] = qgmap->get(prodId,index1);
+    //	qgjet2[ih] = qgmap->get(prodId,index2);
+    //    } else {
+    //	qgjet1[ih] = qgmap->get(prodId,index2);
+    //	qgjet2[ih] = qgmap->get(prodId,index1);
+    //   }
+    //  }// end else recalculate qgProd
+    //  }//end if finalM_||sbM_||finalE_||sbE_
  
 
   }//end analyzeDoubleJet();
@@ -572,20 +575,20 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     //
     if(debug_)cout<<"Inside AnalyzerEDBR::analyzeMuon"<<endl;
 
-	lep[ih]=1;
+    lep[ih]=1;
     isomu1mod[ih]=edbr->userFloat("isomu1mod");
     isomu2mod[ih]=edbr->userFloat("isomu2mod");
 
     /// Let's add the muon ID here for Shuai!
     /*
-    const pat::Muon* patMuonPtr = edbr->leg1().leg1().sourcePtr()->get();
-    const reco::Track* globalTrackPtr = patMuonPtr->globalTrack();
-    const reco::Track* innerTrackPtr = patMuonPtr->innerTrack();
-    int isGlobalMuon     = patMuonPtr->isGlobalMuon() ? 1 : 0;
-    int numTrackerLayers = innerTrackPtr->hitPattern().trackerLayersWithMeasurement();
-    int numPixelHits     = innerTrackPtr->hitPattern().numberOfValidPixelHits();
-    int numMuonHits      = globalTrackPtr->hitPattern().numberOfValidMuonHits();
-    int numMatches       = patMuonPtr->numberOfMatchedStations();
+      const pat::Muon* patMuonPtr = edbr->leg1().leg1().sourcePtr()->get();
+      const reco::Track* globalTrackPtr = patMuonPtr->globalTrack();
+      const reco::Track* innerTrackPtr = patMuonPtr->innerTrack();
+      int isGlobalMuon     = patMuonPtr->isGlobalMuon() ? 1 : 0;
+      int numTrackerLayers = innerTrackPtr->hitPattern().trackerLayersWithMeasurement();
+      int numPixelHits     = innerTrackPtr->hitPattern().numberOfValidPixelHits();
+      int numMuonHits      = globalTrackPtr->hitPattern().numberOfValidMuonHits();
+      int numMatches       = patMuonPtr->numberOfMatchedStations();
     */
     /// Easier life...
     const cmg::Muon& cmgMuon = edbr->leg1().leg1();
@@ -618,8 +621,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     if(debug_)cout<<"Inside AnalyzerEDBR::analyzeElectron for cand#"<<ih<<" : "<<std::flush;
     bool highptLep1=true;
     if(edbr->leg1().leg2().pt()>edbr->leg1().leg1().pt())highptLep1=false;
-	if(VType_=="W")highptLep1=true;//for ww case, we don't compare pt of lepton and neutrino
-	lep[ih]=0;    
+    if(VType_=="W")highptLep1=true;//for ww case, we don't compare pt of lepton and neutrino
+    lep[ih]=0;    
    
     isoele1trk[ih]=edbr->userFloat("isoele1trk");
     isoele2trk[ih]=edbr->userFloat("isoele2trk");
@@ -635,41 +638,41 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
       eleMVAId2[ih] = edbr->leg1().leg1().mvaTrigV0();
     }
 
-	//electron id variables
-	sigmaIetaIeta[ih]=edbr->leg1().leg1().sigmaIetaIeta();
-	deltaPhiSuperClusterTrackAtVtx[ih]=edbr->leg1().leg1().deltaPhiSuperClusterTrackAtVtx();
-	deltaEtaSuperClusterTrackAtVtx[ih]=edbr->leg1().leg1().deltaEtaSuperClusterTrackAtVtx();
-	hadronicOverEm[ih]=edbr->leg1().leg1().hadronicOverEm();
-	numberOfHits[ih]=edbr->leg1().leg1().numberOfHits();
-	dxy[ih]=edbr->leg1().leg1().dxy();
-	dz[ih]=edbr->leg1().leg1().dz(); 
-	ecalDriven[ih]=edbr->leg1().leg1().ecalDriven();
-	convDist[ih]=edbr->leg1().leg1().convDist();
-	convDcot[ih]=edbr->leg1().leg1().convDcot();
-	isConv[ih]=edbr->leg1().leg1().isConv();
-	passConversionVeto[ih]=edbr->leg1().leg1().passConversionVeto();
+    //electron id variables
+    sigmaIetaIeta[ih]=edbr->leg1().leg1().sigmaIetaIeta();
+    deltaPhiSuperClusterTrackAtVtx[ih]=edbr->leg1().leg1().deltaPhiSuperClusterTrackAtVtx();
+    deltaEtaSuperClusterTrackAtVtx[ih]=edbr->leg1().leg1().deltaEtaSuperClusterTrackAtVtx();
+    hadronicOverEm[ih]=edbr->leg1().leg1().hadronicOverEm();
+    numberOfHits[ih]=edbr->leg1().leg1().numberOfHits();
+    dxy[ih]=edbr->leg1().leg1().dxy();
+    dz[ih]=edbr->leg1().leg1().dz(); 
+    ecalDriven[ih]=edbr->leg1().leg1().ecalDriven();
+    convDist[ih]=edbr->leg1().leg1().convDist();
+    convDcot[ih]=edbr->leg1().leg1().convDcot();
+    isConv[ih]=edbr->leg1().leg1().isConv();
+    passConversionVeto[ih]=edbr->leg1().leg1().passConversionVeto();
 	
-	/*
-	cout<<"missing hits: "<<edbr->leg1().leg1().sourcePtr()->get()->gsfTrack().get()->trackerExpectedHitsInner().numberOfLostHits()<<endl;
-	cout<<"e2x5Max: "<<edbr->leg1().leg1().sourcePtr()->get()->e2x5Max()<<endl;
-	cout<<"e5x5: "<<edbr->leg1().leg1().sourcePtr()->get()->e5x5()<<endl;
-	*/
+    /*
+      cout<<"missing hits: "<<edbr->leg1().leg1().sourcePtr()->get()->gsfTrack().get()->trackerExpectedHitsInner().numberOfLostHits()<<endl;
+      cout<<"e2x5Max: "<<edbr->leg1().leg1().sourcePtr()->get()->e2x5Max()<<endl;
+      cout<<"e5x5: "<<edbr->leg1().leg1().sourcePtr()->get()->e5x5()<<endl;
+    */
 	
-	numberOfLostHits[ih]=edbr->leg1().leg1().sourcePtr()->get()->gsfTrack().get()->trackerExpectedHitsInner().numberOfLostHits();
-	e1x5[ih]=edbr->leg1().leg1().sourcePtr()->get()->e1x5();
-	e2x5Max[ih]=edbr->leg1().leg1().sourcePtr()->get()->e2x5Max();
-	e5x5[ih]=edbr->leg1().leg1().sourcePtr()->get()->e5x5();
-	e1x5Over5x5[ih] = (e5x5[ih]!=0 ? e1x5[ih]/e5x5[ih] : 0.);
-	e2x5MaxOver5x5[ih] = (e5x5[ih]!=0 ? e2x5Max[ih]/e5x5[ih] : 0.);
+    numberOfLostHits[ih]=edbr->leg1().leg1().sourcePtr()->get()->gsfTrack().get()->trackerExpectedHitsInner().numberOfLostHits();
+    e1x5[ih]=edbr->leg1().leg1().sourcePtr()->get()->e1x5();
+    e2x5Max[ih]=edbr->leg1().leg1().sourcePtr()->get()->e2x5Max();
+    e5x5[ih]=edbr->leg1().leg1().sourcePtr()->get()->e5x5();
+    e1x5Over5x5[ih] = (e5x5[ih]!=0 ? e1x5[ih]/e5x5[ih] : 0.);
+    e2x5MaxOver5x5[ih] = (e5x5[ih]!=0 ? e2x5Max[ih]/e5x5[ih] : 0.);
 
-	// Muon ID variables are dummy for electrons
-	globalMuon[ih] = -1;
-	nTrackerLayers[ih] = -1;
-	nPixelHits[ih] = -1;
-	nMuonHits[ih] = -1;
-	nMatches[ih] = -1;
-	muondXY[ih] = -1;
-	muondZ[ih] = -1;
+    // Muon ID variables are dummy for electrons
+    globalMuon[ih] = -1;
+    nTrackerLayers[ih] = -1;
+    nPixelHits[ih] = -1;
+    nMuonHits[ih] = -1;
+    nMatches[ih] = -1;
+    muondXY[ih] = -1;
+    muondZ[ih] = -1;
 	
     if(debug_)    std::cout<<"leg1.eleMVA="<<eleMVAId1[ih]<<"  leg2.eleMVA="<<eleMVAId2[ih]<<std::endl;
 	
@@ -730,7 +733,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
   edm::InputTag XEEColl_,XEELDMap_,XEEJColl_,XEEJLDMap_;
   edm::InputTag XMMColl_,XMMLDMap_,XMMJColl_,XMMJLDMap_;
-    edm::InputTag  XQGMap_;
+  edm::InputTag  XQGMap_;
 
   const static int nMaxCand = 30;
   const static int nMaxTrig = 20;
