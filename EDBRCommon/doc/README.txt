@@ -1,7 +1,7 @@
 
 Works in CMSSW_5_3_9 (not tested with higher releases)
 Based on CMG V5_15_0
-Most recent recommended tag for analysis code : edbr_vv_20130524
+Most recent recommended tag for analysis code : edbr_vv_20130527
 
 
 
@@ -20,6 +20,7 @@ cvs co -r V00-09-03 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer
 cvs co -r V00-02-03  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/BstdZeeTools
 
 cvs co -A -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
+cvs co -A -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 
 #compile again
 scram b -j 4 
