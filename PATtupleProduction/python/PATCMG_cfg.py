@@ -40,9 +40,6 @@ METLEPTON_KINCUT = ("pt > 80.0")
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
-## Options and Output Report
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-
 ## Input files
 from CMGTools.Production.datasetToSource import *
 
@@ -248,6 +245,8 @@ if runOnMC is False:
 #### Adding HEEP and modified isolation
 ### Boosted electrons isolation
 ### Remake the HEEP ID with no isolation cuts
+print "Adding HEEP and modified isolation..."
+
 process.load("RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi")
 from SHarper.HEEPAnalyzer.HEEPSelectionCuts_cfi import *
 
@@ -311,6 +310,38 @@ process.PATCMGSequence.replace( process.patElectrons,
 # The changes trickle down from here.
 process.selectedPatElectrons.src = cms.InputTag("heepPatElectrons")
 
+#### Adding new TuneP muons and new Track Errors
+# Load the tune P muons
+print "Adding new TuneP muons and Track Errors..."
+
+# This adds process.tunePmuons and process.muonTrackError
+process.load("ExoDiBosonResonances.EDBRMuon.newTuneP_cff")
+
+# Change the source of the patMuons
+process.patMuons.muonSource = "tunePmuons"
+# Add the user float
+process.patMuons.userData.userFloats.src = ['muonTrackError']
+
+# Since we don't use these isoDeposits, we might as well take them out.
+process.patMuons.isoDeposits = cms.PSet()
+process.patMuons.isolationValues = cms.PSet()
+process.patMuons.embedCaloMETMuonCorrs = False # Don't use
+process.patMuons.embedTcMETMuonCorrs = False # Don't use
+
+# Put the new modules in the sequence
+if runOnMC is False:
+    process.PATCMGSequence.replace( process.patMuons,
+                                    process.tunePmuons +
+                                    process.muonTrackError +
+                                    process.patMuons )
+
+if runOnMC is True:
+        process.PATCMGSequence.replace( process.muonMatch,
+                                        process.tunePmuons +
+                                        process.muonTrackError +
+                                        process.muonMatch )
+        process.muonMatch.src = "tunePmuons"
+
 print 'cloning the jet sequence to build PU chs jets'
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
@@ -326,6 +357,18 @@ process.puJetIdCHS.jec = jecPayload
 process.cmgPUJetMvaCHS.jec = jecPayload
 process.selectedPatJetsCHS.cut = 'pt()>10'
 
+# Change the soft muons? Change the MET?
+###
+### WW ANALYSIS - PAY ATTENTION TO THIS
+###
+
+#process.softMuonTagInfos.leptons    = "tunePmuons"
+#process.softMuonTagInfosCHS.leptons = "tunePmuons"
+
+###
+### WW ANALYSIS - PAY ATTENTION TO THIS
+###
+#
 
 ########################################################
 ## Path definition
