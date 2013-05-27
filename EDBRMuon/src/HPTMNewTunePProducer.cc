@@ -20,7 +20,7 @@ private:
   double muonMass;
 };
 
-/// Class Definition
+/// Class definition
 HPTMNewTunePProducer::HPTMNewTunePProducer(const edm::ParameterSet& iPara)  
 {
   muonMass = 0.1056583715; //GeV 
@@ -35,7 +35,7 @@ void HPTMNewTunePProducer::produce(edm::Event& iEvent,const edm::EventSetup& iSe
   iEvent.getByLabel(muLabel_,muHandle);
   const edm::View<reco::Muon>& muons = *(muHandle.product());
 
-  //prepare output collection
+  //prepare output collections
   std::auto_ptr<reco::MuonCollection> outMuons(new reco::MuonCollection());
 
   //clone muons, set pt to TuneP pt
@@ -54,14 +54,21 @@ void HPTMNewTunePProducer::produce(edm::Event& iEvent,const edm::EventSetup& iSe
       math::XYZTLorentzVector oP4(oPx,oPy,oPz,oE);
       
       recoMu->setP4(oP4); /// This sets the new LorentzVector
-      recoMu->setTrack(cktTrack); /// This sets the chosen track
+
+      //recoMu->setTrack(cktTrack);
+      
+      /// We don't set the track anymore, because the TeV-refit tracks are NOT
+      /// suitable for the muon ID cuts - those have to be separately done
+      /// on the globalTrack and on the innerTrack. Instead, there's another
+      /// producer which produces the sigmaPt/overPt, and we add it to the 
+      /// pat::Muon as an userFloat.
     }
     
     outMuons->push_back(*(recoMu));
     delete recoMu;
   }
 
-  //store the output
+  /// Store the muons in the event
   iEvent.put(outMuons);
 }
 

@@ -13,7 +13,7 @@
 //
 // Original Author:  Thiago Tomei Fernandez,40 2-B15,+41227671625,
 //         Created:  Tue May 21 23:24:55 CEST 2013
-// $Id: HPTMNewTunePAnalyzer.cc,v 1.1 2013/05/22 19:11:35 tomei Exp $
+// $Id: HPTMNewTunePAnalyzer.cc,v 1.2 2013/05/24 15:31:13 tomei Exp $
 //
 //
 
@@ -119,6 +119,10 @@ class HPTMNewTunePAnalyzer : public edm::EDAnalyzer {
   TH1F* h_modiPt;
   TH1F* h_origPtNoCut;
   TH1F* h_modiPtNoCut;
+  TH1F* h_deltaCharge;
+  TH1F* h_deltaVx;
+  TH1F* h_deltaVy;
+  TH1F* h_deltaVz;
 };
 
 /// Class definition
@@ -133,6 +137,10 @@ HPTMNewTunePAnalyzer::HPTMNewTunePAnalyzer(const edm::ParameterSet& iConfig)
   h_modiPtNoCut = fs->make<TH1F>( "modiPtNoCut"  , "", 400,  0., 4000. );
   h_deltaEta = fs->make<TH1F>( "deltaEta"  , "", 100,  -0.02, 0.02 );
   h_deltaPhi = fs->make<TH1F>( "deltaPhi"  , "", 100,  -0.02, 0.02 );
+  h_deltaCharge = fs->make<TH1F>( "deltaCharge"  , "", 5,  -2.5, 2.5 );
+  h_deltaVx = fs->make<TH1F>( "deltaVx"  , "", 100,  -0.02, 0.02 );
+  h_deltaVy = fs->make<TH1F>( "deltaVy"  , "", 100,  -0.02, 0.02 );
+  h_deltaVz = fs->make<TH1F>( "deltaVz"  , "", 100,  -0.02, 0.02 );
 }
 
 
@@ -184,10 +192,18 @@ HPTMNewTunePAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       double deltaPt = (origMu.pt() - modiMu.pt());
       double deltaEta = (origMu.eta() - modiMu.eta());
       double dPhi = deltaPhi(origMu.phi(),modiMu.phi());
+      int deltaCharge = (origMu.charge() - modiMu.charge());
+      int deltaVx = (origMu.vx() - modiMu.vy());
+      int deltaVy = (origMu.vy() - modiMu.vx());
+      int deltaVz = (origMu.vz() - modiMu.vz());
       h_deltaPt->Fill(deltaPt/origMu.pt());
       h_deltaEta->Fill(deltaEta);
       h_deltaPhi->Fill(dPhi);
-    
+      h_deltaCharge->Fill(deltaCharge);
+      h_deltaVx->Fill(deltaVx);
+      h_deltaVy->Fill(deltaVy);
+      h_deltaVz->Fill(deltaVz);
+
       /// For those muons where the pT changes TOO MUCH... who are they?
       /// What is happening?
       

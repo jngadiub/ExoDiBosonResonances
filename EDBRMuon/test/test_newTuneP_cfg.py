@@ -35,19 +35,50 @@ process.source = cms.Source("PoolSource",
 "/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/tomei/store/user/tomei/BulkG_ZZ_lljj_M2000_G120-JHU/BulkG_ZZ_lljj_M2000_G120-JHU/c8f8ed334db8a7d6f56c62266b1dfa5b/Bulk_AODSIM_10_1_r0R.root"
     )
                             )
-                            
-process.tunePmuons = cms.EDProducer("HPTMNewTunePProducer",
-                                    muLabel = cms.InputTag("muons")
-                                    )
+process.maxEvents= cms.untracked.PSet(
+    input = cms.untracked.int32(-1),
+    )
+################################
+### NEEDED FOR THE PAT MUONS ###
+################################
+process.load("Configuration.StandardSequences.GeometryDB_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
-process.validation = cms.EDAnalyzer("HPTMNewTunePAnalyzer")
+### Set the global tag from
+### https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions#Winter13_2012_A_B_C_D_datasets_r
+process.GlobalTag.globaltag = 'START53_V21::All'
 
-process.p = cms.Path(process.tunePmuons + process.validation)
+process.TransientTrackBuilderESProducer = cms.ESProducer("TransientTrackBuilderESProducer",
+                                                         ComponentName = cms.string('TransientTrackBuilder')
+                                                         )
+
+### Load the tune P muons
+process.load("ExoDiBosonResonances.EDBRMuon.newTuneP_cff")
+
+### Load the PAT muons
+process.load("PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi")
+
+### Change their source
+process.patMuons.muonSource = "tunePmuons"
+process.patMuons.addGenMatch = False
+process.patMuons.embedGenMatch = False
+process.patMuons.embedCaloMETMuonCorrs = False
+process.patMuons.embedTcMETMuonCorrs = False
+process.patMuons.userData.userFloats.src = ['muonTrackError']
+
+### Validation
+process.validation    = cms.EDAnalyzer("HPTMNewTunePAnalyzer")
+process.PATvalidation = cms.EDAnalyzer("HPTMNewTunePPATAnalyzer") # Careful, this spits a lot of printfs.
+
+process.p = cms.Path(process.tunePmuons + process.muonTrackError + process.patMuons + process.validation)
                                               
 process.out = cms.OutputModule("PoolOutputModule",
      outputCommands = cms.untracked.vstring('drop *',
+                                            'keep *_muonTrackError_*_*',
                                             'keep *_tunePmuons_*_*',
-                                            'keep *_muons_*_*'),
+                                            'keep *_muons_*_*',
+                                            'keep *_patMuons_*_*'),
                                fileName = cms.untracked.string("BulkG_ZZ_lljj_M2000_G120-JHU.root")
                                )
 
