@@ -38,31 +38,29 @@ METLEPTON_KINCUT = ("pt > 80.0")
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
-
-## Options and Output Report
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
 ## Input files
 from CMGTools.Production.datasetToSource import *
+
+datasetInfo = (
+    'CMS',
+    '/DYJetsToLL_PtZ-100_TuneZ2star_8TeV_ext-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM',
+    '.*root')
 process.source = datasetToSource(
-     'CMS',
-     '/DoubleElectron/Run2012A-13Jul2012-v1/AOD'
-    # '/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM',
-    # '/DoubleMu/Run2012C-PromptReco-v2/AOD'
-    # '/DoubleMu/Run2012B-PromptReco-v1/AOD'
-    # '/TTH_HToBB_M-135_8TeV-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',
-    # '/BTag/Run2012B-PromptReco-v1/RECO', 
-    #'cmgtools_group',
-    #'/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
-   )
+    *datasetInfo
+    )
+
+
 
 process.source.fileNames = process.source.fileNames[:20]
 # If you want you can overwrite the previous input filenames like this:
-#process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/group/cmgtools/CMG/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PFAOD_0.root']
+#####process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/group/cmgtools/CMG/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PFAOD_0.root']
+#process.source.fileNames = ['file:root://eoscms//eos/cms/store/data/Run2012C/DoublePhotonHighPt/AOD/PromptReco-v2/000/200/600/0AA4E2BB-2BE5-E111-B3A8-00237DDC5C24.root']
+##process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/bonato/patTuple/2012/EXOVVtest/BulkG_ZZllqq_M1000_c0p2_STEP3_AODSIM_24_1_fvt.root']
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(50) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 print sep_line
 print process.source.fileNames
@@ -138,7 +136,7 @@ patEventContentCMG+=['drop patJets_selectedPatJetsCA8CHSwithNsub_*_*']
 
 ######ADD PU JET ID
 
-from  CMGTools.External.pujetidsequence_cff import puJetId
+from  CMGTools.External.pujetidsequence_cff import puJetId, puJetMva
 process.puJetIdAK7CHS = puJetId.clone(
     jets ='selectedPatJetsAK7CHSwithQjets',
     jec = 'AK7chs'
@@ -149,8 +147,40 @@ process.puJetIdCA8CHS = puJetId.clone(
     jets ='selectedPatJetsCA8CHSwithQjets',
     jec = 'AK7chs'
     )
-process.PATCMGSequence += process.puJetIdCA8CHS
+
+from CMGTools.External.pujetidproducer_cfi import  stdalgos_4x, stdalgos_5x, stdalgos, cutbased, chsalgos_4x, chsalgos_5x, chsalgos
+
+process.puJetMvaAK5CHS= puJetMva.clone(
+    jetids = cms.InputTag("puJetIdCHS"),
+####    jets ='selectedPatJetsCHS',
+    jets ='patJetsWithVarCHS',
+    algos =  chsalgos
+    )
+
+process.puJetMvaAK7CHS= puJetMva.clone(
+    jetids = cms.InputTag("puJetIdAK7CHS"),
+    jets ='selectedPatJetsAK7CHSwithQjets',
+    algos =  chsalgos
+    )
+
+process.puJetMvaCA8CHS= puJetMva.clone(
+    jetids = cms.InputTag("puJetIdCA8CHS"),
+    jets ='selectedPatJetsCA8CHSwithQjets',
+    algos =  chsalgos
+    )
+
+process.puJetIdAK5Sequence = cms.Sequence(                      process.puJetMvaAK5CHS)
+process.puJetIdAK7Sequence = cms.Sequence(process.puJetIdAK7CHS+process.puJetMvaAK7CHS)
+process.puJetIdCA8Sequence = cms.Sequence(process.puJetIdCA8CHS+process.puJetMvaCA8CHS)
+#### these are moved down below this same cfg, after having built AK5 CHS jets
+#process.PATCMGSequence += process.puJetIdAK5Sequence
+#process.PATCMGSequence += process.puJetIdAK7Sequence
+#process.PATCMGSequence += process.puJetIdCA8Sequence
+patEventContentCMG+=['keep *_puJetIdAK7CHS_*_*']
 patEventContentCMG+=['keep *_puJetIdCA8CHS_*_*']
+patEventContentCMG+=['keep *_puJetMvaAK5CHS_*_*']
+patEventContentCMG+=['keep *_puJetMvaAK7CHS_*_*']
+patEventContentCMG+=['keep *_puJetMvaCA8CHS_*_*']
 
 if runOnMC is False:
     # removing MC stuff
@@ -168,23 +198,23 @@ if runOnMC is False:
     process.patJets.addGenJetMatch = False
     process.patJets.addGenPartonMatch = False
 
-    if isNewerThan('CMSSW_5_2_0'):
-        process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
-        process.patJetsCHSpruned.addGenJetMatch = False
-        process.patJetsCHSpruned.addGenPartonMatch = False
-        process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
-        process.patJetsAK7CHS.addGenJetMatch = False
-        process.patJetsAK7CHS.addGenPartonMatch = False
-        process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
-        process.patJetsAK7CHSpruned.addGenJetMatch = False
-        process.patJetsAK7CHSpruned.addGenPartonMatch = False
-        process.PATCMGJetSequenceCA8CHS.remove( process.jetMCSequenceCA8CHS )
-        process.patJetsCA8CHS.addGenJetMatch = False
-        process.patJetsCA8CHS.addGenPartonMatch = False
-        process.PATCMGJetSequenceCA8CHSpruned.remove( process.jetMCSequenceCA8CHSpruned )
-        process.patJetsCA8CHSpruned.addGenJetMatch = False
-        process.patJetsCA8CHSpruned.addGenPartonMatch = False
-
+   #### if isNewerThan('CMSSW_5_2_0'):
+    process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
+    process.patJetsCHSpruned.addGenJetMatch = False
+    process.patJetsCHSpruned.addGenPartonMatch = False
+    process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
+    process.patJetsAK7CHS.addGenJetMatch = False
+    process.patJetsAK7CHS.addGenPartonMatch = False
+    process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
+    process.patJetsAK7CHSpruned.addGenJetMatch = False
+    process.patJetsAK7CHSpruned.addGenPartonMatch = False
+    process.PATCMGJetSequenceCA8CHS.remove( process.jetMCSequenceCA8CHS )
+    process.patJetsCA8CHS.addGenJetMatch = False
+    process.patJetsCA8CHS.addGenPartonMatch = False
+    process.PATCMGJetSequenceCA8CHSpruned.remove( process.jetMCSequenceCA8CHSpruned )
+    process.patJetsCA8CHSpruned.addGenJetMatch = False
+    process.patJetsCA8CHSpruned.addGenPartonMatch = False
+    
     process.PATCMGTauSequence.remove( process.tauGenJets )
     process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
     process.PATCMGTauSequence.remove( process.tauGenJetMatch )
@@ -203,17 +233,20 @@ if runOnMC is False:
 
     # adding L2L3Residual corrections
     process.patJetCorrFactors.levels.append('L2L3Residual')
-    if isNewerThan('CMSSW_5_2_0'):
-        process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
-        process.patJetCorrFactorsAK7CHS.levels.append('L2L3Residual')
-        process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
-        process.patJetCorrFactorsCA8CHS.levels.append('L2L3Residual')
-        process.patJetCorrFactorsCA8CHSpruned.levels.append('L2L3Residual')
 
+     ###   if isNewerThan('CMSSW_5_2_0'):
+    process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
+    process.patJetCorrFactorsAK7CHS.levels.append('L2L3Residual')
+    process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
+    process.patJetCorrFactorsCA8CHS.levels.append('L2L3Residual')
+    process.patJetCorrFactorsCA8CHSpruned.levels.append('L2L3Residual')
+    
 
 #### Adding HEEP and modified isolation
 ### Boosted electrons isolation
 ### Remake the HEEP ID with no isolation cuts
+print "Adding HEEP and modified isolation..."
+
 process.load("RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi")
 from SHarper.HEEPAnalyzer.HEEPSelectionCuts_cfi import *
 
@@ -277,6 +310,38 @@ process.PATCMGSequence.replace( process.patElectrons,
 # The changes trickle down from here.
 process.selectedPatElectrons.src = cms.InputTag("heepPatElectrons")
 
+#### Adding new TuneP muons and new Track Errors
+# Load the tune P muons
+print "Adding new TuneP muons and Track Errors..."
+
+# This adds process.tunePmuons and process.muonTrackError
+process.load("ExoDiBosonResonances.EDBRMuon.newTuneP_cff")
+
+# Change the source of the patMuons
+process.patMuons.muonSource = "tunePmuons"
+# Add the user float
+process.patMuons.userData.userFloats.src = ['muonTrackError']
+
+# Since we don't use these isoDeposits, we might as well take them out.
+process.patMuons.isoDeposits = cms.PSet()
+process.patMuons.isolationValues = cms.PSet()
+process.patMuons.embedCaloMETMuonCorrs = False # Don't use
+process.patMuons.embedTcMETMuonCorrs = False # Don't use
+
+# Put the new modules in the sequence
+if runOnMC is False:
+    process.PATCMGSequence.replace( process.patMuons,
+                                    process.tunePmuons +
+                                    process.muonTrackError +
+                                    process.patMuons )
+
+if runOnMC is True:
+        process.PATCMGSequence.replace( process.muonMatch,
+                                        process.tunePmuons +
+                                        process.muonTrackError +
+                                        process.muonMatch )
+        process.muonMatch.src = "tunePmuons"
+
 print 'cloning the jet sequence to build PU chs jets'
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
@@ -285,9 +350,25 @@ process.PATCMGJetCHSSequence.insert( 0, process.ak5PFJetsCHS )
 from CMGTools.Common.Tools.visitorUtils import replaceSrc
 replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
 replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
-process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
+jecPayload = 'AK5PFchs'
+process.patJetsWithVarCHS.payload = jecPayload
+process.patJetCorrFactorsCHS.payload = jecPayload
+process.puJetIdCHS.jec = jecPayload
+process.cmgPUJetMvaCHS.jec = jecPayload
 process.selectedPatJetsCHS.cut = 'pt()>10'
 
+# Change the soft muons? Change the MET?
+###
+### WW ANALYSIS - PAY ATTENTION TO THIS
+###
+
+#process.softMuonTagInfos.leptons    = "tunePmuons"
+#process.softMuonTagInfosCHS.leptons = "tunePmuons"
+
+###
+### WW ANALYSIS - PAY ATTENTION TO THIS
+###
+#
 
 ########################################################
 ## Path definition
@@ -299,7 +380,8 @@ process.load('CMGTools.Common.PAT.addFilterPaths_cff')
 process.p = cms.Path(
     process.prePathCounter + 
     process.PATCMGSequence +
-    process.PATCMGJetCHSSequence
+    process.PATCMGJetCHSSequence+
+    process.puJetIdAK5Sequence+process.puJetIdAK7Sequence+process.puJetIdCA8Sequence
     )
 
 process.p += process.postPathCounter
@@ -419,7 +501,7 @@ if not skimEvents:
 
 ## Output Module Configuration (expects a path 'p')
 process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string( THISROOTFILE ),
+                               fileName = cms.untracked.string('patTuple.root'),
                                # save only events passing the full path
                                SelectEvents   = cms.untracked.PSet( SelectEvents = EventSelection ),
                                # save PAT Layer 1 output; you need a '*' to
@@ -428,6 +510,13 @@ process.out = cms.OutputModule("PoolOutputModule",
                                )
 # needed to override the CMG format, which drops the pat taus
 process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
+
+#### drop collections not used by EXO-VV analysis
+process.out.outputCommands.append('drop *_cmg*_*_*')
+process.out.outputCommands.append('drop *_particleFlow*_*_*')
+process.out.outputCommands.append('drop *_pfNoPileUp_*_*')
+process.out.outputCommands.append('drop *_pfSelectedPhotons_*_*')
+process.out.outputCommands.append('drop *_phPFIsoDeposit*_*_*')
 
 #FIXME now keeping the whole event content...
 # process.out.outputCommands.append('keep *_*_*_*')
@@ -463,11 +552,29 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
-from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
+### Set the global tag from
+### https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions#Winter13_2012_A_B_C_D_datasets_r
+EXOVV_GT= 'START53_V7G::All'
+if runOnMC:
+    if 'START53' in datasetInfo[1]:
+        EXOVV_GT = 'START53_V21::All' 
+    elif 'START52' in datasetInfo[1]:
+        EXOVV_GT = 'START52_V9F::All'
+else :
+    if 'Run2012D' in datasetInfo[1]:
+        EXOVV_GT = 'FT_53_V21_AN3::All'
+    else:
+        EXOVV_GT = 'FT_53_V21_AN3::All'
+        
+process.GlobalTag.globaltag = EXOVV_GT  ###cms.string("START53_V21::All")
 
-process.GlobalTag.globaltag = getGlobalTag( runOnMC, runOld5XGT )
+### do it like CMGTools (but tags in getGlobalTag are not the latest for Jan22nd)
+#from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
+### OLD way: process.GlobalTag.globaltag = getGlobalTag( runOnMC, runOld5XGT )
+#process.GlobalTag.globaltag = getGlobalTagByDataset( runOnMC, datasetInfo[1])
+
 print 'Global tag       : ', process.GlobalTag.globaltag
-
+###
 
 ########################################################
 ## Below, stuff that you probably don't want to modify
@@ -485,6 +592,15 @@ process.schedule.append( process.WToENUskimPath )
 process.schedule.append( process.WToMUNUskimPath )
 ## Close the schedule
 process.schedule.append( process.outpath )
+
+## MessageLogger
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.suppressWarning = cms.untracked.vstring('ecalLaserCorrFilter')
+## Options and Output Report
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+
+
 ## Print the schedule
 print process.schedule
 
