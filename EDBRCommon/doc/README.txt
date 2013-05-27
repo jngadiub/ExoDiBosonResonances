@@ -1,7 +1,7 @@
 
 Works in CMSSW_5_3_9 (not tested with higher releases)
 Based on CMG V5_15_0
-Most recent recommended tag for analysis code : edbr_vv_20130527
+Most recent recommended tag for analysis code : edbr_vv_20130527b
 
 
 
