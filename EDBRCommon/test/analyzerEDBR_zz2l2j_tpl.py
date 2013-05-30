@@ -62,6 +62,11 @@ if processFullSel :
 #    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
 
 
+    #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestTTBarSelectorEle:doubleJet")
+    #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestTTBarSelectorMu:doubleJet")
+    #process.ANEDBR.EDBREEJColl=cms.InputTag("BestTTBarSelectorEle:singleJet")
+    #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestTTBarSelectorMu:singleJet")
+
 ##### set Ngen and xsect values ofr MC samples; xsect in pb !!! 
 if "TTBAR"=="<SAMPLE>" or "TTBAR_xww"=="<SAMPLE>":
     process.ANEDBR.Ngen=cms.uint32(6540800)
