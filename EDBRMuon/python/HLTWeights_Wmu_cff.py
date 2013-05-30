@@ -9,38 +9,16 @@ dummyHLTMuEffWeights =  cms.PSet( lumi = cms.double(1.),#dummy
                                hlt  = cms.VPSet( cms.PSet(bin = cms.vdouble(0.0,999.0,0.0,999. ,1.0))),
                                )
 
-globMuIdSF_Run2012= cms.VPSet( ### dummy at one for now
-    cms.PSet(bin = cms.vdouble(0.0,0.9,20.,40. ,1.000)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,20.,40. ,1.000)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,20.,40. ,1.000)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,20.,40. ,1.000)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9,40.,999. ,1.000)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,40.,999. ,1.000)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,40.,999. ,1.000)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,40.,999. ,1.000)),
+globMuIdSF_Run2012= cms.VPSet( ### eta bin of lepton, pt bin of lepton, eff
+    cms.PSet(bin = cms.vdouble(0.0,   0.9,   0.,   9999.,   0.99321)),
+	cms.PSet(bin = cms.vdouble(0.9,   1.2,   0.,   9999.,   0.9911)),
+    cms.PSet(bin = cms.vdouble(1.2,   2.1,   0.,   9999.,   0.9975)),
     )
 
-singleMuTrigSF_Run2012= cms.VPSet(
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 0.0,0.9 ,1.000)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 0.9,1.2 ,1.000)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 1.2,2.1 ,1.000)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 2.1,2.4 ,1.000)),
-
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 0.0,0.9 ,1.000)),
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 0.9,1.2 ,1.000)),
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 1.2,2.1 ,1.000)),
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 2.1,2.4 ,1.000)),
-
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 0.0,0.9 ,1.000)),
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 0.9,1.2 ,1.000)),
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 1.2,2.1 ,1.000)),
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 2.1,2.4 ,1.000)),
-
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 0.0,0.9 ,1.000)),
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 0.9,1.2 ,1.000)),
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 1.2,2.1 ,1.000)),
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 2.1,2.4 ,1.000)),
-    
+singleMuTrigSF_Run2012= cms.VPSet( ### eta bin of lepton, eta bin of neutrino, eff  ## neutrino bin is used for zz
+    cms.PSet(bin = cms.vdouble(0.0,   0.9,   0.,   9999,   0.94010)),
+    cms.PSet(bin = cms.vdouble(0.9,   1.2,   0.,   9999,   0.84368)),
+    cms.PSet(bin = cms.vdouble(1.2,   2.1,   0.,   9999,   0.82423)),
     )
 
 #### to be expanded according to the modifcations of the HLT triggers that we use
