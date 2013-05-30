@@ -448,6 +448,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     qgjet1[ih]=-99.0;
     qgjet2[ih]=-99.0;
     qgProduct[ih]=-99.0;
+
+	TOBTECjetsId[ih]=edbr->leg2().getSelection("cuts_TOBTECjetsId");
   }//end analyzeSingleJet();
 
 
@@ -830,7 +832,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
   //pt of neutrino before and after the correction
   double pt_neutrino[nMaxCand], pt_neutrino_corrected[nMaxCand];
-
+  double TOBTECjetsId[nMaxCand];
 };//end class AnalyzerEDBR 
 
 
