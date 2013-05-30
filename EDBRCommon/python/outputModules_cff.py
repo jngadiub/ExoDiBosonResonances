@@ -7,7 +7,8 @@ from ExoDiBosonResonances.EDBRCommon.cmdLine import options
 out = cms.OutputModule("PoolOutputModule",
                               fileName = cms.untracked.string("cmgTuple.root"),
                               outputCommands = cms.untracked.vstring('drop *',
-                                                                     'keep *_*_*_CMG'
+                                                                     'keep *_*_*_CMG',
+																	 'keep *_patMetShiftCorrected_*_*'
                                                                      )
                               )
 
