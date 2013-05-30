@@ -115,7 +115,7 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 				}
 				 */
 				//sychronize with group2: clean only away from the hardronic candidate
-				if(deltaR(  ak5->eta(),ak5->phi(),newCand.leg2().eta(),newCand.leg2().phi()  )<0.8) { isclean=0; break; }
+				if(deltaR(  ak5->eta(),ak5->phi(),newCand.leg2().eta(),newCand.leg2().phi()  )<0.8) isclean=0;
 
 				if(discCSV>0.244&&isclean==1) nbtagscleanL++;
 				if(discCSV>0.679&&isclean==1) nbtagscleanM++;
