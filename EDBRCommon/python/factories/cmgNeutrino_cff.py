@@ -3,7 +3,8 @@ import FWCore.ParameterSet.Config as cms
 neutrinoFactory = cms.PSet(
     isEleNeutrino = cms.bool(True),
     leptonLabel=cms.InputTag("electronPresel"),
-    metLabel = cms.InputTag("patMETs"),
+    #metLabel = cms.InputTag("patMETs"),
+	metLabel = cms.InputTag("patMetShiftCorrected"),
     massW = cms.double(80.4)
     )
 
