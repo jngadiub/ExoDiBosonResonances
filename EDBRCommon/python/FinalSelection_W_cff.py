@@ -116,10 +116,20 @@ BestFullRangeSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
                                     VMass            =cms.double(80.4),
 									Algo             =cms.string("UseJetPt")##could be UseVMass or UseJetPt
 									)
-                                    
+BestTTBarSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
+                                    srcSingleJet     =cms.InputTag("SingleJetVBFTagger"),
+                                    srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
+                                    tagSelectionList =cms.vstring("tag_SingleJetFull","tag_DoubleJetFull"),#highest priority to lowest priority
+                                    VMass            =cms.double(80.4),
+                                    Algo             =cms.string("UseTTBar")##could be UseVMass or UseJetPt or UseTTBar
+                                    )                                     
+
+
+
+
 
 allSelectedEDBR = cms.EDProducer("CandViewMerger",
-       src = cms.VInputTag( "BestCandSelector:singleJet", "BestCandSelector:doubleJet", "BestSidebandSelector:singleJet", "BestSidebandSelector:doubleJet","BestFullRangeSelector:singleJet", "BestFullRangeSelector:doubleJet")
+       src = cms.VInputTag( "BestFullRangeSelector:singleJet", "BestFullRangeSelector:doubleJet", "BestTTBarSelector:singleJet", "BestTTBarSelector:doubleJet"  )
   )
 
 
@@ -130,6 +140,7 @@ FinalFilter = cms.EDFilter("CandViewCountFilter",
 
 
 cmgSeq = cms.Sequence( DiJetVBFTagger+SingleJetVBFTagger+
-                       BestCandSelector + BestSidebandSelector +  BestFullRangeSelector +
+                       #BestCandSelector + BestSidebandSelector +  
+					   BestFullRangeSelector +  BestTTBarSelector  +
                        allSelectedEDBR + FinalFilter
                        )
