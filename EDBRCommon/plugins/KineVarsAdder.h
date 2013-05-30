@@ -153,7 +153,6 @@ void KineVarsAdder<edbrtype>::produce(edm::Event & iEvent, const edm::EventSetup
 		float caloiso1=-99.0;
 		float caloiso2=-99.0;
 		bool isleg1GoodEle = ( abs(newCand.leg1().leg1().pdgId())== 11 ) ; //check that lep1 is an ele
-		bool isleg2GoodEle = ( abs(newCand.leg1().leg2().pdgId())== 11 ) ; //check that lep2 is an ele
 
 		if(isleg1GoodEle) {
 			trkiso1 = (*(*newCand.leg1().leg1().sourcePtr())).userIso(0);
