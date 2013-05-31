@@ -11,13 +11,13 @@ dummyHLTEleEffWeights =  cms.PSet( lumi = cms.double(1.),#dummy
                                )
 
 eleIdSF_Run2012= cms.VPSet( ### eta bin of lepton, pt bin of lepton, eff
-    cms.PSet(bin = cms.vdouble(0.0,   1.4442,   0.0,   9999.,   0.98)),
-    cms.PSet(bin = cms.vdouble(1.566,    2.5,   0.0,   9999.,   0.98)),
+    cms.PSet(bin = cms.vdouble(0.0,   1.4442,   0.0,   99999.,   0.98)),
+    cms.PSet(bin = cms.vdouble(1.566,    2.5,   0.0,   99999.,   0.98)),
     )
 
 singleEleTrigSF_Run2012= cms.VPSet(  ### eta bin of lepton, eta bin of neutrino, eff  ## bin neutrino is used for zz
-    cms.PSet(bin = cms.vdouble(0.0,   1.4442,   0.0,   9999.,     0.991)),
-    cms.PSet(bin = cms.vdouble(1.566,    2.5,   0.0,   9999.,     0.976)),
+    cms.PSet(bin = cms.vdouble(0.0,   1.4442,   0.0,   99999.,     0.991)),
+    cms.PSet(bin = cms.vdouble(1.566,    2.5,   0.0,   99999.,     0.976)),
     
     )
 

@@ -10,15 +10,15 @@ dummyHLTMuEffWeights =  cms.PSet( lumi = cms.double(1.),#dummy
                                )
 
 globMuIdSF_Run2012= cms.VPSet( ### eta bin of lepton, pt bin of lepton, eff
-    cms.PSet(bin = cms.vdouble(0.0,   0.9,   0.,   9999.,   0.99321)),
-	cms.PSet(bin = cms.vdouble(0.9,   1.2,   0.,   9999.,   0.9911)),
-    cms.PSet(bin = cms.vdouble(1.2,   2.1,   0.,   9999.,   0.9975)),
+    cms.PSet(bin = cms.vdouble(0.0,   0.9,   0.,   99999.,   0.99321)),
+	cms.PSet(bin = cms.vdouble(0.9,   1.2,   0.,   99999.,   0.9911)),
+    cms.PSet(bin = cms.vdouble(1.2,   2.1,   0.,   99999.,   0.9975)),
     )
 
 singleMuTrigSF_Run2012= cms.VPSet( ### eta bin of lepton, eta bin of neutrino, eff  ## neutrino bin is used for zz
-    cms.PSet(bin = cms.vdouble(0.0,   0.9,   0.,   9999,   0.94010)),
-    cms.PSet(bin = cms.vdouble(0.9,   1.2,   0.,   9999,   0.84368)),
-    cms.PSet(bin = cms.vdouble(1.2,   2.1,   0.,   9999,   0.82423)),
+    cms.PSet(bin = cms.vdouble(0.0,   0.9,   0.,   99999,   0.94010)),
+    cms.PSet(bin = cms.vdouble(0.9,   1.2,   0.,   99999,   0.84368)),
+    cms.PSet(bin = cms.vdouble(1.2,   2.1,   0.,   99999,   0.82423)),
     )
 
 #### to be expanded according to the modifcations of the HLT triggers that we use
