@@ -39,5 +39,9 @@ cmgTuple_0428_CA8/     : update from cmgTuple_0314_CA8,
                                                 4) changed Pz assignment (using type-2 from FNAL group by default, i.e. 
                                                    choosing the smallest of the two real roots + NO neutrino PT correction for complex roots) 
 
+cmgTuple_0601         : apply synchronization changes.
+						detail see:
+						https://twiki.cern.ch/twiki/bin/viewauth/CMS/EXOWWSynchronization
+						https://indico.cern.ch/getFile.py/access?contribId=0&resId=0&materialId=slides&confId=254387
 
 
