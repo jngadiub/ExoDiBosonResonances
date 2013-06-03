@@ -22,8 +22,8 @@ void loopPlot(){
   /// Boolean flags to steer the histogram making
   bool wantElectrons = true; // Will make histograms for electrons
   bool wantMuons     = false; // Will make histograms for muons
-  bool wantSideband  = false; // Will make histograms for sideband region
-  bool wantSignal    = true; // Will make histograms for signal region
+  bool wantSideband  = true; // Will make histograms for sideband region
+  bool wantSignal    = false; // Will make histograms for signal region
   bool wantFullRange = false; // Will not check signal or sideband, ie, pick all jet mass range
   int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
   int  isZZchannel   = 0; //plot label for zz (1) or ww (0)
@@ -47,13 +47,15 @@ void loopPlot(){
   //CA8 (cmgTuple_08032013_CA8)
   //std::string pathToTrees="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig_plus_sb/sum/";
   //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange/";
-  std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/";
+  //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/";
+  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/fullallrange/";
+
 
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./plots_WW_ele_signal_bvetoM_ALLP";
+  //std::string outputDir = "./plots_WW_ele_signal_bvetoM_ALLP";
   //std::string outputDir = "./plots_WW_mu_signal_bvetoM_ALLP";
-  //std::string outputDir = "./plots_WW_ele_sideband_bvetoM_ALLP";
-  //std::string outputDir = "./plots_WW_mu_sideband_bvetoM_ALLP";
+  std::string outputDir = "./plots_WW_ele_sideband_bvetoM_ALLP_sync";
+  //std::string outputDir = "./plots_WW_mu_sideband_bvetoM_ALLP_sync";
   //std::string outputDir = "./plots_WW_ele_fullallrange_btagT_ALLP";
   //std::string outputDir = "./plots_WW_mu_fullallrange_btagT_ALLP";
 

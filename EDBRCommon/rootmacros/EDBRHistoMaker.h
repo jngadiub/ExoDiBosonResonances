@@ -205,6 +205,7 @@ class EDBRHistoMaker {
 		Double_t        pz_type4[99]; //[nCands]
 		Double_t        pt_neutrino[99]; //[nCands]
 		Double_t        pt_neutrino_corrected[99]; //[nCands]
+		Double_t        TOBTECjetsId[99];//[nCands]
 
 		// List of branches
 		TBranch        *b_nCands;   //!
@@ -575,6 +576,7 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("pz_type4",pz_type4);
 	fChain->SetBranchAddress("pt_neutrino",pt_neutrino);
 	fChain->SetBranchAddress("pt_neutrino_corrected",pt_neutrino_corrected);
+	fChain->SetBranchAddress("TOBTECjetsId",TOBTECjetsId);
 }
 
 EDBRHistoMaker::EDBRHistoMaker(TTree* tree, 
@@ -779,7 +781,7 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("pz_type4",60,-500,500);
 	hs.setHisto("pt_neutrino",35,0,500);
 	hs.setHisto("pt_neutrino_corrected",35,0,500);
-
+	hs.setHisto("TOBTECjetsId",2,0,2);
 
 	if(isZZchannel_==0)//WW channel, use special binning in sync with FNAL
 	  {
@@ -980,8 +982,9 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 		}
 		// We calculate a weight here.
-		//double actualWeight = weight;//*HLTweight*PUweight*LumiWeight*GenWeight;
-		double actualWeight = PUweight*LumiWeight*GenWeight;
+		//double actualWeight = weight;
+		double actualWeight = HLTweight*PUweight*LumiWeight*GenWeight;
+		//double actualWeight = PUweight*LumiWeight*GenWeight;
 		if(setUnitaryWeights_) {
 			if(jentry==0)printf("Unitary weights set!\n");
 			actualWeight=1.0;
@@ -1026,8 +1029,8 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					if( nLooseEle+nLooseMu==1 );//loose lepton veto selection
 					else continue;	
 
-					if(eventPassesCut(ivec, 200, 20));//cut on WL pt
-					else continue;
+					//if(eventPassesCut(ivec, 200, 20));//cut on WL pt
+					//else continue;
 
 					//cut from fermilab
 					if(deltaR_LJ>1.57 && deltaPhi_JMET>2. && deltaPhi_JWL>2.);
@@ -1076,7 +1079,8 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 					//-- END of ALL CUTS --
 
-					//Printout for debugging						       		       
+					//Printout for debugging	
+					/*					       		       
 					if(mZZ_type2[ivec]>1800)
 					  {
 					    //RunNumber:LumiSection:EvtNumber
@@ -1089,6 +1093,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					         << ptjet1[ivec]      << " * " << etajet1[ivec] << " * " << phijet1[ivec]   << " * " 
 					         << mJJNoKinFit[ivec] << " * " << nsubj21[ivec] << endl << endl; 					    
 					  }
+					  */
 					
 				       
 					
@@ -1203,6 +1208,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				(theHistograms["pz_type4"])->Fill(pz_type4[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["pt_neutrino"])->Fill(pt_neutrino[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				(theHistograms["pt_neutrino_corrected"])->Fill(pt_neutrino_corrected[ivec],actualWeight);//printf("line number %i\n",__LINE__);
+				(theHistograms["TOBTECjetsId"])->Fill(TOBTECjetsId[ivec],actualWeight);//printf("line number %i\n",__LINE__);
 				
 				/// Also, once per event we check if the event is interesting...
 				/// What's interesting?
