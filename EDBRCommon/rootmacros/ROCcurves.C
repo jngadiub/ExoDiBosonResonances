@@ -161,9 +161,9 @@ TCanvas* compareHistos(TH1* signalHisto, TH1* backgroundHisto){
 void makeROCcurves(int massValue) {
 	char buffer[256];
 	masspoint.push_back(massValue);
-	sprintf(buffer,"CA8optimization/signal_%i.root",massValue);
+	sprintf(buffer,"optimization_tau21/signal_%i.root",massValue);
 	TFile* sgnFile = TFile::Open(buffer); 
-	TFile* bkgFile = TFile::Open("CA8optimization/allBackgrounds.root"); 
+	TFile* bkgFile = TFile::Open("optimization_tau21/allBackgrounds.root"); 
 
 	TH1* signalHisto = getNSubjHisto(sgnFile, massValue);
 	TH1* backgroundHisto = getNSubjHisto(bkgFile, massValue);
@@ -190,11 +190,11 @@ void ROCcurves(){
 	makeROCcurves(1800);
 	makeROCcurves(1900);
 	makeROCcurves(2000);
-	//	makeROCcurves(2100);
-	//	makeROCcurves(2200);
-	//	makeROCcurves(2300);
-	//	makeROCcurves(2400);
-	//	makeROCcurves(2500);
+	makeROCcurves(2100);
+	makeROCcurves(2200);
+	makeROCcurves(2300);
+	makeROCcurves(2400);
+	makeROCcurves(2500);
 
 	TGraph* cutVSmass     = new TGraph(masspoint.size());
 	TGraph* punziRefVSmass     = new TGraph(masspoint.size());
@@ -242,14 +242,14 @@ void ROCcurves(){
     punzi45VSmass->SetMarkerStyle(28);
     punzi45VSmass->SetMarkerSize(1.25);
     punzi45VSmass->SetMarkerColor(9);
-    punzi45VSmass->Draw("LPsame");
+    //punzi45VSmass->Draw("LPsame");
     char legEntry2[64];
     sprintf(legEntry2,"%d Punzi",refPunzi);    
     TLegend * leg = new TLegend (0.15, 0.5, 0.45, 0.85, NULL, "brNDC") ;
     leg->SetFillColor(kWhite);
     leg->AddEntry (bestpunziVSmass, "Punzi Signif (Best Cut)" ,"p") ;
     leg->AddEntry (punziRefVSmass, "Punzi Signif (tau21<0.50)" ,"p") ;
-    leg->AddEntry (punzi45VSmass, "Punzi Signif (tau21<0.45)" ,"p") ;
+    //leg->AddEntry (punzi45VSmass, "Punzi Signif (tau21<0.45)" ,"p") ;
     leg->Draw();
     c1->SaveAs("punziVSmass.png");
 
@@ -264,12 +264,12 @@ void ROCcurves(){
     sigeffVSmass->Draw("ALP");
     sigeff45VSmass->SetMarkerStyle(20);
     sigeff45VSmass->SetMarkerSize(1);
-    sigeff45VSmass->Draw("LPsame");
+    //sigeff45VSmass->Draw("LPsame");
     sprintf(legEntry2,"Cut %.3f sigeff",refPunzi);
     TLegend * leg2 = new TLegend (0.15, 0.7, 0.45, 0.9, NULL, "brNDC") ;
     leg2->SetFillColor(kWhite);
     leg2->AddEntry (sigeffVSmass, "Best Cut sigeff" ,"p") ;
-    leg2->AddEntry (sigeff45VSmass, legEntry2 ,"p") ;
+    //leg2->AddEntry (sigeff45VSmass, legEntry2 ,"p") ;
     leg2->Draw();
     c1->SaveAs("sigeffVSmass.png");
 

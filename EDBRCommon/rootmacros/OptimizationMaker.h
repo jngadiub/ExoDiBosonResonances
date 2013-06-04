@@ -663,11 +663,11 @@ void OptimizationMaker::Loop(std::string outFileName, double massPoint, double p
 		//double actualWeight = weight;//*HLTweight*PUweight*LumiWeight*GenWeight;
 		double sampleWeight=1;
 		TString sample = outFileName;
-		if(isZZchannel_==false&&sample.Contains("WJetsPt180"))sampleWeight=1.3*1.1;
-		if(isZZchannel_==false&&sample.Contains("WJetsPt100"))sampleWeight=1.3;
+		if(isZZchannel_==false&&sample.Contains("WJetsPt180"))sampleWeight=1.45;
+		if(isZZchannel_==false&&sample.Contains("WJetsPt100"))sampleWeight=1.45;
 		//cout<<"sample weight "<<sampleWeight<<endl;
 		
-		double actualWeight = PUweight*LumiWeight*GenWeight*lumi_*sampleWeight;
+		double actualWeight = HLTweight*PUweight*LumiWeight*GenWeight*lumi_*sampleWeight;
 		if(setUnitaryWeights_) {
 			if(jentry==0)printf("Unitary weights set!\n");
 			actualWeight=1.0;
@@ -689,7 +689,8 @@ void OptimizationMaker::Loop(std::string outFileName, double massPoint, double p
 
                 if(isZZchannel_==false)//WW channel, veto second loose lepton
                 {   
-                    if( (nLooseEle+nLooseMu==1) && ptZjj[ivec]>200 );//global selection
+		    //2nd lepton veto
+                    if( (nLooseEle+nLooseMu==1) );//global selection
                     else continue;  
 
                     //cut from fermilab
@@ -699,6 +700,10 @@ void OptimizationMaker::Loop(std::string outFileName, double massPoint, double p
                     //b veto cut
                     if(nbtagsM[ivec]==0) ;
                     else continue;
+
+		    //met cut
+		    if(lep[ivec]==1 || (lep[ivec]==0 && met>80) );
+		    else continue;
 
                     //b cut - ttbar control region
                     //if(nbtagscleanT[ivec]>=1) ;
