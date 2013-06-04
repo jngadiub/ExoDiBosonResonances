@@ -41,8 +41,10 @@ void absolute_eff()
 {
 
   //TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange";
-	TString inputpath = "/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsig/";
+	//TString inputpath = "/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsig/";
 	///afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
+	//TString inputpath = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/";
+	TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/fullallrange/";
 	TString cut = "absolute_efficiency";
 	vector<TString> dataSamples;
 	vector<TString> bkgSamples;
@@ -50,7 +52,7 @@ void absolute_eff()
 
 
 	bool weightedeff = true;
-	bool isZZChannel = true;
+	bool isZZChannel = false;
 	/*
 	   double lepCut=0.0;   // 0->ele 1->mu
 	   double nxjCut=1.0;  // -1 means you take both single and double jet
@@ -63,7 +65,7 @@ void absolute_eff()
 	double lumi=1;
 
 	//system("rm -rf SignalEffPlots");   
-	system("mkdir SignalEffPlots");
+	system("mkdir -p SignalEffPlots");
 	ofstream outFile("SignalEffPlots/efficiencies_MCSig.txt");
 	//outFile<<"Mass	EE1JHP	MM1JHP	EE1JLP	MM1JLP	EE2J	MM2J"<<endl;
 	/*
@@ -248,6 +250,7 @@ void absolute_eff()
 					int nLooseEle;
 					int nLooseMu;
 					//per event weight
+					double HLTweight=-1;
 					double PUweight=-1;
 					double LumiWeight=-1;
 					double GenWeight=-1;
@@ -283,7 +286,8 @@ void absolute_eff()
 					tree->SetBranchAddress("lep", lep);
 					tree->SetBranchAddress("vTagPurity", vtag);
 					tree->SetBranchAddress("nCands", &nCands);
-
+					
+					tree->SetBranchAddress("HLTweight", &HLTweight);
 					tree->SetBranchAddress("PUweight", &PUweight);
 					tree->SetBranchAddress("LumiWeight", &LumiWeight);
 					tree->SetBranchAddress("GenWeight", &GenWeight);
@@ -305,7 +309,7 @@ void absolute_eff()
 						}
 
 						//per event weight
-						double actualWeight = PUweight*LumiWeight*GenWeight*lumi;
+						double actualWeight = HLTweight*PUweight*LumiWeight*GenWeight*lumi;
 						if(i<ndata) actualWeight =1; //for data
 						//cout<<actualWeight<<endl;
 
@@ -339,7 +343,7 @@ void absolute_eff()
 									else continue;
 									////
 									if((nLooseEle+nLooseMu)!=1)continue;
-									if(ptZll[ivec]<200)continue;
+									//if(ptZll[ivec]<200)continue;
 									if(nbtagsM[ivec]!=0)continue; //b-tag veto
 									if(deltaR_LJ<1.57 || deltaPhi_JMET<2. || deltaPhi_JWL<2.)continue;
 									
