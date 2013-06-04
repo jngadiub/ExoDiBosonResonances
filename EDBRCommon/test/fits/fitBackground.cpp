@@ -190,8 +190,8 @@ int main(){
 
 			//sprintf(alphahname,"h_alpha_smoothened");
 			sprintf(alphahname,"h_alpha_smoothened_Final");//alpha with R0
-			
-			
+
+
 			TTree* weightedData = weightTree(treeDATA_tmp , (TH1D*)falpha->Get(alphahname)  ,"alphaWeightedTreetmp" );
 
 			//stat uncertainty on alpha normalization
@@ -243,13 +243,13 @@ int main(){
 			//weight events by the alpha function
 			string cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>800&&mZZ<2800"+lepCutStr+vtagcutstr;
 			string cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>800&&mZZ<2800"+lepCutStr+vtagcutstr;
-			
+
 			if(isZZChannel)
 			{
- 				cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>"+strmcut.str()+lepCutStr+vtagcutstr;
- 				cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>"+ strmcut.str()+lepCutStr+vtagcutstr;	
+				cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>"+strmcut.str()+lepCutStr+vtagcutstr;
+				cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>"+ strmcut.str()+lepCutStr+vtagcutstr;	
 			}
-		
+
 			string cutDum="nXjets=="+ssnxj.str()+" && mZZ>"+ strmcut.str()+lepCutStr+vtagcutstr;
 
 
@@ -276,28 +276,24 @@ int main(){
 
 			if(!isZZChannel&&inxj==1)
 			{
-				/*
-				// for A->B
-				if(leptType=="ELE"&&purityCut==0)normalizationNEW=84.8322;
-				if(leptType=="ELE"&&purityCut==1)normalizationNEW=116.602;
-				if(leptType=="MU"&&purityCut==0)normalizationNEW=167.612;
-				if(leptType=="MU"&&purityCut==1)normalizationNEW=192.596;
-				*/
-	
-				/*
-				//for Ana 100
-                if(leptType=="ELE"&&purityCut==0)normalizationNEW=515.374;
-                if(leptType=="ELE"&&purityCut==1)normalizationNEW=344.849;
-                if(leptType=="MU"&&purityCut==0)normalizationNEW=802.572;
-                if(leptType=="MU"&&purityCut==1)normalizationNEW=518.888;
-				*/
-                //for Ana 180
-                if(leptType=="ELE"&&purityCut==0)normalizationNEW=515.374;
-                if(leptType=="ELE"&&purityCut==1)normalizationNEW=333.799;
-                if(leptType=="MU"&&purityCut==0)normalizationNEW=802.572;
-                if(leptType=="MU"&&purityCut==1)normalizationNEW=523.247;
+				if(InTreeName=="SelectedCandidatesAB")
+				{
+					// for A->B
+					if(leptType=="ELE"&&purityCut==0)normalizationNEW=92.5818;
+					if(leptType=="ELE"&&purityCut==1)normalizationNEW=121.546;
+					if(leptType=="MU"&&purityCut==0)normalizationNEW=178.52;
+					if(leptType=="MU"&&purityCut==1)normalizationNEW=197.467;
+				}
+				else if(InTreeName=="SelectedCandidates")
+				{
+					//for Ana , wjets 180
+					if(leptType=="ELE"&&purityCut==0)normalizationNEW=552.083;
+					if(leptType=="ELE"&&purityCut==1)normalizationNEW=342.247;
+					if(leptType=="MU"&&purityCut==0)normalizationNEW=852.543;
+					if(leptType=="MU"&&purityCut==1)normalizationNEW=537.415;
+				}
 			}
-						
+
 			logf<<" normalizationNEW "<<normalizationNEW<<" normalizationOLD  "<<normalizationOLD<<endl;
 
 			name_datasb2="dsDataSB2";
@@ -561,10 +557,10 @@ int main(){
 					pseudoSB2.append(*VVDataSetWeight);
 					//std::cout << "XXX " <<doPseudoTwoPars << "  " <<decorrLevExpo <<std::endl;
 					if(doPseudoTwoPars && decorrLevExpo){//actually do it only if you already decorrelated the two par func
-					  fitPseudoTwoPars(pseudoSB2,*wsnew,n,fitResultNamePseudo,inxj,purityCut,leptType);
+						fitPseudoTwoPars(pseudoSB2,*wsnew,n,fitResultNamePseudo,inxj,purityCut,leptType);
 					}
 					else{
-					  fitPseudoOnePar(pseudoSB2,*wsnew,n,fitResultNamePseudo,inxj,pur_str,leptType);
+						fitPseudoOnePar(pseudoSB2,*wsnew,n,fitResultNamePseudo,inxj,pur_str,leptType);
 					}
 					//      cout<<"Deleting tree #"<<n<<"  "<<weightedPseuo->GetName()<<endl;
 					delete weightedPseudo;
@@ -846,7 +842,7 @@ void pseudoMassgeOnePar(int nxj ,std::string inPurStr, const std::string & leptT
 	cout<<"pseudoMassgeOnePar starts to loop over "<<nToys<<" toys with initial value "<<x1<<"+/-"<<e1<<endl;
 
 	for(unsigned i =0 ; i < nToys ; i++){
-	  sprintf(indexstring,"TMPResult_%s_%s_%dJ%s_%d",channel_marker.c_str(),leptType.c_str(),nxj,inPurStr.c_str(),i);
+		sprintf(indexstring,"TMPResult_%s_%s_%dJ%s_%d",channel_marker.c_str(),leptType.c_str(),nxj,inPurStr.c_str(),i);
 		//  ifstream testFile(indexstring,ios::in);
 		// if(! testFile.good())continue;
 		ws.argSet(argname).readFromFile(indexstring);
@@ -1065,7 +1061,7 @@ void pseudoMassgeTwoPars(int nxj ,int pur, const std::string& leptType , RooFitR
 
 	cout<<"pseudoMassgeTwoPars starts to loop over "<<nToys<<" toys"<<endl;
 	for(unsigned i =0 ; i < nToys ; i++){
-	  sprintf(indexstring,"TMPResult_%s_%s_%dJ%s_%d",channel_marker.c_str(),leptType.c_str(),nxj,pur_str.c_str(),i);
+		sprintf(indexstring,"TMPResult_%s_%s_%dJ%s_%d",channel_marker.c_str(),leptType.c_str(),nxj,pur_str.c_str(),i);
 		//    sprintf(indexstring,"TMPResult_%dtag_%d",nxj,i);
 		//  ifstream testFile(indexstring,ios::in);
 		// if(! testFile.good())continue;

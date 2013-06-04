@@ -264,14 +264,14 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 			if(inxj==1&&iP==0)R0=&R0_vector.at(0);//1JLP
 			else if(inxj==1&&iP==1)R0=&R0_vector.at(1);//1JHP
 			else if(inxj==2)R0=&R0_vector.at(2);//2J
-			
+
 			/*
 			//a test to see we get what they are
 			TCanvas * cr1 = new TCanvas();
 			R0->Draw();
 			TString r0test = Form("test_%dJ_%d_R0_test.png",inxj,iP);
 			cr1->SaveAs( r0test );
-			*/
+			 */
 
 			//do alpha_Final = (1-R0) * alpha_ORI
 			alpha_Final->Reset();
@@ -485,20 +485,24 @@ void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name,std::s
 			{
 				double ttbar_scale =0;
 				//double tttar_scale_error=0;
-				
+
 				//for the analysis
-				if(vTagPurity_2==1&&leptType_2==1)ttbar_scale = 0.947391;
-				if(vTagPurity_2==1&&leptType_2==0)ttbar_scale = 0.948701;
-				if(vTagPurity_2==0&&leptType_2==1)ttbar_scale =  1.13451;
-				if(vTagPurity_2==0&&leptType_2==0)ttbar_scale = 1.21555;
-				
-				/*
-				//for closure test A->B
-				if(vTagPurity_2==1&&leptType_2==1)ttbar_scale =  1.06193;
-				if(vTagPurity_2==1&&leptType_2==0)ttbar_scale =   1.14417 ; 
-				if(vTagPurity_2==0&&leptType_2==1)ttbar_scale =  1.53171; 
-				if(vTagPurity_2==0&&leptType_2==0)ttbar_scale =  1.6139; 
-				*/
+				if(InTreeName=="SelectedCandidatesAB")
+				{
+					if(vTagPurity_2==0&&leptType_2==0)ttbar_scale = 1.290926;//eleLP
+					if(vTagPurity_2==1&&leptType_2==0)ttbar_scale = 0.963780;//eleHP
+					if(vTagPurity_2==0&&leptType_2==1)ttbar_scale = 1.225310;//muLP
+					if(vTagPurity_2==1&&leptType_2==1)ttbar_scale = 0.965009;//muHP
+				}
+				else if (InTreeName=="SelectedCandidatesAB")
+				{
+					//for closure test A->B
+					if(vTagPurity_2==0&&leptType_2==0)ttbar_scale = 1.311132;//eleLP
+					if(vTagPurity_2==1&&leptType_2==0)ttbar_scale = 0.970865;//eleHP
+					if(vTagPurity_2==0&&leptType_2==1)ttbar_scale = 1.211814;//muLP
+					if(vTagPurity_2==1&&leptType_2==1)ttbar_scale = 1.058920;//muHP
+				}
+
 				TString filename = t1->GetFile()->GetEndpointUrl()->GetUrl();
 				//cout<<filename<<endl;
 				if(filename.Contains("TTBAR"))
