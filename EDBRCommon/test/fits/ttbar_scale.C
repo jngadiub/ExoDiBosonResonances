@@ -3,8 +3,8 @@ void ttbar_scale()
 	TString SigDir = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree_forTT/";	
 
     //for which category?
-    TString lepType = "mu";
-    TString purity  = "HP";
+    TString lepType = "ele";
+    TString purity  = "LP";
 
 	double lumi =0. ;
 	if(lepType == "mu")lumi= 19538.85;//mu
@@ -61,8 +61,8 @@ void ttbar_scale()
 	mJJSBData->SetStats(0);
 	mJJSBMC->SetTitle("ttbar_scale_"+lepType+"_"+purity);
 	mJJSBData->SetTitle("ttbar_scale_"+lepType+"_"+purity);
-	mJJSBMC->Draw();
-	mJJSBData->Draw("same");
+	mJJSBData->Draw();
+	mJJSBMC->Draw("same");
 	TLegend * leg = new TLegend (0.7, 0.8, 0.9, 0.9, NULL, "brNDC") ;
 	leg->AddEntry(mJJSBMC,"MC","l");
 	leg->AddEntry(mJJSBData,"Data","l");
@@ -86,7 +86,7 @@ void ttbar_scale()
 	cout<<"scale factor is : "<<scale<<" +- "<<error<<endl;
 
 
-	TPaveText * tp = new TPaveText(0.1,0.76,0.5,0.9,"brNDC");
+	TPaveText * tp = new TPaveText(0.1,0.8,0.45,0.9,"brNDC");
 	TString text = Form("scale factor is : %f +- %f",scale,error);
 	tp->AddText(text);
 	tp->SetBorderSize(0) ;
