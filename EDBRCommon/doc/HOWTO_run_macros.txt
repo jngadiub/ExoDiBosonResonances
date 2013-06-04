@@ -21,21 +21,90 @@ root -l -b absolute_eff.C
 3. Find the plots of 6 categories and efficiencies_MCSig.txt in SignalEffPlots/
 
 
-
-
-For closure test
-1. create trees after cuts
+--------------------
+Create trees after cuts
 go to ExoDiBosonResonances/EDBRCommon/test
 Edit the options in createTreesClosureTest_xww.C
 and run with 
 root -l -b createTreesClosureTest_xww.C++
-2. go to ExoDiBosonResonances/EDBRCommon/test/fits
-Edit options in fitSidebands.cpp
-Edit options in fitBackground.cpp
-and run with
+
+
+---------------------
+ttbar scale factor
+cd ExoDiBosonResonances/EDBRCommon/test/fits
+Edit the path in ttbar_scale.C
+NOTE: the tree should use ttbarcontrol->Create trees after btagM selection
+run with
+root ttbar_scale.C
+
+read the numbers in ttbar_scale_plots/ttbar_scale_factor.txt 
+
+
+-----------------
+WJets normalization
+
+cd ExoDiBosonResonances/EDBRCommon/test/fits/WJetsNormalization
+1. put sample in Data
+cd Data/
+Edit Path in cp.sh
+sh cp.sh
+
+2. compile
+cd PDFs 
+cmsenv
+rt -b
+gSystem->AddIncludePath("-I$ROOFITSYS/include")
+.L  HWWLVJRooPdfs.cxx++
+.L  PdfDiagonalizer.cc++
+
+3. put the ttbar scale factors in 
+shuai_exo_doFit_class.py, line 206
+
+4. run
+read the numbers in the last line of the print out
+For the analysis
+python shuai_exo_doFit_class.py  -c 0  
+python shuai_exo_doFit_class.py  -c 1  
+python shuai_exo_doFit_class.py  -c 2  
+python shuai_exo_doFit_class.py  -c 3  
+For closure test A->B
+python shuai_exo_doFit_class.py -c 0 --closuretest 2   
+python shuai_exo_doFit_class.py -c 1 --closuretest 2   
+python shuai_exo_doFit_class.py -c 2 --closuretest 2   
+python shuai_exo_doFit_class.py -c 3 --closuretest 2   
+
+------------
+Background estimation
+
+Edit options in Config_XWW.h
+For closure test A->B: const std::string InTreeName="SelectedCandidatesAB";
+For the analysis: const std::string InTreeName="SelectedCandidates";
+
+put the ttbar scale factor in fitSidebands.cpp
+put wjets normalization in fitBackground.cpp
+
+run:
+rm -f fitSidebands fitBackground  SidebandFitter.o
 make fitSidebands
 ./fitSidebands
 make fitBackground
 ./fitBackground
-3. For results look at mZZ_alpha_1JHP_MU_Madgraph_ROOFIT.eps and fitPlot_1J_HP_MU_log.eps
+
+Do it twice with string leptType="ELE"; and string leptType="MU";
+
+------------------
+Create datacrads
+
+replace efficiencies_MCSig_xww.txt with the latest one
+rm create_datacards
+make create_datacards
+./create_datacards
+
+Do it twice with string leptType="ELE"; and string leptType="MU";
+
+
+
+
+
+
 
