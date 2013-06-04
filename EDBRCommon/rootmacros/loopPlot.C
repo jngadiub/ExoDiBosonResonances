@@ -36,6 +36,8 @@ void loopPlot(){
   double lumiValue = 19531.85;// for singleEle2012
   /// Should we scale the histograms to data?
   bool scaleToData = false;
+  // Should we scale only wjets to make total MC = DATA?
+  bool scaleOnlyWJets = true;
   /// Should we plot the Data/Bkg and Data-Bkg/Error ratios?
   bool makeRatio = true;
   /// Should we REDO histograms?
@@ -49,15 +51,15 @@ void loopPlot(){
   //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange/";
   //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/";
   std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/fullallrange/";
-
+  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/ttbarcontrol/";
 
   /// Path to wherever you want to put the histograms (figures) in.
   //std::string outputDir = "./plots_WW_ele_signal_bvetoM_ALLP";
   //std::string outputDir = "./plots_WW_mu_signal_bvetoM_ALLP";
   std::string outputDir = "./plots_WW_ele_sideband_bvetoM_ALLP_sync";
   //std::string outputDir = "./plots_WW_mu_sideband_bvetoM_ALLP_sync";
-  //std::string outputDir = "./plots_WW_ele_fullallrange_btagT_ALLP";
-  //std::string outputDir = "./plots_WW_mu_fullallrange_btagT_ALLP";
+  //std::string outputDir = "./plots_WW_ele_fullallrange_btagT_ALLP_sync";
+  //std::string outputDir = "./plots_WW_mu_fullallrange_btagT_ALLP_sync";
 
   /// Setup names of data files for trees.
  
@@ -171,7 +173,7 @@ void loopPlot(){
   //WW, muon channel
   //double kFactorsMC_array[nMC] = {1, 1., 1., 1., 1.3};
   //WW, electron channel
-  double kFactorsMC_array[nMC] = {1, 1., 1., 1., 1.37};
+  double kFactorsMC_array[nMC] = {1, 1., 1., 1., 1.};
  
 
   std::vector<std::string> fMC;
@@ -368,6 +370,7 @@ void loopPlot(){
 						 flavour,
 						 isZZchannel,
 						 scaleToData,
+						 scaleOnlyWJets,
 						 makeRatio,
 						 isSignalStackOnBkg,
 						 kFactorsMC,kFactorsMCSig);

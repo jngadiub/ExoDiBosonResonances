@@ -26,6 +26,7 @@ public:
 		   int flavour,
 		   bool isZZchannel,
 		   bool scaleToData,
+		   bool scaleOnlyWJets,
 		   bool makeRatio,
 		   bool isSignalStackOnBkg,
 		   std::vector<double> kFactorsMC,
@@ -42,6 +43,7 @@ public:
     flavour_       = flavour;
     isZZchannel_   = isZZchannel;
     scaleToData_   = scaleToData;
+	scaleOnlyWJets_ = scaleOnlyWJets;
     makeRatio_     = makeRatio;
     isSignalStackOnBkg_ = isSignalStackOnBkg;
     debug_         = true;
@@ -110,6 +112,7 @@ public:
   int    flavour_;
   bool   isZZchannel_;
   bool   scaleToData_;
+  bool   scaleOnlyWJets_;
   bool   makeRatio_;
   bool   isSignalStackOnBkg_;
   bool   isDataPresent_;
@@ -320,10 +323,10 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 				   fileNamesMC.at(i)).c_str()));
   }
   
+  double sumBkgOther=0.;
+  double sumWJets=0.;
   for(size_t i=0; i!= filesMC.size(); ++i) {
     TH1D* histo = (TH1D*)(filesMC.at(i)->Get(histoName.c_str())->Clone(labels.at(i).c_str()));
-    histo->SetDirectory(0);
-    histo->SetFillColor(getFillColor(i));
 
     histo->Scale(kFactorsMC_.at(i));
     
@@ -331,8 +334,32 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
       histo->Print();
     }
     sumBkgAtTargetLumi += (histo->Integral() * targetLumi_);
-    histosMC.push_back(histo);
+
+
+	if(debug_)cout<<"filesMC.at(i)->GetName()   "<<filesMC.at(i)->GetName()<<endl;
+	TString filename = filesMC.at(i)->GetName();
+	if(filename.Contains("WJets")) sumWJets+=(histo->Integral() * targetLumi_);
+	else sumBkgOther+=(histo->Integral() * targetLumi_);
   }
+  if(debug_)cout<<sumBkgAtTargetLumi<<" "<<sumWJets<<" "<<sumBkgOther<<" "<<sumWJets+sumBkgOther<<endl;
+  double WJetsScaleFactor = 1.;
+  if(scaleOnlyWJets_){
+  	WJetsScaleFactor = (sumDataIntegral - sumBkgOther)/sumWJets;
+  	cout<<"WJetsScaleFactor "<<WJetsScaleFactor<<endl;
+  }
+
+   for(size_t i=0; i!= filesMC.size(); ++i) {
+	TH1D* histo = (TH1D*)(filesMC.at(i)->Get(histoName.c_str())->Clone(labels.at(i).c_str()));
+	histo->SetDirectory(0);
+	histo->SetFillColor(getFillColor(i));
+
+	TString filename = filesMC.at(i)->GetName();
+	histo->Scale(kFactorsMC_.at(i));
+	if(filename.Contains("WJets"))histo->Scale(WJetsScaleFactor);
+	histosMC.push_back(histo);
+	}
+
+
 
   if(debug_) {
     printf("sumBkgAtTargetLumi = %g\n",sumBkgAtTargetLumi);

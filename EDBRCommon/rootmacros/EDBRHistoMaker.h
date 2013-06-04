@@ -1065,8 +1065,8 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					if(nbtagsM[ivec]==0) ;
 					else continue;
 
-					//b cut - ttbar control region
-					//if(nbtagscleanT[ivec]>=1) ;
+					//b cut - ttbar control region - to sync we use clean M
+					//if(nbtagscleanM[ivec]>=1) ;
 					//else continue;
 
 					//nsubjettiness HP
