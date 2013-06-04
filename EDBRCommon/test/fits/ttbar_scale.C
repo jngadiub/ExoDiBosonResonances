@@ -14,8 +14,8 @@ void ttbar_scale()
 			for(int PUR = 0; PUR<=1; PUR++)
 			{
 				TString lepType;
-				if(LEP==1)  lepType= "ele";
-				if(LEP==0)  lepType= "mu";
+				if(LEP==0)  lepType= "ele";
+				if(LEP==1)  lepType= "mu";
 
 				TString purity;
 				if(PUR == 1) purity  = "HP";
