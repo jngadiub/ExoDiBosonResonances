@@ -100,21 +100,21 @@ class doFit_wj_and_wlvj:
         self.workspace4limit_ = RooWorkspace("workspace4limit_","workspace4limit_");
 
         if options.closuretest ==0:
-            self.mj_sideband_lo_min=in_mj_min;
+            self.mj_sideband_lo_min=40;
             self.mj_sideband_lo_max=65;
             self.mj_signal_min=65;
             self.mj_signal_max=105;
             self.mj_sideband_hi_min=105;
             self.mj_sideband_hi_max=in_mj_max;
         if options.closuretest ==1: ##closure test A1->A2
-            self.mj_sideband_lo_min=in_mj_min;
+            self.mj_sideband_lo_min=40;
             self.mj_sideband_lo_max=55;
             self.mj_signal_min=55;
             self.mj_signal_max= 65;
             self.mj_sideband_hi_min=105;
             self.mj_sideband_hi_max=in_mj_max;
         if options.closuretest ==2: #closure test A->B
-            self.mj_sideband_lo_min=in_mj_min;
+            self.mj_sideband_lo_min=40;
             self.mj_sideband_lo_max=65;
             self.mj_signal_min=100;
             self.mj_signal_max=115;
@@ -2553,10 +2553,10 @@ class doFit_wj_and_wlvj:
                 tmp_scale_to_lumi=treeIn.LumiWeight*19538.85;
     
             tmp_jet_mass=getattr(treeIn, "mJJNoKinFit");
-            if treeIn.categories==options.category and  treeIn.mZZ> rrv_mass_lvj.getMin() and treeIn.mZZ<rrv_mass_lvj.getMax():
+            if treeIn.categories==options.category and  treeIn.mZZ> rrv_mass_lvj.getMin() and treeIn.mZZ<rrv_mass_lvj.getMax() and tmp_jet_mass>40 and tmp_jet_mass<130 :
                 #print tmp_jet_mass_dn, tmp_jet_mass, tmp_jet_mass_up;
                 tmp_event_weight= treeIn.weight*19538.85;
-                tmp_event_weight4fit= treeIn.PUweight*treeIn.GenWeight;
+                tmp_event_weight4fit= treeIn.HLTweight*treeIn.PUweight*treeIn.GenWeight;
                 tmp_event_weight4fit=tmp_event_weight4fit*treeIn.LumiWeight*19538.85/tmp_scale_to_lumi
 
                 #wtagger_eff_reweight
