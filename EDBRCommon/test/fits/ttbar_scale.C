@@ -1,10 +1,20 @@
 void ttbar_scale()
 {
-	TString SigDir = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/";	
-	double lumi = 19538.85;
+	TString SigDir = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree_forTT/";	
+
+    //for which category?
+    TString lepType = "mu";
+    TString purity  = "HP";
+
+	double lumi =0. ;
+	if(lepType == "mu")lumi= 19538.85;//mu
+	if(lepType == "ele")lumi = 19531.85;//ele
 
 	TChain * chainMC = new TChain("SelectedCandidatesPlain");
 	TChain * chainData = new TChain("SelectedCandidatesPlain");
+
+	//TChain * chainMC = new TChain("SelectedCandidatesABPlain");
+	//TChain * chainData = new TChain("SelectedCandidatesABPlain");
 
 	chainMC->Add(SigDir+"/treeEDBR_DYJets_xww.root");
 	chainMC->Add(SigDir+"/treeEDBR_WJetsPt100_xww.root");
@@ -23,17 +33,23 @@ void ttbar_scale()
 		cout<<filename<<endl;
 	}
 */
-
-	TString region = "(region==1)";
-	TString lep = "(lep==1)";	
+	//for which category?
+	//
+	TString lep="1";
+	if(lepType == "mu")lep = "(lep==1)";//0 for ele, 1 for mu
+	if(lepType == "ele")lep = "(lep==0)";//0 for ele, 1 for mu
+	TString vTagPurity="1";
+	if(purity == "HP")vTagPurity = "(vTagPurity==1)";//1 for HP, 0 for LP
+	if(purity == "LP")vTagPurity = "(vTagPurity==0)";//1 for HP, 0 for LP
+	//
+	TString region = "(region==1)";//1 for sig, 0 for sideband
 	TString nXjets = "(nXjets==1)";
-	TString vTagPurity = "(vTagPurity==0)";
 
 	TString Cut = region+"*"+lep+"*"+nXjets+"*"+vTagPurity;
 	TString totalWeight = Form("weight*%f",lumi);	
 
-	TH1D * mJJSBMC = new TH1D ("mJJSBMC","mJJSBMC",25,40,140);
-	TH1D * mJJSBData = new TH1D ("mJJSBData","mJJSBData",25,40,140);
+	TH1D * mJJSBMC = new TH1D ("mJJSBMC","mJJSBMC",28,0,140);
+	TH1D * mJJSBData = new TH1D ("mJJSBData","mJJSBData",28,0,140);
 	mJJSBMC->Sumw2();
 	mJJSBData->Sumw2();
 	chainMC->Draw("prunedmass>>mJJSBMC",Cut+"*"+totalWeight);
@@ -41,8 +57,17 @@ void ttbar_scale()
 	
 	TCanvas * c0 = new TCanvas();
 	mJJSBMC->SetLineColor(kGreen);
+	mJJSBMC->SetStats(0);
+	mJJSBData->SetStats(0);
+	mJJSBMC->SetTitle("ttbar_scale_"+lepType+"_"+purity);
+	mJJSBData->SetTitle("ttbar_scale_"+lepType+"_"+purity);
 	mJJSBMC->Draw();
 	mJJSBData->Draw("same");
+	TLegend * leg = new TLegend (0.7, 0.8, 0.9, 0.9, NULL, "brNDC") ;
+	leg->AddEntry(mJJSBMC,"MC","l");
+	leg->AddEntry(mJJSBData,"Data","l");
+	leg->Draw();
+
 
 	double totalMC =0;
 	double errorMC =0;
@@ -60,5 +85,12 @@ void ttbar_scale()
 	cout<<Cut<<endl;
 	cout<<"scale factor is : "<<scale<<" +- "<<error<<endl;
 
+
+	TPaveText * tp = new TPaveText(0.1,0.76,0.5,0.9,"brNDC");
+	TString text = Form("scale factor is : %f +- %f",scale,error);
+	tp->AddText(text);
+	tp->SetBorderSize(0) ;
+	tp->Draw();
+	c0->SaveAs("ttbar_scale_"+lepType+"_"+purity+".png");
 
 }
