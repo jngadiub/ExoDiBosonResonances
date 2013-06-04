@@ -42,9 +42,9 @@ double deltaR(const double& eta1, const double& phi1,
 int createTreesClosureTest_xww()
 {
 	//########EDIT THIS PART###########
-	TString inTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange";
-	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from40_noConv";
-	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from40_noConv";
+	TString inTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/fullallrange";
+	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree";
+	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSBTree";
 
 	const double A1Low=40.0;
 	const double A1High=55.0;
@@ -115,6 +115,7 @@ int createTreesClosureTest_xww()
 		double region[99];
 		double nsubj21[99];
 		//per event weight
+		double HLTweight=-1;
 		double PUweight=-1;
 		double LumiWeight=-1;
 		double GenWeight=-1;
@@ -153,10 +154,11 @@ int createTreesClosureTest_xww()
 		tIn->SetBranchAddress("mt", mt);
 		tIn->SetBranchAddress("region", region);
 		tIn->SetBranchAddress("nsubj21", nsubj21);
+		tIn->SetBranchAddress("HLTweight", &HLTweight);
 		tIn->SetBranchAddress("PUweight", &PUweight);
 		tIn->SetBranchAddress("LumiWeight", &LumiWeight);
 		tIn->SetBranchAddress("GenWeight", &GenWeight);
-		tIn->SetBranchAddress("mZZ", mZZ);
+		tIn->SetBranchAddress("mZZ_type2_ptUncorrected", mZZ);
 		tIn->SetBranchAddress("mJJ", mJJ);
 		tIn->SetBranchAddress("mLL", mLL);
 		tIn->SetBranchAddress("prunedmass", prMJ);
@@ -180,7 +182,7 @@ int createTreesClosureTest_xww()
 		double mLLAna[99],nsubj21Ana[99],prMJAna[99],mJJNoKinFitAnaSig[99];
 		double  vTagPurityAna[99];
 		int nXjetsAna[99];
-		double PUweightAnaSig, LumiWeightAnaSig,GenWeightAnaSig,weightAnaSig;
+		double HLTweightAnaSig, PUweightAnaSig, LumiWeightAnaSig,GenWeightAnaSig,weightAnaSig;
 		int categories[99];
 		double MCmatchAna[99];
 		tAnaSig->Branch("nCands" ,         &nCandsAna ,      "nCands/I");
@@ -195,6 +197,7 @@ int createTreesClosureTest_xww()
 		tAnaSig->Branch("mJJNoKinFit"             ,&mJJNoKinFitAnaSig           ,"mJJNoKinFit[nCands]/D");
 		tAnaSig->Branch("prunedmass"      , &prMJAna, "prunedmass[nCands]/D");
 		tAnaSig->Branch("nsubj21"       ,&nsubj21Ana    ,"nsubj21[nCands]/D");
+		tAnaSig->Branch("HLTweight"        ,&HLTweightAnaSig            ,"HLTweight/D" );
 		tAnaSig->Branch("PUweight"        ,&PUweightAnaSig            ,"PUweight/D" );
 		tAnaSig->Branch("LumiWeight"      ,&LumiWeightAnaSig         ,"LumiWeight/D"  );
 		tAnaSig->Branch("GenWeight"      ,&GenWeightAnaSig         ,"GenWeight/D"  );
@@ -210,7 +213,7 @@ int createTreesClosureTest_xww()
 		double mLLAnaPlain,nsubj21AnaPlain,prMJAnaPlain,mJJNoKinFitAnaSigPlain;
 		double  vTagPurityAnaPlain;
 		int nXjetsAnaPlain;
-		double PUweightAnaSigPlain, LumiWeightAnaSigPlain,GenWeightAnaSigPlain,weightAnaSigPlain;
+		double HLTweightAnaSigPlain, PUweightAnaSigPlain, LumiWeightAnaSigPlain,GenWeightAnaSigPlain,weightAnaSigPlain;
 		int categoriesPlain;
 		double MCmatchAnaPlain;
 		tAnaSigPlain->Branch("nCands" ,         &nCandsAnaPlain ,      "nCands/I");
@@ -225,6 +228,7 @@ int createTreesClosureTest_xww()
 		tAnaSigPlain->Branch("mJJNoKinFit"             ,&mJJNoKinFitAnaSigPlain           ,"mJJNoKinFit/D");
 		tAnaSigPlain->Branch("prunedmass"      , &prMJAnaPlain, "prunedmass/D");
 		tAnaSigPlain->Branch("nsubj21"       ,&nsubj21AnaPlain    ,"nsubj21/D");
+		tAnaSigPlain->Branch("HLTweight"        ,&HLTweightAnaSigPlain            ,"HLTweight/D" );
 		tAnaSigPlain->Branch("PUweight"        ,&PUweightAnaSigPlain            ,"PUweight/D" );
 		tAnaSigPlain->Branch("LumiWeight"      ,&LumiWeightAnaSigPlain         ,"LumiWeight/D"  );  
 		tAnaSigPlain->Branch("GenWeight"      ,&GenWeightAnaSigPlain         ,"GenWeight/D"  );  
@@ -270,12 +274,13 @@ int createTreesClosureTest_xww()
 			nCandsAna=nCands;
 			neventAnaSig=nevent;
 			runAna=run;
+			HLTweightAnaSig=HLTweight;
 			PUweightAnaSig=PUweight;
 			LumiWeightAnaSig=LumiWeight;
 			//if(file.Contains("BulkG_WW_lvjj_c0p2_M1600"))LumiWeightAnaSig=1.5771e-05/45994;
 			GenWeightAnaSig=GenWeight;
 			if(file.Contains("WJetsPt"))GenWeightAnaSig=GenWeightAnaSig*1.3;//for wjets, add addtionnal 1.3 factor
-			weightAnaSig=PUweightAnaSig*LumiWeightAnaSig*GenWeightAnaSig;
+			weightAnaSig=HLTweightAnaSig*PUweightAnaSig*LumiWeightAnaSig*GenWeightAnaSig;
 
 			bool goodevent=false;
 			for(int ivec =0; ivec<nCands; ivec++)
@@ -288,8 +293,8 @@ int createTreesClosureTest_xww()
 				if( nLooseEle+nLooseMu==1 );//loose lepton veto selection
 				else continue;
 
-				if(ptZll[ivec]>200);//cut on WL pt
-				else continue;
+				//if(ptZll[ivec]>200);//cut on WL pt
+				//else continue;
 
 				//cut from fermilab
 				if(deltaR_LJ>1.57 && deltaPhi_JMET>2. && deltaPhi_JWL>2.);
@@ -379,6 +384,7 @@ int createTreesClosureTest_xww()
 			mJJNoKinFitAnaSigPlain=mJJNoKinFitAnaSig[0];
 			vTagPurityAnaPlain=vTagPurityAna[0];
 			nXjetsAnaPlain=nXjetsAna[0];
+			HLTweightAnaSigPlain=HLTweightAnaSig;
 			PUweightAnaSigPlain=PUweightAnaSig;
 			LumiWeightAnaSigPlain=LumiWeightAnaSig;
 			GenWeightAnaSigPlain=GenWeightAnaSig;
