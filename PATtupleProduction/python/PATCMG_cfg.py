@@ -58,8 +58,11 @@ process.source.fileNames = process.source.fileNames[:20]
 #####process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/group/cmgtools/CMG/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PFAOD_0.root']
 #process.source.fileNames = ['file:root://eoscms//eos/cms/store/data/Run2012C/DoublePhotonHighPt/AOD/PromptReco-v2/000/200/600/0AA4E2BB-2BE5-E111-B3A8-00237DDC5C24.root']
 ##process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/bonato/patTuple/2012/EXOVVtest/BulkG_ZZllqq_M1000_c0p2_STEP3_AODSIM_24_1_fvt.root']
-
+###process.source.fileNames = [
+###    "/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/tomei/store/user/tomei/BulkG_ZZ_lljj_M2000_G120-JHU/BulkG_ZZ_lljj_M2000_G120-JHU/c8f8ed334db8a7d6f56c62266b1dfa5b/Bulk_AODSIM_6_1_GAz.root",
+###    ]
 ## Maximal Number of Events
+
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 print sep_line
@@ -557,14 +560,14 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 EXOVV_GT= 'START53_V7G::All'
 if runOnMC:
     if 'START53' in datasetInfo[1]:
-        EXOVV_GT = 'START53_V21::All' 
+        EXOVV_GT = 'START53_V23::All' 
     elif 'START52' in datasetInfo[1]:
         EXOVV_GT = 'START52_V9F::All'
 else :
     if 'Run2012D' in datasetInfo[1]:
-        EXOVV_GT = 'FT_53_V21_AN3::All'
+        EXOVV_GT = 'FT_53_V21_AN4::All'
     else:
-        EXOVV_GT = 'FT_53_V21_AN3::All'
+        EXOVV_GT = 'FT_53_V21_AN4::All'
         
 process.GlobalTag.globaltag = EXOVV_GT  ###cms.string("START53_V21::All")
 
@@ -590,6 +593,13 @@ process.schedule.append( process.ZToEEskimPath )
 process.schedule.append( process.ZToMUMUskimPath )
 process.schedule.append( process.WToENUskimPath )
 process.schedule.append( process.WToMUNUskimPath )
+
+## Also add the TOBTEC Fakes Filter
+process.load("KStenson.TrackingFilters.tobtecfakesfilter_cfi")
+print process.tobtecfakesfilter
+process.tobtecfakesfilterPath = cms.Path(~process.tobtecfakesfilter)
+process.schedule.append( process.tobtecfakesfilterPath )
+
 ## Close the schedule
 process.schedule.append( process.outpath )
 
