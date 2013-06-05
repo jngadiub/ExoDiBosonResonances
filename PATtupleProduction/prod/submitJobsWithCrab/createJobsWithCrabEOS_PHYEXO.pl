@@ -89,7 +89,8 @@ my $date = "$year$mon$mday\_$hour$min$sec";
 
 $eosPath = "/eos/cms/store";
 #$eosUserPath1 = "/user/".$eosUserName;
-$eosUserPath1 = "/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/".$eosUserName;
+#$eosUserPath1 = "/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/".$eosUserName;
+$eosUserPath1 = "/cmst3/group/exovv/".$eosUserName;
 
 ###################################################################
 
@@ -101,12 +102,12 @@ $fullEosPath = $eosPath.$eosUserPath3;
 
 #create EOS dir
 print("xrd eoscms mkdir $fullEosPath \n");
-system("xrd eoscms mkdir $fullEosPath");
+#system("xrd eoscms mkdir $fullEosPath");
 
 #setting permission on EOS dir
 $currentPath = $eosPath.$eosUserPath1;
 print("eos chmod -r 755 $currentPath \n");
-system("eos chmod -r 755 $currentPath");
+#system("eos chmod -r 755 $currentPath");
 #my @directories = split(/\//, $eosUserStorageDir);
 my @directories = split(/\//, "");
 foreach $dir(@directories)
@@ -116,7 +117,7 @@ foreach $dir(@directories)
     system("eos chmod -r 755 $currentPath");
 }
 print("eos chmod -r 775 $fullEosPath \n");
-system("eos chmod -r 775 $fullEosPath");
+#system("eos chmod -r 775 $fullEosPath");
 
 
 #other directories

@@ -501,7 +501,7 @@ if not skimEvents:
 
 ## Output Module Configuration (expects a path 'p')
 process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string('patTuple.root'),
+                               fileName = cms.untracked.string(THISROOTFILE),
                                # save only events passing the full path
                                SelectEvents   = cms.untracked.PSet( SelectEvents = EventSelection ),
                                # save PAT Layer 1 output; you need a '*' to
@@ -557,14 +557,14 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 EXOVV_GT= 'START53_V7G::All'
 if runOnMC:
     if 'START53' in datasetInfo[1]:
-        EXOVV_GT = 'START53_V21::All' 
+        EXOVV_GT = 'START53_V23::All' 
     elif 'START52' in datasetInfo[1]:
         EXOVV_GT = 'START52_V9F::All'
 else :
     if 'Run2012D' in datasetInfo[1]:
-        EXOVV_GT = 'FT_53_V21_AN3::All'
+        EXOVV_GT = 'FT_53_V21_AN4::All'
     else:
-        EXOVV_GT = 'FT_53_V21_AN3::All'
+        EXOVV_GT = 'FT_53_V21_AN4::All'
         
 process.GlobalTag.globaltag = EXOVV_GT  ###cms.string("START53_V21::All")
 
@@ -590,6 +590,13 @@ process.schedule.append( process.ZToEEskimPath )
 process.schedule.append( process.ZToMUMUskimPath )
 process.schedule.append( process.WToENUskimPath )
 process.schedule.append( process.WToMUNUskimPath )
+
+## Also add the TOBTEC Fakes Filter
+process.load("KStenson.TrackingFilters.tobtecfakesfilter_cfi")
+print process.tobtecfakesfilter
+process.tobtecfakesfilterPath = cms.Path(~process.tobtecfakesfilter)
+process.schedule.append( process.tobtecfakesfilterPath )
+
 ## Close the schedule
 process.schedule.append( process.outpath )
 
@@ -598,7 +605,7 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 process.MessageLogger.suppressWarning = cms.untracked.vstring('ecalLaserCorrFilter')
 ## Options and Output Report
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 
 ## Print the schedule
