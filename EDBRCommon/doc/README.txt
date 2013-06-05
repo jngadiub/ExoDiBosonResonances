@@ -18,9 +18,22 @@ scram b -j 4
 # Add the HEEP code and the modified HEEP isolation for boosted case.
 cvs co -r V00-09-03 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer
 cvs co -r V00-02-03  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/BstdZeeTools
-
-cvs co -A -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
+# Add the new TuneP muons
 cvs co -A -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
+# The PATtuplization code itself
+cvs co -A -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
+# Add the TOBTEC filter
+cvs co -A -d KStenson/TrackingFilters UserCode/KStenson/TrackingFilters
+# and add the missing BuildFile
+mv ExoDiBosonResonances/PATtupleProduction/data/Buildfile_KStenson KStenson/TrackingFilters/BuildFile.xml
+
+######## updated recipe for new MET corrections 
+addpkg PhysicsTools/PatAlgos V08-09-57 
+addpkg DataFormats/StdDictionaries V00-02-15 
+addpkg DataFormats/METReco V03-03-11-01
+addpkg JetMETCorrections/Type1MET V04-06-09-02
+cvs co -r V00-03-23 CommonTools/RecoAlgos
+rm -fr FWCore/GuiBrowser
 
 #compile again
 scram b -j 4 
