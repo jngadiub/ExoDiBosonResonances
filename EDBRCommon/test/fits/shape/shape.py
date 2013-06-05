@@ -215,7 +215,7 @@ def readTree(filename, njet,pur,lep, workspace):
 def plot( category , workspace, descriptor):
 
     plot = workspace.var("mZZ").frame()
-
+    
 
     if category == 0: # no match
         workspace.data("weightedSet").plotOn(plot,root.RooFit.Cut("match==match::unmatched"))
@@ -246,6 +246,10 @@ def plot( category , workspace, descriptor):
     plot.SetMinimum(0)
     maximum = root.TMath.MaxElement(plot.getObject(0).GetN(),plot.getObject(0).GetY())
     plot.SetMaximum(1.2*maximum)
+
+    ##for WW
+    #plot.GetXaxis().SetTitle("mWW [GeV]");
+    #plot.SetTitle("");
 
     plot.Draw()
 
