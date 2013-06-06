@@ -30,12 +30,13 @@ rm -rf KStenson/TrackingFilters/src
 mv KStenson/TrackingFilters/plugins KStenson/TrackingFilters/src 
 
 ######## updated recipe for new MET corrections 
-addpkg PhysicsTools/PatAlgos V08-09-57 
-addpkg DataFormats/StdDictionaries V00-02-15 
-addpkg DataFormats/METReco V03-03-11-01
-addpkg JetMETCorrections/Type1MET V04-06-09-02
-cvs co -r V00-03-23 CommonTools/RecoAlgos
-rm -fr FWCore/GuiBrowser
+# On second hand, better not to do it, makes the sandbox too big
+#addpkg PhysicsTools/PatAlgos V08-09-57 
+#addpkg DataFormats/StdDictionaries V00-02-15 
+#addpkg DataFormats/METReco V03-03-11-01
+#addpkg JetMETCorrections/Type1MET V04-06-09-02
+#cvs co -r V00-03-23 CommonTools/RecoAlgos
+#rm -fr FWCore/GuiBrowser
 
 #compile again
 scram b -j 4 
