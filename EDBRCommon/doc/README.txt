@@ -24,9 +24,10 @@ scram b -j 4
 cvs co -r V00-09-03 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer
 cvs co -r V00-02-03  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/BstdZeeTools
 # Add the new TuneP muons
+cvs co -r edbr_vv_20130605b -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 cvs co -A -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 # The PATtuplization code itself
-cvs co -A -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
+cvs co -r edbr_vv_20130605b -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/
 # Add the TOBTEC filter
 cvs co -A -d KStenson/TrackingFilters UserCode/KStenson/TrackingFilters
 # and add the missing BuildFile, as well as move the plugins directory to the src one
