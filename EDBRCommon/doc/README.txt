@@ -24,8 +24,10 @@ cvs co -A -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMu
 cvs co -A -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
 # Add the TOBTEC filter
 cvs co -A -d KStenson/TrackingFilters UserCode/KStenson/TrackingFilters
-# and add the missing BuildFile
+# and add the missing BuildFile, as well as move the plugins directory to the src one
 mv ExoDiBosonResonances/PATtupleProduction/data/Buildfile_KStenson KStenson/TrackingFilters/BuildFile.xml
+rm -rf KStenson/TrackingFilters/src
+mv KStenson/TrackingFilters/plugins KStenson/TrackingFilters/src 
 
 ######## updated recipe for new MET corrections 
 addpkg PhysicsTools/PatAlgos V08-09-57 
