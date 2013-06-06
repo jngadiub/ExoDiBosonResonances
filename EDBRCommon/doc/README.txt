@@ -10,8 +10,13 @@ Most recent recommended tag for analysis code : edbr_vv_20130527b
 # Follow these: https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsReleasesExperimental#Colin_539_V5_15_0
 # BUT before compiling, update class def for CaloClusters
 cvs up -r 1.15 DataFormats/CaloRecHit/src/classes_def.xml
-# Remove the H2TauTau pachage since it is not useful and we want to keep the sandbox < 100 MB
-rm -rf CMGTools/H2TauTau
+# Remove the H2TauTau package and other stuff since it is not useful and we want to keep the sandbox < 100 MB
+rm -r CMGTools/RootTools 
+rm -r CMGTools/ZJetsTutorial 
+rm -r CMGTools/H2TauTau 
+rm -r CMGTools/Utilities 
+rm -r TauAnalysis/SVFitStandAlone 
+rm -r TauAnalysis/CandidateTools 
 #now, compile
 scram b -j 4 
 
