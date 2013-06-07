@@ -27,7 +27,7 @@ cvs co -r V00-02-03  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/Bst
 cvs co -r edbr_vv_20130605b -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 cvs co -A -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 # The PATtuplization code itself
-cvs co -r edbr_vv_20130605b -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/
+cvs co -r edbr_vv_20130605b -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
 # Add the TOBTEC filter
 cvs co -A -d KStenson/TrackingFilters UserCode/KStenson/TrackingFilters
 # and add the missing BuildFile, as well as move the plugins directory to the src one
