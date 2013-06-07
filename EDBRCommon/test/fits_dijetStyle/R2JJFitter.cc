@@ -537,6 +537,9 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
   RooPlot* plotMggBkg[NCAT];
   RooPlot* plotMggBkgPull[NCAT];
   RooHist* histMggBkgPull[NCAT];
+  RooDataHist* histdata[NCAT];
+  RooHist histdataTest[NCAT];
+  RooCurve* bkgFunction[NCAT];
 
   // dobands and dosignal
   RooDataSet* signal[NCAT];
@@ -628,39 +631,50 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     plotMggBkg[c]->GetXaxis()->SetTitleSize(0.06);
     plotMggBkg[c]->SetTitle("");
 
-    data[c]->plotOn(plotMggBkg[c]);    
-    //data[c]->statOn(plotMggBkg[c]) ;
+    data[c]->plotOn(plotMggBkg[c],Name("ThisData"));    
+    //data[c]->plotOn(plotMggBkg[c],DataError(RooAbsData::SumW2));    
     data[c]->statOn(plotMggBkg[c],"N","",2,"NELU",0.66797,0.86551,0.864278) ;
-    MggBkgTmp.plotOn(plotMggBkg[c],LineColor(kBlue),Range("fitrange"),NormRange("fitrange")); 
+    MggBkgTmp.plotOn(plotMggBkg[c],LineColor(kBlue),Range("fitrange"),NormRange("fitrange"),Name("ThisBackgroundFunction")); 
     MggBkgTmp.paramOn(plotMggBkg[c],data[c],"",2,"NELU", 0.413408,0.887911,0.784027);
     plotMggBkg[c]->SetMinimum(0.1);    
     plotMggBkg[c]->SetMaximum(1000);    
-    
-    /*
-    //modify statbox and fitbox
-    TString StatBoxName = TString::Format("Data_cat%d_statBox",c);
-    cout << "StatBoxName : " << StatBoxName << endl;
-    //gPad->Update();
-    TPaveStats *StatBox = (TPaveStats*)fPads1->FindObject(StatBoxName.Data());
-    StatBox->SetLineColor(0);
-    StatBox->SetTextAlign(32);
-    StatBox->SetTextSize(0.0353107);
-    StatBox->SetX1NDC(0.175138);
-    StatBox->SetX2NDC(0.681305);
-    StatBox->SetY1NDC(0.374715);
-    StatBox->SetY2NDC(0.861068);
-    StatBox->SetMargin(0.05);
-    */    
-
     plotMggBkg[c]->Draw();
 
-    Double_t chi2 = plotMggBkg[c]->chiSquare(2);
+    //chi2
+    int nparameters = 3;
+
+    //method 1
+    Double_t chi2_method1 = plotMggBkg[c]->chiSquare(nparameters);
     char Chi2Text[55]; 
-    sprintf(Chi2Text,"#chi^{2}/ndf = %f",chi2); 
+    sprintf(Chi2Text,"#chi^{2}/ndf = %f",chi2_method1); 
     TLatex *texf = new TLatex(2975.49,21.3163,Chi2Text);
     texf->SetTextAlign(32);
     texf->SetTextSize(0.0353107);
     texf->Draw();
+
+    //method 2
+    ((RooRealVar*) data[c]->get()->find("mZZ"))->setBins(nBinsMass) ;
+    histdata[c] = data[c]->binnedClone();
+    cout << "number of events: " << histdata[c]->sumEntries() << endl;
+    cout << "number of bins: " << histdata[c]->numEntries() << endl;
+
+    //method 3 (by hand)
+    histdataTest[c] = (RooHist) plotMggBkg[c]->findObject("ThisData") ;
+    bkgFunction[c] = (RooCurve*) plotMggBkg[c]->findObject("ThisBackgroundFunction") ;
+    Double_t chi2_method3 = bkgFunction[c]->chiSquare(histdataTest[c],nparameters);
+
+    //--
+    RooChi2Var chi2var ("chi2var", "chi2var", MggBkgTmp, *histdata[c], Extended(kTRUE)); 
+    Double_t chi2_val = chi2var.getVal(); 
+    Double_t nodf = (histdata[c]->numEntries() - nparameters);
+    Double_t chi2_method2 = chi2_val / nodf;
+    cout << "================ chi2_method1 : " << chi2_method1 << endl;
+    cout << "================ chi2_method2 : " << chi2_val  << " / " << nodf << " = " << chi2_method2 << endl;
+    cout << "================ chi2_method3 : " << chi2_method3 << endl; //same as method1
+
+    //By default we use METHOD1
+    // http://root.cern.ch/viewcvs/trunk/roofit/roofitcore/src/RooCurve.cxx?view=log
+
     //----
 
     //---- pad2
