@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.3 2013/04/27 13:34:27 santanas Exp $
+ * $Id: R2JJFitter.cc,v 1.4 2013/05/06 18:57:25 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -116,7 +116,8 @@ using namespace RooStats ;
 
 static const Int_t NCAT = 4;
 static const Double_t MMIN = 800;
-static const Double_t MMAX = 4000;
+static const Double_t MMAX = 3100;
+static const Double_t BINSIZEPLOT = 50; //GeV
 
 void AddSigData(RooWorkspace*, Float_t);
 void AddBkgData(RooWorkspace*);
@@ -203,8 +204,8 @@ void runfits(const Float_t mass=1000, bool isWW = true, Bool_t dobands = false)
 void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 
   //TString inDir   = "./MiniTrees/Signal_VV/";
-  //TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSBTree_mWW_Type2_corrected/"; 
-  TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/"; 
+  //TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/"; 
+  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree/"; 
 
   int iMass = abs(mass);       
   /*
@@ -361,8 +362,8 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 void AddBkgData(RooWorkspace* w) {
 
   //TString inDir   = "./MiniTrees/Data_VV/";
-  //TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSBTree_mWW_Type2_corrected/"; 
-  TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/"; 
+  //TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/"; 
+  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree/"; 
 
   //TFile dataFile(inDir+"dijetWtag_Moriond_Mar6_miniTree.root");   
   TFile dataFile(inDir+"treeEDBR_data_xww.root");   
@@ -534,13 +535,14 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
   RooBernstein* MggBkg[NCAT];
   RooFitResult* fitresult[NCAT];;
   RooPlot* plotMggBkg[NCAT];
+  RooPlot* plotMggBkgPull[NCAT];
+  RooHist* histMggBkgPull[NCAT];
 
   // dobands and dosignal
   RooDataSet* signal[NCAT];
   RooAbsPdf*  MggSig[NCAT];
 
-
-  Float_t minMassFit(MMIN),maxMassFit(MMAX); 
+  Float_t minMassFit(MMIN),maxMassFit(MMAX),BinSizePlot(BINSIZEPLOT); 
 
   // Fit data with background pdf for data limit
 
@@ -557,7 +559,13 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     //parameter 3 set to constant            
     ((RooRealVar*) w->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c)))->setConstant(true);
     cout << "---------------- Parameter 3 set to const" << endl;
-    
+
+    /*
+    ((RooRealVar*) w->var(TString::Format("mgg_bkg_8TeV_slope2_cat%d",c)))->setVal(0); 
+    ((RooRealVar*) w->var(TString::Format("mgg_bkg_8TeV_slope2_cat%d",c)))->setConstant(true);
+    cout << "---------------- Parameter 2 set to const" << endl;    
+    */
+
     RooFormulaVar *p1mod = new RooFormulaVar(TString::Format("p1mod_cat%d",c),"","@0",*w->var(TString::Format("mgg_bkg_8TeV_slope1_cat%d",c)));
     RooFormulaVar *p2mod = new RooFormulaVar(TString::Format("p2mod_cat%d",c),"","@0",*w->var(TString::Format("mgg_bkg_8TeV_slope2_cat%d",c)));
     RooFormulaVar *p3mod = new RooFormulaVar(TString::Format("p3mod_cat%d",c),"","@0",*w->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c)));
@@ -593,24 +601,124 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     //****************************//
 
     TCanvas* ctmp = new TCanvas("ctmp","M(VV) Background Categories",0,0,500,500);
-    Int_t nBinsMass(20);
+
+    TPad* fPads1 = NULL;
+    TPad* fPads2 = NULL;
+
+    fPads1 = new TPad("pad1", "", 0.00, 0.33, 0.99, 0.99);
+    fPads2 = new TPad("pad2", "", 0.00, 0.00, 0.99, 0.30);
+
+    fPads1->SetFillColor(0);
+    fPads1->SetLineColor(0);
+    fPads2->SetFillColor(0);
+    fPads2->SetLineColor(0);
+    fPads1->Draw();
+    fPads2->Draw();
+
+    //---- pad1
+    fPads1->cd();
+    fPads1->SetLogy() ;
+    gPad->SetLeftMargin(0.15) ;
+
+    Int_t nBinsMass( int( (maxMassFit-minMassFit)/BinSizePlot) );
     plotMggBkg[c] = mgg->frame(nBinsMass);
+    plotMggBkg[c]->GetXaxis()->SetTitle("m_{WW} [GeV]");
+    plotMggBkg[c]->GetYaxis()->SetTitleOffset(0.8);
+    plotMggBkg[c]->GetYaxis()->SetTitleSize(0.06);
+    plotMggBkg[c]->GetXaxis()->SetTitleSize(0.06);
+    plotMggBkg[c]->SetTitle("");
 
-    //data[c]->plotOn(plotMggBkg[c],LineColor(kWhite),MarkerColor(kWhite)); //not needed?
     data[c]->plotOn(plotMggBkg[c]);    
-    data[c]->statOn(plotMggBkg[c]) ;
+    //data[c]->statOn(plotMggBkg[c]) ;
+    data[c]->statOn(plotMggBkg[c],"N","",2,"NELU",0.66797,0.86551,0.864278) ;
     MggBkgTmp.plotOn(plotMggBkg[c],LineColor(kBlue),Range("fitrange"),NormRange("fitrange")); 
-    MggBkgTmp.paramOn(plotMggBkg[c],data[c],"",2,"NELU",0.356855,0.877016,0.741525);
-    plotMggBkg[c]->Draw();
+    MggBkgTmp.paramOn(plotMggBkg[c],data[c],"",2,"NELU", 0.413408,0.887911,0.784027);
     plotMggBkg[c]->SetMinimum(0.1);    
+    plotMggBkg[c]->SetMaximum(1000);    
+    
+    /*
+    //modify statbox and fitbox
+    TString StatBoxName = TString::Format("Data_cat%d_statBox",c);
+    cout << "StatBoxName : " << StatBoxName << endl;
+    //gPad->Update();
+    TPaveStats *StatBox = (TPaveStats*)fPads1->FindObject(StatBoxName.Data());
+    StatBox->SetLineColor(0);
+    StatBox->SetTextAlign(32);
+    StatBox->SetTextSize(0.0353107);
+    StatBox->SetX1NDC(0.175138);
+    StatBox->SetX2NDC(0.681305);
+    StatBox->SetY1NDC(0.374715);
+    StatBox->SetY2NDC(0.861068);
+    StatBox->SetMargin(0.05);
+    */    
 
-    Double_t chi2 = plotMggBkg[c]->chiSquare(3);
+    plotMggBkg[c]->Draw();
+
+    Double_t chi2 = plotMggBkg[c]->chiSquare(2);
     char Chi2Text[55]; 
-    sprintf(Chi2Text,"Chi2/ndf = %f",chi2); 
-    TLatex *texf = new TLatex( 2190.32,8.70607,Chi2Text);
+    sprintf(Chi2Text,"#chi^{2}/ndf = %f",chi2); 
+    TLatex *texf = new TLatex(2975.49,21.3163,Chi2Text);
+    texf->SetTextAlign(32);
+    texf->SetTextSize(0.0353107);
     texf->Draw();
+    //----
 
-    ctmp->SetLogy();
+    //---- pad2
+    fPads2->cd();
+    fPads2->SetGridx();
+    fPads2->SetGridy();
+    gPad->SetLeftMargin(0.15) ;
+
+    // Construct a histogram with the pulls of the data w.r.t the curve
+    histMggBkgPull[c] = plotMggBkg[c]->pullHist() ;
+
+    // Create a new frame to draw the pull distribution and add the distribution to the frame
+    plotMggBkgPull[c] = mgg->frame(nBinsMass) ;
+    plotMggBkgPull[c]->GetXaxis()->SetTitle("");
+    plotMggBkgPull[c]->GetYaxis()->SetTitle("#frac{data - fit}{#sigma}      ");
+    plotMggBkgPull[c]->GetYaxis()->SetTitleOffset(0.4);
+    plotMggBkgPull[c]->GetYaxis()->SetTitleSize(0.12);
+    plotMggBkgPull[c]->SetTitle("");
+    plotMggBkgPull[c]->addPlotable(histMggBkgPull[c],"P") ;
+    plotMggBkgPull[c]->SetMinimum(-3);    
+    plotMggBkgPull[c]->SetMaximum(3);    
+
+    //modify statbox and fitbox
+    TString ParamBoxName = TString::Format("MggBkg_cat%d_paramBox",c);
+    cout << "ParamBoxName : " << ParamBoxName << endl;
+    //gPad->Update();
+    TPaveStats *ParamBox = (TPaveStats*)fPads1->FindObject(ParamBoxName.Data());
+    ParamBox->SetLineColor(0);
+    ParamBox->SetTextAlign(32);
+    ParamBox->SetTextSize(0.0353107);
+    ParamBox->SetX1NDC(0.370642);
+    ParamBox->SetX2NDC(0.681305);
+    ParamBox->SetY1NDC(0.889948);
+    ParamBox->SetY2NDC(0.861068);
+    ParamBox->SetMargin(0.05);
+
+
+    plotMggBkgPull[c]->Draw();
+
+    //lines
+    TLine* lineAtZero = NULL; 
+    TLine* lineAtPlusTwo = NULL; 
+    TLine* lineAtMinusTwo = NULL; 
+
+    lineAtZero = new TLine(plotMggBkgPull[c]->GetXaxis()->GetXmin(),0,plotMggBkgPull[c]->GetXaxis()->GetXmax(),0);
+    lineAtZero->SetLineColor(2);
+    lineAtZero->Draw();
+    lineAtPlusTwo = new TLine(plotMggBkgPull[c]->GetXaxis()->GetXmin(),2,plotMggBkgPull[c]->GetXaxis()->GetXmax(),2);
+    lineAtPlusTwo->SetLineColor(2);
+    lineAtPlusTwo->SetLineStyle(2);
+    lineAtPlusTwo->Draw();
+    lineAtMinusTwo = new TLine(plotMggBkgPull[c]->GetXaxis()->GetXmin(),-2,plotMggBkgPull[c]->GetXaxis()->GetXmax(),-2);
+    lineAtMinusTwo->SetLineColor(2);
+    lineAtMinusTwo->SetLineStyle(2);
+    lineAtMinusTwo->Draw();
+
+    //----
+
     ctmp->SaveAs(TString::Format("plots/FitBackground_cat%d.png",c));
     ctmp->SaveAs(TString::Format("plots/FitBackground_cat%d.root",c));
 
