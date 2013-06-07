@@ -90,6 +90,10 @@ Dijet-like fit
     plot_golfcourse_Asymptotic(true) [unblind data]      
     plot_golfcourse_Asymptotic(false) [blind data]      
 
+6) Plot significance
+  
+  ......
+
 --------------------------------------------------------------------------------------
 
 
@@ -97,11 +101,13 @@ Dijet-like fit
 
     - the mass variable must be called "mZZ" (or substitute in many places in the code)
     - NCAT
-    - MMIN, MMAX
+    - MMIN, MMAX (should be consistent with range defined in **** below)
+    - BINSIZEPLOT 
+    - decide the mVV range in 
     - defineVariables
     - TString fileBaseName(TString::Format("Xvv.mX%d_ZZ_8TeV"
     - TString fileBkgName(TString::Format("Xvv.inputbkg_8TeV"
-    - TString card_name("Xvv_models_Bkg_8TeV_test.rs");
+    - TString card_name("Xvv_models_Bkg_8TeV_test.rs");  ****
     - AddSigData 
       - TString inDir
       - TFile sigFile1
