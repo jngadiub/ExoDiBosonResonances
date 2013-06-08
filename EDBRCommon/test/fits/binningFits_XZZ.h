@@ -10,6 +10,6 @@ const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
 			    1000,1100,1250,1400};
 
 
-const double startFit = 600.0;
+const double startFit = 500.0;
 
 #endif

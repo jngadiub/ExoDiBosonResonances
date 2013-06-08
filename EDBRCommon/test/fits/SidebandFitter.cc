@@ -188,7 +188,7 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
   h1_alpha_smooth->SetMarkerStyle(20);
   h1_alpha->SetMarkerStyle(20);
   h1_alpha->SetMarkerColor(kGreen);
- // gStyle->SetOptFit(1111);
+  // gStyle->SetOptFit(1111);
   h1_alpha->Draw("F");
   h1_alpha_smooth->Draw("Fsames");
   fpol0->SetLineColor(kMagenta);
@@ -227,7 +227,7 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
   ///// fit the MC histos in sig and sb region, make ratios of fits,
   ///// use this analytical ratio as scaling factor for extrapolation 
 
- //fill a RooDataHist from the TH1D; the errors will be the proper ones
+  //fill a RooDataHist from the TH1D; the errors will be the proper ones
   double minMZZ=bins1[0];
   rangecut_=binpointer[nb];
   //  RooRealVar *mZZ = new RooRealVar("mZZ", "m_{ZZ}", mZZmin_, mZZmax_, "GeV");
@@ -278,7 +278,7 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
     //for levelled exponential
     RooRealVar *f0_SIG=new RooRealVar("f0_SIG","sigma_SIG",30,0.0,300.0);
     RooRealVar *f1_SIG=new RooRealVar("f1_SIG","alpha_SIG",0.0,-0.5,2.0);
-    RooRealVar *f2_SIG=new RooRealVar("f2_SIG","m_SIG",560,200.0,500.0);
+    RooRealVar *f2_SIG=new RooRealVar("f2_SIG","m_SIG",480,200.0,500.0);
     RooRealVar *f3_SIG=new RooRealVar("f3_SIG","theta_SIG",0.0);
     f2_SIG->setConstant(kTRUE);
     f3_SIG->setConstant(kTRUE);
@@ -294,7 +294,7 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
     RooRealVar *f0_SB=new RooRealVar("f0_SB","sigma_SB",30,0.0,300.0);
     RooRealVar *f1_SB=new RooRealVar("f1_SB","alpha_SB",0.0,-0.5,2.0);
     RooRealVar *f1b_SB=new RooRealVar("f1b_SB","beta_SB",0.0,-0.5,2.0);
-    RooRealVar *f2_SB=new RooRealVar("f2_SB","m_SB",560,200.0,500.0);
+    RooRealVar *f2_SB=new RooRealVar("f2_SB","m_SB",480,200.0,500.0);
     RooRealVar *f3_SB=new RooRealVar("f3_SB","theta_SB",0.0);
     f2_SB->setConstant(kTRUE);
     f3_SB->setConstant(kTRUE);
@@ -377,19 +377,19 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
     double alpha_fit_SIG=slope_SIG->getVal();
     double alpha_fit_SB=slope_SB->getVal();
     double alpha_fit_ratio=alpha_fit_SIG/alpha_fit_SB;
-    double alpha_hist_int=h1_alpha_smooth->Integral(h1_alpha_smooth->FindBin(600.0),h1_alpha_smooth->FindBin(rangecut_));
-    cout<<"Ratio of exponential fits: SIG_slope="<<alpha_fit_SIG<<"  SB_slope="<<alpha_fit_SB<<"  Sig/SB="<<alpha_fit_ratio<<"  Integral of ratio in [600,"<<rangecut_<<"]="<<alpha_hist_int <<endl;
+    double alpha_hist_int=h1_alpha_smooth->Integral(h1_alpha_smooth->FindBin(startFit),h1_alpha_smooth->FindBin(rangecut_));
+    cout<<"Ratio of exponential fits: SIG_slope="<<alpha_fit_SIG<<"  SB_slope="<<alpha_fit_SB<<"  Sig/SB="<<alpha_fit_ratio<<"  Integral of ratio in ["<<startFit<<","<<rangecut_<<"]="<<alpha_hist_int <<endl;
     /*
-    double tmpintegral=0.0;
-    for(int tmpbin=1;tmpbin<=h1_alpha_smooth->GetNbinsX();tmpbin++){
+      double tmpintegral=0.0;
+      for(int tmpbin=1;tmpbin<=h1_alpha_smooth->GetNbinsX();tmpbin++){
       double tmpcont=h1_alpha_smooth->GetBinContent(tmpbin);
       if(h1_alpha_smooth->GetBinCenter(tmpbin)<600.0)continue;
       tmpintegral+=tmpcont;
-    }
-    cout<<"Same Integral calculated by hand: "<<tmpintegral<<endl;
+      }
+      cout<<"Same Integral calculated by hand: "<<tmpintegral<<endl;
     */
 
-    TF1 *fitExpoRatio=new TF1("ratio_fit_expo","[0]*expo(1)",600.0, rangecut_);
+    TF1 *fitExpoRatio=new TF1("ratio_fit_expo","[0]*expo(1)",startFit, rangecut_);
     fitExpoRatio->FixParameter(1,0.0);
     fitExpoRatio->FixParameter(2,(alpha_fit_SIG-alpha_fit_SB));
     fitExpoRatio->SetLineColor(kMagenta);
@@ -428,10 +428,10 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
     cout<<"\n\n\n\nNORMALIZATIONS "<<nxjCategory<<"-jets : SIG="<<mcSigNorm<<" ("<<h1_mZZ_signalRegion.GetEntries()<<")      SB="<< mcSBNorm<<" ("<<h1_mZZ_sidebands.GetEntries()<<")   Ratio="<<rNorm<<std::endl<<std::endl<<std::endl<<std::endl;
     
     for(int ib=1;ib<=h1_funcRatio->GetNbinsX();ib++){
-      mZZ.setVal(h1_funcRatio->GetBinCenter(ib));   
-      double sigval=bkgd_fit_SIG->getVal();
-      double sbval=bkgd_fit_SB->getVal();
-      h1_funcRatio->SetBinContent(ib,rNorm*(sigval/sbval) );
+    mZZ.setVal(h1_funcRatio->GetBinCenter(ib));   
+    double sigval=bkgd_fit_SIG->getVal();
+    double sbval=bkgd_fit_SB->getVal();
+    h1_funcRatio->SetBinContent(ib,rNorm*(sigval/sbval) );
     }
     h1_funcRatio->Draw("sames");
     */
@@ -468,10 +468,10 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
 
     delete bkgd_fit_SIG; delete expLev_fit_SIG; 
     delete bkgd_fit_SB; delete expLev_fit_SB;delete expLev_fit_SBinv;delete ratioFit2;
-     delete xf2; delete xfRatio;
+    delete xf2; delete xfRatio;
 
-     delete mcSBDSet;
-     delete mcSigDSet;
+    delete mcSBDSet;
+    delete mcSigDSet;
   }//end if with roofit
   cout<<"\n\nContinuing..."<<std::endl;
   
@@ -646,53 +646,53 @@ TH1D* SidebandFitter::DivideAndSmoothAlphaHist( TH1D hnum, TH1D hden,TH1D &halph
 
 
   /******
-  //ok, now we have a ratio that has a value for all bins.
-  //some bins might be at zero or be outliers. Smooth them.
-  const  int nbins=hfin->GetNbinsX();
-  for(int b=1;b<=nbins;b++){
-    double bincont=0.0,bincontM=0.0,bincontP=0.0;
-    double binerr=0.0,binerrM=0.0,binerrP=0.0;
+   //ok, now we have a ratio that has a value for all bins.
+   //some bins might be at zero or be outliers. Smooth them.
+   const  int nbins=hfin->GetNbinsX();
+   for(int b=1;b<=nbins;b++){
+   double bincont=0.0,bincontM=0.0,bincontP=0.0;
+   double binerr=0.0,binerrM=0.0,binerrP=0.0;
     
-    bincont=hfin->GetBinContent(b);
-    binerr=hfin->GetBinError(b);
+   bincont=hfin->GetBinContent(b);
+   binerr=hfin->GetBinError(b);
 
-    if(b>1){
-      bincontM=hfin->GetBinContent(b-1);
-      binerrM=hfin->GetBinError(b-1);
-    }
-    else{
-      bincontM=bincont;
-      binerrM=binerr;
-    }
+   if(b>1){
+   bincontM=hfin->GetBinContent(b-1);
+   binerrM=hfin->GetBinError(b-1);
+   }
+   else{
+   bincontM=bincont;
+   binerrM=binerr;
+   }
 
-    if(b<nbins){
-      bincontP=hfin->GetBinContent(b+1);
-      binerrP=hfin->GetBinError(b+1);
-    }
-    else{
-      bincontP=hfin->GetBinContent(b-2);
-      binerrP=hfin->GetBinError(b-2);
-    }
+   if(b<nbins){
+   bincontP=hfin->GetBinContent(b+1);
+   binerrP=hfin->GetBinError(b+1);
+   }
+   else{
+   bincontP=hfin->GetBinContent(b-2);
+   binerrP=hfin->GetBinError(b-2);
+   }
 
-    if(b==1&&(bincont==0||binerr==0)){
-      std::cout<<"ERROR from SidebandFitter::DivideAndSmoothAlphaHist : first bin of alpha ratio equals zero. Exiting with a copy of the input alpha histo."<<std::endl;  
-      return hfin;
-    }
+   if(b==1&&(bincont==0||binerr==0)){
+   std::cout<<"ERROR from SidebandFitter::DivideAndSmoothAlphaHist : first bin of alpha ratio equals zero. Exiting with a copy of the input alpha histo."<<std::endl;  
+   return hfin;
+   }
 
-    double avgRef=(bincontM+bincontP) / 2.0;
-    double errRef=sqrt(binerrM*binerrM + binerrP*binerrP);
-    double sigma=min(binerr, errRef);
-    //smooth if bin is >= 3 sigma away; assign large uncertainty
-    if(fabs(bincont-avgRef)/sigma >=3.0  &&bincont!=0){
-      bincont=avgRef;
-      binerr=errRef;
+   double avgRef=(bincontM+bincontP) / 2.0;
+   double errRef=sqrt(binerrM*binerrM + binerrP*binerrP);
+   double sigma=min(binerr, errRef);
+   //smooth if bin is >= 3 sigma away; assign large uncertainty
+   if(fabs(bincont-avgRef)/sigma >=3.0  &&bincont!=0){
+   bincont=avgRef;
+   binerr=errRef;
 
-      hfin->SetBinContent(b,bincont);
-      hfin->SetBinError(b,binerr);
-    }
+   hfin->SetBinContent(b,bincont);
+   hfin->SetBinError(b,binerr);
+   }
 
 
-  }//end loop on ib -> bins
+   }//end loop on ib -> bins
   ****/
 
 
@@ -751,7 +751,7 @@ int SidebandFitter::smoothHist(TH1 &h, bool forceCorrZero,int smoothLevel){
       while(b-i2>0 && bincontM==0){
 	bincontM=h.GetBinContent(b-i2);
 	binerrM=h.GetBinError(b-i2);
-	  i2++;
+	i2++;
       }
     }
     if(bincontP==0){//mmmh, I put this safety but it looks strange...
@@ -794,7 +794,7 @@ int SidebandFitter::smoothHist(TH1 &h, bool forceCorrZero,int smoothLevel){
       if(fabs(bincont-avgRef)/sigma >=3.0  &&bincont!=0){
 	bincont=avgRef;
 	binerr=errRef;
-	  cout<<"Changing bin to "<<h.GetName() <<" ! b: "<<b<<"  New Val="<<avgRef<<" +/- "<<errRef<<endl;
+	cout<<"Changing bin to "<<h.GetName() <<" ! b: "<<b<<"  New Val="<<avgRef<<" +/- "<<errRef<<endl;
 	h.SetBinContent(b,bincont);
 	h.SetBinError(b,binerr);
       }
