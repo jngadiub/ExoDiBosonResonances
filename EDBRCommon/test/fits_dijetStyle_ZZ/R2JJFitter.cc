@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.1 2013/05/07 08:11:51 tomei Exp $
+ * $Id: R2JJFitter.cc,v 1.3 2013/04/27 13:34:27 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -122,7 +122,6 @@ static const Double_t MMAX = 2500;
 void AddSigData(RooWorkspace*, Float_t);
 void AddBkgData(RooWorkspace*);
 void SigModelFit(RooWorkspace*, Float_t);
-void SigModelSet(RooWorkspace*, double*, int);
 RooFitResult*  BkgModelFitBernstein(RooWorkspace*, Bool_t);
 void MakePlots(RooWorkspace*, Float_t, RooFitResult* , bool);
 void MakeSigWS(RooWorkspace* w, const char* filename);
@@ -237,18 +236,7 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
   /// Why we need the SIGNAL here???
   //TFile sigFile1(inDir+TString(Form("treeEDBR_BulkG_WW_lvjj_c0p2_M%d_xww.root", iMass)));
   //EXOVVTree_BulkG_ZZ_lljj_c0p2_M1700_SIG_NOcut.root
- 
-  /// A bit of workaround. I don't want to change the inner workings of the script.
-  /// If we're dealing with a mass point for which we have no MC... we just open another file
-  int iMassOfFileToOpen; 
-  if(iMass%100 == 0) 
-    iMassOfFileToOpen=iMass;
-  else
-    iMassOfFileToOpen=(iMass-iMass%100);
-      
-  cout << "iMassOfFileToOpen = " << iMassOfFileToOpen << endl;
-
-  TFile sigFile1(inDir+TString(Form("EXOVVTree_BulkG_ZZ_lljj_c0p2_M%d_SIG_NOcut.root", iMassOfFileToOpen)));
+  TFile sigFile1(inDir+TString(Form("EXOVVTree_BulkG_ZZ_lljj_c0p2_M%d_SIG_NOcut.root", iMass)));
   
   /*
   if (!isWW) {
@@ -492,60 +480,7 @@ void AddBkgData(RooWorkspace* w) {
 
 }
 
-void ReadFromFile(ifstream& myfile, double* params) {
-  /* File structure
-     mean_match =  606.57 +/- 254.58 L(400 - 800) 
-     sigma_match =  22.978 +/- 48.225 L(20 - 70) 
-     width_match =  1.0000 L(0 - 1000) 
-     mean_unmatch =  600.00 C L(200 - 1500) 
-     sigma_unmatch =  30.000 C L(1 - +INF) 
-     alpha_unmatch =  1.0000 C L(-INF - +INF) 
-     n_unmatch =  0.30000 C L(0 - 20) 
-     machfrac =  0.99900 C L(0 - 1) 
-     alpha1_match =  2.2912 +/- 2.5776 L(0.01 - 5) 
-     n1_match =  1.7910 +/- 5.4302 L(0 - 10) 
-     alpha2_match =  2.3328 +/- 3.1736 L(0.01 - 5) 
-     n2_match =  1.8134 +/- 7.7558 L(0 - 10) 
-  */
-    string line; // Line of the input file
-    string buf; // Have a buffer string
-    stringstream ss; // Insert the string into a stream
-    double value;
-    if (myfile.is_open()) {
-      // Ok, file is open.
-      getline (myfile,line); /// mean_match
-      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[0]=value;
-      getline (myfile,line); /// sigma_match
-      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[1]=value;
-      getline (myfile,line); /// width_match (discard)
-      getline (myfile,line); /// mean_unmatch (discard)
-      getline (myfile,line); /// sigma_unmatch (discard)
-      getline (myfile,line); /// alpha_unmatch (discard)
-      getline (myfile,line); /// n_unmatch (discard)
-      getline (myfile,line); /// machfrac (discard)
-      getline (myfile,line); /// alpha1_match
-      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[2]=value;
-      getline (myfile,line); /// n1_match
-      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[3]=value;
-      getline (myfile,line); /// alpha2_match
-      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[4]=value;
-      getline (myfile,line); /// n2_match
-      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[5]=value;
-    }
-    else {
-      printf("WHAT THE FLYING FUCK MY FILE IS NOT OPEN!!!\n");
-    }
-    myfile.close();  
-}
 
-void SigModelSet(RooWorkspace* w, double* params, int c) {
-  w->var(TString::Format("mgg_sig_m0_cat%d",c))->setVal(params[0]);
-  w->var(TString::Format("mgg_sig_sigma_cat%d",c))->setVal(params[1]);
-  w->var(TString::Format("mgg_sig_alpha1_cat%d",c))->setVal(params[2]);
-  w->var(TString::Format("mgg_sig_n1_cat%d",c))->setVal(params[3]);
-  w->var(TString::Format("mgg_sig_alpha2_cat%d",c))->setVal(params[4]);
-  w->var(TString::Format("mgg_sig_n2_cat%d",c))->setVal(params[5]);
-}
 
 void SigModelFit(RooWorkspace* w, Float_t mass) {
 
@@ -594,45 +529,58 @@ void SigModelFit(RooWorkspace* w, Float_t mass) {
 
     /// Let's read from the file!
     /// There SHOULD be a smarter way to do this....
-    /// First: do we actually have a file for this?
-    int iMass = (int)MASS;
-    bool weHaveAFileForThis = ((iMass%100)==0);
+    string line;
+    ifstream myfile(TString::Format("../fits/shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",
+				    (int)MASS,
+				    nxj,
+				    leptType_str.c_str()));
     
-    if(weHaveAFileForThis) {
-      /// Ok, open and read the file
-      double params[6];
-      ifstream myfile(TString::Format("../fits/shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",
-				      iMass,
-				      nxj,
-				      leptType_str.c_str()));
-      ReadFromFile(myfile, params);
-      SigModelSet(w, params, c);
-    }  
-    else {
-      cout << "Try to interpolate" << endl;
-      /// Ok, open the two neighbouring files and average the values (LOL?)
-      double params[6];
-      double paramslow[6];
-      double paramshigh[6];
-      int lowTag = iMass-50;
-      int highTag = iMass+50;
-      ifstream myfileLow(TString::Format("../fits/shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",
-					 lowTag,
-					 nxj,
-					 leptType_str.c_str()));
-      ifstream myfileHigh(TString::Format("../fits/shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",
-					  highTag,
-					  nxj,
-					  leptType_str.c_str()));
-      ReadFromFile(myfileLow, paramslow);
-      ReadFromFile(myfileHigh, paramshigh);
-      for(int ii=0; ii!=6; ++ii) {
-	params[ii] = (paramslow[ii]+paramshigh[ii])/2.0;
-      }
-      SigModelSet(w, params, c);
+    /* File structure
+     mean_match =  606.57 +/- 254.58 L(400 - 800) 
+     sigma_match =  22.978 +/- 48.225 L(20 - 70) 
+     width_match =  1.0000 L(0 - 1000) 
+     mean_unmatch =  600.00 C L(200 - 1500) 
+     sigma_unmatch =  30.000 C L(1 - +INF) 
+     alpha_unmatch =  1.0000 C L(-INF - +INF) 
+     n_unmatch =  0.30000 C L(0 - 20) 
+     machfrac =  0.99900 C L(0 - 1) 
+     alpha1_match =  2.2912 +/- 2.5776 L(0.01 - 5) 
+     n1_match =  1.7910 +/- 5.4302 L(0 - 10) 
+     alpha2_match =  2.3328 +/- 3.1736 L(0.01 - 5) 
+     n2_match =  1.8134 +/- 7.7558 L(0 - 10) 
+    */
+    
+    string buf; // Have a buffer string
+    stringstream ss; // Insert the string into a stream
+    double value;
+    if (myfile.is_open()) {
+      getline (myfile,line); /// mean_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); w->var(TString::Format("mgg_sig_m0_cat%d",c))->setVal(value);
+      getline (myfile,line); /// sigma_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); w->var(TString::Format("mgg_sig_sigma_cat%d",c))->setVal(value);
+      getline (myfile,line); /// width_match (discard)
+      getline (myfile,line); /// mean_unmatch (discard)
+      getline (myfile,line); /// sigma_unmatch (discard)
+      getline (myfile,line); /// alpha_unmatch (discard)
+      getline (myfile,line); /// n_unmatch (discard)
+      getline (myfile,line); /// machfrac (discard)
+      getline (myfile,line); /// alpha1_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); w->var(TString::Format("mgg_sig_alpha1_cat%d",c))->setVal(value);
+      getline (myfile,line); /// n1_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); w->var(TString::Format("mgg_sig_n1_cat%d",c))->setVal(value);
+      getline (myfile,line); /// alpha2_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); w->var(TString::Format("mgg_sig_alpha2_cat%d",c))->setVal(value);
+      getline (myfile,line); /// n2_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); w->var(TString::Format("mgg_sig_n2_cat%d",c))->setVal(value);
     }
+    myfile.close();
     
-    
+    printf("=== Reading from file: ===\n");
+    cout << TString::Format("../fits/shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",
+			    (int)MASS,
+			    nxj,
+			    leptType_str.c_str()) << endl;
+      
     //MggSig[c]     ->fitTo(*sigToFit[c],Range(minMassFit,maxMassFit),SumW2Error(kTRUE));
     printf("We are in SigModelFit, c = %i\n",c);
     /// This is the fit we DON'T want to do...
