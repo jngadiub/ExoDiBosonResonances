@@ -18,8 +18,8 @@ fi
 #-----------------------------------------------------------------
 #EDIT HERE
 
-#DIR="output_EXOZZ_Asymptotic_comb_xzz"
-DIR="output_EXOZZ_Asymptotic_comb_xzz_2l1JELELP"
+DIR="output_EXOZZ_Asymptotic_comb_xzz"
+#DIR="output_EXOZZ_Asymptotic_comb_xzz_2l1JELELP"
 LISTFILES_EXP=""
 LISTFILES_OBS=""
 LISTFILES_ASYMPT=""
