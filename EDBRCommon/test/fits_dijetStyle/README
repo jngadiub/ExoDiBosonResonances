@@ -10,11 +10,13 @@ Dijet-like fit
      is uploaded and compiled. 
      See https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggsAnalysisCombinedLimit 
      NOTE: the following code has been tested in CMSSW_5_3_3_patch3 and CMSSW_5_3_7
+     NOTE1: need to load lib (see below under R2JJFitter.cc)
 
 1) Make fits and workspaces
 
   - Edit : R2JJFitter.cc
     - Details at [1]    
+    - need to load gSystem->Load("$CMSSW_BASE/lib/slc5_amd64_gcc462/libHiggsAnalysisCombinedLimit.so");
 
   - Edit : ProduceWorkspaces_local.py
     - mass range
@@ -108,6 +110,9 @@ Dijet-like fit
     - TString fileBaseName(TString::Format("Xvv.mX%d_ZZ_8TeV"
     - TString fileBkgName(TString::Format("Xvv.inputbkg_8TeV"
     - TString card_name("Xvv_models_Bkg_8TeV_test.rs");  ****
+    - ReadFromFile 
+      - the file structure should be consistent with the ones used at:  
+        http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/ExoDiBosonResonances/EDBRCommon/test/fits/shape/pars/outpars_BulkG_WW_lvjj_c0p2_M1600_xww_1J_LP_ELE.config?revision=1.1&view=markup (example of WW)
     - AddSigData 
       - TString inDir
       - TFile sigFile1
@@ -121,9 +126,18 @@ Dijet-like fit
       - TTree* dataTree  
       - LumForBkg   
       - IMPORTANT: change lines of code depending if you use real data (no weight) or MC (weighted to LumForBkg)
+    - SigModelFit 
+      - ifstream myfile(TString::Format("../fits/shape/pars/outpars_BulkG_WW_lvjj_c0p2_M1000_xww_%dJ__ELE.config",
+        - nxj , leptType_str (if one changes the category definition)      
+      - bool weHaveAFileForThis = ((iMass%100)==0) , int lowTag = iMass-50; int highTag = iMass+50; etc..  
+        is hardcoded (specific for X-->ZZ). 
+        If you provide the mass values for which you do have files, you never call this part of the code. 
+      - bool redoFit = false; --> leave it false if you read from an other file with the shapes
     - BkgModelFitBernstein
       - decide fit function
       - PAR3 constant? ((RooRealVar*) w->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c)))->setConstant(true); 
+    - MakeBkgWS
+      - wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,%g,%g]", c, mean, mean, mean)); //P3 fixed
     - MakeDataCard_1Channel
       - ScaleFactorSignal
 

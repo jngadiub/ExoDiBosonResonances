@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.4 2013/05/06 18:57:25 santanas Exp $
+ * $Id: R2JJFitter.cc,v 1.6 2013/06/07 15:16:45 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -111,6 +111,7 @@
 //#include "HiggsCSandWidth.cc"
 //#include "RooPower.h"
 
+#include <sstream>
 using namespace RooFit;
 using namespace RooStats ;
 
@@ -118,10 +119,13 @@ static const Int_t NCAT = 4;
 static const Double_t MMIN = 800;
 static const Double_t MMAX = 3100;
 static const Double_t BINSIZEPLOT = 50; //GeV
+static const Double_t BINSIZEPLOTSIGNAL = 10; //GeV
 
 void AddSigData(RooWorkspace*, Float_t);
 void AddBkgData(RooWorkspace*);
+void ReadFromFile(ifstream& , double* );
 void SigModelFit(RooWorkspace*, Float_t);
+void SigModelSet(RooWorkspace* , double* , int );
 RooFitResult*  BkgModelFitBernstein(RooWorkspace*, Bool_t);
 void MakePlots(RooWorkspace*, Float_t, RooFitResult* , bool);
 void MakeSigWS(RooWorkspace* w, const char* filename);
@@ -172,6 +176,7 @@ void runfits(const Float_t mass=1000, bool isWW = true, Bool_t dobands = false)
   TString card_name("Xvv_models_Bkg_8TeV_test.rs");
   HLFactory hlf("HLFactory", card_name, false);
   RooWorkspace* w = hlf.GetWs();
+
   RooFitResult* fitresults;
 
   // Add data to the workspace
@@ -216,7 +221,21 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
   }
   */                     
 
-  TFile sigFile1(inDir+TString(Form("treeEDBR_BulkG_WW_lvjj_c0p2_M%d_xww.root", iMass)));
+  /// A bit of workaround. I don't want to change the inner workings of the script.
+  /// If we're dealing with a mass point for which we have no MC... we just open another file
+  int iMassOfFileToOpen; 
+  if(iMass%100 == 0) 
+    iMassOfFileToOpen=iMass;
+  else
+    iMassOfFileToOpen=(iMass-iMass%100);
+      
+  cout << "iMassOfFileToOpen = " << iMassOfFileToOpen << endl;
+
+  //== ZZ
+  //TFile sigFile1(inDir+TString(Form("EXOVVTree_BulkG_ZZ_lljj_c0p2_M%d_SIG_NOcut.root", iMassOfFileToOpen)));
+  //== WW
+  TFile sigFile1(inDir+TString(Form("treeEDBR_BulkG_WW_lvjj_c0p2_M%d_xww.root", iMassOfFileToOpen)));
+  //TFile sigFile1(inDir+TString(Form("treeEDBR_BulkG_WW_lvjj_c0p2_M%d_xww.root", iMass)));
 
   /*
   if (!isWW) {
@@ -435,6 +454,60 @@ void AddBkgData(RooWorkspace* w) {
 }
 
 
+void ReadFromFile(ifstream& myfile, double* params) {
+  /* File structure
+     mean_match =  606.57 +/- 254.58 L(400 - 800) 
+     sigma_match =  22.978 +/- 48.225 L(20 - 70) 
+     width_match =  1.0000 L(0 - 1000) 
+     mean_unmatch =  600.00 C L(200 - 1500) 
+     sigma_unmatch =  30.000 C L(1 - +INF) 
+     alpha_unmatch =  1.0000 C L(-INF - +INF) 
+     n_unmatch =  0.30000 C L(0 - 20) 
+     machfrac =  0.99900 C L(0 - 1) 
+     alpha1_match =  2.2912 +/- 2.5776 L(0.01 - 5) 
+     n1_match =  1.7910 +/- 5.4302 L(0 - 10) 
+     alpha2_match =  2.3328 +/- 3.1736 L(0.01 - 5) 
+     n2_match =  1.8134 +/- 7.7558 L(0 - 10) 
+  */
+    string line; // Line of the input file
+    string buf; // Have a buffer string
+    stringstream ss; // Insert the string into a stream
+    double value;
+    if (myfile.is_open()) {
+      // Ok, file is open.
+      getline (myfile,line); /// mean_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[0]=value;
+      getline (myfile,line); /// sigma_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[1]=value;
+      getline (myfile,line); /// width_match (discard)
+      getline (myfile,line); /// mean_unmatch (discard)
+      getline (myfile,line); /// sigma_unmatch (discard)
+      getline (myfile,line); /// alpha_unmatch (discard)
+      getline (myfile,line); /// n_unmatch (discard)
+      getline (myfile,line); /// machfrac (discard)
+      getline (myfile,line); /// alpha1_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[2]=value;
+      getline (myfile,line); /// n1_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[3]=value;
+      getline (myfile,line); /// alpha2_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[4]=value;
+      getline (myfile,line); /// n2_match
+      ss.str(line); ss >> buf; ss >> buf; ss >> buf; value = atof(buf.c_str()); params[5]=value;
+    }
+    else {
+      printf("WHAT THE FILE IS NOT OPEN!!!\n");
+    }
+    myfile.close();  
+}
+
+void SigModelSet(RooWorkspace* w, double* params, int c) {
+  w->var(TString::Format("mgg_sig_m0_cat%d",c))->setVal(params[0]);
+  w->var(TString::Format("mgg_sig_sigma_cat%d",c))->setVal(params[1]);
+  w->var(TString::Format("mgg_sig_alpha1_cat%d",c))->setVal(params[2]);
+  w->var(TString::Format("mgg_sig_n1_cat%d",c))->setVal(params[3]);
+  w->var(TString::Format("mgg_sig_alpha2_cat%d",c))->setVal(params[4]);
+  w->var(TString::Format("mgg_sig_n2_cat%d",c))->setVal(params[5]);
+}
 
 void SigModelFit(RooWorkspace* w, Float_t mass) {
 
@@ -449,7 +522,9 @@ void SigModelFit(RooWorkspace* w, Float_t mass) {
   RooDataSet* sigToFit[NCAT];
   RooAbsPdf* MggSig[NCAT];
 
-  Float_t minMassFit(MMIN),maxMassFit(MMAX); 
+  Float_t minMassFit(MMIN),maxMassFit(MMAX),BinSizePlotSignal(BINSIZEPLOTSIGNAL); 
+
+  Int_t nBinsMassSignal( int( (maxMassFit-minMassFit)/BinSizePlotSignal) );
 
   // Fit Signal 
   for (int c = 0; c < ncat; ++c) {
@@ -459,49 +534,130 @@ void SigModelFit(RooWorkspace* w, Float_t mass) {
     //    sigToFit[c]   = (RooDataSet*) w->data(TString::Format("Sig_cat%d",c));
     sigToFit[c]   = (RooDataSet*) w->data(TString::Format("SigWeight_cat%d",c));
     MggSig[c]     = (RooAbsPdf*)  w->pdf(TString::Format("MggSig_cat%d",c));
+    w->Print();
 
     ((RooRealVar*) w->var(TString::Format("mgg_sig_m0_cat%d",c)))->setVal(MASS);  
-    ((RooRealVar*) w->var(TString::Format("mgg_sig_gsigma_cat%d",c)))->setVal(MASS*0.1);  
+    //((RooRealVar*) w->var(TString::Format("mgg_sig_gsigma_cat%d",c)))->setVal(MASS*0.1);  ---> OLD
     ((RooRealVar*) w->var(TString::Format("mgg_sig_sigma_cat%d",c)))->setVal(MASS*0.1);  
     cout << "---------------- Peak Val = " << w->var(TString::Format("mgg_sig_m0_cat%d",c))->getVal() << " Mass = " << MASS << endl;
 
     //define a set with the parameters
     w->defineSet(TString::Format("SigPdfParam_cat%d",c), RooArgSet(*w->var(TString::Format("mgg_sig_m0_cat%d",c)),
 								   *w->var(TString::Format("mgg_sig_sigma_cat%d",c)),
+								   *w->var(TString::Format("mgg_sig_alpha1_cat%d",c)),
+								   *w->var(TString::Format("mgg_sig_n1_cat%d",c)), 
+								   *w->var(TString::Format("mgg_sig_alpha2_cat%d",c)),
+								   *w->var(TString::Format("mgg_sig_n2_cat%d",c))) );
+
+    /* OLD
+    w->defineSet(TString::Format("SigPdfParam_cat%d",c), RooArgSet(*w->var(TString::Format("mgg_sig_m0_cat%d",c)),
+								   *w->var(TString::Format("mgg_sig_sigma_cat%d",c)),
 								   *w->var(TString::Format("mgg_sig_alpha_cat%d",c)),
 								   *w->var(TString::Format("mgg_sig_n_cat%d",c)), 
 								   *w->var(TString::Format("mgg_sig_gsigma_cat%d",c)),
 								   *w->var(TString::Format("mgg_sig_frac_cat%d",c))) );
+								   */
 
     //read initial values from text file
     w->set(TString::Format("SigPdfParam_cat%d",c))->readFromFile(TString::Format("SigPdfParam/SigPdfParamLast_%d_cat%d.dat",(int)MASS,c));
+    //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
-    //MggSig[c]     ->fitTo(*sigToFit[c],Range(minMassFit,maxMassFit),SumW2Error(kTRUE));
-    MggSig[c]     ->fitTo(*sigToFit[c],Range( TMath::Max(minMassFit,MASS-2.5*MASS*0.1) , MASS+2.5*MASS*0.1 ),SumW2Error(kTRUE));
+
+    /// Let's read from the file!
+    /// There SHOULD be a smarter way to do this....
+    /// First: do we actually have a file for this?
+    int iMass = (int)MASS;
+    bool weHaveAFileForThis = ((iMass%100)==0);
+    int nxj = 1; /// We're doing the 1-jet case only.
+    std::string leptType_str = (c<2)?"ELE":"MU";
+ 
+    if(weHaveAFileForThis) {
+      /// Ok, open and read the file
+      cout << "Take parameters from the file" << endl;
+      double params[6];
+      ifstream myfile(TString::Format(//"../fits/shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",
+                                      "../fits/shape/pars/outpars_BulkG_WW_lvjj_c0p2_M%d_xww_%dJ__%s.config",
+				      iMass,
+				      nxj,
+				      leptType_str.c_str()));
+      ReadFromFile(myfile, params);
+      SigModelSet(w, params, c);
+    }  
+    else {
+      cout << "Try to interpolate" << endl;
+      /// Ok, open the two neighbouring files and average the values (LOL?)
+      double params[6];
+      double paramslow[6];
+      double paramshigh[6];
+      int lowTag = iMass-50;
+      int highTag = iMass+50;
+      /* ZZ
+      ifstream myfileLow(TString::Format("../fits/shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",
+					 lowTag,
+					 nxj,
+					 leptType_str.c_str()));
+      ifstream myfileHigh(TString::Format("../fits/shape/pars/outpars_BulkG_ZZ_lljj_c0p2_M%d_%dJ__%s.config",
+					  highTag,
+					  nxj,
+					  leptType_str.c_str()));
+      */
+
+      ifstream myfileLow(TString::Format("../fits/shape/pars/outpars_BulkG_WW_lvjj_c0p2_M%d_xww_%dJ__%s.config",
+					 lowTag,
+					 nxj,
+					 leptType_str.c_str()));
+      ifstream myfileHigh(TString::Format("../fits/shape/pars/outpars_BulkG_WW_lvjj_c0p2_M%d_xww_%dJ__%s.config",
+					  highTag,
+					  nxj,
+					  leptType_str.c_str()));
+      ReadFromFile(myfileLow, paramslow);
+      ReadFromFile(myfileHigh, paramshigh);
+      for(int ii=0; ii!=6; ++ii) {
+	params[ii] = (paramslow[ii]+paramshigh[ii])/2.0;
+      }
+      SigModelSet(w, params, c);
+    }
+
+    bool redoFit = false;
+    if(redoFit) {
+      //MggSig[c]     ->fitTo(*sigToFit[c],Range(minMassFit,maxMassFit),SumW2Error(kTRUE));
+      MggSig[c]     ->fitTo(*sigToFit[c],Range( TMath::Max(minMassFit,MASS-2.5*MASS*0.1) , MASS+2.5*MASS*0.1 ),SumW2Error(kTRUE));
+    }
 
     //write new fit results to file
+    //w->set(TString::Format("SigPdfParam_cat%d",c))->writeToFile(TString::Format("SigPdfParam/SigPdfParamLast_%d_cat%d.dat",(int)MASS,c));
     w->set(TString::Format("SigPdfParam_cat%d",c))->writeToFile(TString::Format("SigPdfParam/SigPdfParamNew_%d_cat%d.dat",(int)MASS,c));
 
     // IMPORTANT: fix all pdf parameters to constant
     SetConstantParams(w->set(TString::Format("SigPdfParam_cat%d",c)));
 
-    //=== Plots --> MOVE THIS PART IN THE APPROPRIATE AREA?
+    //=== Plots --> MOVE THIS PART IN A SEPARATE FUNCTION?
     //---> RooRealVar *weightVar1 = (RooRealVar*) (*ntplVars)["weight"] ;
     // retrieve mass observable from the workspace
     RooRealVar* massForPlot     = w->var("mZZ");  
     massForPlot->setUnit("GeV");
-    Int_t nBinMass(40);
+    Int_t nBinMass(nBinsMassSignal);
     RooPlot* myframe = massForPlot->frame(nBinMass) ;
     sigToFit[c]->plotOn(myframe) ;
     MggSig[c]->plotOn(myframe) ;
-    MggSig[c]->plotOn(myframe
-		      //,
-		      //Components(TString::Format("MggGaussSig_cat%d",c)),
-		      //Components(TString::Format("MggCBSig_cat%d",c)),
-		      //LineStyle(kDashed)
-		      );
-    MggSig[c]->paramOn(myframe,sigToFit[c]);
-    TCanvas* canvas = new TCanvas("canvas","canvas",1200,400);
+    //     MggSig[c]->plotOn(myframe
+    // 		      //,
+    // 		      //Components(TString::Format("MggGaussSig_cat%d",c)),
+    // 		      //Components(TString::Format("MggCBSig_cat%d",c)),
+    // 		      //LineStyle(kDashed)
+    // 		      );
+    //MggSig[c]->paramOn(myframe,sigToFit[c]);
+    myframe->GetXaxis()->SetRangeUser( TMath::Max(minMassFit,MASS-2.5*MASS*0.1) , MASS+2.5*MASS*0.1 );
+    myframe->SetMinimum(0.);    
+    myframe->GetXaxis()->SetTitle("m_{WW} [GeV]");
+    myframe->GetYaxis()->SetTitleOffset(1.2);
+    myframe->GetYaxis()->SetTitleSize(0.04);
+    myframe->GetXaxis()->SetTitleSize(0.04);
+    myframe->SetTitle("");
+
+    //TCanvas* canvas = new TCanvas("canvas","canvas",1200,400);
+    TCanvas* canvas = new TCanvas("canvas","canvas",0,0,500,500);
+    gPad->SetLeftMargin(0.15) ;
     myframe->Draw();
     canvas->SaveAs(TString::Format("plots/SignalShape_m%d_cat%d.png",int(MASS),c));
     delete canvas;
@@ -1071,7 +1227,7 @@ void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, bool isW
 
 }
 
-
+//OLD
 void SetParamNames(RooWorkspace* w) {
   
   Int_t ncat = NCAT;
@@ -1212,20 +1368,22 @@ void MakeSigWS(RooWorkspace* w, const char* fileBaseName) {
   wAll->factory("prod::CMS_hgg_sig_sigma_cat2(mgg_sig_sigma_cat2, CMS_hgg_sig_sigmaScale_cat2)");
   wAll->factory("prod::CMS_hgg_sig_sigma_cat3(mgg_sig_sigma_cat3, CMS_hgg_sig_sigmaScale_cat3)");
 
-  //multiply by scale factor
-  wAll->factory("prod::CMS_hgg_sig_gsigma_cat0(mgg_sig_gsigma_cat0, CMS_hgg_sig_sigmaScale_cat0)");
-  wAll->factory("prod::CMS_hgg_sig_gsigma_cat1(mgg_sig_gsigma_cat1, CMS_hgg_sig_sigmaScale_cat1)");
-  wAll->factory("prod::CMS_hgg_sig_gsigma_cat2(mgg_sig_gsigma_cat2, CMS_hgg_sig_sigmaScale_cat2)");
-  wAll->factory("prod::CMS_hgg_sig_gsigma_cat3(mgg_sig_gsigma_cat3, CMS_hgg_sig_sigmaScale_cat3)");
+  //OLD
+  //   //multiply by scale factor
+  //   wAll->factory("prod::CMS_hgg_sig_gsigma_cat0(mgg_sig_gsigma_cat0, CMS_hgg_sig_sigmaScale_cat0)");
+  //   wAll->factory("prod::CMS_hgg_sig_gsigma_cat1(mgg_sig_gsigma_cat1, CMS_hgg_sig_sigmaScale_cat1)");
+  //   wAll->factory("prod::CMS_hgg_sig_gsigma_cat2(mgg_sig_gsigma_cat2, CMS_hgg_sig_sigmaScale_cat2)");
+  //   wAll->factory("prod::CMS_hgg_sig_gsigma_cat3(mgg_sig_gsigma_cat3, CMS_hgg_sig_sigmaScale_cat3)");
 
   // (4) do reparametrization of signal
   for (int c = 0; c < ncat; ++c) {
     wAll->factory(
-		  TString::Format("EDIT::CMS_hgg_sig_cat%d(MggSig_cat%d,",c,c) +
+		  TString::Format("EDIT::CMS_hgg_sig_cat%d_MggSig_cat%d,",c,c) +
 		  TString::Format(" mgg_sig_m0_cat%d=CMS_hgg_sig_m0_cat%d, ", c,c) +
-		  TString::Format(" mgg_sig_sigma_cat%d=CMS_hgg_sig_sigma_cat%d, ", c,c) +
-		  TString::Format(" mgg_sig_gsigma_cat%d=CMS_hgg_sig_gsigma_cat%d)", c,c)
+		  TString::Format(" mgg_sig_sigma_cat%d=CMS_hgg_sig_sigma_cat%d, ", c,c)
 		  );
+                 //+ TString::Format(" mgg_sig_gsigma_cat%d=CMS_hgg_sig_gsigma_cat%d)", c,c) //OLD
+    
   }
 
   TString filename(wsDir+TString(fileBaseName)+".inputsig.root");
@@ -1609,6 +1767,8 @@ Double_t effSigma(TH1 *hist) {
 
 void R2JJFitter(double mass)
 {
+    gSystem->Load("$CMSSW_BASE/lib/slc5_amd64_gcc462/libHiggsAnalysisCombinedLimit.so");
+    
     runfits(mass, true);
     //runfits(mass, false);
 }
