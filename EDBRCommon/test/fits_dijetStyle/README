@@ -145,7 +145,8 @@ Dijet-like fit
         If you provide the mass values for which you do have files, you never call this part of the code. 
       - bool redoFit = false; --> leave it false if you read from an other file with the shapes
     - BkgModelFitBernstein
-      - decide fit function
+      - decide fit function 
+      - int nparameters = XXX;     
       - PAR3 constant? ((RooRealVar*) w->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c)))->setConstant(true); 
     - MakeBkgWS
       - wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,%g,%g]", c, mean, mean, mean)); //P3 fixed
