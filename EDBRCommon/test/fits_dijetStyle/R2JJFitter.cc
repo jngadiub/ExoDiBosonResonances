@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.7 2013/06/09 16:03:18 santanas Exp $
+ * $Id: R2JJFitter.cc,v 1.8 2013/06/09 16:30:48 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -696,6 +696,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
   RooDataHist* histdata[NCAT];
   RooHist histdataTest[NCAT];
   RooCurve* bkgFunction[NCAT];
+  TH1D *h_data[NCAT];
 
   // dobands and dosignal
   RooDataSet* signal[NCAT];
@@ -801,35 +802,71 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
 
     //method 1
     Double_t chi2_method1 = plotMggBkg[c]->chiSquare(nparameters);
-    char Chi2Text[55]; 
-    sprintf(Chi2Text,"#chi^{2}/ndf = %f",chi2_method1); 
-    TLatex *texf = new TLatex(2975.49,21.3163,Chi2Text);
-    texf->SetTextAlign(32);
-    texf->SetTextSize(0.0353107);
-    texf->Draw();
 
-    //method 2
+    //method 2 
     ((RooRealVar*) data[c]->get()->find("mZZ"))->setBins(nBinsMass) ;
     histdata[c] = data[c]->binnedClone();
     cout << "number of events: " << histdata[c]->sumEntries() << endl;
     cout << "number of bins: " << histdata[c]->numEntries() << endl;
-
-    //method 3 (by hand)
-    histdataTest[c] = (RooHist) plotMggBkg[c]->findObject("ThisData") ;
-    bkgFunction[c] = (RooCurve*) plotMggBkg[c]->findObject("ThisBackgroundFunction") ;
-    Double_t chi2_method3 = bkgFunction[c]->chiSquare(histdataTest[c],nparameters);
-
-    //--
     RooChi2Var chi2var ("chi2var", "chi2var", MggBkgTmp, *histdata[c], Extended(kTRUE)); 
     Double_t chi2_val = chi2var.getVal(); 
     Double_t nodf = (histdata[c]->numEntries() - nparameters);
     Double_t chi2_method2 = chi2_val / nodf;
+
+    //method 3 (should match with method1 and it does..)
+    histdataTest[c] = (RooHist) plotMggBkg[c]->findObject("ThisData") ;
+    bkgFunction[c] = (RooCurve*) plotMggBkg[c]->findObject("ThisBackgroundFunction") ;
+    Double_t chi2_method3 = bkgFunction[c]->chiSquare(histdataTest[c],nparameters);
+
+    //method 4 (by hand) --> following http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/ExoDiBosonResonances/EDBRCommon/test/fits/FTestExoVV.cpp?revision=1.4&view=markup
+    double chi2_method4_raw=0.;
+    double chi2_method4=0.;
+    double ndof_method4=0.;
+
+    h_data[c]=(TH1D*)data[c]->createHistogram( TString::Format("h1d_Data_cat%d",c),*mgg,RooFit::Binning(RooBinning(nBinsMass,minMassFit,maxMassFit)));
+    h_data[c]->Sumw2();
+    
+    double integralFit = 0;
+    for(int ib=1;ib<=h_data[c]->GetNbinsX();ib++)
+      {
+	double low=h_data[c]->GetBinLowEdge(ib);
+	double center=h_data[c]->GetBinCenter(ib);
+	double high=h_data[c]->GetBinLowEdge(ib)+h_data[c]->GetBinWidth(ib);
+	double bincont=h_data[c]->GetBinContent(ib); 
+	double binerr=h_data[c]->GetBinError(ib);
+
+	double fit=bkgFunction[c]->average(low,high);
+	integralFit+=fit;
+
+	if(bincont>0&&binerr>0){
+	  double tmpChi2=(bincont-fit)*(bincont-fit)/(binerr*binerr);
+	  chi2_method4_raw+=tmpChi2;
+	  ndof_method4+=1.0;
+	  cout <<"  OK\t\t"<<center << "\t\t"<<bincont<<"\t\t"<<binerr<<"\t\t"<<fit<<"\t\t"<<tmpChi2<<endl;
+	}
+	else{
+	  cout <<"  ZERO ! BinCenter=" <<center <<"  BinCont=" << bincont << "   BinErr=" << binerr << endl;
+	}      
+      }
+    ndof_method4 = ndof_method4 - nparameters;
+    chi2_method4 = chi2_method4_raw / ndof_method4;
+
+    cout << "h_data[c]->GetEntries(): " << h_data[c]->GetEntries() << endl;
+    cout << "integralFit: " << integralFit << endl;        
+
+    //-- Comparing different methods
     cout << "================ chi2_method1 : " << chi2_method1 << endl;
     cout << "================ chi2_method2 : " << chi2_val  << " / " << nodf << " = " << chi2_method2 << endl;
     cout << "================ chi2_method3 : " << chi2_method3 << endl; //same as method1
+    cout << "================ chi2_method4 : " << chi2_method4_raw  << " / " << ndof_method4 << " = " << chi2_method4 << endl; //by hand
 
-    //By default we use METHOD1
-    // http://root.cern.ch/viewcvs/trunk/roofit/roofitcore/src/RooCurve.cxx?view=log
+    //-- Put chi2 on plot
+    char Chi2Text[55]; 
+    sprintf(Chi2Text,"#chi^{2} / ndf = %.1f / %d = %.2f", chi2_method4_raw , int(ndof_method4) , chi2_method4); 
+    TLatex *texf = new TLatex(maxMassFit/1.02,21.3163,Chi2Text);
+    texf->SetTextAlign(32);
+    texf->SetTextSize(0.0353107);
+    texf->Draw();
 
     //----
 
@@ -850,8 +887,8 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     plotMggBkgPull[c]->GetYaxis()->SetTitleSize(0.12);
     plotMggBkgPull[c]->SetTitle("");
     plotMggBkgPull[c]->addPlotable(histMggBkgPull[c],"P") ;
-    plotMggBkgPull[c]->SetMinimum(-3);    
-    plotMggBkgPull[c]->SetMaximum(3);    
+    plotMggBkgPull[c]->SetMinimum(-4);    
+    plotMggBkgPull[c]->SetMaximum(4);    
 
     //modify statbox and fitbox
     TString ParamBoxName = TString::Format("MggBkg_cat%d_paramBox",c);
