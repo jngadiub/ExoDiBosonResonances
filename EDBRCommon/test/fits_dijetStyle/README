@@ -79,6 +79,7 @@ Dijet-like fit
     - ScaleFactorSignal  
       - must be the same defined at point 1) in R2JJFitter.cc
     - isZZChannel
+    - x axis range: if(!isZZChannel){fr_left=1000.0, fr_down=0.0000005,fr_right=2500.0,fr_up=10.0;}
     - TFile *fFREQ=new TFile("higgsCombineEXOZZ.Asymptotic.TOTAL.root","READ");
     - string xsect_file_th="../data/xsect_BulkG_ZZ (or WW) _c0p2_xsect_in_pb.txt"; 
       - should contain "sigma x BR(VV)" --> if you want to get limits on sigma X BR(VV)
@@ -94,7 +95,17 @@ Dijet-like fit
 
 6) Plot significance
   
-  ......
+  - Edit: plot_Significance.C
+    -   TFile *fexp=new TFile("higgsCombineEXOZZExpSignif.ProfileLikelihood.TOTAL.root","READ");
+    -   TFile *fobs=new TFile("higgsCombineEXOZZObsSignif.ProfileLikelihood.TOTAL.root","READ");
+    -   XMIN=1000; XMAX=2500;
+
+  - Run : 
+    root -b 
+    .L plot_Significance.C+
+    plot_Significance(true) [unblind data]      
+    plot_Significance(false) [blind data]      
+
 
 --------------------------------------------------------------------------------------
 
