@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.6 2013/06/07 15:16:45 santanas Exp $
+ * $Id: R2JJFitter.cc,v 1.7 2013/06/09 16:03:18 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -1378,9 +1378,9 @@ void MakeSigWS(RooWorkspace* w, const char* fileBaseName) {
   // (4) do reparametrization of signal
   for (int c = 0; c < ncat; ++c) {
     wAll->factory(
-		  TString::Format("EDIT::CMS_hgg_sig_cat%d_MggSig_cat%d,",c,c) +
+		  TString::Format("EDIT::CMS_hgg_sig_cat%d(MggSig_cat%d,",c,c) +
 		  TString::Format(" mgg_sig_m0_cat%d=CMS_hgg_sig_m0_cat%d, ", c,c) +
-		  TString::Format(" mgg_sig_sigma_cat%d=CMS_hgg_sig_sigma_cat%d, ", c,c)
+		  TString::Format(" mgg_sig_sigma_cat%d=CMS_hgg_sig_sigma_cat%d) ", c,c)
 		  );
                  //+ TString::Format(" mgg_sig_gsigma_cat%d=CMS_hgg_sig_gsigma_cat%d)", c,c) //OLD
     
