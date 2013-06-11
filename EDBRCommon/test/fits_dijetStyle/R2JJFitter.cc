@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.8 2013/06/09 16:30:48 santanas Exp $
+ * $Id: R2JJFitter.cc,v 1.9 2013/06/09 18:37:29 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -117,9 +117,10 @@ using namespace RooStats ;
 
 static const Int_t NCAT = 4;
 static const Double_t MMIN = 800;
-static const Double_t MMAX = 3100;
-static const Double_t BINSIZEPLOT = 50; //GeV
+static const Double_t MMAX = 3200;
+static const Double_t BINSIZEPLOT = 100; //GeV
 static const Double_t BINSIZEPLOTSIGNAL = 10; //GeV
+static const Double_t BINSIZEPLOTTEST = 100; //GeV
 
 void AddSigData(RooWorkspace*, Float_t);
 void AddBkgData(RooWorkspace*);
@@ -127,6 +128,7 @@ void ReadFromFile(ifstream& , double* );
 void SigModelFit(RooWorkspace*, Float_t);
 void SigModelSet(RooWorkspace* , double* , int );
 RooFitResult*  BkgModelFitBernstein(RooWorkspace*, Bool_t);
+void BkgModelTest(RooWorkspace*, Bool_t);
 void MakePlots(RooWorkspace*, Float_t, RooFitResult* , bool);
 void MakeSigWS(RooWorkspace* w, const char* filename);
 void MakeBkgWS(RooWorkspace* w, const char* filename);
@@ -186,6 +188,9 @@ void runfits(const Float_t mass=1000, bool isWW = true, Bool_t dobands = false)
   // Fit with models
   SigModelFit(w, mass);
   fitresults = BkgModelFitBernstein(w, dobands);
+
+  //Test different fit models for background (use chi2, F-test, etc..)
+  BkgModelTest(w, dobands);
       
   // Create Workspaces
   MakeSigWS(w, fileBaseName);
@@ -407,14 +412,17 @@ void AddBkgData(RooWorkspace* w) {
 
   //============== IMPORTANT ==========================
 
+  
   //--
   // For real data
   RooDataSet Data("Data","dataset",dataTree,*ntplVars,mainCut,"weight");
   //--
+  
 
+  /*
   //--
   // For MC background
-  /*
+  
   Float_t LumForBkg = 19500.0;
   RooRealVar lumiForBkg ("lumiForBkg","lumiForBkg",LumForBkg);  
 
@@ -424,8 +432,9 @@ void AddBkgData(RooWorkspace* w) {
   RooDataSet *DataNoWeight = new RooDataSet("DataNoWeight","DataNoWeight",dataTree,*ntplVars,mainCut);
   RooRealVar *weightFinal = (RooRealVar*) DataNoWeight->addColumn(*weightNormLumiFormula) ;
   RooDataSet Data("Data","dataset",DataNoWeight,*DataNoWeight->get(),mainCut,weightFinal->GetName());
-  */
+  
   //--
+  */
 
   //====================================================
 
@@ -861,7 +870,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     cout << "================ chi2_method4 : " << chi2_method4_raw  << " / " << ndof_method4 << " = " << chi2_method4 << endl; //by hand
 
     //-- Put chi2 on plot
-    char Chi2Text[55]; 
+    char Chi2Text[80]; 
     sprintf(Chi2Text,"#chi^{2} / ndf = %.1f / %d = %.2f", chi2_method4_raw , int(ndof_method4) , chi2_method4); 
     TLatex *texf = new TLatex(maxMassFit/1.02,21.3163,Chi2Text);
     texf->SetTextAlign(32);
@@ -877,7 +886,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     gPad->SetLeftMargin(0.15) ;
 
     // Construct a histogram with the pulls of the data w.r.t the curve
-    histMggBkgPull[c] = plotMggBkg[c]->pullHist() ;
+    histMggBkgPull[c] = plotMggBkg[c]->pullHist("ThisData","ThisBackgroundFunction",true) ;
 
     // Create a new frame to draw the pull distribution and add the distribution to the frame
     plotMggBkgPull[c] = mgg->frame(nBinsMass) ;
@@ -1005,6 +1014,375 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
   
   return fitresult;
 
+}
+
+void BkgModelTest(RooWorkspace* w, Bool_t dobands) {
+
+
+  Int_t ncat = NCAT;
+
+  //******************************************//
+  // Fit background with model pdfs
+  //******************************************//
+
+  // retrieve pdfs and datasets from workspace to fit with pdf models
+
+  RooDataSet* data[NCAT];
+  RooFitResult* fitresult_expo_1par[NCAT];;
+  RooFitResult* fitresult_expo_2par[NCAT];;
+  RooFitResult* fitresult_expo_3par[NCAT];;
+  RooPlot* plotMggBkg[NCAT];
+  RooPlot* plotMggBkgPull[NCAT];
+  RooHist* histMggBkgPull_expo_1par[NCAT];
+  RooHist* histMggBkgPull_expo_2par[NCAT];
+  RooHist* histMggBkgPull_expo_3par[NCAT];
+  RooCurve* bkgFunction_expo_1par[NCAT];
+  RooCurve* bkgFunction_expo_2par[NCAT];
+  RooCurve* bkgFunction_expo_3par[NCAT];
+  TH1D *h_data[NCAT];
+
+  Float_t minMassFit(MMIN),maxMassFit(MMAX),BinSizePlot(BINSIZEPLOTTEST); 
+
+  // Fit data with background pdf for data limit
+
+  RooRealVar* mgg     = w->var("mZZ");  
+  mgg->setUnit("GeV");
+  
+  for (int c = 0; c < ncat; ++c) {
+
+    //The data to fit
+    data[c]   = (RooDataSet*) w->data(TString::Format("Data_cat%d",c));
+
+    //The variable
+    RooFormulaVar *xNoScale = new RooFormulaVar(TString::Format("x_NoScale_cat%d",c),"","@0",RooArgList(*mgg));    
+
+    //-- Leveled exponential 
+    //   y = exp( -x / ( p1 + p2*x + p3*x^2 ) )
+
+    //Leveled expo - 1par + norm
+    RooRealVar *p1_expo_1par=new RooRealVar(TString::Format("p1_expo_1par_cat%d",c),"",15,-100,500);
+    RooRealVar *norm_expo_1par=new RooRealVar(TString::Format("norm_expo_1par_cat%d",c),"",4000.0,0.0,10000000);
+
+    //Leveled expo - 2par + norm
+    RooRealVar *p1_expo_2par=new RooRealVar(TString::Format("p1_expo_2par_cat%d",c),"",15,-100,500);
+    RooRealVar *p2_expo_2par=new RooRealVar(TString::Format("p2_expo_2par_cat%d",c),"",10,0.,100);
+    RooRealVar *norm_expo_2par=new RooRealVar(TString::Format("norm_expo_2par_cat%d",c),"",4000.0,0.0,10000000);
+
+    //Leveled expo - 3par + norm
+    RooRealVar *p1_expo_3par=new RooRealVar(TString::Format("p1_expo_3par_cat%d",c),"",15,-100,500);
+    RooRealVar *p2_expo_3par=new RooRealVar(TString::Format("p2_expo_3par_cat%d",c),"",10,0.,100);
+    RooRealVar *p3_expo_3par=new RooRealVar(TString::Format("p3_expo_3par_cat%d",c),"",0,-10,10);
+    RooRealVar *norm_expo_3par=new RooRealVar(TString::Format("norm_expo_3par_cat%d",c),"",4000.0,0.0,10000000);
+
+    //Set parameter values
+    /*
+    p3_expo_3par->setVal(0);
+    p3_expo_3par->setConstant(true);
+    cout << "---------------- Parameter 3 set to const" << endl;    
+    */
+
+    //Define the function
+    RooAbsPdf* MggBkgTmp_expo_1par = new RooGenericPdf(TString::Format("LevelExpoBackground_expo_1par_%d",c), "exp(- @0 / (@1) )", RooArgList(*xNoScale, *p1_expo_1par)); 
+    RooAbsPdf* MggBkgTmp_expo_2par = new RooGenericPdf(TString::Format("LevelExpoBackground_expo_2par_%d",c), "exp(- @0 / (@1 + @2*@0) )", RooArgList(*xNoScale, *p1_expo_2par, *p2_expo_2par)); 
+    RooAbsPdf* MggBkgTmp_expo_3par = new RooGenericPdf(TString::Format("LevelExpoBackground_expo_3par_%d",c), "exp(- @0 / (@1 + @2*@0 + @3*@0*@0) )", RooArgList(*xNoScale, *p1_expo_3par, *p2_expo_3par, *p3_expo_3par)); 
+
+    //Normalization
+    RooExtendPdf MggBkg_expo_1par(TString::Format("MggBkg_expo_1par_cat%d",c),"",*MggBkgTmp_expo_1par,*norm_expo_1par);
+    RooExtendPdf MggBkg_expo_2par(TString::Format("MggBkg_expo_2par_cat%d",c),"",*MggBkgTmp_expo_2par,*norm_expo_2par);
+    RooExtendPdf MggBkg_expo_3par(TString::Format("MggBkg_expo_3par_cat%d",c),"",*MggBkgTmp_expo_3par,*norm_expo_3par);
+
+    //Fit
+    fitresult_expo_1par[c] = MggBkg_expo_1par.fitTo(*data[c], Strategy(1),Minos(kFALSE), Range(minMassFit,maxMassFit),SumW2Error(kTRUE), Save(kTRUE));
+    p1_expo_2par->setVal( p1_expo_1par->getVal() ); 
+    fitresult_expo_2par[c] = MggBkg_expo_2par.fitTo(*data[c], Strategy(1),Minos(kFALSE), Range(minMassFit,maxMassFit),SumW2Error(kTRUE), Save(kTRUE));
+    p1_expo_3par->setVal( p1_expo_2par->getVal() ); 
+    p2_expo_3par->setVal( p2_expo_2par->getVal() ); 
+    fitresult_expo_3par[c] = MggBkg_expo_3par.fitTo(*data[c], Strategy(1),Minos(kFALSE), Range(minMassFit,maxMassFit),SumW2Error(kTRUE), Save(kTRUE));
+
+    //************************************************//
+    // Plot Mgg background fit results per categories 
+    //************************************************//
+
+    TCanvas* ctmp = new TCanvas("ctmp","Test different functions",0,0,500,500);
+
+    TPad* fPads1 = NULL;
+    TPad* fPads2 = NULL;
+
+    fPads1 = new TPad("pad1", "", 0.00, 0.33, 0.99, 0.99);
+    fPads2 = new TPad("pad2", "", 0.00, 0.00, 0.99, 0.30);
+
+    fPads1->SetFillColor(0);
+    fPads1->SetLineColor(0);
+    fPads2->SetFillColor(0);
+    fPads2->SetLineColor(0);
+    fPads1->Draw();
+    fPads2->Draw();
+
+    int color_expo_1par = 4;
+    int color_expo_2par = 2;
+    int color_expo_3par = 3;
+
+    //---- pad1
+    fPads1->cd();
+    fPads1->SetLogy() ;
+    gPad->SetLeftMargin(0.15) ;
+
+    Int_t nBinsMass( int( (maxMassFit-minMassFit)/BinSizePlot) );
+    plotMggBkg[c] = mgg->frame(nBinsMass);
+    plotMggBkg[c]->GetXaxis()->SetTitle("m_{WW} [GeV]");
+    plotMggBkg[c]->GetYaxis()->SetTitleOffset(0.8);
+    plotMggBkg[c]->GetYaxis()->SetTitleSize(0.06);
+    plotMggBkg[c]->GetXaxis()->SetTitleSize(0.06);
+    plotMggBkg[c]->SetTitle("");
+
+    data[c]->plotOn(plotMggBkg[c],Name("ThisData"));    
+
+    MggBkg_expo_1par.plotOn(plotMggBkg[c],LineColor(color_expo_1par),Range("fitrange"),NormRange("fitrange"),Name("ThisBackgroundFunction_expo_1par")); 
+    MggBkg_expo_1par.paramOn(plotMggBkg[c],data[c],"",2,"NELU", 0.175138,0.466357,0.873909);
+
+    MggBkg_expo_2par.plotOn(plotMggBkg[c],LineColor(color_expo_2par),Range("fitrange"),NormRange("fitrange"),Name("ThisBackgroundFunction_expo_2par")); 
+    MggBkg_expo_2par.paramOn(plotMggBkg[c],data[c],"",2,"NELU", 0.47654,0.877729,0.877119);
+
+    MggBkg_expo_3par.plotOn(plotMggBkg[c],LineColor(color_expo_3par),Range("fitrange"),NormRange("fitrange"),Name("ThisBackgroundFunction_expo_3par")); 
+    MggBkg_expo_3par.paramOn(plotMggBkg[c],data[c],"",2,"NELU", 0.47654,0.877729,0.671674);
+
+    //Draw
+    plotMggBkg[c]->SetMinimum(0.1);    
+    plotMggBkg[c]->SetMaximum(100000);    
+    plotMggBkg[c]->Draw();
+
+    //---- chi2 and F-test
+    int nparameters_expo_1par = 1+1;
+    int nparameters_expo_2par = 2+1;
+    int nparameters_expo_3par = 3+1;
+
+    bkgFunction_expo_1par[c] = (RooCurve*) plotMggBkg[c]->findObject("ThisBackgroundFunction_expo_1par") ;
+    bkgFunction_expo_2par[c] = (RooCurve*) plotMggBkg[c]->findObject("ThisBackgroundFunction_expo_2par") ;
+    bkgFunction_expo_3par[c] = (RooCurve*) plotMggBkg[c]->findObject("ThisBackgroundFunction_expo_3par") ;
+
+    h_data[c]=(TH1D*)data[c]->createHistogram( TString::Format("h1d_DataTest_cat%d",c),*mgg,RooFit::Binning(RooBinning(nBinsMass,minMassFit,maxMassFit)));
+    h_data[c]->Sumw2();
+
+    double chi2_reduce_expo_1par = 0; 
+    double chi2_reduce_expo_2par = 0; 
+    double chi2_reduce_expo_3par = 0;
+
+    double chi2_expo_1par = 0; 
+    double chi2_expo_2par = 0; 
+    double chi2_expo_3par = 0;
+
+    double ndof_expo_1par = 0; 
+    double ndof_expo_2par = 0; 
+    double ndof_expo_3par = 0;
+    
+    double integralFit_expo_1par = 0; 
+    double integralFit_expo_2par = 0; 
+    double integralFit_expo_3par = 0;
+
+    //Variables for F-Test: 
+    double rss1=0;
+    double rss2=0;
+    double rss3=0;
+
+    for(int ib=1;ib<=h_data[c]->GetNbinsX();ib++)
+      {
+	double low=h_data[c]->GetBinLowEdge(ib);
+	double center=h_data[c]->GetBinCenter(ib);
+	double high=h_data[c]->GetBinLowEdge(ib)+h_data[c]->GetBinWidth(ib);
+	double bincont=h_data[c]->GetBinContent(ib); 
+	double binerr=h_data[c]->GetBinError(ib);
+
+	double fit_expo_1par=bkgFunction_expo_1par[c]->average(low,high);
+	double fit_expo_2par=bkgFunction_expo_2par[c]->average(low,high);
+	double fit_expo_3par=bkgFunction_expo_3par[c]->average(low,high);
+
+	integralFit_expo_1par+=fit_expo_1par;
+	integralFit_expo_2par+=fit_expo_2par;
+	integralFit_expo_3par+=fit_expo_3par;
+
+	if(bincont>0&&binerr>0){
+	  double tmpChi2_expo_1par=(bincont-fit_expo_1par)*(bincont-fit_expo_1par)/(binerr*binerr);
+	  double tmpChi2_expo_2par=(bincont-fit_expo_2par)*(bincont-fit_expo_2par)/(binerr*binerr);
+	  double tmpChi2_expo_3par=(bincont-fit_expo_3par)*(bincont-fit_expo_3par)/(binerr*binerr);
+
+	  rss1+=(bincont-fit_expo_1par)*(bincont-fit_expo_1par);
+	  rss2+=(bincont-fit_expo_2par)*(bincont-fit_expo_2par);
+	  rss3+=(bincont-fit_expo_3par)*(bincont-fit_expo_3par);
+
+	  chi2_expo_1par+=tmpChi2_expo_1par;
+	  chi2_expo_2par+=tmpChi2_expo_2par;
+	  chi2_expo_3par+=tmpChi2_expo_3par;
+
+	  ndof_expo_1par+=1.0;
+	  ndof_expo_2par+=1.0;
+	  ndof_expo_3par+=1.0;
+
+	  //cout <<"  OK\t\t"<<center << "\t\t"<<bincont<<"\t\t"<<binerr<<"\t\t"<<fit<<"\t\t"<<tmpChi2<<endl;
+	}
+	else{
+	  //cout <<"  ZERO ! BinCenter=" <<center <<"  BinCont=" << bincont << "   BinErr=" << binerr << endl;
+	}      
+      }
+    ndof_expo_1par = ndof_expo_1par - nparameters_expo_1par;
+    ndof_expo_2par = ndof_expo_2par - nparameters_expo_2par;
+    ndof_expo_3par = ndof_expo_3par - nparameters_expo_3par;
+
+    chi2_reduce_expo_1par = chi2_expo_1par / ndof_expo_1par;
+    chi2_reduce_expo_2par = chi2_expo_2par / ndof_expo_2par;
+    chi2_reduce_expo_3par = chi2_expo_3par / ndof_expo_3par;
+
+    char Chi2Text_expo_1par[80]; 
+    sprintf(Chi2Text_expo_1par,"#chi^{2} / ndf = %.1f / %d = %.2f", chi2_expo_1par , int(ndof_expo_1par) , chi2_reduce_expo_1par); 
+    char Chi2Text_expo_2par[80]; 
+    sprintf(Chi2Text_expo_2par,"#chi^{2} / ndf = %.1f / %d = %.2f", chi2_expo_2par , int(ndof_expo_2par) , chi2_reduce_expo_2par); 
+    char Chi2Text_expo_3par[80]; 
+    sprintf(Chi2Text_expo_3par,"#chi^{2} / ndf = %.1f / %d = %.2f", chi2_expo_3par , int(ndof_expo_3par) , chi2_reduce_expo_3par); 
+
+
+    //Calculate F-Test
+    //http://en.wikipedia.org/wiki/F-test
+    //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/DiJetHighMass/test/fitcode/F_test_default.C?revision=1.3&view=markup
+    const double alphaFTest=0.05;
+    cout <<"\nStarting F-Test evaluation with alpha-value="<<alphaFTest<<endl;
+    double Ftest_21 = (rss1-rss2)*ndof_expo_2par/ (rss2*1.0);
+    double Ftest_32 = (rss2-rss3)*ndof_expo_3par/ (rss3*1.0);
+    cout  << "Ftest 21 value = " << Ftest_21 << endl;
+    cout  << "Ftest 32 value = " << Ftest_32 << endl;
+    double good_CL21 =  1.-TMath::FDistI(Ftest_21,1,ndof_expo_2par);
+    double good_CL32 =  1.-TMath::FDistI(Ftest_32,1,ndof_expo_3par);
+    cout  << " Ftest21 CL = " << good_CL21 << endl;
+    cout  << " Ftest32 CL = " << good_CL32 << endl;
+    if (good_CL21>alphaFTest) {
+      cout  << " No need for anything more than a simple exponential" << endl;
+    } else if (good_CL32>alphaFTest) {
+      cout  << "A levelled exponential with 2 parameters is needed for these data. " << endl;
+    } else {
+      cout  << " A levelled exponential with 3 parameters is needed for these data. " << endl;
+      cout  << " You should check for higher-order functions. " << endl;
+    }
+    cout  << endl;   
+
+    //----
+
+    //modify statbox and fitbox
+    TString ParamBoxName_expo_1par = TString::Format("MggBkg_expo_1par_cat%d_paramBox",c);
+    TPaveStats *ParamBox_expo_1par = (TPaveStats*)fPads1->FindObject(ParamBoxName_expo_1par.Data());
+    ParamBox_expo_1par->SetFillColor(kWhite);
+    ParamBox_expo_1par->SetLineColor(color_expo_1par);
+    ParamBox_expo_1par->SetTextAlign(32);
+    ParamBox_expo_1par->SetTextSize(0.0288906);
+    ParamBox_expo_1par->SetX1NDC(0.175138);
+    ParamBox_expo_1par->SetX2NDC(0.466357);
+    ParamBox_expo_1par->SetY1NDC(0.748716);
+    ParamBox_expo_1par->SetY2NDC(0.873909);
+    ParamBox_expo_1par->SetMargin(0.05);
+    ParamBox_expo_1par->AddText(Chi2Text_expo_1par);
+
+    TString ParamBoxName_expo_2par = TString::Format("MggBkg_expo_2par_cat%d_paramBox",c);
+    TPaveStats *ParamBox_expo_2par = (TPaveStats*)fPads1->FindObject(ParamBoxName_expo_2par.Data());
+    ParamBox_expo_2par->SetFillColor(kWhite);
+    ParamBox_expo_2par->SetLineColor(color_expo_2par);
+    ParamBox_expo_2par->SetTextAlign(32);
+    ParamBox_expo_2par->SetTextSize(0.0288906);
+    ParamBox_expo_2par->SetX1NDC(0.492832);
+    ParamBox_expo_2par->SetX2NDC(0.853291);
+    ParamBox_expo_2par->SetY1NDC(0.690935);
+    ParamBox_expo_2par->SetY2NDC(0.873909);
+    ParamBox_expo_2par->SetMargin(0.05);
+    ParamBox_expo_2par->AddText(Chi2Text_expo_2par);
+
+    TString ParamBoxName_expo_3par = TString::Format("MggBkg_expo_3par_cat%d_paramBox",c);
+    TPaveStats *ParamBox_expo_3par = (TPaveStats*)fPads1->FindObject(ParamBoxName_expo_3par.Data());
+    ParamBox_expo_3par->SetFillColor(kWhite);
+    ParamBox_expo_3par->SetLineColor(color_expo_3par);
+    ParamBox_expo_3par->SetTextAlign(32);
+    ParamBox_expo_3par->SetTextSize(0.0288906);
+    ParamBox_expo_3par->SetX1NDC(0.492832);
+    ParamBox_expo_3par->SetX2NDC(0.855327);
+    ParamBox_expo_3par->SetY1NDC(0.430919);
+    ParamBox_expo_3par->SetY2NDC(0.671674);
+    ParamBox_expo_3par->SetMargin(0.05);
+    ParamBox_expo_3par->AddText(Chi2Text_expo_3par);
+
+
+    //---- pad2
+    fPads2->cd();
+    fPads2->SetGridx();
+    fPads2->SetGridy();
+    gPad->SetLeftMargin(0.15) ;
+
+    // Construct a histogram with the pulls of the data w.r.t the curve
+    histMggBkgPull_expo_1par[c] = plotMggBkg[c]->pullHist("ThisData","ThisBackgroundFunction_expo_1par",true) ;
+    histMggBkgPull_expo_2par[c] = plotMggBkg[c]->pullHist("ThisData","ThisBackgroundFunction_expo_2par",true) ;
+    histMggBkgPull_expo_3par[c] = plotMggBkg[c]->pullHist("ThisData","ThisBackgroundFunction_expo_3par",true) ;
+
+    histMggBkgPull_expo_1par[c]->SetMarkerColor(color_expo_1par);
+    histMggBkgPull_expo_2par[c]->SetMarkerColor(color_expo_2par);
+    histMggBkgPull_expo_3par[c]->SetMarkerColor(color_expo_3par);
+
+    histMggBkgPull_expo_1par[c]->SetMarkerStyle(21);
+    histMggBkgPull_expo_2par[c]->SetMarkerStyle(20);
+    histMggBkgPull_expo_3par[c]->SetMarkerStyle(23);
+
+    histMggBkgPull_expo_1par[c]->SetMarkerSize(0.8);
+    histMggBkgPull_expo_2par[c]->SetMarkerSize(1);
+    histMggBkgPull_expo_3par[c]->SetMarkerSize(0.8);
+
+    histMggBkgPull_expo_1par[c]->SetLineColor(color_expo_1par);
+    histMggBkgPull_expo_2par[c]->SetLineColor(color_expo_2par);
+    histMggBkgPull_expo_3par[c]->SetLineColor(color_expo_3par);
+    
+    // Create a new frame to draw the pull distribution and add the distribution to the frame
+    plotMggBkgPull[c] = mgg->frame(nBinsMass) ;
+    plotMggBkgPull[c]->GetXaxis()->SetTitle("");
+    plotMggBkgPull[c]->GetYaxis()->SetTitle("#frac{data - fit}{#sigma}      ");
+    plotMggBkgPull[c]->GetYaxis()->SetTitleOffset(0.4);
+    plotMggBkgPull[c]->GetYaxis()->SetTitleSize(0.12);
+    plotMggBkgPull[c]->SetTitle("");
+    plotMggBkgPull[c]->addPlotable(histMggBkgPull_expo_1par[c],"P") ;
+    plotMggBkgPull[c]->addPlotable(histMggBkgPull_expo_2par[c],"P") ;
+    plotMggBkgPull[c]->addPlotable(histMggBkgPull_expo_3par[c],"P") ;
+    plotMggBkgPull[c]->SetMinimum(-4);    
+    plotMggBkgPull[c]->SetMaximum(4);    
+
+    plotMggBkgPull[c]->Draw();
+
+    //lines
+    TLine* lineAtZero = NULL; 
+    TLine* lineAtPlusTwo = NULL; 
+    TLine* lineAtMinusTwo = NULL; 
+
+    lineAtZero = new TLine(plotMggBkgPull[c]->GetXaxis()->GetXmin(),0,plotMggBkgPull[c]->GetXaxis()->GetXmax(),0);
+    lineAtZero->SetLineColor(2);
+    lineAtZero->Draw();
+    lineAtPlusTwo = new TLine(plotMggBkgPull[c]->GetXaxis()->GetXmin(),2,plotMggBkgPull[c]->GetXaxis()->GetXmax(),2);
+    lineAtPlusTwo->SetLineColor(2);
+    lineAtPlusTwo->SetLineStyle(2);
+    lineAtPlusTwo->Draw();
+    lineAtMinusTwo = new TLine(plotMggBkgPull[c]->GetXaxis()->GetXmin(),-2,plotMggBkgPull[c]->GetXaxis()->GetXmax(),-2);
+    lineAtMinusTwo->SetLineColor(2);
+    lineAtMinusTwo->SetLineStyle(2);
+    lineAtMinusTwo->Draw();
+
+    //----
+
+    ctmp->SaveAs(TString::Format("plots/FitBackground_test_cat%d.png",c));
+    ctmp->SaveAs(TString::Format("plots/FitBackground_test_cat%d.root",c));
+
+
+    //----
+
+    delete ctmp;    
+
+    //--
+    //shape
+    //--
+    //-- Standard di-jet function
+    //     RooFormulaVar *sqrtS = new RooFormulaVar(TString::Format("sqrtS_cat%d",c),"","@0",*w->var("sqrtS"));
+    //     RooFormulaVar *x = new RooFormulaVar(TString::Format("x_cat%d",c),"","@0/@1",RooArgList(*mgg, *sqrtS));    
+    //     RooAbsPdf* MggBkgTmp0 = new RooGenericPdf(TString::Format("DijetBackground_%d",c), "pow(1-@0, @1)/pow(@0, @2+@3*log(@0))", RooArgList(*x, *p1mod, *p2mod, *p3mod)); 
+
+  }
 }
 
 
