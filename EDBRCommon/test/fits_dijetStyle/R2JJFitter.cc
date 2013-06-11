@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.9 2013/06/09 18:37:29 santanas Exp $
+ * $Id: R2JJFitter.cc,v 1.10 2013/06/11 08:56:24 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -118,9 +118,9 @@ using namespace RooStats ;
 static const Int_t NCAT = 4;
 static const Double_t MMIN = 800;
 static const Double_t MMAX = 3200;
-static const Double_t BINSIZEPLOT = 100; //GeV
+static const Double_t BINSIZEPLOT = 50; //GeV
 static const Double_t BINSIZEPLOTSIGNAL = 10; //GeV
-static const Double_t BINSIZEPLOTTEST = 100; //GeV
+static const Double_t BINSIZEPLOTTEST = 50; //GeV
 
 void AddSigData(RooWorkspace*, Float_t);
 void AddBkgData(RooWorkspace*);
@@ -659,7 +659,7 @@ void SigModelFit(RooWorkspace* w, Float_t mass) {
     myframe->GetXaxis()->SetRangeUser( TMath::Max(minMassFit,MASS-2.5*MASS*0.1) , MASS+2.5*MASS*0.1 );
     myframe->SetMinimum(0.);    
     myframe->GetXaxis()->SetTitle("m_{WW} [GeV]");
-    myframe->GetYaxis()->SetTitleOffset(1.2);
+    myframe->GetYaxis()->SetTitleOffset(1.0);
     myframe->GetYaxis()->SetTitleSize(0.04);
     myframe->GetXaxis()->SetTitleSize(0.04);
     myframe->SetTitle("");
@@ -669,6 +669,8 @@ void SigModelFit(RooWorkspace* w, Float_t mass) {
     gPad->SetLeftMargin(0.15) ;
     myframe->Draw();
     canvas->SaveAs(TString::Format("plots/SignalShape_m%d_cat%d.png",int(MASS),c));
+    canvas->SaveAs(TString::Format("plots/SignalShape_m%d_cat%d.pdf",int(MASS),c));
+    canvas->SaveAs(TString::Format("plots/SignalShape_m%d_cat%d.eps",int(MASS),c));
     delete canvas;
 
   }
@@ -774,8 +776,8 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     TPad* fPads1 = NULL;
     TPad* fPads2 = NULL;
 
-    fPads1 = new TPad("pad1", "", 0.00, 0.33, 0.99, 0.99);
-    fPads2 = new TPad("pad2", "", 0.00, 0.00, 0.99, 0.30);
+    fPads1 = new TPad("pad1", "", 0.00, 0.28, 0.99, 0.99);
+    fPads2 = new TPad("pad2", "", 0.00, 0.00, 0.99, 0.28);
 
     fPads1->SetFillColor(0);
     fPads1->SetLineColor(0);
@@ -788,10 +790,13 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     fPads1->cd();
     fPads1->SetLogy() ;
     gPad->SetLeftMargin(0.15) ;
+    gPad->SetTopMargin(0.05) ;
+    gPad->SetBottomMargin(0.12) ;
 
     Int_t nBinsMass( int( (maxMassFit-minMassFit)/BinSizePlot) );
     plotMggBkg[c] = mgg->frame(nBinsMass);
     plotMggBkg[c]->GetXaxis()->SetTitle("m_{WW} [GeV]");
+    plotMggBkg[c]->GetXaxis()->SetTitleOffset(0.8);
     plotMggBkg[c]->GetYaxis()->SetTitleOffset(0.8);
     plotMggBkg[c]->GetYaxis()->SetTitleSize(0.06);
     plotMggBkg[c]->GetXaxis()->SetTitleSize(0.06);
@@ -872,7 +877,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     //-- Put chi2 on plot
     char Chi2Text[80]; 
     sprintf(Chi2Text,"#chi^{2} / ndf = %.1f / %d = %.2f", chi2_method4_raw , int(ndof_method4) , chi2_method4); 
-    TLatex *texf = new TLatex(maxMassFit/1.02,21.3163,Chi2Text);
+    TLatex *texf = new TLatex(maxMassFit/1.0357,15.66,Chi2Text);
     texf->SetTextAlign(32);
     texf->SetTextSize(0.0353107);
     texf->Draw();
@@ -936,6 +941,8 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     //----
 
     ctmp->SaveAs(TString::Format("plots/FitBackground_cat%d.png",c));
+    ctmp->SaveAs(TString::Format("plots/FitBackground_cat%d.pdf",c));
+    ctmp->SaveAs(TString::Format("plots/FitBackground_cat%d.eps",c));
     ctmp->SaveAs(TString::Format("plots/FitBackground_cat%d.root",c));
 
     delete ctmp;    
@@ -1108,8 +1115,8 @@ void BkgModelTest(RooWorkspace* w, Bool_t dobands) {
     TPad* fPads1 = NULL;
     TPad* fPads2 = NULL;
 
-    fPads1 = new TPad("pad1", "", 0.00, 0.33, 0.99, 0.99);
-    fPads2 = new TPad("pad2", "", 0.00, 0.00, 0.99, 0.30);
+    fPads1 = new TPad("pad1", "", 0.00, 0.28, 0.99, 0.99);
+    fPads2 = new TPad("pad2", "", 0.00, 0.00, 0.99, 0.28);
 
     fPads1->SetFillColor(0);
     fPads1->SetLineColor(0);
@@ -1126,10 +1133,13 @@ void BkgModelTest(RooWorkspace* w, Bool_t dobands) {
     fPads1->cd();
     fPads1->SetLogy() ;
     gPad->SetLeftMargin(0.15) ;
+    gPad->SetTopMargin(0.05) ;
+    gPad->SetBottomMargin(0.12) ;
 
     Int_t nBinsMass( int( (maxMassFit-minMassFit)/BinSizePlot) );
     plotMggBkg[c] = mgg->frame(nBinsMass);
     plotMggBkg[c]->GetXaxis()->SetTitle("m_{WW} [GeV]");
+    plotMggBkg[c]->GetXaxis()->SetTitleOffset(0.8);
     plotMggBkg[c]->GetYaxis()->SetTitleOffset(0.8);
     plotMggBkg[c]->GetYaxis()->SetTitleSize(0.06);
     plotMggBkg[c]->GetXaxis()->SetTitleSize(0.06);
@@ -1367,6 +1377,8 @@ void BkgModelTest(RooWorkspace* w, Bool_t dobands) {
     //----
 
     ctmp->SaveAs(TString::Format("plots/FitBackground_test_cat%d.png",c));
+    ctmp->SaveAs(TString::Format("plots/FitBackground_test_cat%d.pdf",c));
+    ctmp->SaveAs(TString::Format("plots/FitBackground_test_cat%d.eps",c));
     ctmp->SaveAs(TString::Format("plots/FitBackground_test_cat%d.root",c));
 
 
@@ -1848,7 +1860,7 @@ void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
     RooDataHist* dataBinned = data[c]->binnedClone();
 
     MggBkgPdf[c] = (RooExtendPdf*)  w->pdf(TString::Format("MggBkg_cat%d",c)); //actually, not used...
-    //   wAll->import(*data[c], Rename(TString::Format("data_obs_cat%d",c))); // unbinned 
+    //wAll->import(*data[c], Rename(TString::Format("data_obs_cat%d",c))); // unbinned 
     wAll->import(*dataBinned, Rename(TString::Format("data_obs_cat%d",c)));   // binned
     wAll->import(*w->pdf(TString::Format("MggBkg_cat%d",c)));
 
@@ -2085,7 +2097,7 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
 
   
   outFile << "lumi_8TeV       lnN  0.950/1.050    - " << endl;
-  outFile << "CMS_VV_eff_g         lnN  0.8/1.20      - # Signal Efficiency" << endl;
+  outFile << "CMS_VV_eff_g         lnN  0.8/1.10      - # Signal Efficiency" << endl;
 
   outFile << "# Parametric shape uncertainties, entered by hand." << endl;
   outFile << Form("CMS_hgg_sig_m0_absShift_cat%d    param   1   0.0125   # displacement of the mean",iChan) << endl;
