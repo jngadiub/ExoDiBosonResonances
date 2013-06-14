@@ -22,8 +22,8 @@ void loopPlot(){
   /// Boolean flags to steer the histogram making
   bool wantElectrons = true; // Will make histograms for electrons
   bool wantMuons     = false; // Will make histograms for muons
-  bool wantSideband  = true; // Will make histograms for sideband region
-  bool wantSignal    = false; // Will make histograms for signal region
+  bool wantSideband  = false; // Will make histograms for sideband region
+  bool wantSignal    = true; // Will make histograms for signal region
   bool wantFullRange = false; // Will not check signal or sideband, ie, pick all jet mass range
   int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
   int  isZZchannel   = 0; //plot label for zz (1) or ww (0)
@@ -54,9 +54,13 @@ void loopPlot(){
   //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/ttbarcontrol/";
 
   /// Path to wherever you want to put the histograms (figures) in.
-  //std::string outputDir = "./plots_WW_ele_signal_bvetoM_ALLP";
-  //std::string outputDir = "./plots_WW_mu_signal_bvetoM_ALLP";
-  std::string outputDir = "./plots_WW_ele_sideband_bvetoM_ALLP_sync";
+  //std::string outputDir = "./plots_WW_ele_signal_bvetoM_ALLP_sync";
+  std::string outputDir = "./plots_WW_ele_signal_bvetoM_HP_sync";
+  //std::string outputDir = "./plots_WW_ele_signal_bvetoM_LP_sync";
+  //std::string outputDir = "./plots_WW_mu_signal_bvetoM_ALLP_sync";
+  //std::string outputDir = "./plots_WW_mu_signal_bvetoM_HP_sync";
+  //std::string outputDir = "./plots_WW_mu_signal_bvetoM_LP_sync";
+  //std::string outputDir = "./plots_WW_ele_sideband_bvetoM_ALLP_sync";
   //std::string outputDir = "./plots_WW_mu_sideband_bvetoM_ALLP_sync";
   //std::string outputDir = "./plots_WW_ele_fullallrange_btagT_ALLP_sync";
   //std::string outputDir = "./plots_WW_mu_fullallrange_btagT_ALLP_sync";
