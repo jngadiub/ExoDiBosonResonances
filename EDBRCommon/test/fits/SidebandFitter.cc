@@ -129,6 +129,11 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
   h1_mZZ_signalRegion.Sumw2();
   TH1D h1_mZZ_sidebands("mX_sidebands", "", nb,binpointer );
   h1_mZZ_sidebands.Sumw2();
+  //save additionaly the unweighted histos to evaluate Poisson-Errors later
+  TH1D h1_mZZ_signalRegion_nw("mX_signalRegion_noWeight", "",nb ,binpointer ); 
+  h1_mZZ_signalRegion_nw.Sumw2();
+  TH1D h1_mZZ_sidebands_nw("mX_sidebands_noWeight", "", nb,binpointer );
+  h1_mZZ_sidebands_nw.Sumw2();
   TH1D h1_jj("mJJ", "",20 , 50, 150 );
   
 
@@ -146,7 +151,9 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
   
     bool isSignalRegion = (region==1.0);
     if( isSignalRegion ) h1_mZZ_signalRegion.Fill(mZZd, eventWeight);
+    if( isSignalRegion ) h1_mZZ_signalRegion_nw.Fill(mZZd);
     if( !isSignalRegion && region==0.0) h1_mZZ_sidebands.Fill(mZZd, eventWeight);
+    if( !isSignalRegion && region==0.0) h1_mZZ_sidebands_nw.Fill(mZZd);
     h1_jj.Fill(mZqq, eventWeight);
     //std::cout << "Entry (2): " << iEntry << "/" << treeMC->GetEntries() << std::endl;
   }
@@ -156,7 +163,7 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
   h1_alpha->SetName("h_alpha");
   //smoothening procedure for taking care of low-stat MC
   TH1D *h1_alpha_smooth=(TH1D*)DivideAndSmoothAlphaHist(  h1_mZZ_signalRegion, h1_mZZ_sidebands,*h1_alpha);
-  char newAlphaname[200];
+  char newAlphaname[200];      
   sprintf(newAlphaname,"%s_smoothened",h1_alpha->GetName());
   h1_alpha_smooth->SetName(newAlphaname);
  
@@ -492,6 +499,8 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
   alphaws->Write();
   h1_mZZ_signalRegion.Write();
   h1_mZZ_sidebands.Write();
+  h1_mZZ_signalRegion_nw.Write();
+  h1_mZZ_sidebands_nw.Write();
   h1_jj.Write();
   h1_alpha->Write();
   h1_alpha_smooth->Write();
@@ -583,6 +592,58 @@ TH1D* SidebandFitter::shuffle( TH1D* inhist, TRandom3* random, char *histName, T
   }
   return outhist;
 }
+
+
+TH1D* SidebandFitter::realpharize( TH1D* signalRegion , TH1D*sidebands,TH1D* signalRegion_nw , TH1D*sidebands_nw,TH1D*R0, TRandom3* random, char *histName){
+  TH1D *h1_shuffled_sig  = (TH1D *)signalRegion->Clone("tmp_sig");
+  TH1D *h1_shuffled_side = (TH1D *)sidebands->Clone("tmp_side");
+  
+  for(int nbin =1 ; nbin <= h1_shuffled_sig->GetNbinsX(); nbin++){
+    int nsig_orig = signalRegion_nw->GetBinContent(nbin);
+    int nside_orig = sidebands_nw->GetBinContent(nbin);
+    
+    int nsig_new = random->Poisson(nsig_orig);
+    int nside_new = random->Poisson(nside_orig);
+
+    if(nsig_orig!=0)
+      h1_shuffled_sig->SetBinContent(nbin,signalRegion->GetBinContent(nbin)*((float)nsig_new)/((float)nsig_orig));
+    else
+      h1_shuffled_sig->SetBinContent(nbin,0);
+    
+    if(nside_orig!=0)
+      h1_shuffled_side->SetBinContent(nbin,sidebands->GetBinContent(nbin)*((float)nside_new)/((float)nside_orig));
+    else
+      h1_shuffled_side->SetBinContent(nbin,0);
+  }
+  
+  TH1D *h1_alpha = (TH1D*)signalRegion->Clone("alpha_tmp"); h1_alpha->Reset();
+  TH1D *h1_alpha_smooth = (TH1D*)DivideAndSmoothAlphaHist( *h1_shuffled_sig , *h1_shuffled_side ,*h1_alpha);
+  //TH1D* h1_alpha_smooth = new TH1D(*h1_alpha);
+  
+  TH1D * alpha_Final = (TH1D*)h1_alpha_smooth->Clone(histName);
+
+  for (int iBin = 1 ; iBin <= alpha_Final->GetNbinsX() ; ++iBin){
+    double alpha_ORI_c = h1_alpha_smooth->GetBinContent(iBin);
+    double alpha_ORI_e = h1_alpha_smooth->GetBinError(iBin);
+    double R0_c = R0->GetBinContent(iBin);
+    double R0_e = R0->GetBinError(iBin);
+    double alpha_Final_c = (1-R0_c)*alpha_ORI_c;
+    double alpha_Final_e = sqrt(alpha_ORI_c*alpha_ORI_c*R0_e*R0_e+(1-R0_c)*(1-R0_c)*alpha_ORI_e*alpha_ORI_e);
+    alpha_Final->SetBinContent(iBin,alpha_Final_c);
+    alpha_Final->SetBinError(iBin,alpha_Final_e);
+  }
+  
+  delete h1_shuffled_sig;  
+  delete h1_shuffled_side; 
+  delete h1_alpha;
+  delete h1_alpha_smooth;
+  
+  
+  return alpha_Final;
+  
+
+}
+
 
 TH1D* SidebandFitter::dummyAlphaHist( float alpha , TH1D* inhist , char* histName  ) {
 

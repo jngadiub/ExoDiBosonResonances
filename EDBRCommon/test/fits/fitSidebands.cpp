@@ -13,8 +13,8 @@
 #include <iostream>
 
 #include "SidebandFitter.h"
-#include "Config_XWW.h"
-//#include "Config_XZZ.h"
+//#include "Config_XWW.h"
+#include "Config_XZZ.h"
 using namespace std;
 
 void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1,bool ScaleTTbar=0);
@@ -337,12 +337,21 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
       cout<<"Generating toys"<<endl;
       //2: use it as template for generating toys
       TH1D *h_dist_p0=new TH1D("h_dist_p0","Distribution of par0 of fit to alpha for 500 toys",1000,-5.0,5.0);
+      TH1D *h1_mZZ_signalRegion   =(TH1D*)fWS->Get("mX_signalRegion");
+      TH1D *h1_mZZ_sidebands      =(TH1D*)fWS->Get("mX_sidebands");
+      TH1D *h1_mZZ_signalRegion_nw=(TH1D*)fWS->Get("mX_signalRegion_noWeight");
+      TH1D *h1_mZZ_sidebands_nw   =(TH1D*)fWS->Get("mX_sidebands_noWeight");
       for(unsigned int i = 0 ; i <nToys ; i++) {
 
 	char histotitle[50];
 	sprintf(histotitle,"tmp_%d",i);
-	TH1D* variedHisto = sf->shuffle(myalpha, randomGen ,histotitle, NULL);
-
+	TH1D* variedHisto = 0 ;
+	if(alphaPoisson)
+	  variedHisto = sf->realpharize(h1_mZZ_signalRegion ,h1_mZZ_sidebands , h1_mZZ_signalRegion_nw ,h1_mZZ_sidebands_nw  ,R0, randomGen ,histotitle);
+	else
+	  variedHisto = sf->shuffle(myalpha, randomGen ,histotitle, NULL);
+	
+	
 	variedHisto->Write();
 	//3:for each toy make a fit and save the results in the output histo
 	std::vector<double> tmppars;

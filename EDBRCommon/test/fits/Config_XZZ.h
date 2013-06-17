@@ -1,5 +1,5 @@
 
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130424/";
+const std::string myOutDir="FitSidebandsMJJ_ZZ_EXPERIMENTAL/";
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsb/";
 
@@ -16,6 +16,8 @@ const bool doPseudoExp=true; //if true, for for different psuedo-alpha
 const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=false;//choose what to plot as main fit function
+
+const bool alphaPoisson=true;//use Poisson errors for alpha uncertainties
 
 std::string channel_marker="xzz";
 

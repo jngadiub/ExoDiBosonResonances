@@ -14,8 +14,8 @@
 
 #include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
 
-#include "binningFits_XWW.h"
-//#include "binningFits_XZZ.h"
+//#include "binningFits_XWW.h"
+#include "binningFits_XZZ.h"
 
 class SidebandFitter {
 
@@ -38,7 +38,7 @@ class SidebandFitter {
   void setCanvasLabel(string new_label);
   TH1D* shuffle( TH1D* inhist, TRandom3* random, char *histName, TH1D* inhist2 = 0 );
   TH1D* shuffle( TH1D* inhist, TRandom3* random, char *histName, TH1D* madgr , TH1D* sherpa );
-  TH1D* shufflePoisson( TH1D* inhist, TRandom3* random, char *histName);
+  TH1D* realpharize( TH1D* signalRegion , TH1D*sidebands,TH1D* signalRegion_nw , TH1D*sidebands_nw, TH1D* R0, TRandom3* random, char *histName);
   TH1D* dummyAlphaHist( float alpha , TH1D* inhist , char* histName );
   void alphaFit( TH1D* alpha_hist , std::vector<double> & fitpars, std::vector<double> & fiterrs);
   std::string getFitFunc(std::string modifier){return fitfuncName_+modifier;}

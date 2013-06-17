@@ -19,6 +19,9 @@ const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=true;//choose what to plot as main fit function
 std::string channel_marker="xww";
 
+const bool alphaPoisson=false;//use Poisson errors for alpha uncertainties
+
+
 std::string bkgd_decorr_name="levexp_dcr_xww";
 
 
