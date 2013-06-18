@@ -56,15 +56,21 @@ cvs co -r edbr_vv_20130524 -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBos
 cvs co -r edbr_vv_20130524 -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
 cvs co -r edbr_vv_20130524 -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 
+### OR, IF YOU WANT TO RUN WITH THE NEW VERSION OF THE CODE
+### (CMSSW_5_3_9), use this tag
+cvs co -r edbr_vv_20130608 -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
+cvs co -r edbr_vv_20130608 -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
+cvs co -r edbr_vv_20130608 -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
+cvs co -r edbr_vv_20130608 -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
+
+
 rm -rf ExoDiBosonResonances/AnalysisDataFormats
 cvs co -d Francesco/KinFitter/src UserCode/pandolf/KinematicFit
 rm -f Francesco/KinFitter/src/T*
 rm -f Francesco/KinFitter/src/LeptonNeutrinoKinFitter.*
 
-#remove spurious semi-colons in Francesco/KinFitter/src/GlobalFitter.cc
-# at the end of these two functions
-# void MissingEnergy1::SetSumEt(float SumEt){
-# void MissingEnergy1::SetNeutrino(TLorentzVector Neutrino){
+### Notice that even though the instructions below are "commented",
+### they still need to be followed!
 
 #In AnalysisDataFormats/CMGTools/interface/DiObject.h add
 #template <typename T, typename U> class DiObjectKinFitFactory; near the top and
