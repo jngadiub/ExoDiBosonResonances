@@ -18,7 +18,7 @@
 //void getSigmaBands(string fileName);
 void plot_golfcourse_Asymptotic(bool unblind=false);
 void setFPStyle();
-bool isZZChannel=false;
+bool isZZChannel=true;
 double expo_interp(double s2, double s1,  double newM,double m2,double m1){
 
   if(m1>m2){
@@ -195,9 +195,10 @@ void plot_golfcourse_Asymptotic(bool unblind){
 
     //search for right index in theor vectors
     bool found=false;
-    int indtmp=0,ind=-1;
+    int indtmp=0,ind=-1, swapind=-1;
     while(!found){
       if(v_mhxs.at(indtmp)==v_mh.at(im)){found=true;ind=indtmp;}
+      if(swapind==-1 && v_mh.at(im)<v_mhxs.at(indtmp)){swapind=indtmp;}
       indtmp++;
       if(indtmp==v_mhxs.size()){
 	cout<<"!!! m="<<flush<<v_mh.at(im)<<" NOT found in theor matrix."<<endl;
@@ -205,16 +206,22 @@ void plot_golfcourse_Asymptotic(bool unblind){
       }
     }//end while    
    
-  
+    if(!found && swapind!=-1){
+      ind = swapind;
+    }
 
+    double fl_xs=double(v_xs.at(ind));//*1000.0
+    double fl_xs10=double(v_xs10.at(ind));//*1000.0
+  
     if(!found){
       cout<<"(2) m="<<v_mh.at(im)<<" NOT found in theor matrix."<<endl;
-      continue;
+      fl_xs  = expo_interp(v_xs.at(ind),v_xs.at(ind-1),v_mh.at(im),v_mhxs.at(ind),v_mhxs.at(ind-1));
+      fl_xs10  = expo_interp(v_xs10.at(ind),v_xs10.at(ind-1),v_mh.at(im),v_mhxs.at(ind),v_mhxs.at(ind-1));
+
+      //continue;
     }
 
   
-    double fl_xs=double(v_xs.at(ind));//*1000.0
-    double fl_xs10=double(v_xs10.at(ind));//*1000.0
    
     if(fl_xs<fl_xs10)cout<<"WARNING ABOUT XSECT! XS="<<fl_xs<<"  XS10="<<fl_xs10<<endl;
 
