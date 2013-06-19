@@ -8,12 +8,12 @@ source = cms.Source("PoolSource",
                    )
 
 cmgFiles.extend([
-    '/store/user/shuai/ExoDiBosonResonances/CMGtuple/production0428/Summer12/CA8//ZZ_xww/cmgTuple_0.root',
-    '/store/user/shuai/ExoDiBosonResonances/CMGtuple/production0428/Summer12/CA8//ZZ_xww/cmgTuple_1.root',
-    '/store/user/shuai/ExoDiBosonResonances/CMGtuple/production0428/Summer12/CA8//ZZ_xww/cmgTuple_2.root',
-    '/store/user/shuai/ExoDiBosonResonances/CMGtuple/production0428/Summer12/CA8//ZZ_xww/cmgTuple_3.root',
-    '/store/user/shuai/ExoDiBosonResonances/CMGtuple/production0428/Summer12/CA8//ZZ_xww/cmgTuple_4.root',
-    '/store/user/shuai/ExoDiBosonResonances/CMGtuple/production0428/Summer12/CA8//ZZ_xww/cmgTuple_5.root',
-    '/store/user/shuai/ExoDiBosonResonances/CMGtuple/production0428/Summer12/CA8//ZZ_xww/cmgTuple_6.root',
-    '/store/user/shuai/ExoDiBosonResonances/CMGtuple/production0428/Summer12/CA8//ZZ_xww/cmgTuple_7.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0601/Summer12/CA8//ZZ_xww/cmgTuple_0.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0601/Summer12/CA8//ZZ_xww/cmgTuple_1.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0601/Summer12/CA8//ZZ_xww/cmgTuple_2.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0601/Summer12/CA8//ZZ_xww/cmgTuple_3.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0601/Summer12/CA8//ZZ_xww/cmgTuple_4.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0601/Summer12/CA8//ZZ_xww/cmgTuple_5.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0601/Summer12/CA8//ZZ_xww/cmgTuple_6.root',
+    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/shuai/production0601/Summer12/CA8//ZZ_xww/cmgTuple_7.root',
     ])
