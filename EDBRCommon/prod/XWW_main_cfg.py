@@ -174,6 +174,50 @@ if options.mcordata == "DATASM" :
 
 
 ###################################################################
+# Met Sequence: apply met phi correction #
+###################################################################
+
+process.load("JetMETCorrections/Type1MET/pfMETsysShiftCorrections_cfi")
+process.pfMEtSysShiftCorr.src = cms.InputTag('patMETs')
+process.pfMEtSysShiftCorr.srcMEt = cms.InputTag('patMETs')
+#process.pfMEtSysShiftCorr.srcJets = cms.InputTag('selectedPatJetsPFlow')
+
+if "DATA" in options.mcordata :
+ # pfMEtSysShiftCorrParameters_2012runAplusBvsNvtx_data
+ process.pfMEtSysShiftCorr.parameter = cms.PSet(
+      numJetsMin = cms.int32(-1),
+      numJetsMax = cms.int32(-1),
+      px = cms.string("+0.2661 + 0.3217*Nvtx"),
+      py = cms.string("-0.2251 - 0.1747*Nvtx")
+ #    px = cms.string("+1.68804e-01 + 3.37139e-01*Nvtx"),
+ #    py = cms.string("-1.72555e-01 - 1.79594e-01*Nvtx")
+ )
+else :
+ # pfMEtSysShiftCorrParameters_2012runAplusBvsNvtx_mc
+ process.pfMEtSysShiftCorr.parameter = cms.PSet(
+      numJetsMin = cms.int32(-1),
+      numJetsMax = cms.int32(-1),
+      px = cms.string("+0.1166 + 0.0200*Nvtx"),
+      py = cms.string("+0.2764 - 0.1280*Nvtx")
+ #    px = cms.string("+2.22335e-02 - 6.59183e-02*Nvtx"),
+ #    py = cms.string("+1.52720e-01 - 1.28052e-01*Nvtx")
+ )
+            
+process.patMetShiftCorrected = cms.EDProducer("CorrectedPATMETProducer",
+                                               src = cms.InputTag('patMETs'),
+                                               applyType1Corrections = cms.bool(True),
+                                               srcType1Corrections = cms.VInputTag(
+                                               cms.InputTag('pfMEtSysShiftCorr')),
+                                               applyType2Corrections = cms.bool(False)
+                                              )
+
+process.metphiCorretionSequence = cms.Sequence(
+        process.pfMEtSysShiftCorrSequence *
+        process.patMetShiftCorrected
+        )
+
+
+###################################################################
 # Ele Sequence: select electron and neutrino and build Welenu from them #
 ###################################################################
     
@@ -196,6 +240,7 @@ process.load('ExoDiBosonResonances.EDBRMuon.skims.selEventsWmunu_cff')
 
 
 process.analysisSequenceElectrons = cms.Sequence(
+	process.metphiCorretionSequence +
     process.eleSequence +
     process.selectedElectronSequence +
     process.muonSequence +
@@ -209,6 +254,7 @@ process.analysisSequenceElectrons = cms.Sequence(
 
 
 process.analysisSequenceMuons = cms.Sequence(
+	process.metphiCorretionSequence +
     process.eleSequence +
     process.selectedElectronSequence +
     process.muonSequence +
