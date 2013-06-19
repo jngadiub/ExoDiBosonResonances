@@ -1,0 +1,39 @@
+### How to run the electron and muon systematics
+
+#1) Make sure you're in the right version of the code. If you're using the "old" PATtuple, 
+#you must use an "old" version of the code. I had tag edbr_vv_20130410b if I remember correctly
+
+#2) Go to our directory
+cd $CMSSW_BASE/src/ExoDiBosonResonances/
+
+#3) Update the smearing modules. DON'T UPDATE OTHER THINGS, or else you'll go to the "new" version of the code
+cvs update -A EDBRElectron/BuildFile.xml EDBRElectron/src/PATElectronSmearProducer.cc EDBRElectron/src/PATElectronSmearProducer.h
+cvs update -A EDBRMuon/BuildFile.xml EDBRMuon/src/PATMuonSmearProducer.cc EDBRMuon/src/PATMuonSmearProducer.h
+
+#4) Update the configuration modules
+cvs update -A EDBRCommon/prod/EDBR_ElectronSystematics_cfg.py
+cvs update -A EDBRCommon/prod/EDBR_MuonSystematics_cfg.py
+
+#5) Compile
+scram b -j 8
+
+### Now, the tricky thing. Those files, EDBR_ElectronSystematics_cfg.py and EDBR_Muon_Systematics_cfg.py
+### are modifications of the EDBR_main_cfg.py files that I made. They have some additions in the end of
+### the file that:
+### a) Set up random numbers for smearing 
+### b) Makes the files consider only signal
+### c) Create a new module for smearing
+### d) Change the modules and paths such that the smearing module is invoked
+### So, you should put these additions to your own version of EDBR_main_cfg.py (or XWW_main_cfg.py).
+
+### For completeness, I document here the options of the smearing module:
+
+# src = cms.InputTag("patElectronsWithTrigger"), # Shouldn't change this!
+# highPtRegion = cms.double(200.0),              # Objects with pt ABOVE this threshold will have the "extra" momentum scale applied
+# momentumScale = cms.double(0.0),               # The regular momentum scale which you use for scaling smearing
+# extraMomentumScale = cms.double(0.0),          # The "extra" momenum scale discussed above
+# isScale = cms.bool(True),                      # If True, will do scaling. If False, will do smearing (randomly around a gaussian)
+# isPositive = cms.bool(True),                   # If True, scale up. If false, scale down. If you're doing smearing instead of scaling, set True
+
+### Some example setups are in the files. Running the files on the PATtuples give you the changed CMGtuples, 
+### and from those you do the trees, histograms, etc.
