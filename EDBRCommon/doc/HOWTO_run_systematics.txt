@@ -37,3 +37,19 @@ scram b -j 8
 
 ### Some example setups are in the files. Running the files on the PATtuples give you the changed CMGtuples, 
 ### and from those you do the trees, histograms, etc.
+
+
+
+
+
+### How to run Jet Energy Scale systematics
+#1) Make sure that the tag that you are using is edbr_vv_20130523b or greater
+#2) Open ExoDiBosonResonances/EDBRCommon/python/factories/cmgJet_cfi.py and in both cmgJet and structJetFactory change:
+#   - applyScale to True
+#   - nSigmaScale equal to the number of sigma that you want use to scale the jet energy. 
+
+#Putting applyScale equal to False (that is the standard value that has this boolean) means that you are applying the nominal values of the JES
+#Consider that nSigmaScale equal to 1.0 and -1.0 gives different results: you are scaling the jet energy of the JES nominal values plus or minus one sigma
+#Consider also that nSigmaScale equal to 0.0 gives the same results as if applyScale is setted to false: this means that if you have nSigmaScale equal to 0.0 and applyScale equal to True at the same time, you are applying the nominal values of the JES
+
+#3) Now you can run your analysis in order to produce the cmgTuples: in your cmgTuples the jets will have the energy scaled according to your setting
