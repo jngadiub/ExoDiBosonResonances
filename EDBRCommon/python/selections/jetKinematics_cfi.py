@@ -54,11 +54,11 @@ isMergedSideband = cms.PSet(
     )
 
 isMergedWSignal = cms.PSet(
-    prunedMass = cms.string('prunedMass()>70.0 && prunedMass()<100.0')
+    prunedMass = cms.string('prunedMass()>65.0 && prunedMass()<105.0')
     )
 
 isMergedWSideband = cms.PSet(
-    prunedMass = cms.string('(prunedMass()>50.0&&prunedMass()<70.0) || prunedMass()>100.0')
+    prunedMass = cms.string('(prunedMass()>40.0&&prunedMass()<65.0) || prunedMass()>105.0&&prunedMass()<130')
     )
 isMergedFullRange  = cms.PSet(
 	prunedMass = cms.string('prunedMass()>0.0')
