@@ -514,7 +514,7 @@ void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name,std::s
 
 	  TString filename = t1->GetFile()->GetEndpointUrl()->GetUrl();
 	  //cout<<filename<<endl;
-	  if(filename.Contains("TTBAR"))
+	  if(filename.Contains("TTBAR")||filename.Contains("SingleTop"))
 	    {
 	      //cout<<filename<<endl;
 	      eventWeight_2 =eventWeight_2*ttbar_scale;
