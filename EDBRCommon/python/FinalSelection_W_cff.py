@@ -129,7 +129,7 @@ BestTTBarSelector=cms.EDProducer("WelenuNJetEDBRBestCandidateSelector",
 
 
 allSelectedEDBR = cms.EDProducer("CandViewMerger",
-       src = cms.VInputTag( "BestFullRangeSelector:singleJet", "BestFullRangeSelector:doubleJet", "BestTTBarSelector:singleJet", "BestTTBarSelector:doubleJet"  )
+       src = cms.VInputTag( "BestCandSelector:singleJet", "BestCandSelector:doubleJet", "BestSidebandSelector:singleJet", "BestSidebandSelector:doubleJet", "BestFullRangeSelector:singleJet", "BestFullRangeSelector:doubleJet", "BestTTBarSelector:singleJet", "BestTTBarSelector:doubleJet"  )
   )
 
 
@@ -140,7 +140,7 @@ FinalFilter = cms.EDFilter("CandViewCountFilter",
 
 
 cmgSeq = cms.Sequence( DiJetVBFTagger+SingleJetVBFTagger+
-                       #BestCandSelector + BestSidebandSelector +  
+                       BestCandSelector + BestSidebandSelector +  
 					   BestFullRangeSelector +  BestTTBarSelector  +
                        allSelectedEDBR + FinalFilter
                        )
