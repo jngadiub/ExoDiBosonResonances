@@ -121,9 +121,11 @@ For WW:
 
 /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/fullallrange
 	date         : 20130601
+	cmgtuple     : cmgTuple_0601 
 	updates	     : synchronization updates
 /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/ttbarcontrol
 	date         : 20130601
+	cmgtuple     : cmgTuple_0601 
 	updates      : synchronization updates for ttbarcontrol region
 
 
