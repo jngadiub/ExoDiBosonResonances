@@ -142,7 +142,7 @@ Then you can check the logs to find the problem.
 At last you change RESUB=1 to resubmit them.
 
 
-11) Another new script to submit the trees
+11) Another new script to submit the trees  --------- Recommended
 
 There is a new script to submit the trees, from which you can decide how many files to run in one job.
 
@@ -157,10 +157,13 @@ Edit submit_split.sh, note you have an option of how many files to run in each j
 ./submit_split.sh
 
 TO CHECK:
-Edit check_split.sh, set the treedir and RESUB=0, MERGE=0. Then
+Edit check_split.sh, set the treedir and RESUB=0, MERGE=0, MERGESAMPLE=0. Then
 ./check_split.sh
 It will tell you if you are missing some root files or in some logs there are things incorrect. 
 Then you set RESUB=1 and run it again to resubmit failed jobs.
 After everything is fine you can set MERGE=1 to merge the output of the jobs.
+For WW, you can then set MERGE=0, MERGESAMPLE=1, to merge similar samples to
+one root file.
+
 
 
