@@ -4,6 +4,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
+#include "TRandom3.h"
 
 #include <iostream>
 
@@ -27,60 +28,82 @@ cmg::PFJetSmearFactory::event_ptr cmg::PFJetSmearFactory::create(const edm::Even
     }
   }//end if applyScale and 1st event
   
-  JetResolution *ptResol= 0;
-  const bool  doGaussianSmear = true;  
-  if(applyResolution_&&ptResol==0)ptResol=new JetResolution(resolutionFile_, doGaussianSmear);
-  
   for(cmg::PFJetFactory::collection::iterator mi = result->begin();
       mi != result->end(); ++mi){
     
+    if(applyScale_){   
+      double jetPt = mi->pt();
+      double jetEta = mi->eta();
+      double jetMass = mi->mass();
+      jecUnc->setJetEta(jetEta);
+      jecUnc->setJetPt(jetPt);
+      double unc = jecUnc->getUncertainty(true);
+      float jesCorrFactor = unc*nSigmaScale_ ;
+      jetPt   = (1+jesCorrFactor)*jetPt;
+      jetMass = (1+jesCorrFactor)*jetMass;
+      const math::PtEtaPhiMLorentzVector jetp4 (jetPt, mi->eta(), mi->phi(), jetMass);
+      mi->setP4(jetp4);  
+    }//end if applyScale
     
     if(applyResolution_){
+      float jesSmearFactor = JetResolutionPFJet(iEvent, mi);  
+      double jetPt = mi->pt();
+      double jetMass = mi-> mass();
+      jetPt   = jesSmearFactor*jetPt;
+      jetMass = jesSmearFactor*jetMass;
+      const math::PtEtaPhiMLorentzVector jetp4 (jetPt, mi->eta(), mi->phi(), jetMass);
+      mi->setP4(jetp4);  
+    }//end if applyResolution
     
-      float ini_eta = mi->eta() ;
-      float ini_pt = mi->pt();  
-      float jetpt = ini_pt;
-      float jetMass = mi->mass();
-      if(ini_pt > 10){ // no reliable resolution numbers that low
-	//std::cout << "eta/pt " << ini_eta <<" " << ini_pt << std::endl;
-	TF1* fPtResol = ptResol->resolutionEtaPt(ini_eta,ini_pt);
-	fPtResol->Print("v");
-	float rndm = fPtResol->GetRandom();
-	float etafactor = 0;
-	if(fabs(ini_eta) <1.1)      etafactor = 0.04;
-	else if(fabs(ini_eta) <1.7) etafactor = 0.02;
-	else if(fabs(ini_eta) <2.3) etafactor = 0.09;
-	else                       etafactor = 0.04;
-	if(resolutionOverride_ > 0.) etafactor = resolutionOverride_;
-	float jesSmearFactor = fabs(1.- (1.-rndm)*etafactor) ;
-	//std::cout << rndm  << " "<<smearfactor << std::endl;
-	jetpt = jesSmearFactor*ini_pt;
-	jetMass = jesSmearFactor*jetMass;
-	const math::PtEtaPhiMLorentzVector jetp4(jetpt, mi->eta(), mi->phi(), jetMass);//mi->mass());
-	mi->setP4(jetp4);
-	delete fPtResol;
-      }
-    }//end if applyRes
-
-   
-  if(applyScale_){   
-    double jetPt = mi->pt();
-    double jetEta = mi->eta();
-    double jetMass = mi->mass();
-    jecUnc->setJetEta(jetEta);
-    jecUnc->setJetPt(jetPt);
-    double unc = jecUnc->getUncertainty(true);
-    float jesCorrFactor = unc*nSigmaScale_ ;
-    //std::cout<<"Smearing factor = "<<smearfactor<<std::endl;
-    jetPt   = (1+jesCorrFactor)*jetPt;
-    jetMass = (1+jesCorrFactor)*jetMass;
-    const math::PtEtaPhiMLorentzVector jetp4 (jetPt, mi->eta(), mi->phi(), jetMass);//mi->mass());
-    mi->setP4(jetp4);  
-  }//end if applyScale
+  }//end loop on PFJet collection
   
- }//end loop on PFJet collection
-
-  delete ptResol;
   delete jecUnc;//too bad we cannot declare it as data member...
   return result;
 }
+
+
+float cmg::PFJetSmearFactory::JetResolutionPFJet(const edm::Event& iEvent, cmg::PFJetFactory::collection::iterator output){
+  bool genjet_match = false;
+  float genpt = -10;
+  float jetpt = output->pt();
+  double factor = 1;
+  if(fabs(output->eta())<0.5)      factor = 1.052;
+  else if(fabs(output->eta())<1.1) factor = 1.057;
+  else if(fabs(output->eta())<1.7) factor = 1.096;
+  else if(fabs(output->eta())<2.3) factor = 1.134;
+  else                             factor = 1.288;
+
+  edm::Handle<reco::GenJetCollection> GenjetCands;
+  iEvent.getByLabel("ca8GenJetsNoNu",GenjetCands);
+
+  double dR = 999;
+  for(reco::GenJetCollection::const_iterator genmi = GenjetCands->begin(); genmi != GenjetCands->end(); ++genmi){
+    if(deltaR(*output,*genmi) < dR  && deltaR(*output,*genmi) < 0.3){
+      dR = deltaR(*output,*genmi);
+      genjet_match = true;
+      genpt = genmi->pt();
+    }
+  }
+
+  if(genjet_match){
+    jetpt = max(0.,genpt+factor*(jetpt-genpt));
+  }
+  else{
+    double sigmaMC;
+    if(fabs(output->eta()) < 0.5 )   sigmaMC = 0.05206; 
+    else if(fabs(output->eta())<1.0) sigmaMC = 0.05403;
+    else if(fabs(output->eta())<1.5) sigmaMC = 0.06231;
+    else if(fabs(output->eta())<2.0) sigmaMC = 0.06452;
+    else                             sigmaMC = 0.07672;
+    TRandom3 r;
+    r.SetSeed(0);
+    double resol = sigmaMC;
+    double sigma = resol * sqrt(factor*factor-1);
+    double smear = r.Gaus(1,sigma);
+    jetpt = jetpt*smear;
+  }
+  
+  float smearing_factor = jetpt/output->pt();
+  return smearing_factor;
+}
+

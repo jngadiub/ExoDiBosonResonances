@@ -29,8 +29,6 @@ cmgJet = cms.EDFilter(
     "PFJetSmearPOProducer", 
     cfg =  cms.PSet( PFJetFactory = pfJetFactory.clone(), 
                     applyResolution = cms.bool(False),
-                    resolutionFile = cms.FileInPath("CondFormats/JetMETObjects/data/Spring10_PtResolution_AK5PF.txt"),
-                    resolutionOverride = cms.double(-1.),# negative => use default
                     applyScale = cms.bool(False),
                     applyScaleFromDB= cms.bool(False),
                     scaleFile = cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/DUMMY_GR_R_42_V19_AK5PF_DUMMY_Uncertainty_DUMMY.txt"),
@@ -72,10 +70,8 @@ structJetFactory = cms.PSet(
                            "puJetMvaCA8CHS:fullId",                           
                            ),
        verbose = cms.untracked.bool( True ),
-###used for JES and JER systematics
+       ###used for JES and JER systematics
        applyResolution = cms.bool(False),
-       resolutionFile = cms.FileInPath("CondFormats/JetMETObjects/data/Spring10_PtResolution_AK5PF.txt"), 
-       resolutionOverride = cms.double(-1.),# negative => use default
        applyScale = cms.bool(False),
        applyScaleFromDB= cms.bool(False),
        scaleFile = cms.FileInPath("ExoDiBosonResonances/EDBRCommon/data/DUMMY_GR_R_42_V19_AK5PF_DUMMY_Uncertainty_DUMMY.txt"), 

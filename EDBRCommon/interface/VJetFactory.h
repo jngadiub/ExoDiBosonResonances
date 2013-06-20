@@ -21,6 +21,8 @@ class VJetFactory : public Factory<cmg::VJet>{
     void set(const edm::Event& iEvent, const edm::EventSetup& iSetup,
 			  const pat::JetPtr& input, cmg::VJet *output);
 
+    float JetResolution(const edm::Event& iEvent, cmg::VJet *output);
+
   private:
     const edm::InputTag jetLabel_;
     const edm::InputTag prunedJetLabel_;
@@ -32,15 +34,10 @@ class VJetFactory : public Factory<cmg::VJet>{
     const bool useConstituents_;
     const bool verbose_;
 
-    //------------------------------ANIELLO------------------------------//
     const bool applyResolution_;
-    const std::string resolutionFile_;
-    const double resolutionOverride_;
-    
     const bool applyScale_, applyScaleDB_;
     const std::string scaleFile_;
     const double nSigmaScale_;
-    //------------------------------ANIELLO------------------------------//
   };
 
 }

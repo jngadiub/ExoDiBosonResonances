@@ -24,19 +24,16 @@ namespace cmg{
     PFJetSmearFactory(const edm::ParameterSet& ps):
       PFJetFactory_(ps.getParameter<edm::ParameterSet>("PFJetFactory")),
       applyResolution_(ps.getParameter<bool>("applyResolution")),
-      resolutionFile_(ps.getParameter<edm::FileInPath>("resolutionFile").fullPath()),
-      resolutionOverride_(ps.getParameter<double>("resolutionOverride")),
       applyScale_(ps.getParameter<bool>("applyScale")),
       applyScaleDB_(ps.getParameter<bool>("applyScaleFromDB")),
       scaleFile_(ps.getParameter<edm::FileInPath>("scaleFile").fullPath()),
       nSigmaScale_(ps.getParameter<double>("nSigmaScale"))
 	{
-	  if(applyScale_) std::cout<<"For the Standard Jet you are applying the JES with sigma equal to: "<< nSigmaScale_ << std::endl;
-	  else std::cout<<"For the Standard Jet you are NOT applying the JES" << std::endl;
-	  
-	  //      jecUnc_ =0;
+	  if(applyScale_)      std::cout<<"For the Standard Jet you are applying the JES with sigma equal to: "<< nSigmaScale_ << std::endl;
+	  if(applyResolution_) std::cout<<"For the Standard Jet you are applying the JER smearing"<< std::endl;
 	  
 	}
+      float JetResolutionPFJet(const edm::Event& iEvent, cmg::PFJetFactory::collection::iterator output);
       
       
       virtual event_ptr create(const edm::Event&, const edm::EventSetup&) ;
@@ -46,9 +43,6 @@ namespace cmg{
       PFJetFactory PFJetFactory_;
       
       const bool applyResolution_;
-      const std::string resolutionFile_;
-      const double resolutionOverride_;
-      
       const bool applyScale_, applyScaleDB_;
       const std::string scaleFile_;
       const double nSigmaScale_;

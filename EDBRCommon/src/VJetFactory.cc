@@ -2,6 +2,7 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "TLorentzVector.h"
+#include "TRandom3.h"
 
 #include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
@@ -26,19 +27,16 @@ cmg::VJetFactory::VJetFactory(const edm::ParameterSet& ps):
   puIdsTag_(ps.getParameter<std::vector<edm::InputTag> >("puIds")), 
   useConstituents_(ps.getParameter<bool>("useConstituents")) ,
   verbose_(ps.getUntrackedParameter<bool>("verbose")),
-  //------------------------------ANIELLO------------------------------//
   applyResolution_(ps.getParameter<bool>("applyResolution")),
-  resolutionFile_(ps.getParameter<edm::FileInPath>("resolutionFile").fullPath()),
-  resolutionOverride_(ps.getParameter<double>("resolutionOverride")),
   applyScale_(ps.getParameter<bool>("applyScale")),
   applyScaleDB_(ps.getParameter<bool>("applyScaleFromDB")),
   scaleFile_(ps.getParameter<edm::FileInPath>("scaleFile").fullPath()),
   nSigmaScale_(ps.getParameter<double>("nSigmaScale"))
-  //------------------------------ANIELLO------------------------------//
 {
   
   
   if(applyScale_ && verbose_) std::cout<<"For the VJet you are applying the JES with sigma equal to: "<< nSigmaScale_ << std::endl;
+  if(applyResolution_ && verbose_) std::cout<<"For the VJet you are applying the JER smearing"<< std::endl;
   if(verbose_)cout<<"VJetFactory::useConstituents is "<<(useConstituents_ ? "True" : "False")<<endl;
   
   // PU discrimination
@@ -98,7 +96,7 @@ void cmg::VJetFactory::set(const edm::Event& iEvent, const edm::EventSetup& iSet
   JetCorrectionUncertainty *jecUnc=0;  
   double unc = 0.0;
   float jesCorrFactor = 0.0;
-  float jesSmearFactor = 0.0;
+  float jesSmearFactor = 1.0;
   if(applyScale_){
     if(jecUnc==0){//this is the 1st jet
       if(!applyScaleDB_){//this is deprecated !
@@ -121,35 +119,19 @@ void cmg::VJetFactory::set(const edm::Event& iEvent, const edm::EventSetup& iSet
     jesCorrFactor = unc*nSigmaScale_ ;
     jetPt   = (1+jesCorrFactor)*jetPt;
     jetMass = (1+jesCorrFactor)*jetMass;
-    const math::PtEtaPhiMLorentzVector jetp4 (jetPt, output->eta(), output->phi(), jetMass);//output->mass());
+    const math::PtEtaPhiMLorentzVector jetp4 (jetPt, output->eta(), output->phi(), jetMass);
     output->setP4(jetp4);  
   }//end if applyScale 
 
   if(applyResolution_){
-    bool  doGaussianSmear = true;
-    JetResolution ptResol(resolutionFile_, doGaussianSmear);
-    float ini_eta = output->eta() ;
-    float ini_pt = output->pt();  
-    float jetpt = ini_pt;
+    jesSmearFactor = JetResolution(iEvent, output);  
+    double jetPt = output->pt();
     double jetMass = output-> mass();
-    if(ini_pt > 10){ // no reliable resolution numbers that low
-      TF1* fPtResol = ptResol.resolutionEtaPt(ini_eta,ini_pt);
-      fPtResol->Print("v");
-      float rndm = fPtResol->GetRandom();
-      float etafactor = 0;
-      if(fabs(ini_eta) <1.1)      etafactor = 0.04;
-      else if(fabs(ini_eta) <1.7) etafactor = 0.02;
-      else if(fabs(ini_eta) <2.3) etafactor = 0.09;
-      else                       etafactor = 0.04;
-      if(resolutionOverride_ > 0.) etafactor = resolutionOverride_;
-      jesSmearFactor = fabs(1.- (1.-rndm)*etafactor) ;
-      jetpt = jesSmearFactor*ini_pt;
-      jetMass = jesSmearFactor*jetMass;
-      const math::PtEtaPhiMLorentzVector jetp4(jetpt, output->eta(), output->phi(), jetMass);//output->mass());
-      output->setP4(jetp4);
-      delete fPtResol;
-    }
-  }
+    jetPt   = jesSmearFactor*jetPt;
+    jetMass = jesSmearFactor*jetMass;
+    const math::PtEtaPhiMLorentzVector jetp4 (jetPt, output->eta(), output->phi(), jetMass);
+    output->setP4(jetp4);  
+  }//end if applyResolution
   //end JES/JER systematic unc
    
   ///Fill PF Jet specific
@@ -213,10 +195,8 @@ void cmg::VJetFactory::set(const edm::Event& iEvent, const edm::EventSetup& iSet
       output->prunedMass_=(float)pjPtr->mass();//pjPtr->correctedJet("Uncorrected").mass()
       
       //JES/JER systematics applied to pruned mass
-      if(applyResolution_)output->prunedMass_=(float)pjPtr->mass()*(jesSmearFactor);
+      if(applyResolution_)output->prunedMass_=(float)pjPtr->mass()*jesSmearFactor;
       if(applyScale_)output->prunedMass_=(float)pjPtr->mass()*(1+jesCorrFactor);
-      
-      //std::cout<<"Jet Pruned mass before/after the JES corr: "<<pjPtr->mass()<<" -> "<<output->prunedMass_<<std::endl;
 
       // if(output->pt()>20.0&&verbose_)cout<<"From VJetFactory: Jet STD/Pruned matched with dR="<<dRmin <<"  -> Mass NOT-Pruned="<<output->mass()<< "  Pruned="<<pjPtr->mass()<<" Pruned-uncorr="<<pjPtr->correctedJet("Uncorrected").mass()<<endl;
       
@@ -245,3 +225,53 @@ void cmg::VJetFactory::set(const edm::Event& iEvent, const edm::EventSetup& iSet
   delete jecUnc;
 
 }//end set
+
+
+
+float cmg::VJetFactory::JetResolution(const edm::Event& iEvent, cmg::VJet *output){
+  
+  
+  bool genjet_match = false;
+  float genpt = -10;
+  float jetpt = output->pt();
+  double factor = 1;
+  if(fabs(output->eta())<0.5)      factor = 1.052;
+  else if(fabs(output->eta())<1.1) factor = 1.057;
+  else if(fabs(output->eta())<1.7) factor = 1.096;
+  else if(fabs(output->eta())<2.3) factor = 1.134;
+  else                             factor = 1.288;
+
+  edm::Handle<reco::GenJetCollection> GenjetCands;
+  iEvent.getByLabel("ca8GenJetsNoNu",GenjetCands);
+
+  double dR = 999;
+  for(reco::GenJetCollection::const_iterator genmi = GenjetCands->begin(); genmi != GenjetCands->end(); ++genmi){
+    if(deltaR(*output,*genmi) < dR  && deltaR(*output,*genmi) < 0.3){
+      dR = deltaR(*output,*genmi);
+      genjet_match = true;
+      genpt = genmi->pt();
+    }
+  }
+
+  if(genjet_match){
+    jetpt = max(0.,genpt+factor*(jetpt-genpt));
+  }
+  else{
+    double sigmaMC;
+    if(fabs(output->eta()) < 0.5 )   sigmaMC = 0.05206; 
+    else if(fabs(output->eta())<1.0) sigmaMC = 0.05403;
+    else if(fabs(output->eta())<1.5) sigmaMC = 0.06231;
+    else if(fabs(output->eta())<2.0) sigmaMC = 0.06452;
+    else                             sigmaMC = 0.07672;
+    TRandom3 r;
+    r.SetSeed(0);
+    double resol = sigmaMC;
+    double sigma = resol * sqrt(factor*factor-1);
+    double smear = r.Gaus(1,sigma);
+    jetpt = jetpt*smear;
+  }
+  
+  float smearing_factor = jetpt/output->pt();
+  return smearing_factor;
+}
+
