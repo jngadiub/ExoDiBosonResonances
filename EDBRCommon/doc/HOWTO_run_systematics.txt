@@ -53,3 +53,20 @@ scram b -j 8
 #Consider also that nSigmaScale equal to 0.0 gives the same results as if applyScale is setted to false: this means that if you have nSigmaScale equal to 0.0 and applyScale equal to True at the same time, you are applying the nominal values of the JES
 
 #3) Now you can run your analysis in order to produce the cmgTuples: in your cmgTuples the jets will have the energy scaled according to your setting
+
+
+
+
+
+### How to run Jet Energy Resolution systematics
+#1) Update the necessary files:
+cvs update -A ExoDiBosonResonances/EDBRCommon/src/PFJetSmearFactory.cc
+cvs update -A ExoDiBosonResonances/EDBRCommon/src/VJetFactory.cc
+cvs update -A ExoDiBosonResonances/EDBRCommon/interface/PFJetSmearFactory.h
+cvs update -A ExoDiBosonResonances/EDBRCommon/interface/VJetFactory.h
+cvs update -A ExoDiBosonResonances/EDBRCommon/python/factories/cmgJet_cfi.py
+
+#2) Open ExoDiBosonResonances/EDBRCommon/python/factories/cmgJet_cfi.py and in both cmgJet and structJetFactory change:
+#   - applyResolution to True
+
+#3) Now you can run your analysis in order to produce the cmgTuples: in your cmgTuples the jets will have the energy resolution smeared
