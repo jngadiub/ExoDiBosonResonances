@@ -4318,7 +4318,7 @@ def pre_limit_simple(channel):
     #pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,40,130,  800,3000,"Exp","Pow")
     #pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,40,130,  800,3000,"2Exp","Exp")
     #pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,40,130,  800,2800,"ExpN","ExpTail")
-    pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,40,130,  800,2800,"ExpTail","Exp")
+    pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,40,130,  800, 3000,"ExpTail","Exp")
   
 def control_single(channel):
     print "control_single for %s sampel"%(channel)
