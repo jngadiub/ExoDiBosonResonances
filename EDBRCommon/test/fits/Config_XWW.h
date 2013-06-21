@@ -26,5 +26,5 @@ std::string bkgd_decorr_name="levexp_dcr_xww";
 
 
 const std::string datacardDir("DataCards_XWW_V21/");
-float mZZmax_=2800;
+float mZZmax_=3000;
 
