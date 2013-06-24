@@ -13,8 +13,8 @@
 #include <iostream>
 
 #include "SidebandFitter.h"
-//#include "Config_XWW.h"
-#include "Config_XZZ.h"
+#include "Config_XWW.h"
+//#include "Config_XZZ.h"
 using namespace std;
 
 void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name, std::string t2Name,int nxjCut=-1,bool ScaleTTbar=0);
@@ -492,11 +492,11 @@ void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name,std::s
       //now add ttbar scale factor to t1, and only to ttbar 
       if(ScaleTTbar)
 	{
-	  double ttbar_scale =0;
+	  double ttbar_scale =1;//default no scale
 	  //double tttar_scale_error=0;
 
 	  //for the analysis
-	  if(InTreeName=="SelectedCandidatesAB")
+	  if(InTreeName=="SelectedCandidates")
 	    {
 	      if(vTagPurity_2==0&&leptType_2==0)ttbar_scale = 1.290926;//eleLP
 	      if(vTagPurity_2==1&&leptType_2==0)ttbar_scale = 0.963780;//eleHP
