@@ -1,12 +1,16 @@
 #! /bin/bash
 
 
-SAMPLE_Run2012MU=( DoubleMu_Run2012A_13Jul2012 DoubleMu_Run2012A_recover DoubleMu_Run2012B_13Jul2012 DoubleMu_Run2012C_24Aug2012 DoubleMu_Run2012C_PRv2 DoubleMu_Run2012D_PRv1) 
-SAMPLE_Run2012ELE=( DoublePhotonHighPt_Run2012B_13Jul2012  DoublePhotonHighPt_Run2012C_24Aug2012 DoublePhotonHighPt_Run2012C_PRv2 DoublePhotonHighPt_Run2012D_PRv1 Photon_Run2012A_13Jul2012 Photon_Run2012A_recover)
+#SAMPLE_Run2012MU=( DoubleMu_Run2012A_13Jul2012 DoubleMu_Run2012A_recover DoubleMu_Run2012B_13Jul2012 DoubleMu_Run2012C_24Aug2012 DoubleMu_Run2012C_PRv2 DoubleMu_Run2012D_PRv1) 
+#SAMPLE_Run2012ELE=( DoublePhotonHighPt_Run2012B_13Jul2012  DoublePhotonHighPt_Run2012C_24Aug2012 DoublePhotonHighPt_Run2012C_PRv2 DoublePhotonHighPt_Run2012D_PRv1 Photon_Run2012A_13Jul2012 Photon_Run2012A_recover)
+#SAMPLE_Run2012MU=(DoubleMu_Run2012A_22Jan2013 DoubleMuParked_Run2012B_22Jan2013 DoubleMuParked_Run2012C_22Jan2013 DoubleMuParked_Run2012D_22Jan2013)
+#SAMPLE_Run2012ELE=(DoublePhotonHighPt_Run2012B_22Jan2013 DoublePhotonHighPt_Run2012C_22Jan2013 DoublePhotonHighPt_Run2012D_22Jan2013)
+#SAMPLE_MC1=( TTBARpowheg  DYJetsPt50To70 DYJetsPt70To100 DYJetsPt100 WW WZ ZZ WJetsPt100) # MC Background
+SAMPLE_MC2=( BulkG_ZZ_lljj_c0p2_M600 BulkG_ZZ_lljj_c0p2_M700 BulkG_ZZ_lljj_c0p2_M800 BulkG_ZZ_lljj_c0p2_M900 BulkG_ZZ_lljj_c0p2_M1000 BulkG_ZZ_lljj_c0p2_M1100 BulkG_ZZ_lljj_c0p2_M1200 BulkG_ZZ_lljj_c0p2_M1300 BulkG_ZZ_lljj_c0p2_M1400 BulkG_ZZ_lljj_c0p2_M1500 BulkG_ZZ_lljj_c0p2_M1600 BulkG_ZZ_lljj_c0p2_M1700 BulkG_ZZ_lljj_c0p2_M1800 BulkG_ZZ_lljj_c0p2_M1900 BulkG_ZZ_lljj_c0p2_M2000 BulkG_ZZ_lljj_c0p2_M2100 BulkG_ZZ_lljj_c0p2_M2200 BulkG_ZZ_lljj_c0p2_M2300 BulkG_ZZ_lljj_c0p2_M2400 BulkG_ZZ_lljj_c0p2_M2500)
+#SAMPLE_MC1=(TTBARpowheg DYJetsPt70To100 DYJetsPt100 WW WZ ZZ)
 
-SAMPLE_MC1=( TTBARpowheg  DYJetsPt50To70 DYJetsPt70To100 DYJetsPt100 WW WZ ZZ WJetsPt100) # MC Background
-SAMPLE_MC2=( BulkG_ZZ_lljj_c0p2_M600 BulkG_ZZ_lljj_c0p2_M700 BulkG_ZZ_lljj_c0p2_M800 BulkG_ZZ_lljj_c0p2_M900 BulkG_ZZ_lljj_c0p2_M1000 BulkG_ZZ_lljj_c0p2_M1100 BulkG_ZZ_lljj_c0p2_M1200 BulkG_ZZ_lljj_c0p2_M1300 BulkG_ZZ_lljj_c0p2_M1400 BulkG_ZZ_lljj_c0p2_M1500 BulkG_ZZ_lljj_c0p2_M1600 BulkG_ZZ_lljj_c0p2_M1700 BulkG_ZZ_lljj_c0p2_M1800 BulkG_ZZ_lljj_c0p2_M1900 BulkG_ZZ_lljj_c0p2_M2000 BulkG_ZZ_lljj_c1p0_M1000 BulkG_ZZ_lljj_c1p0_M1500 BulkG_ZZ_lljj_c1p0_M600 RSG_ZZ_lljj_c0p05_M1000 RSG_ZZ_lljj_c0p2_M1000 RSG_ZZ_lljj_c0p2_M1500) #MC signal: JHUGrav300  BulkG_ZZ_lljj_c0p2_M1200  BulkG_ZZ_lljj_c0p2_M1600  BulkG_ZZ_lljj_c0p2_M2000
-OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/"
+#OUTPATHBASE="/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/"
+OUTPATHBASE="/store/cmst3/group/exovv/CMGtuple/productionv2a/"
 
 OUTPATHDATA=${OUTPATHBASE}/Run2012/
 OUTPATHMC=${OUTPATHBASE}/Summer12/
@@ -45,7 +49,7 @@ for sample in "${SAMPLE_MC2[@]}"
   LOGDIR=logs/Summer12/
   OUTDIR=${OUTPATHMC}/${sample}
   QUEUE="8nh"
-  NFILES=2
+  NFILES=15
  # cmsMkdir  $OUTDIR
 
    ${MYCMSSW_AREA}/ExoDiBosonResonances/EDBRCommon/prod/cmsBatch_EXOVV.py  $NFILES  EDBR_main_cfg.py  -o ${LOGDIR}/${sample} -r ${OUTDIR} --notagCVS -b "bsub -q "${QUEUE}" -J "cmg${sample}" < batchScript.sh" -c "infile=summer12_${sample}_cff lepton=both selection=presel mcordata=MC"
@@ -63,7 +67,7 @@ for sample in "${SAMPLE_Run2012ELE[@]}"
   QUEUE="8nh"
  # cmsMkdir  $OUTDIR
 
-  NFILES=15
+  NFILES=40
 
   JSONFILE="dummy.json"
   if [[ "$sample" =~ "Photon" ]]
@@ -97,7 +101,7 @@ for sample in "${SAMPLE_Run2012MU[@]}"
   QUEUE="8nh"
  # cmsMkdir  $OUTDIR
   JSONFILE="dummy.json"
-  NFILES=15
+  NFILES=40
 
 
   JSONFILE="dummy.json"

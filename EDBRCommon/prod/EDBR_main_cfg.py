@@ -38,7 +38,12 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxE
 ###process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000))
 
 ##skip events with problem related to kinematic fit                    DYJetsToLL_PtZ-50To70              TTBar                    WJetsPt70To100
-process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:58698863"),cms.EventRange("1:11250208"),cms.EventRange("1:15386873"))
+process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:58698863"),
+                                                         cms.EventRange("1:11250208"),
+                                                         cms.EventRange("1:15386873"),
+                                                         cms.EventRange("1:19438582"),
+                                                         cms.EventRange("1:21193075")
+                                                         )
 ####for synch studies
 #process.source.eventsToProcess = cms.untracked.VEventRange(cms.EventRange("166699:715236831"),cms.EventRange("173389:180639524"))
 #process.source.eventsToProcess  = cms.untracked.VEventRange(cms.EventRange("1:231104"))
@@ -100,7 +105,8 @@ process.badEventFilter = cms.EDFilter("HLTHighLevel",
 ###########
 
 # provide list of HLT paths (or patterns) you want
-HLTlistMu  = cms.vstring("HLT_Mu17_Mu8*","HLT_Mu22_TkMu22*")   # triggers for DoubleMuon PD   
+#HLTlistMu  = cms.vstring("HLT_Mu17_Mu8*","HLT_Mu22_TkMu22*")   # triggers for DoubleMuon PD
+HLTlistMu  = cms.vstring("HLT_Mu22_TkMu8_*") # triggers for DoubleMuon PD, after conversation with Muon POG conveners
 HLTlistEle = cms.vstring("HLT_DoubleEle33_*") # triggers for DoubleElectron PD
 
 ### for SingleElectron and SingleMuon PD, request single lept trigger and
