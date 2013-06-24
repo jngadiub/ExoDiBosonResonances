@@ -8,6 +8,5 @@ source = cms.Source("PoolSource",
                    )
 
 cmgFiles.extend([
-    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//BulkG_ZZ_lljj_c0p2_M1300/cmgTuple_0.root',
-    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//BulkG_ZZ_lljj_c0p2_M1300/cmgTuple_1.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2a/Summer12/BulkG_ZZ_lljj_c0p2_M1300_v2/cmgTuple_0.root',
     ])
