@@ -650,17 +650,17 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("cosTheta2",100,-1.15,1.15);
 	hs.setHisto("phi",100,-3.7,3.7);
 	hs.setHisto("phiStar1",100,-3.7,3.7);
-	hs.setHisto("ptlep1",50,0,500);//50       0       500
-	hs.setHisto("ptlep2",35,0,600);
+	hs.setHisto("ptlep1",120,0,1200);
+	hs.setHisto("ptlep2",60,0,600);
 	hs.setHisto("ptjet1",50,0,500);
 	hs.setHisto("ptjet2",50,0,500);
-	hs.setHisto("ptZll",40,200,800);//40    200      800
-	hs.setHisto("ptZjj",40,200,800);//40    200       800
+	hs.setHisto("ptZll",76,80,1600); // 20 GeV bins
+	hs.setHisto("ptZjj",76,80,1600); // 20 GeV bins
 	hs.setHisto("yZll",28,-2.8,2.8);
 	hs.setHisto("yZjj",28,-2.8,2.8);
 	hs.setHisto("phiZll",100,-3.7,3.7);
 	hs.setHisto("phiZjj",100,-3.7,3.7);
-	hs.setHisto("etalep1",25,-2.1,2.1);// 25   -2.1       2.1
+	hs.setHisto("etalep1",25,-251,2.5);
 	hs.setHisto("etalep2",25,-2.5,2.5);
 	hs.setHisto("etajet1",25,-2.5,2.5);
 	hs.setHisto("etajet2",25,-2.5,2.5);
@@ -670,45 +670,40 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("phijet2",100,-3.7,3.7);
 	hs.setHisto("lep",100,0,1);
 	hs.setHisto("region",100,0,1);
-	hs.setHisto("mZZ",56,200,3000);//60    200       2000 -> 56, 200, 3000
+	hs.setHisto("mZZ",56,200,3000); // 50 GeV bins... 
+	//but to have the signal spread around 4 bins maybe we want 25 GeV bins?
 	hs.setHisto("mZZNoKinFit",81,175,2200);
 	hs.setHisto("ptmzz",35,0,350);
 	hs.setHisto("ptmzzNoKinFit",35,0,350);
 	hs.setHisto("mLL",40,70,110);
 	hs.setHisto("mJJ",20,40,140);
-	hs.setHisto("prunedmass",28,0,140);//28      0       140
-	hs.setHisto("mJJNoKinFit",25,40,140);//25     40      140
+	hs.setHisto("prunedmass",28,0,140);   // 5 GeV bins
+	hs.setHisto("mJJNoKinFit",24,40,160); // 5 GeV bins
 	hs.setHisto("met",35,0,600);//35      0       600
 	hs.setHisto("metSign",20,0,10);
 	//hs.setHisto("nBTags",100,-2.2,0);
 	hs.setHisto("deltaREDBR",100,0,4);
 	hs.setHisto("deltaRleplep",100,0,4);
 	hs.setHisto("deltaRjetjet",100,0,4);
-	//hs.setHisto("qgProduct",100,-100.2,-97.8);
-	//hs.setHisto("qgjet1",100,-100.2,-97.8);
-	//hs.setHisto("qgjet2",100,-100.2,-97.8);
 	hs.setHisto("betajet1",100,0,1.1);
-	//hs.setHisto("betajet2",100,0,1.1);
-	//hs.setHisto("puMvajet1",100,-1080,1000);
-	//hs.setHisto("puMvajet2",100,-1080,1000);
 	hs.setHisto("nXjets",6,-0.5,5.5);
-	hs.setHisto("mdrop",35,0.1,1.15);//35     0.1      1.15
-	hs.setHisto("nsubj21",35,0.2,1.1);//35     0.2      1.1
+	hs.setHisto("mdrop",35,0.1,1.15);
+	hs.setHisto("nsubj21",35,0.2,1.1);
 	//hs.setHisto("nsubj32",100,-1080,100);
 	//hs.setHisto("tau1",100,-1080,100);
 	//hs.setHisto("tau2",100,-1080,100);
 	hs.setHisto("qjet",35,0,1);//35     0        1
 	hs.setHisto("isomu1mod",100,0,0.2);
 	hs.setHisto("isomu2mod",100,0,0.2);
-	hs.setHisto("isoele1calo",100,0,1);
-	hs.setHisto("isoele2calo",100,0,1);
+	hs.setHisto("isoele1calo",100,0,0.5);
+	hs.setHisto("isoele2calo",100,0,0.5);
 	hs.setHisto("isoele1trk",100,0,10);
 	hs.setHisto("isoele2trk",100,0,10);
 	//hs.setHisto("LD",100,-101,-97);
 	//hs.setHisto("q1fl",4,-101,-97);
 	//hs.setHisto("q2fl",4,-101,-97);
 	hs.setHisto("MCmatch",100,-1.2,1.2);
-	hs.setHisto("nVtx",40,0,40);//40      0       40
+	hs.setHisto("nVtx",40,-0.5,39.5);
 	hs.setHisto("nJets",10,0.5,10.5);
 	//hs.setHisto("nPU",2,0,1);
 	//hs.setHisto("HLTweight",100,0.99,10);
