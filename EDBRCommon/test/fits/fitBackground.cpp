@@ -240,8 +240,8 @@ int main(){
 
 			//select the data in the sidebands, convert it in a RooDataSet
 			//weight events by the alpha function
-			string cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>800&&mZZ<2800"+lepCutStr+vtagcutstr;
-			string cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>800&&mZZ<2800"+lepCutStr+vtagcutstr;
+			string cutSB= "nXjets=="+ssnxj.str()+" &&region==0.0 &&mZZ>800&&mZZ<3000"+lepCutStr+vtagcutstr;
+			string cutSIG="nXjets=="+ssnxj.str()+" &&region==1.0 &&mZZ>800&&mZZ<3000"+lepCutStr+vtagcutstr;
 
 			if(isZZChannel)
 			{
