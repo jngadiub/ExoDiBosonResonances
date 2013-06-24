@@ -31,10 +31,10 @@
 
 #include "DataCardUtils.h"
 
-#include "binningFits_XWW.h"
-#include "Config_XWW.h"
-//#include "Config_XZZ.h"
-//#include "binningFits_XZZ.h"
+//#include "binningFits_XWW.h"
+//#include "Config_XWW.h"
+#include "Config_XZZ.h"
+#include "binningFits_XZZ.h"
 
 
 float mZZmin_ = startFit;  // this should be synchronized with startFit in fitBackground.cpp
@@ -332,7 +332,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 
 	// syst done. now finish with sig and bkg shape parameters:
-
+	
 	double bgNorm = DataCardUtils::get_backgroundNormalization(bgws,leptType_str,nxj,pur,"dsDataSB");
 	char bgNorm_char[100];
 	sprintf( bgNorm_char, "%.0lf", bgNorm);
@@ -367,6 +367,27 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	  
 	  //    std::cout << thisVar->GetName() << "\tparam\t\t" << varValue << "\t" << thisVar->getError()  <<" & "<<alphaErr.at(iVar)->getVal()<<" -> "<<varError<< std::endl;
 	  std::cout << thisVar->GetName() << "\tparam\t\t" << varValue << "\t" << thisVar->getError() <<" -> "<<varError<< std::endl;
+	}
+
+	/// %%% THIAGO
+	/// Errors on signal shape
+	/// Artificial scope because I like to feel safe
+	/// My numbers come from this table: https://twiki.cern.ch/twiki/bin/viewauth/CMS/EXO12022ReviewTwiki#Systematic_uncertainties
+	{
+	  float massH = hp.mH;
+	  char sigp1name[200];//m
+	  char sigp2name[200];//width
+	  sprintf(sigp1name,"CMS_%s_sig%dJ%s%s_p1",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	  sprintf(sigp2name,"CMS_%s_sig%dJ%s%s_p2",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	  RooRealVar CB_mean(sigp1name,sigp1name, get_signalParameter(nxj,pur_str,leptType_str, massH,"mean_match"));
+	  RooRealVar CB_sigma(sigp2name,sigp2name,get_signalParameter(nxj,pur_str,leptType_str,massH,"sigma_match"));
+	  //cout << "CB mean =" << CB_mean.getVal() << " CB sigma = " << CB_sigma.getVal() << endl;
+	  double peakSystFactor;
+	  double widthSystFactor;
+	  if(leptType_str == "ELE") {peakSystFactor=0.005; widthSystFactor=0.0004;}
+	  if(leptType_str == "MU") {peakSystFactor=0.006; widthSystFactor=0.018;}
+	  ofs << std::string(sigp1name) << " param " << CB_mean.getVal() << " " << peakSystFactor*CB_mean.getVal() << endl; 
+	  ofs << std::string(sigp2name) << " param " << CB_sigma.getVal() << " " << widthSystFactor*CB_sigma.getVal() << endl;
 	}
 	
 	ofs.close();
