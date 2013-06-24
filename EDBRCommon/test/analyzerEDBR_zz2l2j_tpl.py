@@ -68,31 +68,47 @@ if processFullSel :
     #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestTTBarSelectorMu:singleJet")
 
 ##### set Ngen and xsect values ofr MC samples; xsect in pb !!! 
-if "TTBAR"=="<SAMPLE>" or "TTBAR_xww"=="<SAMPLE>":
+if "TTBAR"=="<SAMPLE>":
     process.ANEDBR.Ngen=cms.uint32(6540800)
     process.ANEDBR.xsec=cms.double(225.197)
-elif "TTBARpowheg"=="<SAMPLE>" or "TTBARpowheg_xww"=="<SAMPLE>":
-	process.ANEDBR.Ngen=cms.uint32(21675970)
-	process.ANEDBR.xsec=cms.double(225.197)
+elif "TTBAR_xww"=="<SAMPLE>":
+    process.ANEDBR.Ngen=cms.uint32(6540800)
+    process.ANEDBR.xsec=cms.double(225.197)
+elif "TTBARpowheg"=="<SAMPLE>":
+    process.ANEDBR.Ngen=cms.uint32(21675970)
+    process.ANEDBR.xsec=cms.double(225.197)
+elif "TTBARpowheg_xww"=="<SAMPLE>":
+    process.ANEDBR.Ngen=cms.uint32(21675970)
+    process.ANEDBR.xsec=cms.double(225.197)
 elif "DYJetsPt50To70" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(4823000)
     process.ANEDBR.xsec=cms.double(105.7) # 105.7 = 89.0 (from PREP) times 1.188
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "DYJetsPt70To100" in "<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(4000000)
+    process.ANEDBR.Ngen=cms.uint32(11764538)
     process.ANEDBR.xsec=cms.double(62.9) # 62.9 = 53.0 (from PREP) times 1.187
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "DYJetsPt100" in "<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(2500000)
+    process.ANEDBR.Ngen=cms.uint32(12511326)
     process.ANEDBR.xsec=cms.double(39.1) # 39.1 = 32.9 (from PREP) times 1.188
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
-elif "WW"=="<SAMPLE>" or "WW_xww" == "<SAMPLE>" :
+elif "WW"=="<SAMPLE>":
+    process.ANEDBR.Ngen=cms.uint32(10000431)
+    process.ANEDBR.xsec=cms.double(57.1097)
+elif "WZ"=="<SAMPLE>":
+    process.ANEDBR.Ngen=cms.uint32(9955839)
+    process.ANEDBR.xsec=cms.double(33.21)
+elif "ZZ"=="<SAMPLE>":
+    process.ANEDBR.Ngen=cms.uint32(9799908)
+    process.ANEDBR.xsec=cms.double(8.059)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(3)
+elif "WW_xww"=="<SAMPLE>":
     process.ANEDBR.Ngen=cms.uint32(3870000)
     process.ANEDBR.xsec=cms.double(57.1097)
-elif "WZ"=="<SAMPLE>" or "WZ_xww"=="<SAMPLE>" :
+elif "WZ_xww"=="<SAMPLE>":
     process.ANEDBR.Ngen=cms.uint32(1910000)
     process.ANEDBR.xsec=cms.double(33.21)
-elif "ZZ"=="<SAMPLE>" or "ZZ_xww"=="<SAMPLE>" :
+elif "ZZ_xww"=="<SAMPLE>":
     process.ANEDBR.Ngen=cms.uint32(485716)
     process.ANEDBR.xsec=cms.double(8.059)
     process.ANEDBR.FillGenLevelCode=cms.uint32(3)
@@ -168,7 +184,7 @@ elif "BulkG_ZZ_lljj_c0p2_M900" in "<SAMPLE>" :
     process.ANEDBR.xsec=cms.double(0.000174) ### Checked
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_ZZ_lljj_c0p2_M1000" in "<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(41997)
+    process.ANEDBR.Ngen=cms.uint32(41997-4199) # Subtracting 4199 because one file isn't there
     process.ANEDBR.xsec=cms.double(8.51e-05) ### Checked
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 elif "BulkG_ZZ_lljj_c0p2_M1100" in "<SAMPLE>" :
