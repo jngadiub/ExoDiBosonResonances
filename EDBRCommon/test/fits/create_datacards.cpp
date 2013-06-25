@@ -24,6 +24,8 @@
 #include "RooFFTConvPdf.h"
 #include "RooFitResult.h"
 #include "RooWorkspace.h"
+#include "RooProduct.h"
+#include "RooArgList.h"
 
 #include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
 
@@ -101,7 +103,7 @@ std::pair<double,double> bTagEffSyst( const std::string& leptType_str, int nbtag
 
 int main( int argc, char* argv[] ) {
 
-
+	RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING) ;
 
 	float lumi_ELE;
 	float lumi_MU;
@@ -244,6 +246,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	//////////////////////////////
 	////->  get main variable from input workspace:
 	if(nxj==2)mZZmin_=600.0;//get in sync with was done in fitBackground for 2J category
+	else mZZmin_ = startFit;
 	RooRealVar* CMS_xzz_mZZ = new RooRealVar("mZZ","mZZ",mZZmin_,mZZmax_);//it works
 	//   RooRealVar* CMS_hzz2l2q_mZZ = bgws->var("mZZ");//it does not work
 	//   RooRealVar* CMS_hzz2l2q_mZZ = mzzws->var("mZZ");//reading it from MZZ-sideband ws works
@@ -369,26 +372,47 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	  std::cout << thisVar->GetName() << "\tparam\t\t" << varValue << "\t" << thisVar->getError() <<" -> "<<varError<< std::endl;
 	}
 
-	/// %%% THIAGO
 	/// Errors on signal shape
-	/// Artificial scope because I like to feel safe
-	/// My numbers come from this table: https://twiki.cern.ch/twiki/bin/viewauth/CMS/EXO12022ReviewTwiki#Systematic_uncertainties
-	{
-	  float massH = hp.mH;
-	  char sigp1name[200];//m
-	  char sigp2name[200];//width
-	  sprintf(sigp1name,"CMS_%s_sig%dJ%s%s_p1",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
-	  sprintf(sigp2name,"CMS_%s_sig%dJ%s%s_p2",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
-	  RooRealVar CB_mean(sigp1name,sigp1name, get_signalParameter(nxj,pur_str,leptType_str, massH,"mean_match"));
-	  RooRealVar CB_sigma(sigp2name,sigp2name,get_signalParameter(nxj,pur_str,leptType_str,massH,"sigma_match"));
-	  //cout << "CB mean =" << CB_mean.getVal() << " CB sigma = " << CB_sigma.getVal() << endl;
-	  double peakSystFactor;
-	  double widthSystFactor;
-	  if(leptType_str == "ELE") {peakSystFactor=0.005; widthSystFactor=0.0004;}
-	  if(leptType_str == "MU") {peakSystFactor=0.006; widthSystFactor=0.018;}
-	  ofs << std::string(sigp1name) << " param " << CB_mean.getVal() << " " << peakSystFactor*CB_mean.getVal() << endl; 
-	  ofs << std::string(sigp2name) << " param " << CB_sigma.getVal() << " " << widthSystFactor*CB_sigma.getVal() << endl;
-	}
+	/// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EXO12022ReviewTwiki#Systematic_uncertainties
+	float massH = hp.mH;
+	
+	//lepton scale 
+	char sigSystp1_LepScale[200];//m
+	char sigSystp2_LepScale[200];//width
+	sprintf(sigSystp1_LepScale,"CMS_%s_sig%dJ%s%s_p1_scale",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigSystp2_LepScale,"CMS_%s_sig%dJ%s%s_p2_scale",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	//cout << "CB mean =" << CB_mean.getVal() << " CB sigma = " << CB_sigma.getVal() << endl;
+	double peakSystFactor;
+	double widthSystFactor;
+	if(leptType_str == "ELE") {peakSystFactor=0.005; widthSystFactor=0.0004;}
+	if(leptType_str == "MU") {peakSystFactor=0.006; widthSystFactor=0.018;}
+	ofs << std::string(sigSystp1_LepScale) << " param 1.0 "  << peakSystFactor << endl; 
+	ofs << std::string(sigSystp2_LepScale) << " param 1.0 "  << widthSystFactor << endl;
+	
+	//lepton resolution omitted because small
+	char sigSystp1_LepRes[200];//m
+	char sigSystp2_LepRes[200];//width
+	sprintf(sigSystp1_LepRes,"CMS_%s_sig%dJ%s%s_p1_res",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+	sprintf(sigSystp2_LepRes,"CMS_%s_sig%dJ%s%s_p2_res",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+
+	//jet scale: same and fully correlated between ele and mu
+	char sigSystp1_JetScale[200];//m
+	char sigSystp2_JetScale[200];//width	
+	sprintf(sigSystp1_JetScale,"CMS_%s_sig%dJ%s_p1_jes",channel_marker.c_str(),nxj,pur_str.c_str());
+	sprintf(sigSystp2_JetScale,"CMS_%s_sig%dJ%s_p2_jes",channel_marker.c_str(),nxj,pur_str.c_str());
+	peakSystFactor=0.005; widthSystFactor=0.02;
+	ofs << std::string(sigSystp1_JetScale) << " param 1.0 "  << peakSystFactor << endl; 
+	ofs << std::string(sigSystp2_JetScale) << " param 1.0 "  << widthSystFactor << endl;
+
+	//jet resolution: same and fully correlated between ele and mu
+	char sigSystp1_JetRes[200];//m
+	char sigSystp2_JetRes[200];//width	
+	sprintf(sigSystp1_JetRes,"CMS_%s_sig%dJ%s_p1_jer",channel_marker.c_str(),nxj,pur_str.c_str());
+	sprintf(sigSystp2_JetRes,"CMS_%s_sig%dJ%s_p2_jer",channel_marker.c_str(),nxj,pur_str.c_str());
+	peakSystFactor=0.0;//<0.1%, negligible 
+	widthSystFactor=0.03;
+	//	ofs << std::string(sigSystp1_JetScale) << " param 1.0 "  << peakSystFactor << endl; 
+	ofs << std::string(sigSystp2_JetRes) << " param 1.0 "  << widthSystFactor << endl;
 	
 	ofs.close();
 	fitResultsFile->Close();
@@ -443,7 +467,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	// ------------------- Crystal Ball (matched) -------------------------------
 	cout<<"Starting Signal Shape part"<<endl;
 	CMS_xzz_mZZ->setBins(10000.0,"cache");
-	float massH = hp.mH;
+
 	char sigp1name[200];//m
 	char sigp2name[200];//width
 	char sigp3name[200];//junction point of left pow law
@@ -456,16 +480,44 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 	sprintf(sigp4name,"CMS_%s_sig%dJ%s%s_p4",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
 	sprintf(sigp5name,"CMS_%s_sig%dJ%s%s_p5",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str()); 
 	sprintf(sigp6name,"CMS_%s_sig%dJ%s%s_p6",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str()); 
-	RooRealVar CB_mean(sigp1name,sigp1name, get_signalParameter(nxj,pur_str,leptType_str, massH,"mean_match"));
-	RooRealVar CB_sigma(sigp2name,sigp2name,get_signalParameter(nxj,pur_str,leptType_str,massH,"sigma_match"));
-	RooRealVar CB_alpha1(sigp3name,sigp3name,get_signalParameter(nxj,pur_str,leptType_str,massH,"alpha1_match"));
-	RooRealVar CB_n1(sigp4name,sigp4name,get_signalParameter(nxj,pur_str,leptType_str,massH,"n1_match"));
-	RooRealVar CB_alpha2(sigp5name,sigp5name,get_signalParameter(nxj,pur_str,leptType_str,massH,"alpha2_match"));
-	RooRealVar CB_n2(sigp6name,sigp6name,get_signalParameter(nxj,pur_str,leptType_str,massH,"n2_match"));
+	char sigp1name_nom[200];//m
+	char sigp2name_nom[200];//width
+	char sigp3name_nom[200];//junction point of left pow law
+	char sigp4name_nom[200];//pow coeff of left pow law
+	char sigp5name_nom[200];//junction point of right pow law
+	char sigp6name_nom[200];//pow coeff of right pow law
+	sprintf(sigp1name_nom,"%s_nom",sigp1name);
+	sprintf(sigp2name_nom,"%s_nom",sigp2name);
+	sprintf(sigp3name_nom,"%s_nom",sigp3name);
+	sprintf(sigp4name_nom,"%s_nom",sigp4name);
+	sprintf(sigp5name_nom,"%s_nom",sigp5name);
+	sprintf(sigp6name_nom,"%s_nom",sigp6name);
+	RooRealVar CB_mean_nom(sigp1name_nom,sigp1name_nom, get_signalParameter(nxj,pur_str,leptType_str, massH,"mean_match"));
+	RooRealVar CB_sigma_nom(sigp2name_nom,sigp2name_nom,get_signalParameter(nxj,pur_str,leptType_str,massH,"sigma_match"));
+	RooRealVar CB_alpha1_nom(sigp3name_nom,sigp3name_nom,get_signalParameter(nxj,pur_str,leptType_str,massH,"alpha1_match"));
+	RooRealVar CB_n1_nom(sigp4name_nom,sigp4name_nom,get_signalParameter(nxj,pur_str,leptType_str,massH,"n1_match"));
+	RooRealVar CB_alpha2_nom(sigp5name_nom,sigp5name_nom,get_signalParameter(nxj,pur_str,leptType_str,massH,"alpha2_match"));
+	RooRealVar CB_n2_nom(sigp6name_nom,sigp6name_nom,get_signalParameter(nxj,pur_str,leptType_str,massH,"n2_match"));
 
-	RooDoubleCB* CB_SIG = new RooDoubleCB("CB_SIG","Crystal Ball",*CMS_xzz_mZZ,CB_mean,CB_sigma,CB_alpha1,CB_n1,CB_alpha2,CB_n2);
+	//used for systematics
+	RooRealVar CB_mean_lepscale(sigSystp1_LepScale,sigSystp1_LepScale,1.0);
+	RooRealVar CB_mean_lepres(sigSystp1_LepRes,sigSystp1_LepRes,1.0);
+	RooRealVar CB_mean_jes(sigSystp1_JetScale,sigSystp1_JetScale,1.0);
+	RooRealVar CB_mean_jer(sigSystp1_JetRes,sigSystp1_JetRes,1.0);
+	RooRealVar CB_sigma_lepscale(sigSystp2_LepScale,sigSystp2_LepScale,1.0);
+	RooRealVar CB_sigma_lepres(sigSystp2_LepRes,sigSystp2_LepRes,1.0);
+	RooRealVar CB_sigma_jes(sigSystp2_JetScale,sigSystp2_JetScale,1.0);
+	RooRealVar CB_sigma_jer(sigSystp2_JetRes,sigSystp2_JetRes,1.0);
 
-	cout<<"List of params of DoubleCB: CB_mean="<<CB_mean.getVal()<<"  CB_sigma="<<CB_sigma.getVal()<<"  CB_alpha1="<<CB_alpha1.getVal()<<"  CB_n1="<<CB_n1.getVal()<<"  CB_alpha2="<<CB_alpha2.getVal()<<"   CB_n2="<<CB_n2.getVal()<<endl;
+
+	RooArgList mean_sigshape_vars(CB_mean_nom,CB_mean_lepscale,CB_mean_jes,CB_mean_jer,"mean_sigshape_vars");
+	RooArgList sigma_sigshape_vars(CB_sigma_nom,CB_sigma_lepscale,CB_sigma_jes,CB_sigma_jer,"sigma_sigshape_vars");
+	RooProduct CB_mean(sigp1name,sigp1name,mean_sigshape_vars);
+	RooProduct CB_sigma(sigp2name,sigp2name,sigma_sigshape_vars);
+
+	RooDoubleCB* CB_SIG = new RooDoubleCB("CB_SIG","Crystal Ball",*CMS_xzz_mZZ,CB_mean,CB_sigma,CB_alpha1_nom,CB_n1_nom,CB_alpha2_nom,CB_n2_nom);
+
+	cout<<"List of params of DoubleCB: CB_mean="<<CB_mean.getVal()<<"  CB_sigma="<<CB_sigma.getVal()<<"  CB_alpha1="<<CB_alpha1_nom.getVal()<<"  CB_n1="<<CB_n1_nom.getVal()<<"  CB_alpha2="<<CB_alpha2_nom.getVal()<<"   CB_n2="<<CB_n2_nom.getVal()<<endl;
 
 	// ------------------- SmearedTriangle (jets un-matched to gen-level) -------------------------------
 	char sigUMp1name[200];//mean of CB
