@@ -8,86 +8,84 @@ dummyHLTMuEffWeights =  cms.PSet( lumi = cms.double(1.),#dummy
                                hlt  = cms.VPSet( cms.PSet(bin = cms.vdouble(0.0,999.0,0.0,999. ,1.0))),
                                )
 
-### put the data/MC SF for the lepton ID and the data eff for the trigger
-
+### put the data/MC SF for the lepton ID and the data/MC SF for the trigger
+### (this is a change for V2 of the analysis)
 globMuIdSF_Run2012= cms.VPSet(
-    cms.PSet(bin = cms.vdouble(0.0,0.9,20.,40. ,0.9907)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,20.,40. ,0.9490)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,20.,40. ,1.0094)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,20.,40. ,0.9832)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9,40.,60. ,0.9748)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,40.,60. ,0.9332)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,40.,60. ,0.9888)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,40.,60. ,0.9720)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9,60.,80. ,1.041)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,60.,80. ,1.029)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,60.,80. ,1.049)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,60.,80. ,1.097)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9,80.,100. ,0.999)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,80.,100. ,0.998)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,80.,100. ,1.009)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,80.,100. ,1.060)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9,100.,5000. ,0.985)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,100.,5000. ,1.009)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,100.,5000. ,0.997)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,100.,5000. ,0.990))
-    )
+    cms.PSet(bin = cms.vdouble(0.0, 0.9, 20.000, 40.000, 0.994607)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 20.000, 40.000, 0.994208)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 20.000, 40.000, 0.9962)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 20.000, 40.000, 0.986778)),
+    cms.PSet(bin = cms.vdouble(0.0, 0.9, 40.000, 60.000, 0.992214)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 40.000, 60.000, 0.993411)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 40.000, 60.000, 0.994307)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 40.000, 60.000, 0.980866)),
+    cms.PSet(bin = cms.vdouble(0.0, 0.9, 60.000, 80.000, 0.999195)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 60.000, 80.000, 0.998496)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 60.000, 80.000, 0.999985)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 60.000, 80.000, 0.978304)),
+    cms.PSet(bin = cms.vdouble(0.0, 0.9, 80.000, 100.000, 1.00498)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 80.000, 100.000, 1.00308)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 80.000, 100.000, 1.00895)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 80.000, 100.000, 0.968944)),
+    cms.PSet(bin = cms.vdouble(0.0, 0.9, 100.000, 5000.000, 1.00418)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 100.000, 5000.000, 1.00288)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 100.000, 5000.000, 1.01453)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 100.000, 5000.000, 1.02846)),
+)
 
 tkMuIdSF_Run2012= cms.VPSet(
-    cms.PSet(bin = cms.vdouble(0.0,0.9,20.,40. ,0.9746)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,20.,40. ,0.9231)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,20.,40. ,0.9930)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,20.,40. ,0.9890)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9,40.,60. ,0.9574)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,40.,60. ,0.9369)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,40.,60. ,0.9710)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,40.,60. ,0.9789)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9,60.,80. ,1.035)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,60.,80. ,1.026)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,60.,80. ,1.041)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,60.,80. ,1.070)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9,80.,100. ,1.003)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,80.,100. ,1.001)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,80.,100. ,1.011)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,80.,100. ,1.020)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9,100.,5000. ,0.978)),
-    cms.PSet(bin = cms.vdouble(0.9,1.2,100.,5000. ,1.007)),
-    cms.PSet(bin = cms.vdouble(1.2,2.1,100.,5000. ,0.984)),
-    cms.PSet(bin = cms.vdouble(2.1,2.4,100.,5000. ,0.970))
-
-    )
+    ms.PSet(bin = cms.vdouble(0.0, 0.9, 20.000, 40.000, 0.996303)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 20.000, 40.000, 0.995903)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 20.000, 40.000, 0.996)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 20.000, 40.000, 0.988059)),
+    cms.PSet(bin = cms.vdouble(0.0, 0.9, 40.000, 60.000, 0.994707)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 40.000, 60.000, 0.995604)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 40.000, 60.000, 0.994606)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 40.000, 60.000, 0.983822)),
+    cms.PSet(bin = cms.vdouble(0.0, 0.9, 60.000, 80.000, 1.00029)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 60.000, 80.000, 0.999892)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 60.000, 80.000, 0.999985)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 60.000, 80.000, 0.978107)),
+    cms.PSet(bin = cms.vdouble(0.0, 0.9, 80.000, 100.000, 1.00698)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 80.000, 100.000, 1.00308)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 80.000, 100.000, 1.00417)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 80.000, 100.000, 0.969437)),
+    cms.PSet(bin = cms.vdouble(0.0, 0.9, 100.000, 5000.000, 1.00488)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 100.000, 5000.000, 1.00209)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 100.000, 5000.000, 1.01403)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 100.000, 5000.000, 0.993478)),
+)
 
 doubleMuTrigEff_Run2012= cms.VPSet(
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 0.0,0.9 ,0.982)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 0.9,1.2 ,0.971)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 1.2,2.1 ,0.961)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 2.1,2.4 ,0.957)),
+    cms.PSet(bin = cms.vdouble(0.0,0.9, 0.0,0.9 ,1.01433)),
+    cms.PSet(bin = cms.vdouble(0.0,0.9, 0.9,1.2 ,1.00292)),
+    cms.PSet(bin = cms.vdouble(0.0,0.9, 1.2,2.1 ,1.03275)),
+    cms.PSet(bin = cms.vdouble(0.0,0.9, 2.1,2.4 ,1.05949)),
 
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 0.0,0.9 ,0.972)),
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 0.9,1.2 ,0.959)),
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 1.2,2.1 ,0.947)),
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 2.1,2.4 ,0.942)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 0.0,0.9 ,1.01337)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 0.9,1.2 ,0.997885)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 1.2,2.1 ,1.02847)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 2.1,2.4 ,1.05961)),
 
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 0.0,0.9 ,0.964)),
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 0.9,1.2 ,0.949)),
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 1.2,2.1 ,0.937)),
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 2.1,2.4 ,0.932)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 0.0,0.9 ,1.04444)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 0.9,1.2 ,1.03207)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 1.2,2.1 ,1.06805)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 2.1,2.4 ,1.11474)),
 
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 0.0,0.9 ,0.956)),
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 0.9,1.2 ,0.941)),
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 1.2,2.1 ,0.929)),
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 2.1,2.4 ,0.923))
-    
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 0.0,0.9 ,1.04875)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 0.9,1.2 ,1.04035)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 1.2,2.1 ,1.08910)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 2.1,2.4 ,1.22225))
     )
 
-#### to be expanded according to the modifcations of the HLT triggers that we use
+#### to be expanded according to the modifications of the HLT triggers that we use
 #### (a set of efficieincies for each of them, function of etan and pt, calculated with T&P)
 
 HLTWeightsKinFitMu = cms.EDProducer("HLTWeightProducer2012Mu",
                                     src = cms.InputTag("cmgDiMuonDiJetKinFitEDBR") ,
                                     isMuChannel = cms.bool(True),
                                     ranges = cms.VPSet(
-                                          cms.PSet( lumi = cms.double(19532.0),#Run2012
+                                          cms.PSet( lumi = cms.double(19747.0),#Run2012
                                                     lep1 = globMuIdSF_Run2012,
                                                     lep2 = tkMuIdSF_Run2012,
                                                     hlt = doubleMuTrigEff_Run2012 
@@ -105,7 +103,7 @@ HLTWeightsMergedMu =cms.EDProducer("HLTWeightProducer2012MuVJet",
                                    src = cms.InputTag( "cmgDiMuonVJetEDBR") ,
                                    isMuChannel = cms.bool(True),
                                    ranges = cms.VPSet(
-                                            cms.PSet(lumi = cms.double(19532.0),
+                                            cms.PSet(lumi = cms.double(19747.0),
                                             lep1 = globMuIdSF_Run2012,
                                             lep2 = tkMuIdSF_Run2012,
                                             hlt = doubleMuTrigEff_Run2012
