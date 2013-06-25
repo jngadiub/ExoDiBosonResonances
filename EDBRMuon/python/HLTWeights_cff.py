@@ -34,7 +34,7 @@ globMuIdSF_Run2012= cms.VPSet(
 )
 
 tkMuIdSF_Run2012= cms.VPSet(
-    ms.PSet(bin = cms.vdouble(0.0, 0.9, 20.000, 40.000, 0.996303)),
+    cms.PSet(bin = cms.vdouble(0.0, 0.9, 20.000, 40.000, 0.996303)),
     cms.PSet(bin = cms.vdouble(0.9, 1.2, 20.000, 40.000, 0.995903)),
     cms.PSet(bin = cms.vdouble(1.2, 2.1, 20.000, 40.000, 0.996)),
     cms.PSet(bin = cms.vdouble(2.1, 2.4, 20.000, 40.000, 0.988059)),
