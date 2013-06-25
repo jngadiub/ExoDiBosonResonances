@@ -1364,10 +1364,12 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 			mynxj_2=int(mynxj[j]);
 			nsubj21_2=nsubj21[j]; 
 			vTagPurity_2=vTagPurity[j]; 
-			if(mynxj_2==1&&mZqq_2>110.0){
+
+			if(isZZChannel&&(mynxj_2==1&&mZqq_2>110.0)){
 				//std::cout<<"Excluding evt "<<nevt_2<<" because in upper SB -> MJ="<<mZqq_2<<std::endl;
 				region_2=2;
 			}
+
 			//if(nsubj21_2>0.45)continue;
 
 			if(region[j]<0||mZZd_2>9999.0||mynxj_2>10||mZqq_2>999.0){
