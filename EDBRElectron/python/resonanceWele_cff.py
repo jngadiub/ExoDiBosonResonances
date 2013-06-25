@@ -6,19 +6,20 @@ from ExoDiBosonResonances.EDBRElectron.factories.cmgWelenuSingleJet_cfi import *
 from ExoDiBosonResonances.EDBRElectron.skims.cmgEDBRSel_Wele_cff import *
 from ExoDiBosonResonances.EDBRElectron.skims.selEventsEDBR_cfi import *
 from ExoDiBosonResonances.EDBRElectron.HLTWeights_Wele_cff import *
+from ExoDiBosonResonances.EDBRElectron.BTagWeights_Wele_cff import *
 
 ### add pu weights for run 2012A
 cmgEDBRKinFitWeighted2012A = cms.EDProducer("WelenuDiJetEDBRWeightAdder",
-                                        src=cms.InputTag("HLTWeightsKinFitEle"),
+                                        src=cms.InputTag("BTagWeightsKinFitEle"),
                                         weight=cms.InputTag("PUWeights2012A"),
                                         )   
 cmgEDBRWeighted2012A = cms.EDProducer("WelenuDiJetEDBRWeightAdder",
-                                  src=cms.InputTag("HLTWeightsEle"),
+                                  src=cms.InputTag("BTagWeightsEle"),
                                   weight=cms.InputTag("PUWeights2012A"),
                                   )   
 
 cmgEDBRMergedWeighted2012A = cms.EDProducer("WelenuSingleJetEDBRWeightAdder",
-                                  src=cms.InputTag("HLTWeightsMergedEle"),
+                                  src=cms.InputTag("BTagWeightsMergedEle"),
                                   weight=cms.InputTag("PUWeights2012A")
                                   )   
 
@@ -76,6 +77,9 @@ edbrSequenceEVJJ = cms.Sequence(
     HLTWeightsEle +
     HLTWeightsKinFitEle +
 
+    BTagWeightsEle +
+    BTagWeightsKinFitEle +
+
     cmgEDBRKinFitWeighted2012A +
     cmgEDBRWeighted2012A +
     cmgEDBRKinFitWeighted2012B +
@@ -98,6 +102,8 @@ edbrSequenceMergedEVJ = cms.Sequence(
     cmgWelenuSingleJetEDBR +
 
     HLTWeightsMergedEle +
+
+    BTagWeightsMergedEle +
 
     cmgEDBRMergedWeighted2012A +
     cmgEDBRMergedWeighted2012B +

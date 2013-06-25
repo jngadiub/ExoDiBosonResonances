@@ -193,6 +193,8 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
 
     // THESE WEIGHTS=1 FOR REAL DATA
     HLTSF = edbr->userFloat("HLTWeight");
+	if(VType_=="W")BTagWeight = edbr->userFloat("BTagWeight");
+	else BTagWeight =1.0;
     if(edbr->hasUserFloat("PUWeights")){
       //if(preselM_ || preselM1J_ ||preselE_ ||preselE1J_ ){
       //   std::cout<<"Event passes presel path"<<std::endl;
@@ -776,7 +778,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double isolep1[nMaxCand], isolep2[nMaxCand], eleMVAId1[nMaxCand], eleMVAId2[nMaxCand];//lepton ID 
   double isomu1mod[nMaxCand], isomu2mod[nMaxCand]; // modified tracker iso for muons
   double isoele1trk[nMaxCand], isoele2trk[nMaxCand], isoele1calo[nMaxCand], isoele2calo[nMaxCand]; // modified isos for ele
-  double HLTSF,PU,PUA,PUB,lumiw,genw,w,wA,wB,vtagw;          // weight
+  double HLTSF,PU,PUA,PUB,lumiw,genw,w,wA,wB,vtagw,BTagWeight;          // weight
   double MCmatch[nMaxCand];            // mc matching flag
  
   double qjet[nMaxCand],tau1[nMaxCand],tau2[nMaxCand],nsubj21[nMaxCand],nsubj32[nMaxCand];

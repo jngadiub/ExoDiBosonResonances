@@ -73,20 +73,20 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
   //use these for X->ZZ analysis
-	
+/*	
   typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
   typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
   typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
   typedef  cmg::DiMuonDiJetEDBR         cmgMuDiJetEDBR  ;
-	
+*/	
 
   //use these for X->WW analysis
-  /*  
+    
       typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
       typedef  cmg::WmunuSingleJetEDBR  cmgMuSingleJetEDBR  ; 
       typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
       typedef  cmg::WmunuDiJetEDBR      cmgMuDiJetEDBR  ;
-  */
+  
 
   nEvt++;
 
@@ -128,8 +128,8 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
 
   // GET MISSING ET
   edm::Handle<edm::View<pat::MET> > metHandle;
-  iEvent.getByLabel("patMETs", metHandle);
-  //iEvent.getByLabel("patMetShiftCorrected", metHandle);
+  if(VType_=="Z")iEvent.getByLabel("patMETs", metHandle);
+  else if(VType_=="W")iEvent.getByLabel("patMetShiftCorrected", metHandle);
   met     = metHandle->at(0).pt();
   metSign = metHandle->at(0).significance(); 
   metPhi  = metHandle->at(0).phi();
@@ -361,9 +361,9 @@ void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& even
     vtagw=VTagSF_;
   }
   if(debug_)  cout<<"lumi weight="<<lumiw<<"  PU weight="<<PU<<endl;
-  w  = PU *HLTSF*genw*lumiw*vtagw;
-  wA = PUA*HLTSF*genw*lumiw*vtagw;
-  wB = PUB*HLTSF*genw*lumiw*vtagw;
+  w  = PU *HLTSF*genw*lumiw*vtagw*BTagWeight;
+  wA = PUA*HLTSF*genw*lumiw*vtagw*BTagWeight;
+  wB = PUB*HLTSF*genw*lumiw*vtagw*BTagWeight;
 
 
   bool passCuts=true;
@@ -487,6 +487,7 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("nAK5jets"        ,&nak5jets      ,"nAK5jets/i"             );
   outTree_->Branch("nPU"             ,&npu           ,"nPU/i"                  );
   outTree_->Branch("HLTweight"       ,&HLTSF         ,"HLTweight/D"            ); 
+  outTree_->Branch("BTagWeight"      ,&BTagWeight    ,"BTagWeight/D"           ); 
   outTree_->Branch("PUweight"        ,&PU            ,"PUweight/D"             ); 
   outTree_->Branch("PUweight2012A"   ,&PUA           ,"PUweight2012A/D"        ); 
   outTree_->Branch("PUweight2012B"   ,&PUB           ,"PUweight2012B/D"        );
@@ -619,6 +620,7 @@ void AnalyzerEDBR::initDataMembers(){
   wA    =   1.0;
   wB    =   1.0;
   HLTSF =   1.0;
+  BTagWeight = 1.0;
   vtagw =   1.0;
   nCands=0;
   nLooseEle=-1;

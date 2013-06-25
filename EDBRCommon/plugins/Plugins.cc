@@ -3,6 +3,7 @@
 #include "ExoDiBosonResonances/EDBRCommon/plugins/PTWeightProducer.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/HLTWeightProducer.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/HLTWeightProducer2012.h" 
+#include "ExoDiBosonResonances/EDBRCommon/plugins/BTagWeightProducer.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/PTWeightAnalyzer.h" 
 //#include "ExoDiBosonResonances/EDBRCommon/plugins/LDProducer.h" 
 #include "ExoDiBosonResonances/EDBRCommon/plugins/KineVarsAdder.h" 
@@ -171,6 +172,17 @@ typedef HLTWeightProducer<cmg::WmunuSingleJetEDBR>     HLTWeightProducerWmunuSin
 DEFINE_FWK_MODULE(HLTWeightProducerWmunuSingleJet);
 typedef HLTWeightProducer2012<cmg::WmunuSingleJetEDBR>     HLTWeightProducer2012WmunuSingleJet;
 DEFINE_FWK_MODULE(HLTWeightProducer2012WmunuSingleJet);
+
+
+typedef BTagWeightProducer<cmg::WelenuDiJetEDBR>     BTagWeightProducerWelenuDiJet;
+DEFINE_FWK_MODULE(BTagWeightProducerWelenuDiJet);  
+typedef BTagWeightProducer<cmg::WmunuDiJetEDBR>     BTagWeightProducerWmunuDiJet;
+DEFINE_FWK_MODULE(BTagWeightProducerWmunuDiJet);
+typedef BTagWeightProducer<cmg::WelenuSingleJetEDBR>     BTagWeightProducerWelenuSingleJet;
+DEFINE_FWK_MODULE(BTagWeightProducerWelenuSingleJet);
+typedef BTagWeightProducer<cmg::WmunuSingleJetEDBR>     BTagWeightProducerWmunuSingleJet;
+DEFINE_FWK_MODULE(BTagWeightProducerWmunuSingleJet);
+
 #undef EDBRNEUTRINO
 
 //define VBF taggers
