@@ -129,6 +129,15 @@ process.hltHighLevelMu = cms.EDFilter("HLTHighLevel",
                                        andOr = cms.bool(True),   # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
                                        throw = cms.bool(True)    # throw exception on unknown path names
    )
+
+process.hltHighLevelMC = cms.EDFilter("HLTHighLevel",
+                                       TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+                                       HLTPaths = cms.vstring(HLTlistMu,HLTlistEle),
+                                       eventSetupPathsKey = cms.string(''), # not empty => use read paths from AlCaRecoTriggerBitsRcd via this key
+                                       andOr = cms.bool(True),   # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
+                                       throw = cms.bool(True)    # throw exception on unknown path names
+   )
+
 process.hltHighLevelSM = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
                                        HLTPaths = cms.vstring(HLTlistSM),
@@ -157,7 +166,7 @@ if "DATA" in options.mcordata :
      process.eventFilterSequence.insert(1, process.genParticles)
 
 
-#### add HLT filters to path (only for data)
+#### add HLT filters to path
 if options.mcordata == "DATAELE" :
      process.eventFilterSequence +=process.hltHighLevelEle
 if options.mcordata == "DATASE" :
@@ -167,7 +176,8 @@ if options.mcordata == "DATAMU" :
 if options.mcordata == "DATASM" :
      process.eventFilterSequence +=process.hltHighLevelSM
 
-
+if options.mcordata == "MC" :
+     process.eventFilterSequence +=process.hltHighLevelMC
 
 
 ###################################################################
