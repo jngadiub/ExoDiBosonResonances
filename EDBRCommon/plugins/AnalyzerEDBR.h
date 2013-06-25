@@ -86,7 +86,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   unsigned int Ngen_;
   double xsec_;
   int VpdgId_; 
-  double VMass_;
+  double VMass_, VTagSF_;
   unsigned int fillGen_;
 
   void init();
@@ -776,7 +776,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double isolep1[nMaxCand], isolep2[nMaxCand], eleMVAId1[nMaxCand], eleMVAId2[nMaxCand];//lepton ID 
   double isomu1mod[nMaxCand], isomu2mod[nMaxCand]; // modified tracker iso for muons
   double isoele1trk[nMaxCand], isoele2trk[nMaxCand], isoele1calo[nMaxCand], isoele2calo[nMaxCand]; // modified isos for ele
-  double HLTSF,PU,PUA,PUB,lumiw,genw,w,wA,wB;          // weight
+  double HLTSF,PU,PUA,PUB,lumiw,genw,w,wA,wB,vtagw;          // weight
   double MCmatch[nMaxCand];            // mc matching flag
  
   double qjet[nMaxCand],tau1[nMaxCand],tau2[nMaxCand],nsubj21[nMaxCand],nsubj32[nMaxCand];
