@@ -23,7 +23,7 @@ class BTagWeightProducer : public edm::EDProducer {
 			EffmapFilename_(iConfig.getParameter<edm::FileInPath>("EffmapFilename").fullPath()),
 			scale_(iConfig.getParameter<double>("scale"))
 	{
-		//cout<<EffmapFilename_<<endl;
+		cout<<"BTagEffmapFilename: "<<EffmapFilename_<<endl;
 		produces<std::vector<restype> >();
 	}
 		~BTagWeightProducer(){}
@@ -111,6 +111,7 @@ void BTagWeightProducer<restype>::produce(edm::Event& iEvent, const edm::EventSe
 
 				for( unsigned int i=0;i<ak5jetCands->size();i++)
 				{
+					/*
 					cout<<"------"<<endl;
 					cout<<jetEff.at(i)<<endl;
 					cout<<jetEff_e.at(i)<<endl;
@@ -118,6 +119,7 @@ void BTagWeightProducer<restype>::produce(edm::Event& iEvent, const edm::EventSe
 					cout<<jetSF_e_up.at(i)<<endl;
 					cout<<jetSF_e_down.at(i)<<endl;
 					cout<<btag->at(i)<<endl;
+					*/
 
 					double temp_SF=1.;
 					if(scale_>=0) temp_SF = jetSF.at(i) + jetSF_e_up.at(i) * scale_;
