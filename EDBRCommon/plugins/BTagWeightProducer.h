@@ -113,7 +113,7 @@ void BTagWeightProducer<restype>::produce(edm::Event& iEvent, const edm::EventSe
 				{
 					double temp_SF=1.;
 					if(scale_>=0) temp_SF = jetSF.at(i) + jetSF_e_up.at(i) * scale_;
-					if(scale_<0)  temp_SF = jetSF.at(i) - jetSF_e_down.at(i) * scale_;
+					if(scale_<0)  temp_SF = jetSF.at(i) + jetSF_e_down.at(i) * scale_;
 					double temp_eff_mc = btag->at(i)==1? jetEff.at(i):1-jetEff.at(i);
 					double temp_eff_data = btag->at(i)==1? jetEff.at(i)*temp_SF : 1-jetEff.at(i)*temp_SF ; 
 					PMC=PMC*temp_eff_mc;
