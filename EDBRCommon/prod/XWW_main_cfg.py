@@ -43,6 +43,10 @@ process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:58698
 #process.source.eventsToProcess = cms.untracked.VEventRange(cms.EventRange("166699:715236831"),cms.EventRange("173389:180639524"))
 #process.source.eventsToProcess  = cms.untracked.VEventRange(cms.EventRange("1:231104"))
 
+BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/WW_TuneZ2star_8TeV_pythia6_tauola_AK5PF_CSVM_bTaggingEfficiencyMap.root"
+#BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/TT_CT10_TuneZ2star_8TeV-powheg-tauola_AK5PF_CSVM_bTaggingEfficiencyMap.root"
+#BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_AK5PF_CSVM_bTaggingEfficiencyMap.root"
+#BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/QCD_Pt-800to1000_MuEnrichedPt5_TuneZ2star_8TeV_pythia6_AK5PF_CSVM_bTaggingEfficiencyMap.root"
 
 
 ###########
@@ -322,6 +326,11 @@ process.analysisSequenceMergedJets = cms.Sequence(
 
 # build X->WW->evjj
 process.load('ExoDiBosonResonances.EDBRElectron.resonanceWele_cff')
+
+process.BTagWeightsKinFitEle.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
+process.BTagWeightsEle.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
+process.BTagWeightsMergedEle.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
+
 cloneProcessingSnippet(process,process.edbrSequenceEVJJ, "Ele")
 
 
@@ -345,6 +354,10 @@ process.analysisSequenceEVJ = cms.Sequence(
 
 # build X->WW->mmjj
 process.load('ExoDiBosonResonances.EDBRMuon.resonanceWmu_cff')
+
+process.BTagWeightsKinFitMu.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
+process.BTagWeightsMu.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
+process.BTagWeightsMergedMu.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
 #cloneProcessingSnippet(process,process.edbrSequenceMVJJ, "Mu")
 
 process.analysisSequenceMVJJ = cms.Sequence(
