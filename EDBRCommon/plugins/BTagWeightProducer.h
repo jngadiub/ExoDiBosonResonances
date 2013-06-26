@@ -111,6 +111,14 @@ void BTagWeightProducer<restype>::produce(edm::Event& iEvent, const edm::EventSe
 
 				for( unsigned int i=0;i<ak5jetCands->size();i++)
 				{
+					cout<<"------"<<endl;
+					cout<<jetEff.at(i)<<endl;
+					cout<<jetEff_e.at(i)<<endl;
+					cout<<jetSF.at(i)<<endl;
+					cout<<jetSF_e_up.at(i)<<endl;
+					cout<<jetSF_e_down.at(i)<<endl;
+					cout<<btag->at(i)<<endl;
+
 					double temp_SF=1.;
 					if(scale_>=0) temp_SF = jetSF.at(i) + jetSF_e_up.at(i) * scale_;
 					if(scale_<0)  temp_SF = jetSF.at(i) + jetSF_e_down.at(i) * scale_;
@@ -248,24 +256,24 @@ void BTagWeightProducer<restype>::getSF(double pt, double eta, int flavor){
 		{
 			ptmax=1000;
 			if(pt>ptmax){pt=ptmax;overmax=1;}
-			SF_low = ((1.07541+(0.00231827*pt))+(-4.74249e-06*(pt*pt)))+(2.70862e-09*(pt*(pt*pt)));
-			SF = ((0.964527+(0.00149055*pt))+(-2.78338e-06*(pt*pt)))+(1.51771e-09*(pt*(pt*pt)));
+			SF = ((1.07541+(0.00231827*pt))+(-4.74249e-06*(pt*pt)))+(2.70862e-09*(pt*(pt*pt)));
+			SF_low = ((0.964527+(0.00149055*pt))+(-2.78338e-06*(pt*pt)))+(1.51771e-09*(pt*(pt*pt)));
 			SF_high = ((1.18638+(0.00314148*pt))+(-6.68993e-06*(pt*pt)))+(3.89288e-09*(pt*(pt*pt)));
 		}
 		else if(abs(eta)>0.8&&abs(eta)<1.6)
 		{
 			ptmax=1000;
 			if(pt>ptmax){pt=ptmax;overmax=1;}
-			SF_low = ((1.05613+(0.00114031*pt))+(-2.56066e-06*(pt*pt)))+(1.67792e-09*(pt*(pt*pt)));
-			SF = ((0.946051+(0.000759584*pt))+(-1.52491e-06*(pt*pt)))+(9.65822e-10*(pt*(pt*pt)));
+			SF = ((1.05613+(0.00114031*pt))+(-2.56066e-06*(pt*pt)))+(1.67792e-09*(pt*(pt*pt)));
+			SF_low = ((0.946051+(0.000759584*pt))+(-1.52491e-06*(pt*pt)))+(9.65822e-10*(pt*(pt*pt)));
 			SF_high = ((1.16624+(0.00151884*pt))+(-3.59041e-06*(pt*pt)))+(2.38681e-09*(pt*(pt*pt)));
 		}
 		else if( abs(eta)>1.6&&abs(eta)<2.4)
 		{
 			ptmax=850;
 			if(pt>ptmax){pt=ptmax;overmax=1;}
-			SF_low = ((1.05625+(0.000487231*pt))+(-2.22792e-06*(pt*pt)))+(1.70262e-09*(pt*(pt*pt)));
-			SF = ((0.956736+(0.000280197*pt))+(-1.42739e-06*(pt*pt)))+(1.0085e-09*(pt*(pt*pt)));
+			SF = ((1.05625+(0.000487231*pt))+(-2.22792e-06*(pt*pt)))+(1.70262e-09*(pt*(pt*pt)));
+			SF_low = ((0.956736+(0.000280197*pt))+(-1.42739e-06*(pt*pt)))+(1.0085e-09*(pt*(pt*pt)));
 			SF_high = ((1.15575+(0.000693344*pt))+(-3.02661e-06*(pt*pt)))+(2.39752e-09*(pt*(pt*pt)));
 		}
 		else {
