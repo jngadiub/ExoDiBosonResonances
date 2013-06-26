@@ -2,10 +2,10 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.PatAlgos.tools.helpers import *
 process = cms.Process("EDBR")
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string("START53_V7A::All")
+process.GlobalTag.globaltag = cms.string("START53_V23::All")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 
@@ -47,14 +47,14 @@ process.ANEDBR = AnalyzerXZZ.clone(
 processFullSel=False
 
 if processFullSel :
-       process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
-       process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
-       process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
-       process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
-       #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
-       #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
-       #process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
-       #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
+       #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
+       #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
+       #process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
+       #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
+       process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
+       process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
+       process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
+       process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
 
 #    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
 #    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
@@ -226,6 +226,75 @@ elif "BulkG_ZZ_lljj_c0p2_M1900" in "<SAMPLE>" :
 elif "BulkG_ZZ_lljj_c0p2_M2000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(40040)
     process.ANEDBR.xsec=cms.double(3.79e-07) ### Checked
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M2100" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10499)
+    process.ANEDBR.xsec=cms.double(2.396e-07) ### Checked
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M2200" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10706)
+    process.ANEDBR.xsec=cms.double(1.542e-07) ### Checked
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M2300" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10710)
+    process.ANEDBR.xsec=cms.double(9.891e-08) ### Checked
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M2400" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10709)
+    process.ANEDBR.xsec=cms.double(6.4226e-08) ### Checked
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)    
+elif "BulkG_ZZ_lljj_c0p2_M2500" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10078)
+    process.ANEDBR.xsec=cms.double(4.1969e-08) ### Checked
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+###### Special BulkG -> ZZ with different width or different Parton Shower
+elif "BulkG_ZZ_lljj_M700_G40" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10708)
+    process.ANEDBR.xsec=cms.double(1) 
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_M700_G80" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(0)
+    process.ANEDBR.xsec=cms.double(1) 
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_M700_G120" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10686)
+    process.ANEDBR.xsec=cms.double(1) 
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_M1000_G40" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10700)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_M1000_G80" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(0)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_M1000_G120" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10476)
+    process.ANEDBR.xsec=cms.double(1) 
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)    
+elif "BulkG_ZZ_lljj_M1500_G40" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10284)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_M1500_G80" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(0)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_M1500_G120" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(0)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_M2000_G40" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10701)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_M2000_G80" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10705)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_M2000_G120" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(10690)
+    process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 ###### RS Graviton, ZZ, c = 0.05
 elif "RSG_ZZ_lljj_c0p05_M1000" in "<SAMPLE>" :
