@@ -129,6 +129,7 @@ void BTagWeightProducer<restype>::produce(edm::Event& iEvent, const edm::EventSe
 					PMC=PMC*temp_eff_mc;
 					PDATA=PDATA*temp_eff_data;
 				}
+				if(PMC==0)cout<<"PMC==0!!!"<<endl;
 				weight = PDATA/PMC;
 
 			}//end if input tag is not null
@@ -153,6 +154,7 @@ void BTagWeightProducer<restype>::getEff(double pt, double eta, int flavor){
 	//cout<<"-------"<<endl;
 	//cout<<flavor<<endl;
 	flavor = abs(flavor);
+	eta    = fabs(eta);
 	//cout<<flavor<<endl;
 	if(flavor==1||flavor==2||flavor==3||flavor==21)HistName="efficiency_udsg";
 	else if(flavor==4)HistName="efficiency_c";
@@ -197,8 +199,8 @@ void BTagWeightProducer<restype>::getSF(double pt, double eta, int flavor){
 	flavor=abs(flavor);
 	if(flavor==4||flavor==5)
 	{
-		//Tagger: CSVM within 20 < pt < 800 GeV, abs(eta) < 2.4, x = pt
-		if(abs(eta)>2.4)
+		//Tagger: CSVM within 20 < pt < 800 GeV, fabs(eta) < 2.4, x = pt
+		if(fabs(eta)>2.4)
 		{
 			jetSF.push_back(SF);
 			jetSF_e_up.push_back(SF_e_up);
@@ -254,7 +256,7 @@ void BTagWeightProducer<restype>::getSF(double pt, double eta, int flavor){
 		double SF_high;
 		double ptmax;
 		bool overmax=0;
-		if( abs(eta)<0.8)
+		if( fabs(eta)<0.8)
 		{
 			ptmax=1000;
 			if(pt>ptmax){pt=ptmax;overmax=1;}
@@ -262,7 +264,7 @@ void BTagWeightProducer<restype>::getSF(double pt, double eta, int flavor){
 			SF_low = ((0.964527+(0.00149055*pt))+(-2.78338e-06*(pt*pt)))+(1.51771e-09*(pt*(pt*pt)));
 			SF_high = ((1.18638+(0.00314148*pt))+(-6.68993e-06*(pt*pt)))+(3.89288e-09*(pt*(pt*pt)));
 		}
-		else if(abs(eta)>0.8&&abs(eta)<1.6)
+		else if(fabs(eta)>0.8&&fabs(eta)<1.6)
 		{
 			ptmax=1000;
 			if(pt>ptmax){pt=ptmax;overmax=1;}
@@ -270,7 +272,7 @@ void BTagWeightProducer<restype>::getSF(double pt, double eta, int flavor){
 			SF_low = ((0.946051+(0.000759584*pt))+(-1.52491e-06*(pt*pt)))+(9.65822e-10*(pt*(pt*pt)));
 			SF_high = ((1.16624+(0.00151884*pt))+(-3.59041e-06*(pt*pt)))+(2.38681e-09*(pt*(pt*pt)));
 		}
-		else if( abs(eta)>1.6&&abs(eta)<2.4)
+		else if( fabs(eta)>1.6&&fabs(eta)<2.4)
 		{
 			ptmax=850;
 			if(pt>ptmax){pt=ptmax;overmax=1;}
