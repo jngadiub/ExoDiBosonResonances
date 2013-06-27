@@ -43,10 +43,12 @@ process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:58698
 #process.source.eventsToProcess = cms.untracked.VEventRange(cms.EventRange("166699:715236831"),cms.EventRange("173389:180639524"))
 #process.source.eventsToProcess  = cms.untracked.VEventRange(cms.EventRange("1:231104"))
 
-BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/WW_TuneZ2star_8TeV_pythia6_tauola_AK5PF_CSVM_bTaggingEfficiencyMap.root"
-#BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/TT_CT10_TuneZ2star_8TeV-powheg-tauola_AK5PF_CSVM_bTaggingEfficiencyMap.root"
+#BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/WW_TuneZ2star_8TeV_pythia6_tauola_AK5PF_CSVM_bTaggingEfficiencyMap.root"
+BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/TT_CT10_TuneZ2star_8TeV-powheg-tauola_AK5PF_CSVM_bTaggingEfficiencyMap.root"
 #BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_AK5PF_CSVM_bTaggingEfficiencyMap.root"
 #BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/QCD_Pt-800to1000_MuEnrichedPt5_TuneZ2star_8TeV_pythia6_AK5PF_CSVM_bTaggingEfficiencyMap.root"
+BTag_scale_b = 1
+BTag_scale_light = 1
 
 
 ###########
@@ -328,8 +330,16 @@ process.analysisSequenceMergedJets = cms.Sequence(
 process.load('ExoDiBosonResonances.EDBRElectron.resonanceWele_cff')
 
 process.BTagWeightsKinFitEle.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
+process.BTagWeightsKinFitEle.scale_b = cms.double(BTag_scale_b)
+process.BTagWeightsKinFitEle.scale_light = cms.double(BTag_scale_light)
+
 process.BTagWeightsEle.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
+process.BTagWeightsEle.scale_b = cms.double(BTag_scale_b)
+process.BTagWeightsEle.scale_light = cms.double(BTag_scale_light)
+
 process.BTagWeightsMergedEle.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
+process.BTagWeightsMergedEle.scale_b = cms.double(BTag_scale_b)
+process.BTagWeightsMergedEle.scale_light = cms.double(BTag_scale_light)
 
 cloneProcessingSnippet(process,process.edbrSequenceEVJJ, "Ele")
 
@@ -356,8 +366,16 @@ process.analysisSequenceEVJ = cms.Sequence(
 process.load('ExoDiBosonResonances.EDBRMuon.resonanceWmu_cff')
 
 process.BTagWeightsKinFitMu.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
+process.BTagWeightsKinFitMu.scale_b = cms.double(BTag_scale_b)
+process.BTagWeightsKinFitMu.scale_light = cms.double(BTag_scale_light)
+
 process.BTagWeightsMu.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
+process.BTagWeightsMu.scale_b = cms.double(BTag_scale_b)
+process.BTagWeightsMu.scale_light = cms.double(BTag_scale_light)
+
 process.BTagWeightsMergedMu.EffmapFilename = cms.FileInPath(BTagEffmapFilename)
+process.BTagWeightsMergedMu.scale_b = cms.double(BTag_scale_b)
+process.BTagWeightsMergedMu.scale_light = cms.double(BTag_scale_light)
 #cloneProcessingSnippet(process,process.edbrSequenceMVJJ, "Mu")
 
 process.analysisSequenceMVJJ = cms.Sequence(

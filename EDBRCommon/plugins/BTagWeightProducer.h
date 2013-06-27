@@ -21,9 +21,11 @@ class BTagWeightProducer : public edm::EDProducer {
 			src_(iConfig.getParameter<edm::InputTag>("src")),
 			bjetSrc_(iConfig.getParameter<edm::InputTag>("BTagJets")),
 			EffmapFilename_(iConfig.getParameter<edm::FileInPath>("EffmapFilename").fullPath()),
-			scale_(iConfig.getParameter<double>("scale"))
+			scale_b_(iConfig.getParameter<double>("scale_b")),
+			scale_light_(iConfig.getParameter<double>("scale_light"))
 	{
 		cout<<"BTagEffmapFilename: "<<EffmapFilename_<<endl;
+		cout<<"scale_b = "<<scale_b_<<" scale_light = "<<scale_light_<<endl;
 		produces<std::vector<restype> >();
 	}
 		~BTagWeightProducer(){}
@@ -36,7 +38,8 @@ class BTagWeightProducer : public edm::EDProducer {
 		edm::InputTag src_;
 		edm::InputTag bjetSrc_;
 		std::string EffmapFilename_;
-		double scale_;
+		double scale_b_;
+		double scale_light_;
 
 		vector<double> jetEff;
 		vector<double> jetEff_e;
@@ -71,6 +74,7 @@ void BTagWeightProducer<restype>::produce(edm::Event& iEvent, const edm::EventSe
 				double nbtagscleanM=0.;
 				vector<double> btagsM;
 				vector<double> btagscleanM;
+				vector<int>    flavor;
 
 				edm::Handle<std::vector<cmg::PFJet> > ak5jetCands;
 				iEvent.getByLabel(bjetSrc_,ak5jetCands);
@@ -79,7 +83,8 @@ void BTagWeightProducer<restype>::produce(edm::Event& iEvent, const edm::EventSe
 					//reading eff and SF for each jet and save into vector
 					getEff(ak5->pt(),ak5->eta(),ak5->partonFlavour()) ;
 					getSF(ak5->pt(),ak5->eta(),ak5->partonFlavour()) ; 
-
+	
+					flavor.push_back(ak5->partonFlavour());	
 					//get btags
 					double discCSV = ak5->bDiscriminator( "combinedSecondaryVertexBJetTags" );
 					if(discCSV>0.679) {btagsM.push_back(1);nbtagsM++;}
@@ -122,14 +127,19 @@ void BTagWeightProducer<restype>::produce(edm::Event& iEvent, const edm::EventSe
 					*/
 
 					double temp_SF=1.;
-					if(scale_>=0) temp_SF = jetSF.at(i) + jetSF_e_up.at(i) * scale_;
-					if(scale_<0)  temp_SF = jetSF.at(i) + jetSF_e_down.at(i) * scale_;
+					//scale up and down for b and light separately, to do systematics
+					if(scale_b_>=0&&(flavor.at(i)==4||flavor.at(i)==5)) temp_SF = jetSF.at(i) + jetSF_e_up.at(i) * scale_b_;
+					if(scale_b_<0&&(flavor.at(i)==4||flavor.at(i)==5))  temp_SF = jetSF.at(i) + jetSF_e_down.at(i) * scale_b_;
+
+					if(scale_light_>=0&&(flavor.at(i)==0||flavor.at(i)==1||flavor.at(i)==2||flavor.at(i)==3)) temp_SF = jetSF.at(i) + jetSF_e_up.at(i) * scale_light_;
+					if(scale_light_<0&&(flavor.at(i)==0||flavor.at(i)==1||flavor.at(i)==2||flavor.at(i)==3))  temp_SF = jetSF.at(i) + jetSF_e_down.at(i) * scale_light_;
+					
 					double temp_eff_mc = btag->at(i)==1? jetEff.at(i):1-jetEff.at(i);
 					double temp_eff_data = btag->at(i)==1? jetEff.at(i)*temp_SF : 1-jetEff.at(i)*temp_SF ; 
 					PMC=PMC*temp_eff_mc;
 					PDATA=PDATA*temp_eff_data;
 				}
-				if(PMC==0)cout<<"PMC==0!!!"<<endl;
+				if(PMC==0){cout<<"PMC==0!!!"<<endl;weight=1;}
 				weight = PDATA/PMC;
 
 			}//end if input tag is not null
