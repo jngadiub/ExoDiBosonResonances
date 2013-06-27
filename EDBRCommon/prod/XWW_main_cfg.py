@@ -47,8 +47,8 @@ process.source.eventsToSkip  = cms.untracked.VEventRange(cms.EventRange("1:58698
 BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/TT_CT10_TuneZ2star_8TeV-powheg-tauola_AK5PF_CSVM_bTaggingEfficiencyMap.root"
 #BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_AK5PF_CSVM_bTaggingEfficiencyMap.root"
 #BTagEffmapFilename="ExoDiBosonResonances/EDBRCommon/data/BtaggingEffs/QCD_Pt-800to1000_MuEnrichedPt5_TuneZ2star_8TeV_pythia6_AK5PF_CSVM_bTaggingEfficiencyMap.root"
-BTag_scale_b = 1
-BTag_scale_light = 1
+BTag_scale_b = 0
+BTag_scale_light = 0
 
 
 ###########
