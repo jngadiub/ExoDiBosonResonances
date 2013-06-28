@@ -14,8 +14,8 @@
 
 #include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
 
-//#include "binningFits_XWW.h"
-#include "binningFits_XZZ.h"
+#include "binningFits_XWW.h"
+//#include "binningFits_XZZ.h"
 
 class SidebandFitter {
 
@@ -44,7 +44,7 @@ class SidebandFitter {
   std::string getFitFunc(std::string modifier){return fitfuncName_+modifier;}
   void bkgdFitIterative(TTree *treeMC, RooRealVar& mZZ, int nxjCategory, const std::string& leptType_str);
 //   TTree* correctTreeWithAlpha( TTree* tree, TH1D* h1_alpha, int btagCategory, const std::string& name );
-
+  int smoothHist(TH1 &h, bool forceCorrZero=true,int smoothLevel=1);
 
 
 //   RooPlot* ContourPlot(RooRealVar* var1,RooRealVar* var2, RooFitResult* r);
@@ -66,7 +66,6 @@ class SidebandFitter {
 
   int smoothAlphaHist( TH1D *horig);
   TH1D* DivideAndSmoothAlphaHist( TH1D hnum, TH1D hden,TH1D &halpha);
-  int smoothHist(TH1 &h, bool forceCorrZero=true,int smoothLevel=1);
   //data members
   std::string dataset_;
   std::string wType_;
