@@ -129,6 +129,11 @@ For WW:
 	updates      : synchronization updates for ttbarcontrol region
 
 
+/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9
+	date         : 20130629
+	cmgtuple     : cmgTuple_0627
+	updates      : add btag weight
+
 
 ###################################################################################################################
 
