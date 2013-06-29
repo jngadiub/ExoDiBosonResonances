@@ -42,9 +42,9 @@ double deltaR(const double& eta1, const double& phi1,
 int createTreesClosureTest_xww()
 {
 	//########EDIT THIS PART###########
-	TString inTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/fullallrange";
-	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree";
-	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSBTree";
+	TString inTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/fullallrange";
+	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSigTree";
+	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSBTree";
 
 	const double A1Low=40.0;
 	const double A1High=55.0;
@@ -119,6 +119,8 @@ int createTreesClosureTest_xww()
 		double PUweight=-1;
 		double LumiWeight=-1;
 		double GenWeight=-1;
+		double BTagWeight=-1;
+		double VTagWeight=-1;
 		//for ele 
 		double eleid_passConversionVeto[99];
 		double eleid_numberOfLostHits[99];
@@ -158,6 +160,8 @@ int createTreesClosureTest_xww()
 		tIn->SetBranchAddress("PUweight", &PUweight);
 		tIn->SetBranchAddress("LumiWeight", &LumiWeight);
 		tIn->SetBranchAddress("GenWeight", &GenWeight);
+		tIn->SetBranchAddress("BTagWeight", &BTagWeight);
+		tIn->SetBranchAddress("VTagWeight", &VTagWeight);
 		tIn->SetBranchAddress("mZZ_type2_ptUncorrected", mZZ);
 		tIn->SetBranchAddress("mJJ", mJJ);
 		tIn->SetBranchAddress("mLL", mLL);
@@ -182,7 +186,7 @@ int createTreesClosureTest_xww()
 		double mLLAna[99],nsubj21Ana[99],prMJAna[99],mJJNoKinFitAnaSig[99];
 		double  vTagPurityAna[99];
 		int nXjetsAna[99];
-		double HLTweightAnaSig, PUweightAnaSig, LumiWeightAnaSig,GenWeightAnaSig,weightAnaSig;
+		double HLTweightAnaSig, PUweightAnaSig, LumiWeightAnaSig,GenWeightAnaSig,BTagWeightAnaSig,VTagWeightAnaSig,weightAnaSig;
 		int categories[99];
 		double MCmatchAna[99];
 		tAnaSig->Branch("nCands" ,         &nCandsAna ,      "nCands/I");
@@ -201,6 +205,8 @@ int createTreesClosureTest_xww()
 		tAnaSig->Branch("PUweight"        ,&PUweightAnaSig            ,"PUweight/D" );
 		tAnaSig->Branch("LumiWeight"      ,&LumiWeightAnaSig         ,"LumiWeight/D"  );
 		tAnaSig->Branch("GenWeight"      ,&GenWeightAnaSig         ,"GenWeight/D"  );
+		tAnaSig->Branch("BTagWeight"      ,&BTagWeightAnaSig         ,"BTagWeight/D"  );
+		tAnaSig->Branch("VTagWeight"      ,&VTagWeightAnaSig         ,"VTagWeight/D"  );
 		tAnaSig->Branch("weight"          ,&weightAnaSig             ,"weight/D");
 		tAnaSig->Branch("categories"          ,&categories             ,"categories[nCands]/I");
 		tAnaSig->Branch("MCmatch"          ,&MCmatchAna             ,"MCmatch[nCands]/D");
@@ -213,7 +219,7 @@ int createTreesClosureTest_xww()
 		double mLLAnaPlain,nsubj21AnaPlain,prMJAnaPlain,mJJNoKinFitAnaSigPlain;
 		double  vTagPurityAnaPlain;
 		int nXjetsAnaPlain;
-		double HLTweightAnaSigPlain, PUweightAnaSigPlain, LumiWeightAnaSigPlain,GenWeightAnaSigPlain,weightAnaSigPlain;
+		double HLTweightAnaSigPlain, PUweightAnaSigPlain, LumiWeightAnaSigPlain,GenWeightAnaSigPlain,BTagWeightAnaSigPlain, VTagWeightAnaSigPlain, weightAnaSigPlain;
 		int categoriesPlain;
 		double MCmatchAnaPlain;
 		tAnaSigPlain->Branch("nCands" ,         &nCandsAnaPlain ,      "nCands/I");
@@ -232,6 +238,8 @@ int createTreesClosureTest_xww()
 		tAnaSigPlain->Branch("PUweight"        ,&PUweightAnaSigPlain            ,"PUweight/D" );
 		tAnaSigPlain->Branch("LumiWeight"      ,&LumiWeightAnaSigPlain         ,"LumiWeight/D"  );  
 		tAnaSigPlain->Branch("GenWeight"      ,&GenWeightAnaSigPlain         ,"GenWeight/D"  );  
+		tAnaSigPlain->Branch("BTagWeight"      ,&BTagWeightAnaSigPlain         ,"BTagWeight/D"  );  
+		tAnaSigPlain->Branch("VTagWeight"      ,&VTagWeightAnaSigPlain         ,"VTagWeight/D"  );
 		tAnaSigPlain->Branch("weight"          ,&weightAnaSigPlain             ,"weight/D");
 		tAnaSigPlain->Branch("categories"          ,&categoriesPlain             ,"categories/I");		
 		tAnaSigPlain->Branch("MCmatch"          ,&MCmatchAnaPlain             ,"MCmatch/D");
@@ -279,8 +287,10 @@ int createTreesClosureTest_xww()
 			LumiWeightAnaSig=LumiWeight;
 			//if(file.Contains("BulkG_WW_lvjj_c0p2_M1600"))LumiWeightAnaSig=1.5771e-05/45994;
 			GenWeightAnaSig=GenWeight;
-			if(file.Contains("WJetsPt"))GenWeightAnaSig=GenWeightAnaSig*1.3;//for wjets, add addtionnal 1.3 factor
-			weightAnaSig=HLTweightAnaSig*PUweightAnaSig*LumiWeightAnaSig*GenWeightAnaSig;
+			BTagWeightAnaSig=BTagWeight;
+			VTagWeightAnaSig=VTagWeight;
+			//if(file.Contains("WJetsPt"))GenWeightAnaSig=GenWeightAnaSig*1.3;//for wjets, add addtionnal 1.3 factor
+			weightAnaSig=HLTweightAnaSig*PUweightAnaSig*LumiWeightAnaSig*GenWeightAnaSig*BTagWeightAnaSig*VTagWeightAnaSig;
 
 			bool goodevent=false;
 			for(int ivec =0; ivec<nCands; ivec++)
@@ -388,6 +398,8 @@ int createTreesClosureTest_xww()
 			PUweightAnaSigPlain=PUweightAnaSig;
 			LumiWeightAnaSigPlain=LumiWeightAnaSig;
 			GenWeightAnaSigPlain=GenWeightAnaSig;
+			BTagWeightAnaSigPlain=BTagWeightAnaSig;
+			VTagWeightAnaSigPlain=VTagWeightAnaSig;
 			weightAnaSigPlain=weightAnaSig;
 			categoriesPlain=categories[0];
 			MCmatchAnaPlain=MCmatchAna[0];				
