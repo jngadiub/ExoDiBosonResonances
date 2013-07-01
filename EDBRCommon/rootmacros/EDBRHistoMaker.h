@@ -131,6 +131,7 @@ class EDBRHistoMaker {
 		UInt_t          nAK5jets;
 		UInt_t          nPU;
 		Double_t        HLTweight;
+		Double_t        BTagWeight;
 		Double_t        PUweight;
 		Double_t        PUweight2012A;
 		Double_t        PUweight2012B;
@@ -500,6 +501,7 @@ void EDBRHistoMaker::Init(TTree *tree)
 	fChain->SetBranchAddress("nAK5jets", &nAK5jets);
 	fChain->SetBranchAddress("nPU", &nPU, &b_nPU);
 	fChain->SetBranchAddress("HLTweight", &HLTweight, &b_HLTweight);
+	fChain->SetBranchAddress("BTagWeight", &BTagWeight);
 	fChain->SetBranchAddress("PUweight", &PUweight, &b_PUweight);
 	fChain->SetBranchAddress("PUweight2012A", &PUweight2012A, &b_PUweight2012A);
 	fChain->SetBranchAddress("PUweight2012B", &PUweight2012B, &b_PUweight2012B);
@@ -706,7 +708,8 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("nVtx",40,-0.5,39.5);
 	hs.setHisto("nJets",10,0.5,10.5);
 	//hs.setHisto("nPU",2,0,1);
-	//hs.setHisto("HLTweight",100,0.99,10);
+	hs.setHisto("HLTweight",40,0,4);
+	hs.setHisto("BTagWeight",40,0,4);
 	hs.setHisto("PUweight",100,0,10);
 	//hs.setHisto("PUweight2012A",100,0,10);
 	//hs.setHisto("PUweight2012B",100,0,10);
@@ -977,8 +980,8 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 		}
 		// We calculate a weight here.
-		//double actualWeight = weight;
-		double actualWeight = HLTweight*PUweight*LumiWeight*GenWeight;
+		double actualWeight = weight;
+		//double actualWeight = HLTweight*PUweight*LumiWeight*GenWeight;
 		//double actualWeight = PUweight*LumiWeight*GenWeight;
 		if(setUnitaryWeights_) {
 			if(jentry==0)printf("Unitary weights set!\n");
@@ -1099,7 +1102,9 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 				{   
 					(theHistograms["nVL"])->Fill(wnum,actualWeight);
 					(theHistograms["nCands"])->Fill(nCands,actualWeight);
-
+					
+					(theHistograms["HLTweight"])->Fill(PUweight);
+					(theHistograms["BTagWeight"])->Fill(BTagWeight);
 					(theHistograms["PUweight"])->Fill(PUweight);
 					(theHistograms["LumiWeight"])->Fill(LumiWeight);
 					(theHistograms["GenWeight"])->Fill(GenWeight);
