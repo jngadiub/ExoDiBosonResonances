@@ -278,18 +278,18 @@ int main(){
 				if(InTreeName=="SelectedCandidatesAB")
 				{
 					// for A->B
-					if(leptType=="ELE"&&purityCut==0)normalizationNEW=92.5818;
-					if(leptType=="ELE"&&purityCut==1)normalizationNEW=121.546;
-					if(leptType=="MU"&&purityCut==0)normalizationNEW=178.52;
-					if(leptType=="MU"&&purityCut==1)normalizationNEW=197.467;
+					if(leptType=="ELE"&&purityCut==0)normalizationNEW=92.0078;
+					if(leptType=="ELE"&&purityCut==1)normalizationNEW=121.251;
+					if(leptType=="MU"&&purityCut==0)normalizationNEW=75.52;
+					if(leptType=="MU"&&purityCut==1)normalizationNEW=197.085;
 				}
 				else if(InTreeName=="SelectedCandidates")
 				{
 					//for Ana , wjets 180
-					if(leptType=="ELE"&&purityCut==0)normalizationNEW=552.083;
-					if(leptType=="ELE"&&purityCut==1)normalizationNEW=342.247;
-					if(leptType=="MU"&&purityCut==0)normalizationNEW=852.543;
-					if(leptType=="MU"&&purityCut==1)normalizationNEW=537.415;
+					if(leptType=="ELE"&&purityCut==0)normalizationNEW=547.448;
+					if(leptType=="ELE"&&purityCut==1)normalizationNEW=340.821;
+					if(leptType=="MU"&&purityCut==0)normalizationNEW=836.169;
+					if(leptType=="MU"&&purityCut==1)normalizationNEW=538.237;
 				}
 			}
 

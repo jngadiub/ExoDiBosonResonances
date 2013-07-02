@@ -500,18 +500,18 @@ void CopyTreeVecToPlain(TChain *t1, std::string wType, std::string f2Name,std::s
 				//for the analysis
 				if(InTreeName=="SelectedCandidates")
 				{
-					if(vTagPurity_2==0&&leptType_2==0)ttbar_scale = 1.290926;//eleLP
-					if(vTagPurity_2==1&&leptType_2==0)ttbar_scale = 0.963780;//eleHP
-					if(vTagPurity_2==0&&leptType_2==1)ttbar_scale = 1.225310;//muLP
-					if(vTagPurity_2==1&&leptType_2==1)ttbar_scale = 0.965009;//muHP
+					if(vTagPurity_2==0&&leptType_2==0)ttbar_scale = 1.297481;//eleLP
+					if(vTagPurity_2==1&&leptType_2==0)ttbar_scale = 0.966417;//eleHP
+					if(vTagPurity_2==0&&leptType_2==1)ttbar_scale = 1.226198;//muLP
+					if(vTagPurity_2==1&&leptType_2==1)ttbar_scale = 0.958444;//muHP
 				}
 				else if (InTreeName=="SelectedCandidatesAB")
 				{
 					//for closure test A->B
-					if(vTagPurity_2==0&&leptType_2==0)ttbar_scale = 1.311132;//eleLP
-					if(vTagPurity_2==1&&leptType_2==0)ttbar_scale = 0.970865;//eleHP
-					if(vTagPurity_2==0&&leptType_2==1)ttbar_scale = 1.211814;//muLP
-					if(vTagPurity_2==1&&leptType_2==1)ttbar_scale = 1.058920;//muHP
+					if(vTagPurity_2==0&&leptType_2==0)ttbar_scale = 1.296917;//eleLP
+					if(vTagPurity_2==1&&leptType_2==0)ttbar_scale = 0.957699;//eleHP
+					if(vTagPurity_2==0&&leptType_2==1)ttbar_scale = 1.208456;//muLP
+					if(vTagPurity_2==1&&leptType_2==1)ttbar_scale = 1.046983;//muHP
 				}
 
 				TString filename = t1->GetFile()->GetEndpointUrl()->GetUrl();
