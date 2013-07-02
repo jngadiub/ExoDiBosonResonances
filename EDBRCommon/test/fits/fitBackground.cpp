@@ -280,7 +280,7 @@ int main(){
 					// for A->B
 					if(leptType=="ELE"&&purityCut==0)normalizationNEW=92.0078;
 					if(leptType=="ELE"&&purityCut==1)normalizationNEW=121.251;
-					if(leptType=="MU"&&purityCut==0)normalizationNEW=75.52;
+					if(leptType=="MU"&&purityCut==0)normalizationNEW=175.52;
 					if(leptType=="MU"&&purityCut==1)normalizationNEW=197.085;
 				}
 				else if(InTreeName=="SelectedCandidates")
