@@ -205,31 +205,31 @@ class doFit_wj_and_wlvj:
 	'''	
 		####for the analysis A->SIG
         if options.category==0: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.290926); self.rrv_wtagger_eff_reweight_forT.setError(0.067966*self.rrv_wtagger_eff_reweight_forT.getVal());            
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.297481); self.rrv_wtagger_eff_reweight_forT.setError(0.068222*self.rrv_wtagger_eff_reweight_forT.getVal());            
             self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
         elif options.category==1: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",0.963780); self.rrv_wtagger_eff_reweight_forT.setError(0.03279*self.rrv_wtagger_eff_reweight_forT.getVal());                        
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",0.966417); self.rrv_wtagger_eff_reweight_forT.setError(0.032807*self.rrv_wtagger_eff_reweight_forT.getVal());                        
             self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
         elif options.category==2: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.225310); self.rrv_wtagger_eff_reweight_forT.setError(0.048013*self.rrv_wtagger_eff_reweight_forT.getVal());                        
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.226198); self.rrv_wtagger_eff_reweight_forT.setError(0.048103*self.rrv_wtagger_eff_reweight_forT.getVal());                        
             self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
         elif options.category==3: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",0.965009); self.rrv_wtagger_eff_reweight_forT.setError(0.024275*self.rrv_wtagger_eff_reweight_forT.getVal());                        
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",0.958444); self.rrv_wtagger_eff_reweight_forT.setError(0.024132*self.rrv_wtagger_eff_reweight_forT.getVal());                        
             self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
 '''
 
 		###for closure test A->B
         if options.category==0: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.311132); self.rrv_wtagger_eff_reweight_forT.setError(0.157073*self.rrv_wtagger_eff_reweight_forT.getVal());          
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.296917); self.rrv_wtagger_eff_reweight_forT.setError(0.156032*self.rrv_wtagger_eff_reweight_forT.getVal());          
             self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
         elif options.category==1: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",0.970865); self.rrv_wtagger_eff_reweight_forT.setError(0.079879*self.rrv_wtagger_eff_reweight_forT.getVal());          
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",0.957699); self.rrv_wtagger_eff_reweight_forT.setError(0.078879*self.rrv_wtagger_eff_reweight_forT.getVal());          
             self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
         elif options.category==2: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.211814); self.rrv_wtagger_eff_reweight_forT.setError(0.111287*self.rrv_wtagger_eff_reweight_forT.getVal());          
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.208456); self.rrv_wtagger_eff_reweight_forT.setError(0.111727*self.rrv_wtagger_eff_reweight_forT.getVal());          
             self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
         elif options.category==3: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.058920); self.rrv_wtagger_eff_reweight_forT.setError(0.062571*self.rrv_wtagger_eff_reweight_forT.getVal());          
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.046983); self.rrv_wtagger_eff_reweight_forT.setError(0.061762*self.rrv_wtagger_eff_reweight_forT.getVal());          
             self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
 
         self.mean_shift=1.1; self.sigma_scale=1.167; #correct the W-jet mass peak difference between data and MC
