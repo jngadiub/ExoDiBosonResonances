@@ -1,8 +1,8 @@
 void ttbar_scale()
 {
-	TString SigDir = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree_forTT/";	
+	TString SigDir = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSigTree_forTT/";	
 
-
+	system("rm -rf ttbar_scale_plots");
 	system("mkdir -p ttbar_scale_plots");
 	ofstream outFile("ttbar_scale_plots/ttbar_scale_factor.txt");
 
