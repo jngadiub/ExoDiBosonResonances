@@ -202,7 +202,7 @@ class doFit_wj_and_wlvj:
         #    self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",0.87); self.rrv_wtagger_eff_reweight_forV.setError(0.12*self.rrv_wtagger_eff_reweight_forV.getVal());
         #print "wtagger efficiency correction for Top sample: %s +/- %s"%(self.rrv_wtagger_eff_reweight_forT.getVal(), self.rrv_wtagger_eff_reweight_forT.getError());
         #print "wtagger efficiency correction for V   sample: %s +/- %s"%(self.rrv_wtagger_eff_reweight_forV.getVal(), self.rrv_wtagger_eff_reweight_forV.getError());
-	'''	
+		
 		####for the analysis A->SIG
         if options.category==0: 
             self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.297481); self.rrv_wtagger_eff_reweight_forT.setError(0.068222*self.rrv_wtagger_eff_reweight_forT.getVal());            
@@ -216,8 +216,8 @@ class doFit_wj_and_wlvj:
         elif options.category==3: 
             self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",0.958444); self.rrv_wtagger_eff_reweight_forT.setError(0.024132*self.rrv_wtagger_eff_reweight_forT.getVal());                        
             self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
-'''
 
+        '''
 		###for closure test A->B
         if options.category==0: 
             self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.296917); self.rrv_wtagger_eff_reweight_forT.setError(0.156032*self.rrv_wtagger_eff_reweight_forT.getVal());          
@@ -231,7 +231,7 @@ class doFit_wj_and_wlvj:
         elif options.category==3: 
             self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.046983); self.rrv_wtagger_eff_reweight_forT.setError(0.061762*self.rrv_wtagger_eff_reweight_forT.getVal());          
             self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
-
+'''
         self.mean_shift=1.1; self.sigma_scale=1.167; #correct the W-jet mass peak difference between data and MC
 
         #PU study: 0-11,11-15,15-100

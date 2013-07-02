@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TREEPATH=/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree
+TREEPATH=/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSigTree
 
 
 cp ${TREEPATH}/treeEDBR_SingleTop_xww.root  ./
