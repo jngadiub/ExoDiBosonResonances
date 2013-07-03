@@ -29,6 +29,13 @@ float mZZmax_=2600;
 
 //**********systematics***********
 
+////0) Lepton trigger and id
+const double CMS_trigger_e = 1.01; 
+const double CMS_eff_e = 1.03;//from T.Williams
+
+const double CMS_trigger_m = 1.03; //it is 3% at very large eta, otherwise less
+const double CMS_eff_m = 1.04; //2% eff from T&P, + 2% conservative for boosted topology
+
 ////1) Jet energy scale and resoluation
 //signal efficiency
 const double CMS_scale_j_up= 1.01;

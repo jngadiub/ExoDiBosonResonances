@@ -29,6 +29,12 @@ const std::string datacardDir("DataCards_XWW_V24/");
 float mZZmax_=3000;
 
 //**********systematics***********
+////0) Lepton trigger and id
+const double CMS_trigger_e = 1.01; 
+const double CMS_eff_e = 1.03;//from T.Williams
+
+const double CMS_trigger_m = 1.01; //it is 3% at very large eta, otherwise less
+const double CMS_eff_m = 1.01; //2% eff from T&P, + 2% conservative for boosted topology
 
 ////1) Jet energy scale and resoluation
 //signal efficiency

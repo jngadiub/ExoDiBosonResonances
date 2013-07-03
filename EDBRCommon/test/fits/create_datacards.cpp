@@ -976,8 +976,8 @@ std::pair<double,double> leptTriggerSyst( const std::string& leptType_str) {
 
   double syst;
 
-  if( leptType_str=="MU" )  syst = 1.03;//it is 3% at very large eta, otherwise less
-  if( leptType_str=="ELE" ) syst = 1.01;
+  if( leptType_str=="MU" )  syst = CMS_trigger_m;// Defined in Config_XZZ.h and Config_XWW.h
+  if( leptType_str=="ELE" ) syst = CMS_trigger_e;// Defined in Config_XZZ.h and Config_XWW.h
 
   std::pair<double,double> returnPair;
   returnPair.first  = syst; //symmetrical for now
@@ -991,8 +991,8 @@ std::pair<double,double> leptEffSyst( const std::string& leptType_str) {
 
   double syst;
 
-  if( leptType_str=="MU" )  syst = 1.04;//2% eff from T&P, + 2% conservative for boosted topology
-  if( leptType_str=="ELE" ) syst = 1.03;//from T.Williams
+  if( leptType_str=="MU" )  syst = CMS_eff_m;// Defined in Config_XZZ.h and Config_XWW.h
+  if( leptType_str=="ELE" ) syst = CMS_eff_e;// Defined in Config_XZZ.h and Config_XWW.h
 
   std::pair<double,double> returnPair;
   returnPair.first  = syst; //symmetrical for now
