@@ -27,3 +27,31 @@ std::string bkgd_decorr_name="levexp_dcr_xzz";
 const std::string datacardDir("DataCards_XZZ_20130701/");
 float mZZmax_=2600;
 
+//**********systematics***********
+
+////1) Jet energy scale and resoluation
+//signal efficiency
+const double CMS_scale_j_up= 1.01;
+const double CMS_scale_j_down= 0.99;
+//signal shape: p1 for mean and p2 for sigma
+const double CMS_sig1J_p1_jes = 0.005;
+const double CMS_sig1J_p2_jes = 0.02;
+const double CMS_sig1J_p1_jer = 0.02;
+const double CMS_sig1J_p2_jer = 0.03;
+
+////2) Electron energy scale and resoluation
+//signal efficiency
+const double CMS_scale_e = 1.00;
+//signal shape: p1 for mean and p2 for sigma
+const double CMS_sig1Je_p1_scale = 0.005 ;
+const double CMS_sig1Je_p2_scale = 0.0004 ;
+
+////3) Mu energy scale and resoluation
+//signal efficiency
+const double CMS_scale_m = 1.04;
+//signal shape: p1 for mean and p2 for sigma
+const double CMS_sg1J_p1m_scale = 0.006;
+const double CMS_sig1Jm_p2_scale = 0.018;
+
+
+

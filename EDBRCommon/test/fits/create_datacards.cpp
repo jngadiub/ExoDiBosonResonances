@@ -33,10 +33,10 @@
 
 #include "DataCardUtils.h"
 
-//#include "binningFits_XWW.h"
-//#include "Config_XWW.h"
-#include "Config_XZZ.h"
-#include "binningFits_XZZ.h"
+#include "binningFits_XWW.h"
+#include "Config_XWW.h"
+//#include "Config_XZZ.h"
+//#include "binningFits_XZZ.h"
 
 
 float mZZmin_ = startFit;  // this should be synchronized with startFit in fitBackground.cpp
@@ -384,8 +384,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   //cout << "CB mean =" << CB_mean.getVal() << " CB sigma = " << CB_sigma.getVal() << endl;
   double peakSystFactor;
   double widthSystFactor;
-  if(leptType_str == "ELE") {peakSystFactor=0.005; widthSystFactor=0.0004;}//ele width negligible. we won't consider it
-  if(leptType_str == "MU") {peakSystFactor=0.006; widthSystFactor=0.018;}
+  if(leptType_str == "ELE") {peakSystFactor=CMS_sig1Je_p1_scale; widthSystFactor=CMS_sig1Je_p2_scale;}//ele width negligible. we won't consider it // Defined in Config_XZZ.h and Config_XWW.h
+  if(leptType_str == "MU") {peakSystFactor=CMS_sg1J_p1m_scale; widthSystFactor=CMS_sig1Jm_p2_scale;}  // Defined in Config_XZZ.h and Config_XWW.h
   ofs << std::string(sigSystp1_LepScale) << " param 1.0 "  << peakSystFactor << endl; 
   if(leptType_str == "MU")ofs << std::string(sigSystp2_LepScale) << " param 1.0 "  << widthSystFactor << endl;
 	
@@ -400,7 +400,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   char sigSystp2_JetScale[200];//width	
   sprintf(sigSystp1_JetScale,"CMS_%s_sig%dJ_p1_jes",channel_marker.c_str(),nxj);//,pur_str.c_str());
   sprintf(sigSystp2_JetScale,"CMS_%s_sig%dJ_p2_jes",channel_marker.c_str(),nxj);//,pur_str.c_str());
-  peakSystFactor=0.005; widthSystFactor=0.02;
+  peakSystFactor=CMS_sig1J_p1_jes; widthSystFactor=CMS_sig1J_p2_jes; // Defined in Config_XZZ.h and Config_XWW.h
   ofs << std::string(sigSystp1_JetScale) << " param 1.0 "  << peakSystFactor << endl; 
   ofs << std::string(sigSystp2_JetScale) << " param 1.0 "  << widthSystFactor << endl;
 
@@ -409,8 +409,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   char sigSystp2_JetRes[200];//width	
   sprintf(sigSystp1_JetRes,"CMS_%s_sig%dJ_p1_jer",channel_marker.c_str(),nxj);//,pur_str.c_str());
   sprintf(sigSystp2_JetRes,"CMS_%s_sig%dJ_p2_jer",channel_marker.c_str(),nxj);//,pur_str.c_str());
-  peakSystFactor=0.02;
-  widthSystFactor=0.03;
+  peakSystFactor=CMS_sig1J_p1_jer;  // Defined in Config_XZZ.h and Config_XWW.h
+  widthSystFactor=CMS_sig1J_p2_jer;  // Defined in Config_XZZ.h and Config_XWW.h
   ofs << std::string(sigSystp1_JetRes) << " param 1.0 "  << peakSystFactor << endl; 
   ofs << std::string(sigSystp2_JetRes) << " param 1.0 "  << widthSystFactor << endl;
 	
@@ -1006,8 +1006,8 @@ std::pair<double,double> leptScaleSyst( const std::string& leptType_str) {
 
   double syst;
 
-  if( leptType_str=="MU" )  syst = 1.04;
-  if( leptType_str=="ELE" ) syst = 1.00;
+  if( leptType_str=="MU" )  syst = CMS_scale_m; // Defined in Config_XZZ.h and Config_XWW.h
+  if( leptType_str=="ELE" ) syst = CMS_scale_e; // Defined in Config_XZZ.h and Config_XWW.h
 
   std::pair<double,double> returnPair;
   returnPair.first  = syst; //symmetrical for now
@@ -1033,8 +1033,8 @@ std::pair<double,double> jetScaleSyst( double mass ) {
  
   */
 
-  returnPair.first   = 1.01;
-  returnPair.second  = 0.99;
+  returnPair.first   = CMS_scale_j_up;  // Defined in Config_XZZ.h and Config_XWW.h
+  returnPair.second  = CMS_scale_j_down;  // Defined in Config_XZZ.h and Config_XWW.h
   return returnPair;
 
 }
