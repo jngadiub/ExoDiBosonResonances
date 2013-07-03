@@ -51,7 +51,7 @@ const double CMS_sig1Je_p2_scale = 0.001 ;
 //signal efficiency
 const double CMS_scale_m = 1.007;
 //signal shape: p1 for mean and p2 for sigma
-const double CMS_sg1J_p1m_scale = 0.001;
+const double CMS_sig1Jm_p1_scale = 0.001;
 const double CMS_sig1Jm_p2_scale = 0.005;
 
 

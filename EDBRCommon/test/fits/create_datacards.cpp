@@ -385,7 +385,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   double peakSystFactor;
   double widthSystFactor;
   if(leptType_str == "ELE") {peakSystFactor=CMS_sig1Je_p1_scale; widthSystFactor=CMS_sig1Je_p2_scale;}//ele width negligible. we won't consider it // Defined in Config_XZZ.h and Config_XWW.h
-  if(leptType_str == "MU") {peakSystFactor=CMS_sg1J_p1m_scale; widthSystFactor=CMS_sig1Jm_p2_scale;}  // Defined in Config_XZZ.h and Config_XWW.h
+  if(leptType_str == "MU") {peakSystFactor=CMS_sig1Jm_p1_scale; widthSystFactor=CMS_sig1Jm_p2_scale;}  // Defined in Config_XZZ.h and Config_XWW.h
   ofs << std::string(sigSystp1_LepScale) << " param 1.0 "  << peakSystFactor << endl; 
   if(leptType_str == "MU")ofs << std::string(sigSystp2_LepScale) << " param 1.0 "  << widthSystFactor << endl;
 	
