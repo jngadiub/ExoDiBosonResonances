@@ -31,18 +31,18 @@ float mZZmax_=3000;
 //**********systematics***********
 ////0) Lepton trigger and id
 const double CMS_trigger_e = 1.01; 
-const double CMS_eff_e = 1.03;//from T.Williams
+const double CMS_eff_e = 1.03;
 
-const double CMS_trigger_m = 1.01; //it is 3% at very large eta, otherwise less
-const double CMS_eff_m = 1.01; //2% eff from T&P, + 2% conservative for boosted topology
+const double CMS_trigger_m = 1.01; 
+const double CMS_eff_m = 1.01; 
 
 ////1) Jet energy scale and resoluation
-//signal efficiency
+//signal efficiency------------This will not be used. In the code we will use a line from 1% to 3% from 600 to 2500.
 const double CMS_scale_j_up= 1.03;
 const double CMS_scale_j_down= 0.97;
 //signal shape: p1 for mean and p2 for sigma
 const double CMS_sig1J_p1_jes = 0.013;
-const double CMS_sig1J_p2_jes = 0.04;
+const double CMS_sig1J_p2_jes = 0.04;//---------------This will not be used. In the code we will use a line from 2% to 3% from 600 to 2500.
 const double CMS_sig1J_p1_jer = 0.001;
 const double CMS_sig1J_p2_jer = 0.03;
 
