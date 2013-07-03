@@ -401,6 +401,10 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   sprintf(sigSystp1_JetScale,"CMS_%s_sig%dJ_p1_jes",channel_marker.c_str(),nxj);//,pur_str.c_str());
   sprintf(sigSystp2_JetScale,"CMS_%s_sig%dJ_p2_jes",channel_marker.c_str(),nxj);//,pur_str.c_str());
   peakSystFactor=CMS_sig1J_p1_jes; widthSystFactor=CMS_sig1J_p2_jes; // Defined in Config_XZZ.h and Config_XWW.h
+  //for ww, use a line from 2% to 3% from 600 to 2500
+  if(!isZZChannel)widthSystFactor = 0.02 + (0.03-0.02)/(2500-600)*(hp.mH-600);
+
+
   ofs << std::string(sigSystp1_JetScale) << " param 1.0 "  << peakSystFactor << endl; 
   ofs << std::string(sigSystp2_JetScale) << " param 1.0 "  << widthSystFactor << endl;
 
@@ -1035,6 +1039,15 @@ std::pair<double,double> jetScaleSyst( double mass ) {
 
   returnPair.first   = CMS_scale_j_up;  // Defined in Config_XZZ.h and Config_XWW.h
   returnPair.second  = CMS_scale_j_down;  // Defined in Config_XZZ.h and Config_XWW.h
+  
+  //temporary solution for WW: use a line from 1% to 3% from 600 to 2500
+  if(!isZZChannel)
+  {
+    double error = 0.01 + (0.03-0.01)/(2500-600)*(mass-600);
+    returnPair.first = 1+error;
+    returnPair.second= 1-error;
+  }
+
   return returnPair;
 
 }
