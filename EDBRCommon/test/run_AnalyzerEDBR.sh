@@ -21,13 +21,13 @@ echo
 
 
 
-type="fullsig" #### could be fullsb or presel or fullsig, denpends on analyzerEDBR_zz2l2j_tpl.py
+type="fullsb" #### could be fullsb or presel or fullsig, denpends on analyzerEDBR_zz2l2j_tpl.py
 
 CFGAREA=${MYWORKAREA}/ExoDiBosonResonances/EDBRCommon/test/tmp_cfg_${type}/
 mkdir -p $CFGAREA
 
 
-OUTDIR=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2b/${type}
+OUTDIR=/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2c/${type}
 mkdir -p $OUTDIR/logs
 
 # ok, now do the job:

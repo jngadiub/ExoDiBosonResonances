@@ -73,20 +73,20 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
 void AnalyzerEDBR::analyze(edm::Event const& iEvent, edm::EventSetup const& eventSetup){
 
   //use these for X->ZZ analysis
-/*	
+	
   typedef  cmg::DiElectronSingleJetEDBR cmgEleSingleJetEDBR ;
   typedef  cmg::DiMuonSingleJetEDBR     cmgMuSingleJetEDBR  ;
   typedef  cmg::DiElectronDiJetEDBR     cmgEleDiJetEDBR  ;
   typedef  cmg::DiMuonDiJetEDBR         cmgMuDiJetEDBR  ;
-*/	
+
 
   //use these for X->WW analysis
-    
+  /* 
       typedef  cmg::WelenuSingleJetEDBR cmgEleSingleJetEDBR ;
       typedef  cmg::WmunuSingleJetEDBR  cmgMuSingleJetEDBR  ; 
       typedef  cmg::WelenuDiJetEDBR     cmgEleDiJetEDBR  ;
       typedef  cmg::WmunuDiJetEDBR      cmgMuDiJetEDBR  ;
-  
+  */
 
   nEvt++;
 

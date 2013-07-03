@@ -44,7 +44,7 @@ void absolute_eff()
   //TString inputpath = "/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1e/fullsig/";
   ///afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv5/fullsigCA8/";
   //TString inputpath = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/";
-  TString inputpath = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/fullallrange/";
+  TString inputpath = "/afs/cern.ch/user/b/bonato/scratch0/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2c/fullsig/";
   TString cut = "absolute_efficiency";
   vector<TString> dataSamples;
   vector<TString> bkgSamples;
@@ -52,7 +52,7 @@ void absolute_eff()
 
 
   bool weightedeff = true;
-  bool isZZChannel = false;
+  bool isZZChannel = true;
   /*
     double lepCut=0.0;   // 0->ele 1->mu
     double nxjCut=1.0;  // -1 means you take both single and double jet
@@ -82,7 +82,7 @@ void absolute_eff()
       bkgSamples.push_back("WW");
       bkgSamples.push_back("WZ");
       bkgSamples.push_back("ZZ");
-      bkgSamples.push_back("DYJetsPt50To70");
+      // bkgSamples.push_back("DYJetsPt50To70");
       bkgSamples.push_back("DYJetsPt70To100");
       bkgSamples.push_back("DYJetsPt100");
 
@@ -101,6 +101,11 @@ void absolute_eff()
       sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1800");
       sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M1900");
       sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M2000");
+      sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M2100");
+      sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M2200");
+      sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M2300");
+      sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M2400");
+      sigSamples.push_back("BulkG_ZZ_lljj_c0p2_M2500");
     }
 
   if(!isZZChannel)

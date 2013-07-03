@@ -20,12 +20,12 @@ void loopPlot(){
   
   //#####################EDIT THE OPTIONS##############################
   /// Boolean flags to steer the histogram making
-  bool wantElectrons = false; // Will make histograms for electrons
-  bool wantMuons     = true; // Will make histograms for muons
-  bool wantSideband  = true; // Will make histograms for sideband region
+  bool wantElectrons = true; // Will make histograms for electrons
+  bool wantMuons     = false; // Will make histograms for muons
+  bool wantSideband  = false; // Will make histograms for sideband region
   bool wantSignal    = true; // Will make histograms for signal region
   bool wantFullRange = false; // Will not check signal or sideband, ie, pick all jet mass range
-  int  wantNXJets    = -1; // Will make histograms for 1 or 2 jet topology
+  int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
   int  isZZchannel   = 1; //plot label for zz (1) or ww (0)
   int  flavour = 0; 
   if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
@@ -47,21 +47,12 @@ void loopPlot(){
 
   /// Path to wherever the files with the trees are. 
   //CA8 (cmgTuple_08032013_CA8)
-  //std::string pathToTrees="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv1d/fullsig_plus_sb/sum/";
-  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/fullallrange/";
-  //std::string pathToTrees="/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/";
-  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/fullallrange/";
-  //std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/ttbarcontrol/";
-  std::string pathToTrees="/afs/cern.ch/user/t/tomei/work/public/EXOVV_2012/analyzer_trees/productionv2a/presel/";
+
+  std::string pathToTrees="/afs/cern.ch/user/b/bonato/scratch0/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2b/fullsig/";
 
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./plots_ZZ_mu_presel";
-  //std::string outputDir = "./plots_WW_ele_signal_bvetoM_ALLP";
-  //std::string outputDir = "./plots_WW_mu_signal_bvetoM_ALLP";
-  //std::string outputDir = "./plots_WW_ele_sideband_bvetoM_ALLP_sync";
-  //std::string outputDir = "./plots_WW_mu_sideband_bvetoM_ALLP_sync";
-  //std::string outputDir = "./plots_WW_ele_fullallrange_btagT_ALLP_sync";
-  //std::string outputDir = "./plots_WW_mu_fullallrange_btagT_ALLP_sync";
+  std::string outputDir = "./plots_productionv2b_fullsig_HP_ELE";
+ 
 
   /// Setup names of data files for trees.
  
@@ -81,23 +72,22 @@ void loopPlot(){
 				 };
   */
 
-
+  /*
  const int nDATA=4;
  std::string dataLabels[nDATA]={"DoubleMu_Run2012A_22Jan2013",
 				"DoubleMuParked_Run2012B_22Jan2013",
 				"DoubleMuParked_Run2012C_22Jan2013",
 				"DoubleMuParked_Run2012D_22Jan2013"};
-
- /*
-  const int nDATA=6;//set to zero if you don't want to plot
-  std::string dataLabels[nDATA]={"Photon_Run2012A_13Jul2012",
-  				 "Photon_Run2012A_recover",
-  				 "DoublePhotonHighPt_Run2012B_13Jul2012",
-				 "DoublePhotonHighPt_Run2012C_24Aug2012",
-				 "DoublePhotonHighPt_Run2012C_PRv2",
-				 "DoublePhotonHighPt_Run2012D_PRv1"};
-  */ 
+  */
  
+  const int nDATA=4;//set to zero if you don't want to plot
+  std::string dataLabels[nDATA]={"Photon_Run2012A_22Jan2013",
+                                "DoublePhotonHighPt_Run2012B_22Jan2013",
+                                "DoublePhotonHighPt_Run2012B_22Jan2013",
+                                "DoublePhotonHighPt_Run2012B_22Jan2013"
+				};
+
+  
 /* 
   const int nDATA=7;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"SingleElectron_Run2012A_13Jul2012_xww",
@@ -137,12 +127,12 @@ void loopPlot(){
   /// Setup names of MC files for trees.
 
   const int nMC=6;//set to zero if you don't want to plot
-  std::string mcLabels[nMC]={"TTBARpowheg_v2",
-			     "WW_v2",
-			     "WZ_v2",
-			     "ZZ_v2",
-			     "DYJetsPt70To100_v2",
-			     "DYJetsPt100_v2",
+  std::string mcLabels[nMC]={"TTBARpowheg",
+			     "WW",
+			     "WZ",
+			     "ZZ",
+			     "DYJetsPt70To100",
+			     "DYJetsPt100",
   };
   double kFactorsMC_array[nMC] = {1, 1, 1, 1, 1, 1};
   
@@ -203,7 +193,7 @@ void loopPlot(){
 
   /// Setup names of MC signal files for trees.
   const int nMCSig=1;//set to zero if you don't want to plot
-  std::string mcLabelsSig[nMCSig]={"BulkG_ZZ_lljj_c0p2_M1100_v2"
+  std::string mcLabelsSig[nMCSig]={"BulkG_ZZ_lljj_c0p2_M1000"
 				   //"BulkG_WW_lvjj_c0p2_M1000_xww",				   
                                    //"BulkG_WW_lvjj_c0p2_M2000_xww"				   
                                   };

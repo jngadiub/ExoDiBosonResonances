@@ -7,21 +7,14 @@ mkdir -p $OUTPUTDIR
 
 ### Location of CMGtuples ###
 
-#MAINDIRMC=/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12/
-#MAINDIRDATA=/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Run2012/
-#MAINDIRMC=/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/santanas/production0312/Summer12/CA8/
-#MAINDIRDATA=/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/santanas/production0312/Run2012/CA8/
-MAINDIRMC=/store/cmst3/group/exovv/CMGtuple/productionv2a/Summer12
-MAINDIRDATA=/store/cmst3/group/exovv/CMGtuple/productionv2a/Run2012
+MAINDIRMC=/store/cmst3/group/exovv/CMGtuple/productionv2c/Summer12
+MAINDIRDATA=/store/cmst3/group/exovv/CMGtuple/productionv2c/Run2012
 
 ### Make lists for DATA ###
 
-### List for XWW
-#for sample in SingleMu_Run2012A_13Jul2012_xww  SingleMu_Run2012A_recover_xww SingleMu_Run2012B_13Jul2012_xww SingleMu_Run2012C_24Aug2012_xww SingleMu_Run2012C_PromptReco_xww SingleMu_Run2012C_EcalRecove_xww  SingleMu_Run2012D_PromptReco_xww  SingleElectron_Run2012A_13Jul2012_xww SingleElectron_Run2012A_recover_xww SingleElectron_Run2012B_13Jul2012_xww SingleElectron_Run2012C_24Aug2012_xww SingleElectron_Run2012C_EcalRecove_xww   SingleElectron_Run2012C_PromptReco_xww SingleElectron_Run2012D_PromptReco_xww 
-### List for XZZ
-#DoubleMu_Run2012A_13Jul2012 DoubleMu_Run2012A_recover DoubleMu_Run2012B_13Jul2012 DoubleMu_Run2012C_24Aug2012 DoubleMu_Run2012C_PRv2 DoubleMu_Run2012D_PRv1 DoublePhotonHighPt_Run2012B_13Jul2012  DoublePhotonHighPt_Run2012C_24Aug2012 DoublePhotonHighPt_Run2012C_PRv2 DoublePhotonHighPt_Run2012D_PRv1 Photon_Run2012A_13Jul2012 Photon_Run2012A_recover
+#DoubleMu_Run2012A_22Jan2013 DoubleMuParked_Run2012B_22Jan2013 DoubleMuParked_Run2012C_22Jan2013 DoubleMuParked_Run2012D_22Jan2013 Photon_Run2012A_22Jan2013 DoublePhotonHighPt_Run2012B_22Jan2013 DoublePhotonHighPt_Run2012C_22Jan2013 DoublePhotonHighPt_Run2012D_22Jan2013
 ### List for XZZ v2
-for sample in DoubleMu_Run2012A_22Jan2013 DoubleMuParked_Run2012B_22Jan2013 DoubleMuParked_Run2012C_22Jan2013 DoubleMuParked_Run2012D_22Jan2013 Photon_Run2012A_22Jan2013 DoublePhotonHighPt_Run2012B_22Jan2013 DoublePhotonHighPt_Run2012C_22Jan2013 DoublePhotonHighPt_Run2012D_22Jan2013
+for sample in 
 do
   echo $MAINDIRDATA/$sample
   cmsLs $MAINDIRDATA/$sample | grep .root | awk '{print $5}'  > tmp.txt
@@ -35,7 +28,10 @@ done
 ### List for XZZ
 # TTBAR DYJetsPt50To70 DYJetsPt70To100 DYJetsPt100 WW WZ ZZ BulkG_ZZ_lljj_c0p2_M600 BulkG_ZZ_lljj_c0p2_M700 BulkG_ZZ_lljj_c0p2_M800 BulkG_ZZ_lljj_c0p2_M900 BulkG_ZZ_lljj_c0p2_M1000 BulkG_ZZ_lljj_c0p2_M1100 BulkG_ZZ_lljj_c0p2_M1300 BulkG_ZZ_lljj_c0p2_M1400 BulkG_ZZ_lljj_c0p2_M1500 BulkG_ZZ_lljj_c0p2_M1700 BulkG_ZZ_lljj_c0p2_M1800 BulkG_ZZ_lljj_c0p2_M1900 BulkG_ZZ_lljj_c1p0_M1000 BulkG_ZZ_lljj_c1p0_M1500 BulkG_ZZ_lljj_c1p0_M600 RSG_ZZ_lljj_c0p05_M1000 RSG_ZZ_lljj_c0p2_M1000 RSG_ZZ_lljj_c0p2_M1500
 ### List for XZZ_v2
-for sample in BulkG_ZZ_lljj_c0p2_M1000 BulkG_ZZ_lljj_c0p2_M1100-JHU-herwig BulkG_ZZ_lljj_c0p2_M1100 BulkG_ZZ_lljj_c0p2_M1200 BulkG_ZZ_lljj_c0p2_M1300 BulkG_ZZ_lljj_c0p2_M1400-JHU-herwig BulkG_ZZ_lljj_c0p2_M1400 BulkG_ZZ_lljj_c0p2_M1500 BulkG_ZZ_lljj_c0p2_M1600 BulkG_ZZ_lljj_c0p2_M1700-JHU-herwig BulkG_ZZ_lljj_c0p2_M1700 BulkG_ZZ_lljj_c0p2_M1800 BulkG_ZZ_lljj_c0p2_M1900 BulkG_ZZ_lljj_c0p2_M2000 BulkG_ZZ_lljj_c0p2_M2100 BulkG_ZZ_lljj_c0p2_M2200 BulkG_ZZ_lljj_c0p2_M2300 BulkG_ZZ_lljj_c0p2_M2400 BulkG_ZZ_lljj_c0p2_M2500 BulkG_ZZ_lljj_c0p2_M600 BulkG_ZZ_lljj_c0p2_M700 BulkG_ZZ_lljj_c0p2_M800-JHU-herwig BulkG_ZZ_lljj_c0p2_M800 BulkG_ZZ_lljj_c0p2_M900
+# 
+for sample in DYJetsPt70To100 DYJetsPt100  TTBARpowheg WW WZ ZZ BulkG_ZZ_lljj_c0p2_M600 BulkG_ZZ_lljj_c0p2_M700 BulkG_ZZ_lljj_c0p2_M800 BulkG_ZZ_lljj_c0p2_M900 BulkG_ZZ_lljj_c0p2_M1000 BulkG_ZZ_lljj_c0p2_M1100  BulkG_ZZ_lljj_c0p2_M1200  BulkG_ZZ_lljj_c0p2_M1300 BulkG_ZZ_lljj_c0p2_M1400 BulkG_ZZ_lljj_c0p2_M1500  BulkG_ZZ_lljj_c0p2_M1600  BulkG_ZZ_lljj_c0p2_M1700  BulkG_ZZ_lljj_c0p2_M1800 BulkG_ZZ_lljj_c0p2_M1900  BulkG_ZZ_lljj_c0p2_M2000 BulkG_ZZ_lljj_c0p2_M2100 BulkG_ZZ_lljj_c0p2_M2200 BulkG_ZZ_lljj_c0p2_M2300 BulkG_ZZ_lljj_c0p2_M2400 BulkG_ZZ_lljj_c0p2_M2500 BulkG_ZZ_lljj_c0p2_M1100-JHU-herwig   BulkG_ZZ_lljj_c0p2_M1400-JHU-herwig BulkG_ZZ_lljj_c0p2_M1700-JHU-herwig BulkG_ZZ_lljj_c0p2_M800-JHU-herwig
+
+
 #for sample in DYJetsPt100 DYJetsPt70To100 TTBARpowheg WW WZ ZZ
 do
   echo $MAINDIRMC/$sample
