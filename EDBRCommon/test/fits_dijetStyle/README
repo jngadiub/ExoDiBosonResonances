@@ -115,7 +115,7 @@ Dijet-like fit
     - the mass variable must be called "mZZ" (or substitute in many places in the code)
     - NCAT
     - MMIN, MMAX (should be consistent with range defined in **** below)
-    - BINSIZEPLOT (for main analysis) , BINSIZEPLOTTEST (for the F-test)
+    - BINSIZEPLOT (for main analysis) , BINSIZEPLOTSIGNAL (for signal shapes) , BINSIZEPLOTTEST (for the F-test)
     - defineVariables
     - TString fileBaseName(TString::Format("Xvv.mX%d_ZZ_8TeV"
     - TString fileBkgName(TString::Format("Xvv.inputbkg_8TeV"

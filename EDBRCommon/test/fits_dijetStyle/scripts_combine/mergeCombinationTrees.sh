@@ -18,6 +18,9 @@ fi
 #-----------------------------------------------------------------
 #EDIT HERE
 
+# can be on of those :
+# comb_xzz , comb_xzz_2l1JHP , comb_xzz_2l1JLP , comb_xzz_ee1J , comb_xzz_mm1J  
+# comb_xzz_2l1JELEHP, comb_xzz_2l1JELELP, comb_xzz_2l1JMUHP, comb_xzz_2l1JMULP
 DIR="output_EXOZZ_Asymptotic_comb_xzz"
 #DIR="output_EXOZZ_Asymptotic_comb_xzz_2l1JELELP"
 LISTFILES_EXP=""
