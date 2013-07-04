@@ -1,5 +1,5 @@
 
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130701_prodv2c_ALL/";
+const std::string myOutDir="FitSidebandsMJJ_ZZ_20130701_prodv2c_ALL_MCVVdiv3/";
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2c/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2c/fullsb/";
 
@@ -12,7 +12,7 @@ const unsigned int nToys = 500;
 const float lumi =19538.85;
 
 
-const bool doPseudoExp=true;//true; //if true, for for different psuedo-alpha 
+const bool doPseudoExp=false;//true; //if true, for for different psuedo-alpha 
 const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=false;//choose what to plot as main fit function

@@ -55,13 +55,18 @@ const int nBins2=16;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
 			    1000,1100,1250,1400};
 
+//bins for plots and chi2
+const int nbchi2=16;
+const double lowbinchi2=500.0;
+const double hibinchi2=2800.0;
+
 int main(){
   RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING) ;
 
 
   string leptType_str="ALL";//ELE // "MU"
   // const string outDir="FitSidebandsAlphaHistSmoothenedWithToys";
-  const string outDir="FitSidebandsMJJ_ZZ_20130701_prodv2c_ALL/";
+  const string outDir="FitSidebandsMJJ_ZZ_20130701_prodv2c_ALL_MCVVdiv2/";
 
   ofstream logf((outDir+"./log_FTest_MZZ_Std.log").c_str(),ios::out);
 
@@ -277,8 +282,8 @@ int main(){
       RooDataHist* dsetBinned =new RooDataHist("dhALLData","My Binned dataset",RooArgSet(*x), *SBdset);
       cout<<"Datahist loaded"<<endl;
       // TH1D *hbin2=(TH1D*)SIGdsetFULL->reduce("mZZ>375&&mZZ<1250")->createHistogram( ("h_dsbinned2_M"+ssM.str()+sscat.str()+"b").c_str(),*x,Binning(RooBinning(nBins-1,bins0)));
-      TH1D *hbin2=(TH1D*)SBdset->createHistogram( ("h_dsbinned2_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(80,465,2865)));  //RooBinning(37,600,2450)
-      TH1D *hbinEE=(TH1D*)SBdset->reduce("lep==0")->createHistogram( ("h_dsbinnedEE_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(80,465,2865))); //RooBinning(37,600,2450)
+      TH1D *hbin2=(TH1D*)SBdset->createHistogram( ("h_dsbinned2_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(nbchi2,lowbinchi2,hibinchi2)));  //RooBinning(37,600,2450)
+      TH1D *hbinEE=(TH1D*)SBdset->reduce("lep==0")->createHistogram( ("h_dsbinnedEE_"+ssnxj.str()+"J"+pur_str).c_str(),*x,RooFit::Binning(RooBinning(nbchi2,lowbinchi2,hibinchi2))); //RooBinning(37,600,2450)
 
   
       //  TH1D *hbin=(TH1D*)dsetBinned->createHistogram("h_dsbinned",*x);
@@ -390,7 +395,7 @@ int main(){
       RooPlot *xf=x->frame();
       string frameTitle="F-Test validation ("+ssnxj.str()+"J "+pur_str +" - "+leptType_str+" lept flav)";
       xf->SetTitle(frameTitle.c_str());
-      SBdset->plotOn(xf,RooFit::Binning(RooBinning(79,480,2850)),RooFit::MarkerStyle(21),RooFit::MarkerColor(kRed));
+      SBdset->plotOn(xf,RooFit::Binning(RooBinning(nbchi2,lowbinchi2,hibinchi2)),RooFit::MarkerStyle(21),RooFit::MarkerColor(kRed));
       fit_1par->plotOn(xf, RooFit::Normalization(normFitRange,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), RooFit::LineColor(kBlue), RooFit::LineStyle(kDotted));//RooFit::NormRange("fitRange"),
       fit_2par->plotOn(xf, RooFit::Normalization(normFitRange,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), RooFit::LineColor(kOrange+5), RooFit::LineStyle(kDashed));//RooFit::NormRange("fitRange"),
       fit_3par->plotOn(xf, RooFit::Normalization(normFitRange,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), RooFit::LineColor(kBlack), RooFit::LineStyle(kSolid));//RooFit::NormRange("fitRange"),
@@ -400,7 +405,7 @@ int main(){
       can1->SaveAs((outDir+"/FTestPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType_str+".root").c_str());
       can1->SaveAs((outDir+"/FTestPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType_str+".eps").c_str());
       can1->SaveAs((outDir+"/FTestPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType_str+".pdf").c_str());
-      xf->SetMinimum(0.06);
+      xf->SetMinimum(0.001);
       gPad->SetLogy();
       xf->Draw();
       can1->SaveAs((outDir+"/FTestPlot_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType_str+"_log.root").c_str());
