@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.10 2013/06/11 08:56:24 santanas Exp $
+ * $Id: R2JJFitter.cc,v 1.11 2013/06/11 17:56:52 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -215,7 +215,8 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 
   //TString inDir   = "./MiniTrees/Signal_VV/";
   //TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/"; 
-  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree/"; 
+  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree/"; 
+  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSigTree/"; 
 
   int iMass = abs(mass);       
   /*
@@ -387,7 +388,8 @@ void AddBkgData(RooWorkspace* w) {
 
   //TString inDir   = "./MiniTrees/Data_VV/";
   //TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/"; 
-  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree/"; 
+  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree/"; 
+  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSigTree/"; 
 
   //TFile dataFile(inDir+"dijetWtag_Moriond_Mar6_miniTree.root");   
   TFile dataFile(inDir+"treeEDBR_data_xww.root");   
@@ -1771,36 +1773,49 @@ void MakeSigWS(RooWorkspace* w, const char* fileBaseName) {
 
   // (2) Systematics on energy scale and resolution
 
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat0[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat1[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat2[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat3[1,1.0,1.0]");
+  //was [1,1.0,1.0].....
+  wAll->factory("CMS_hgg_sig_m0_absShift[1,0.5,1.5]");
+  /*
+  wAll->factory("CMS_hgg_sig_m0_absShift_cat0[1,0.5,1.5]");
+  wAll->factory("CMS_hgg_sig_m0_absShift_cat1[1,0.5,1.5]");
+  wAll->factory("CMS_hgg_sig_m0_absShift_cat2[1,0.5,1.5]");
+  wAll->factory("CMS_hgg_sig_m0_absShift_cat3[1,0.5,1.5]");
+  */
 
   //multiply by scale factor
+  wAll->factory("prod::CMS_hgg_sig_m0_cat0(mgg_sig_m0_cat0, CMS_hgg_sig_m0_absShift)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat1(mgg_sig_m0_cat1, CMS_hgg_sig_m0_absShift)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat2(mgg_sig_m0_cat2, CMS_hgg_sig_m0_absShift)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat3(mgg_sig_m0_cat3, CMS_hgg_sig_m0_absShift)");
+  /*
   wAll->factory("prod::CMS_hgg_sig_m0_cat0(mgg_sig_m0_cat0, CMS_hgg_sig_m0_absShift_cat0)");
   wAll->factory("prod::CMS_hgg_sig_m0_cat1(mgg_sig_m0_cat1, CMS_hgg_sig_m0_absShift_cat1)");
   wAll->factory("prod::CMS_hgg_sig_m0_cat2(mgg_sig_m0_cat2, CMS_hgg_sig_m0_absShift_cat2)");
   wAll->factory("prod::CMS_hgg_sig_m0_cat3(mgg_sig_m0_cat3, CMS_hgg_sig_m0_absShift_cat3)");
+  */
 
   // (3) Systematics on resolution: create new sigmas
   
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat0[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat1[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat2[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat3[1,1.0,1.0]");
+  //was [1,1.0,1.0].....
+  wAll->factory("CMS_hgg_sig_sigmaScale[1,0.5,1.5]");
+  /*
+  wAll->factory("CMS_hgg_sig_sigmaScale_cat0[1,0.5,1.5]");
+  wAll->factory("CMS_hgg_sig_sigmaScale_cat1[1,0.5,1.5]");
+  wAll->factory("CMS_hgg_sig_sigmaScale_cat2[1,0.5,1.5]");
+  wAll->factory("CMS_hgg_sig_sigmaScale_cat3[1,0.5,1.5]");
+  */
 
   //multiply by scale factor
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat0(mgg_sig_sigma_cat0, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat1(mgg_sig_sigma_cat1, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat2(mgg_sig_sigma_cat2, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat3(mgg_sig_sigma_cat3, CMS_hgg_sig_sigmaScale)");
+  /*
   wAll->factory("prod::CMS_hgg_sig_sigma_cat0(mgg_sig_sigma_cat0, CMS_hgg_sig_sigmaScale_cat0)");
   wAll->factory("prod::CMS_hgg_sig_sigma_cat1(mgg_sig_sigma_cat1, CMS_hgg_sig_sigmaScale_cat1)");
   wAll->factory("prod::CMS_hgg_sig_sigma_cat2(mgg_sig_sigma_cat2, CMS_hgg_sig_sigmaScale_cat2)");
   wAll->factory("prod::CMS_hgg_sig_sigma_cat3(mgg_sig_sigma_cat3, CMS_hgg_sig_sigmaScale_cat3)");
-
-  //OLD
-  //   //multiply by scale factor
-  //   wAll->factory("prod::CMS_hgg_sig_gsigma_cat0(mgg_sig_gsigma_cat0, CMS_hgg_sig_sigmaScale_cat0)");
-  //   wAll->factory("prod::CMS_hgg_sig_gsigma_cat1(mgg_sig_gsigma_cat1, CMS_hgg_sig_sigmaScale_cat1)");
-  //   wAll->factory("prod::CMS_hgg_sig_gsigma_cat2(mgg_sig_gsigma_cat2, CMS_hgg_sig_sigmaScale_cat2)");
-  //   wAll->factory("prod::CMS_hgg_sig_gsigma_cat3(mgg_sig_gsigma_cat3, CMS_hgg_sig_sigmaScale_cat3)");
+  */
 
   // (4) do reparametrization of signal
   for (int c = 0; c < ncat; ++c) {
@@ -2094,16 +2109,42 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   //<< "  " << signal[iChan]->sumEntries()/signal[2]->sumEntries()*20  << "  " << 1 << endl;
   //should we put the correct rate of events?
   outFile << "--------------------------------" << endl;
-
   
-  outFile << "lumi_8TeV       lnN  0.950/1.050    - " << endl;
-  outFile << "CMS_VV_eff_g         lnN  0.8/1.10      - # Signal Efficiency" << endl;
+  //== Uncertainties on SIGNAL NORMALIZATION ==
 
+  //Lumi
+  outFile << "lumi_8TeV               lnN  0.956/1.044    - " << endl;
+  
+  //Trigger
+  outFile <<   "CMS_Trigger_eff_g      lnN    0.99/1.01    - " << endl;
+  
+  //Lepton ID
+  if(iChan==0 || iChan==1)
+    outFile << "CMS_LeptonID_eff_g_ELE  lnN  0.97/1.03      - # Signal Efficiency" << endl;
+  if(iChan==2 || iChan==3)
+    outFile << "CMS_LeptonID_eff_g_MU   lnN  0.99/1.01      - # Signal Efficiency" << endl;
+  
+  //JES
+  double sigma = 0.0037 + 0.0000105 * mass;
+  outFile << Form("CMS_JES_eff_g           lnN  %f/%f      - # Signal Efficiency",1-sigma,1+sigma) << endl;
+
+  //W-tag efficiency
+  if(iChan==0 || iChan==2)
+    outFile << "CMS_VV_eff_g_LP         lnN  1.10/0.90      - # Signal Efficiency" << endl;
+  if(iChan==1 || iChan==3)
+    outFile << "CMS_VV_eff_g_HP         lnN  0.90/1.10      - # Signal Efficiency" << endl;
+
+
+  //== Uncertainties on SIGNAL SHAPE ==
   outFile << "# Parametric shape uncertainties, entered by hand." << endl;
-  outFile << Form("CMS_hgg_sig_m0_absShift_cat%d    param   1   0.0125   # displacement of the mean",iChan) << endl;
-  outFile << Form("CMS_hgg_sig_sigmaScale_cat%d     param   1   0.1   # jet resolution",iChan) << endl;
-  //what about gsigmaScale?
+  outFile << "CMS_hgg_sig_m0_absShift    param   1   0.013   # uncertainty on the mean" << endl;
+  outFile << "CMS_hgg_sig_sigmaScale     param   1   0.04   # uncertainty on the sigma" << endl;
+  /*
+  outFile << Form("CMS_hgg_sig_m0_absShift_cat%d    param   1   0.013   # uncertainty on the mean",iChan) << endl;
+  outFile << Form("CMS_hgg_sig_sigmaScale_cat%d     param   1   0.04   # uncertainty on the sigma",iChan) << endl;
+  */
  
+  //== Uncertainties on BACKGROUND SHAPE/NORMALIZATION ==
   outFile << Form("CMS_hgg_bkg_8TeV_cat%d_norm           flatParam  # Normalization uncertainty on background slope",iChan) << endl;
   outFile << Form("CMS_hgg_bkg_8TeV_slope1_cat%d         flatParam  # Mean and absolute uncertainty on background slope",iChan) << endl;
   outFile << Form("CMS_hgg_bkg_8TeV_slope2_cat%d         flatParam  # Mean and absolute uncertainty on background slope",iChan) << endl;
