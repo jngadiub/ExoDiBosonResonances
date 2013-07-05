@@ -653,6 +653,7 @@ int main(){
       if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
       logf<<"Check nromalization: NumEntries of dsDataSIG= "<<dsDataSIG->numEntries() <<"("<<dsDataSIG->sumEntries() <<")    SumEntries of dsDataSB2="<<dsDataSB2->sumEntries()<<"   numEntries="<<dsDataSB2->numEntries()<<"    Nbkg (NORM)="<<NbkgRange->getVal()<<"   Nent="<<Nent->getVal()<<"     Nerr="<<Nerr->getVal() <<std::endl;
 
+	  if(!isZZChannel)xf->SetXTitle("mWW");
       xf->Draw();
       can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".root").c_str());
       can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".eps").c_str());
