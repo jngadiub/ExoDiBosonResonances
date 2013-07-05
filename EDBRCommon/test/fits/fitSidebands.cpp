@@ -261,6 +261,7 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 
 			//add R0 to alpha
 			TH1D * alpha_Final = (TH1D*)alpha_ORI->Clone("h_alpha_smoothened_Final");
+			TH1D * alpha_Ori = (TH1D*)alpha_ORI->Clone("h_alpha_smoothened_Ori");
 			TH1D * R0=0;
 			if(inxj==1&&iP==0)R0=&R0_vector.at(0);//1JLP
 			else if(inxj==1&&iP==1)R0=&R0_vector.at(1);//1JHP
@@ -276,6 +277,7 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 
 			//do alpha_Final = (1-R0) * alpha_ORI
 			alpha_Final->Reset();
+			alpha_Ori->Reset();
 			for (int iBin = 1 ; iBin <= alpha_Final->GetNbinsX() ; ++iBin)
 			{
 				double alpha_ORI_c = alpha_ORI->GetBinContent(iBin);
@@ -288,6 +290,8 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 				double alpha_Final_e = sqrt(alpha_ORI_c*alpha_ORI_c*R0_e*R0_e+(1-R0_c)*(1-R0_c)*alpha_ORI_e*alpha_ORI_e);
 				alpha_Final->SetBinContent(iBin,alpha_Final_c);
 				alpha_Final->SetBinError(iBin,alpha_Final_e);
+				alpha_Ori->SetBinContent(iBin,alpha_ORI_c);
+				alpha_Ori->SetBinError(iBin,alpha_ORI_e);
 			}
 
 			TH1D *myalpha= alpha_Final;
@@ -318,6 +322,22 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 			myalpha->SetBinError(i,sqrt(err2));
 			}
 			 */
+
+            //draw alpha origin
+			TCanvas *canAlphaOri=new TCanvas("canAlphaOri","canAlphaOri",800,800);
+			canAlphaOri->cd();
+			alpha_Ori->SetMarkerStyle(20);
+			alpha_Ori->SetMarkerColor(kBlue);
+			alpha_Ori->SetXTitle("m_{ZZ} [GeV]");
+			if(!isZZChannel)alpha_Ori->SetXTitle("m_{WW} [GeV]");
+			alpha_Ori->SetYTitle("#alpha");
+			alpha_Ori->GetYaxis()->SetRangeUser(0,4);
+			alpha_Ori->Draw("PE0");
+			char canvasName[400];
+			sprintf( canvasName, "%s/mZZ_alpha_Ori_%dJ%s_%s.png", myOutDir.c_str(), inxj,pur_str.c_str(), leptType.c_str());
+			canAlphaOri->SaveAs( canvasName  );
+			delete canAlphaOri;
+
 			TCanvas *calphaAVG=new TCanvas("c_avg","CANVAS with Alpha histo",800,800);
 			calphaAVG->cd();
 			std::vector<double> avgpars;
@@ -326,15 +346,18 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 			myalpha->SetMarkerStyle(20);
 			myalpha->SetMarkerColor(kBlue);
 			myalpha->SetXTitle("m_{ZZ} [GeV]");
+			if(!isZZChannel)myalpha->SetXTitle("m_{WW} [GeV]");
 			myalpha->SetYTitle("#alpha");
 			//myalpha->GetFunction("ratio_fit_expo")->SetBit(TF1::kNotDraw);
 			//myalpha->GetFunction("fitPolyRooFit")->SetBit(TF1::kNotDraw);
 			myalpha->GetFunction("alpha_fitfunc")->SetBit(TF1::kNotDraw);
+			myalpha->GetYaxis()->SetRangeUser(0,4);
 			myalpha->Draw("PE0");
-			char canvasName[400];
-			sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.eps", myOutDir.c_str(), inxj,pur_str.c_str(), leptType.c_str());
+			sprintf( canvasName, "%s/mZZ_alpha_Final_%dJ%s_%s.eps", myOutDir.c_str(), inxj,pur_str.c_str(), leptType.c_str());
 			calphaAVG->SaveAs( canvasName  );
-			sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s.pdf", myOutDir.c_str(), inxj,pur_str.c_str(), leptType.c_str());
+			sprintf( canvasName, "%s/mZZ_alpha_Final_%dJ%s_%s.pdf", myOutDir.c_str(), inxj,pur_str.c_str(), leptType.c_str());
+			calphaAVG->SaveAs( canvasName  );
+			sprintf( canvasName, "%s/mZZ_alpha_Final_%dJ%s_%s.png", myOutDir.c_str(), inxj,pur_str.c_str(), leptType.c_str());
 			calphaAVG->SaveAs( canvasName  );
 			delete calphaAVG;
 			cout<<"Generating toys"<<endl;
