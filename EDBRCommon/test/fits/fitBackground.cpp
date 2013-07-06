@@ -650,14 +650,14 @@ int main(){
 			//	expLev_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kOrange+5), LineStyle(kDashed));//RooAbsPdf::NumEvent
 
 
-			//if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
 			dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));//,Normalization(dsDataSB2->numEntries(),RooAbsPdf::NumEvent)
+			if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
 			logf<<"Check nromalization: NumEntries of dsDataSIG= "<<dsDataSIG->numEntries() <<"("<<dsDataSIG->sumEntries() <<")    SumEntries of dsDataSB2="<<dsDataSB2->sumEntries()<<"   numEntries="<<dsDataSB2->numEntries()<<"    Nbkg (NORM)="<<NbkgRange->getVal()<<"   Nent="<<Nent->getVal()<<"     Nerr="<<Nerr->getVal() <<std::endl;
 
 			if(!isZZChannel)xf->SetXTitle("mWW");
 			TPad * fPads1 = NULL;
 			TPad * fPads2 = NULL;
-			if(plotFitPull)
+			if(unblind&&plotFitPull)
 			{
 				fPads1 = new TPad("pad1", "", 0.00, 0.30, 0.99, 0.99);
 				fPads2 = new TPad("pad2", "", 0.00, 0.00, 0.99, 0.30);
@@ -671,7 +671,6 @@ int main(){
 
 				fPads1->cd();
 				RooHist* hpull = xf->pullHist() ;
-				if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
 				xf->Draw();
 				fPads1->Update();
 
@@ -688,7 +687,6 @@ int main(){
 				fPads1->SetLineColor(0);
 				fPads1->Draw();
 				fPads1->cd();
-				if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
 				xf->Draw();
 				fPads1->Update();
 			}
