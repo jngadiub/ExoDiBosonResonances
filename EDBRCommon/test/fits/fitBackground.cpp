@@ -625,13 +625,13 @@ int main(){
 				//plot error bands of fit			  
 				background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
 				background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
-				//plot fits		
-				expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
-				background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2));
 
 				//plot normalization unc of fits		
 				background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal()+Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2), LineStyle(kDashed));
 				background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal()-Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2), LineStyle(kDashed));
+				//plot fits
+				expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
+				background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2));
 
 			}
 			else{
@@ -639,12 +639,10 @@ int main(){
 				expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig2,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
 
 				//
-				background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2)); 
-				expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kSolid));
-
-				//
 				expo_fit->plotOn(xf, Normalization(NbkgRange->getVal()+Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
 				expo_fit->plotOn(xf, Normalization(NbkgRange->getVal()-Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
+				background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2));
+				expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kSolid));
 			}
 
 			//	expLev_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kOrange+5), LineStyle(kDashed));//RooAbsPdf::NumEvent
@@ -676,8 +674,21 @@ int main(){
 
 				RooPlot* xf2 = mZZ->frame(Title("Pull Distribution")) ;
 				xf2->addPlotable(hpull,"P") ;
+				xf2->GetYaxis()->SetRangeUser(-4,4);
 				fPads2->cd();	
 				xf2->Draw();
+				//draw lines 0 -2, 2
+				TLine* lineAtZero = new TLine(xf2->GetXaxis()->GetXmin(),0,xf2->GetXaxis()->GetXmax(),0);
+				lineAtZero->SetLineColor(2);
+				lineAtZero->Draw();
+				TLine* lineAtPlusTwo = new TLine(xf2->GetXaxis()->GetXmin(),2,xf2->GetXaxis()->GetXmax(),2);
+				lineAtPlusTwo->SetLineColor(2);
+				lineAtPlusTwo->SetLineStyle(2);
+				lineAtPlusTwo->Draw();
+				TLine* lineAtMinusTwo = new TLine(xf2->GetXaxis()->GetXmin(),-2,xf2->GetXaxis()->GetXmax(),-2);
+				lineAtMinusTwo->SetLineColor(2);
+				lineAtMinusTwo->SetLineStyle(2);
+				lineAtMinusTwo->Draw();
 				fPads2->Update();
 
 			}
@@ -696,7 +707,7 @@ int main(){
 			can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".png").c_str());
 			can1->SaveAs((myOutDir+"/fitPlot_"+channel_marker+"_"+ssnxj.str()+"J_"+pur_str.c_str()+"_"+leptType+".pdf").c_str());
 
-			xf->SetMinimum(0.06);
+			xf->SetMinimum(0.006);
 			fPads1->SetLogy();
 			can1->Update();		
 
