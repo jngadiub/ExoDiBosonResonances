@@ -13,14 +13,14 @@ const float lumi =19531.85;//for ele
 //const float lumi =19538.85;//for mu
 
 
-const bool doPseudoExp=true; //if true, for for different psuedo-alpha 
+const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=true;//choose what to plot as main fit function
 std::string channel_marker="xww";
 
 const bool alphaPoisson=false;//use Poisson errors for alpha uncertainties
-
+const bool plotFitPull=true;//plot pull plot with the fit result
 
 std::string bkgd_decorr_name="levexp_dcr_xww";
 

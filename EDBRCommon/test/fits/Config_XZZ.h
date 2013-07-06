@@ -16,7 +16,7 @@ const bool doPseudoExp=false;//true; //if true, for for different psuedo-alpha
 const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=false;//choose what to plot as main fit function
-
+const bool plotFitPull=false;//plot pull plot with the fit result
 const bool alphaPoisson=true;//use Poisson errors for alpha uncertainties
 
 std::string channel_marker="xzz";
