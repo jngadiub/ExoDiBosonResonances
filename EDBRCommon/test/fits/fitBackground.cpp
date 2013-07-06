@@ -673,6 +673,10 @@ int main(){
 				fPads1->Update();
 
 				RooPlot* xf2 = mZZ->frame(Title("Pull Distribution")) ;
+				//set error to 1 by hand
+				for(Int_t i=0;i<hpull->GetN();i++){
+					hpull->SetPointError(i,0.,0.,1.,1.);
+				}
 				xf2->addPlotable(hpull,"P") ;
 				xf2->GetYaxis()->SetRangeUser(-4,4);
 				fPads2->cd();	
