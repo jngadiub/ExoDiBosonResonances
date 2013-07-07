@@ -451,6 +451,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
    gPad->SetLogy();
    cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.eps");
    cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.png");
+   cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.root");
   // cMCMC->SaveAs("ClsLimit_1fb.png");
    
 
