@@ -613,13 +613,22 @@ int main(){
 
 			TCanvas *can1=new TCanvas("canvas1", "can1",800,800);
 			can1->cd();
-			RooPlot *xf=mZZ->frame();
+			RooPlot *xf;
+			if(!plotFixedBinning)xf=mZZ->frame();
+			else xf=mZZ->frame((bins[nBins-1]-bins[0])/FixedBinWidth);//definition of FixedBinWidth in Config_XWW.h and Config_XZZ.h
 			string frameTitle="Bkgd Estimation from Data Sidebands ("+ssnxj.str()+"J "+pur_str +" - "+leptType+" lept flav)";
 			xf->SetTitle(frameTitle.c_str());
 			//DO NOT CHANGE THE ORDER !!!!!!! DATA AS FIRST ONES !!!!
-			dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));
-			if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
-
+			if(!plotFixedBinning)
+			{
+				dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));
+				if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
+			}
+			else
+			{
+				dsDataSB2->plotOn(xf,MarkerStyle(21),MarkerColor(kRed));
+				if(unblind)dsDataSIG->plotOn(xf,MarkerStyle(20),MarkerColor(kBlack));
+			}
 
 			if(plotDecorrLevExpoMain){
 				//plot error bands of fit			  
@@ -647,9 +656,17 @@ int main(){
 
 			//	expLev_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kOrange+5), LineStyle(kDashed));//RooAbsPdf::NumEvent
 
+			if(!plotFixedBinning)
+			{
+				dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));//,Normalization(dsDataSB2->numEntries(),RooAbsPdf::NumEvent)
+				if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
+			}
+			else
+			{
+				dsDataSB2->plotOn(xf,MarkerStyle(21),MarkerColor(kRed));
+				if(unblind)dsDataSIG->plotOn(xf,MarkerStyle(20),MarkerColor(kBlack));
+			}
 
-			dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));//,Normalization(dsDataSB2->numEntries(),RooAbsPdf::NumEvent)
-			if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
 			logf<<"Check nromalization: NumEntries of dsDataSIG= "<<dsDataSIG->numEntries() <<"("<<dsDataSIG->sumEntries() <<")    SumEntries of dsDataSB2="<<dsDataSB2->sumEntries()<<"   numEntries="<<dsDataSB2->numEntries()<<"    Nbkg (NORM)="<<NbkgRange->getVal()<<"   Nent="<<Nent->getVal()<<"     Nerr="<<Nerr->getVal() <<std::endl;
 
 			if(!isZZChannel)xf->SetXTitle("mWW");

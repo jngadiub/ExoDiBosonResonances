@@ -21,6 +21,8 @@ std::string channel_marker="xww";
 
 const bool alphaPoisson=false;//use Poisson errors for alpha uncertainties
 const bool plotFitPull=true;//plot pull plot with the fit result
+const bool plotFixedBinning=true;//plot fit result with fixed binning
+const double FixedBinWidth =50;
 
 std::string bkgd_decorr_name="levexp_dcr_xww";
 
