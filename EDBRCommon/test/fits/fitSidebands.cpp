@@ -282,7 +282,7 @@ void doAlpha(TTree *chMC, std::string wType, vector<TH1D> R0_vector){
 			{
 				double alpha_ORI_c = alpha_ORI->GetBinContent(iBin);
 				double alpha_ORI_e = alpha_ORI->GetBinError(iBin);
-				if(!isZZChannel)alpha_ORI_e = alpha_ORI->GetBinError(iBin)*sqrt(2);//multiply by sqrt(2) the uncertainties on alpha to account for differences in wjets parton showering
+				if(!isZZChannel)alpha_ORI_e = alpha_ORI->GetBinError(iBin)*2;//multiply by 2 the uncertainties on alpha to account for differences in wjets parton showering
 
 				double R0_c = R0->GetBinContent(iBin);
 				double R0_e = R0->GetBinError(iBin);
