@@ -542,9 +542,11 @@ print '---> Ngen=',process.ANEDBR.Ngen,'  Xsect=',process.ANEDBR.xsec
 
 ###apply V-tagging scale factor only to signal MC samples
 if "BulkG_ZZ_lljj_" in "<SAMPLE>" :
-       process.ANEDBR.VTaggingScaleFactor=cms.double(0.95)
+       process.ANEDBR.VTaggingScaleFactorHP=cms.double(0.95)
+	   process.ANEDBR.VTaggingScaleFactorLP=cms.double(0.95)
 if "BulkG_WW_lvjj_" in "<SAMPLE>" or "RSG_WW_lvjj_" in "<SAMPLE>" or "WW_xww"=="<SAMPLE>" or "WZ_xww"=="<SAMPLE>" or "ZZ_xww"=="<SAMPLE>":
-       process.ANEDBR.VTaggingScaleFactor=cms.double(0.95)
+       process.ANEDBR.VTaggingScaleFactorHP=cms.double(0.93)
+	   process.ANEDBR.VTaggingScaleFactorLP=cms.double(1.1)
 
 process.filterFinalSelPath = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
