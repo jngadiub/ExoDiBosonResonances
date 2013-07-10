@@ -86,7 +86,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   unsigned int Ngen_;
   double xsec_;
   int VpdgId_; 
-  double VMass_, VTagSF_;
+  double VMass_, VTagSFHP_,VTagSFLP_;
   unsigned int fillGen_;
 
   void init();
@@ -441,6 +441,11 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
     if(nsubj21[ih]<nsubjcut) vTagPurity[ih]=1.0;
     else if(nsubj21[ih]<0.75) vTagPurity[ih]=0.0;
     else  vTagPurity[ih]=-1.0;
+	
+	if(vTagPurity[ih]==1) vtagw=VTagSFHP_;
+	else if(vTagPurity[ih]==0) vtagw=VTagSFLP_;
+	else vtagw=1;
+
     //( edbr->getSelection("tag_SingleJetHP")? 1.0 : 0.0 );
     // nsubj21[ih]<0.45 -> 1.0  //nsubj21[ih]>0.45 &&  nsubj21[ih]<0.75 -> 0.0
 

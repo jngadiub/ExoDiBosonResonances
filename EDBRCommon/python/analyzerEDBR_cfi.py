@@ -24,5 +24,6 @@ AnalyzerXZZ = cms.EDAnalyzer("AnalyzerEDBR",
                              xsec=cms.double(1.0),
                              triggerNames=cms.vstring(),
                              FillGenLevelCode=cms.uint32(0), #0=nothing, 1=Zll,2=Zqq,3=Zll+Zqq, 4=XVV,5=Zqq+XVV, 6=Zll+XVV, 7=XVV+Zll+Zqq
-                             VTaggingScaleFactor=cms.double(1.0)
+                             VTaggingScaleFactorHP=cms.double(1.0),
+							 VTaggingScaleFactorLP=cms.double(1.0)
                              )
