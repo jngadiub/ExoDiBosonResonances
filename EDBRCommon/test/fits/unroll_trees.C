@@ -31,19 +31,20 @@ int unroll_trees( ) {
   char foutn[64];
 
 
-  TChain* chainMC = new TChain(InTreeName.c_str());
+
 
   //chainMC->Add( (inDir+"treeEDBR_DYJetsPt70To100.root").c_str());
   // chainMC->Add( (inDir+"treeEDBR_DYJetsPt100.root").c_str());
   // chainMC->Add( (inDir+"treeEDBR_TTBARpowheg.root").c_str());
 
   int MX=600;
-  /*while (MX<=2500){
+  while (MX<=2500){
     std::stringstream ssMX;
     ssMX << MX;
     MX+=100;
-    }*/
-  std::string sampleLabel="BulkG_ZZ_lljj_c0p2_M1000";
+    
+    std::string sampleLabel="BulkG_ZZ_lljj_c0p2_M"+ssMX.str();
+  TChain* chainMC = new TChain(InTreeName.c_str());
   chainMC->Add( (inDir+"treeEDBR_"+sampleLabel+".root").c_str());
 
   gROOT->cd(); //magic!
@@ -53,6 +54,7 @@ int unroll_trees( ) {
   CopyTreeVecToPlain(chainMC,weighting,tmpFileName,tmpTreeName,-1.0,false,-1.0);
 
    delete chainMC;
+  }
 
    return 0;
 }//end main

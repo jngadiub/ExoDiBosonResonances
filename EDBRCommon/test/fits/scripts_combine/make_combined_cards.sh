@@ -24,15 +24,18 @@ EXOZZ="$EXOZZ1JLP $EXOZZ1JHP $EXOZZ2J "
 COMB="$COMB $EXOZZ";
 combineCards.py -S $EXOZZ1JLP > comb_${label}_2l1JLP.txt
 combineCards.py -S $EXOZZ1JHP > comb_${label}_2l1JHP.txt
-combineCards.py -S $EXOZZ1JELE > comb_${label}_ee1J.txt
-combineCards.py -S $EXOZZ1JMU > comb_${label}_mm1J.txt
-if (( $MASS < 800)); then 
+if (( $MASS <= 750)); then 
     combineCards.py -S $EXOZZ2J   > comb_${label}_2l2J.txt
     combineCards.py -S $EXOZZ1J   > comb_${label}_2l1J.txt
 #    combineCards.py -S $EXOZZ     > comb_${label}.txt
-    combineCards.py -S $EXOZZ1J   > comb_${label}.txt
+    combineCards.py -S $EXOZZ1JHP   > comb_${label}.txt
+    combineCards.py -S "${label}_ee1JHP=${label}_ee1JHP.${MASS}.txt" > comb_${label}_ee1J.txt
+    combineCards.py -S "${label}_mm1JHP=${label}_mm1JHP.${MASS}.txt" > comb_${label}_mm1J.txt
 else
     combineCards.py -S $EXOZZ1J   > comb_${label}.txt
+    combineCards.py -S $EXOZZ1JELE > comb_${label}_ee1J.txt
+    combineCards.py -S $EXOZZ1JMU > comb_${label}_mm1J.txt
+
 fi;
 ###combineCards.py -S $COMB > comb.txt
 

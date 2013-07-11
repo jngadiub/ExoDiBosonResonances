@@ -117,18 +117,24 @@ def defineVars(descriptor,njets,workspace,plotonly):
     print 'mean-match before reading from file: ',workspace.var("mean_match").getVal()
     workspace.set("pars").readFromFile(filename)
     print 'mean-match after reading from file: ',workspace.var("mean_match").getVal()
-    
-    mzzLow=workspace.var("mean_match").getVal()- workspace.var("sigma_match").getVal()*4.0
+
+
+    windowSF=4.0
+    if workspace.var("mean_match").getVal()>1500 :
+        windowSF=6.0
+    mzzLow=workspace.var("mean_match").getVal()- workspace.var("sigma_match").getVal()*windowSF
     if mzzLow < 400.0 :
         mzzLow=400.0
-    mzzHigh=workspace.var("mean_match").getVal()+ workspace.var("sigma_match").getVal()*4.0
+    mzzHigh=workspace.var("mean_match").getVal()+ workspace.var("sigma_match").getVal()*windowSF
     if mzzHigh > 3000.0 :
         mzzHigh=3000.0
         
-  
+    binWidth=20.0; ### 20 gev bins
+    mzzNBins=round( (mzzHigh-mzzLow)/binWidth );
     
-    mzz = root.RooRealVar("mZZ","mZZ",mzzLow,mzzHigh) ## IMPORTANT: Master fit range must be the same as for the datacards
-    print 'mzz created in range ',mzzLow,' ', mzzHigh
+    mzz = root.RooRealVar("mZZ","mZZ",mzzNBins,mzzLow,mzzHigh) ## IMPORTANT: Master fit range must be the same as for the datacards
+    mzz.setBins(int(mzzNBins))
+    print 'mzz created in range ',mzzLow,' ', mzzHigh,' with ',mzzNBins,' bins'
     weight = root.RooRealVar("weight","weight",0,100000)
     match  = root.RooCategory("match","match")
     match.defineType("unmatched",0)
@@ -137,7 +143,7 @@ def defineVars(descriptor,njets,workspace,plotonly):
     getattr(workspace,'import')(mzz)
     getattr(workspace,'import')(weight)
     getattr(workspace,'import')(match)
-
+    print 'TEMP NBINS: ', workspace.var("mZZ").getBins()
 
 def readTree(filename, njet,pur,lep, workspace):
     # set up dataset, filtering for the proper jet category
@@ -214,10 +220,14 @@ def readTree(filename, njet,pur,lep, workspace):
 # make pretty plots of the different categories
 def plot( category , workspace, descriptor):
 
-    plot = workspace.var("mZZ").frame()
-    
+    NBinsMZZ=workspace.var("mZZ").getBins();
+    mZZLow2=workspace.var("mZZ").getMin();
+    mZZHi2=workspace.var("mZZ").getMax();
+    plot = workspace.var("mZZ").frame(NBinsMZZ)
+    print 'Bins: ',NBinsMZZ,' Range: ',mZZLow2,' - ',mZZHi2
 
     if category == 0: # no match
+        ###,root.RooFit.Binning(root.RooBinning(NBinsMZZ,mZZLow2,mZZHi2))
         workspace.data("weightedSet").plotOn(plot,root.RooFit.Cut("match==match::unmatched"))
         workspace.pdf("FitFunc").plotOn(plot,root.RooFit.Components("ExtUnMatchedFunc"),root.RooFit.ProjWData(workspace.data("weightedSet")))
 
@@ -226,6 +236,7 @@ def plot( category , workspace, descriptor):
         workspace.pdf("FitFunc").plotOn(plot,root.RooFit.Components("ExtMatchedFunc"),root.RooFit.ProjWData(workspace.data("weightedSet")))
       
     if category == 2: # both
+        #,root.RooFit.Binning(root.RooBinning(NBinsMZZ,mZZLow2,mZZHi2) )
         workspace.data("weightedSet").plotOn(plot)
         workspace.pdf("FitFunc").plotOn(plot,root.RooFit.ProjWData(workspace.data("weightedSet")),\
                                         root.RooFit.FillStyle(1001),\

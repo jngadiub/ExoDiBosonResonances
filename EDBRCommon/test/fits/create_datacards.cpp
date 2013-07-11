@@ -33,10 +33,10 @@
 
 #include "DataCardUtils.h"
 
-#include "binningFits_XWW.h"
-#include "Config_XWW.h"
-//#include "Config_XZZ.h"
-//#include "binningFits_XZZ.h"
+//#include "binningFits_XWW.h"
+//#include "Config_XWW.h"
+#include "Config_XZZ.h"
+#include "binningFits_XZZ.h"
 
 
 float mZZmin_ = startFit;  // this should be synchronized with startFit in fitBackground.cpp
@@ -136,7 +136,7 @@ int main( int argc, char* argv[] ) {
 
     float mass;
     ifs >> mass;	
-
+    //if(mass!=2200)continue;
     std::cout << std::endl << std::endl;;
     std::cout << "++++++++++++++++++++++" << std::endl;
     std::cout << "+++ MASS: " << mass << std::endl;
@@ -202,13 +202,13 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   /////////////////////
   //->  get fit results:
   char fitResultName[200];  
-  //  sprintf( fitResultName, "resultsExpoFit_%dJ_%s",nxj , leptType_str.c_str() );
-  if(pur==1 && isZZChannel ){//simple expo for HP category or XWW analysis
-    sprintf( fitResultName, "resultsExpoFit_%s_%dJ_%s_%s",channel_marker.c_str(),nxj,pur_str.c_str(),leptType.c_str() );
-  }
-  else {
-    sprintf( fitResultName, "resultsExpLevelledFit_%s_%dJ_%s_%s_decorr",channel_marker.c_str(), nxj ,pur_str.c_str(),leptType.c_str());
-  }
+  
+  //  if(pur==1 && isZZChannel ){//simple expo for HP category or XWW analysis
+  //  sprintf( fitResultName, "resultsExpoFit_%s_%dJ_%s_%s",channel_marker.c_str(),nxj,pur_str.c_str(),leptType.c_str() );
+  // }
+  //else {
+  sprintf( fitResultName, "resultsExpLevelledFit_%s_%dJ_%s_%s_decorr",channel_marker.c_str(), nxj ,pur_str.c_str(),leptType.c_str());
+  //}
   cout<<"Trying to pick RooFitResult :"<<fitResultName<<endl;
   RooFitResult* bgFitResult = (RooFitResult*)fitResultsFile->Get(fitResultName);
   bgFitResult->Print("v");
@@ -266,7 +266,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   std::ofstream ofs(datacardName);
 
   std::string bkgd_shape_name=("background_decorrLevExpo"+rename_str);
-  if(pur==1 && isZZChannel) bkgd_shape_name=("background_expo"+rename_str);
+  //   if(pur==1 && isZZChannel) bkgd_shape_name=("background_expo"+rename_str);
 
   ofs << "# Card for process XZZ->"<<suffix << std::endl;
   ofs << "#imax 1  number of channels" << std::endl;
@@ -283,7 +283,17 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   RooDataSet* dataset_obs = DataCardUtils::get_observedDataset( bgws , leptType_str, nxj,pur, name_dataobs );
   dataset_obs->SetName(( dataset_obs->GetName()+rename_str).c_str());
   std::cout<<"Statistics of the observed dataset straight from the ws: "<<dataset_obs->numEntries()<<"  "<<dataset_obs->sumEntries() <<std::endl;
-  RooDataSet* dataset_obs_reduced=new RooDataSet("dataset_obs","dataset_obs",dataset_obs,RooArgSet(*CMS_xzz_mZZ));
+  double mzzRangeMinCut=0.0;
+  if(isZZChannel){
+    mzzRangeMinCut=bins1[0];
+    if(nxj==1&&pur==0)mzzRangeMinCut=600.0;
+  }
+  std::stringstream ssMinRangeCut;
+  ssMinRangeCut << mzzRangeMinCut;
+  std::string mzzRangeMinStr="mZZ>"+ssMinRangeCut.str();
+
+  std::cout<<"Applying on the observed dataset in sig region this extra-cut: "<<mzzRangeMinStr.c_str()<<endl;
+  RooDataSet* dataset_obs_reduced=new RooDataSet("dataset_obs","dataset_obs",dataset_obs,RooArgSet(*CMS_xzz_mZZ),mzzRangeMinStr.c_str());
   dataset_obs_reduced->SetName(("dataset_obs"+rename_str).c_str());
   float observedYield = dataset_obs_reduced->sumEntries();
   std::cout << "observation   " << observedYield << " (numEntries="<< dataset_obs_reduced->numEntries()<<")"<<std::endl;
@@ -452,18 +462,19 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   RooAbsPdf *expo_fit =0;
   RooAbsPdf* background_decorr =0;
   bgws->Print("v");
-  if(pur==1 && isZZChannel){	  
-    expo_fit =bgws->pdf(("exp_fit_"+channel_marker).c_str());
-    expo_fit->SetName(bkgd_shape_name.c_str());
-    // and import it:
-    w->import(*expo_fit, RooFit::RecycleConflictNodes());
-  }
-  else{
-    //This if you want ot use the leveled expo
+ //  if(pur==1 && isZZChannel){	  
+//     expo_fit =bgws->pdf(("exp_fit_"+channel_marker).c_str());
+//     expo_fit->SetName(bkgd_shape_name.c_str());
+//     // and import it:
+//     w->import(*expo_fit, RooFit::RecycleConflictNodes());
+//   }
+//   else{
+ 
+   //This if you want ot use the leveled expo
     background_decorr = bgws->pdf(("levexp_dcr_"+channel_marker).c_str());
     background_decorr->SetName(bkgd_shape_name.c_str());
     w->import(*background_decorr, RooFit::RecycleConflictNodes());
-  }
+    //  }
 
   //// now define signal shape:
   //// (didn manage to do use get_signalShape without a crash):
@@ -589,7 +600,9 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   std::cout<<"FRACTION of signal inside the +/-3 sigma window ["<<sigWindowLow<<" , "<< sigWindowHigh<<"]: "<<signalFrac<<std::endl;
 
   bool doPlot=false;
-  if(mass==650||mass==1000||mass==1500||mass==1900||mass==2000||mass==2500)doPlot=true;
+  // if(mass==650||mass==1000||mass==1500||mass==1600||mass==1700||mass==1900||mass==2000||mass==2100||mass==2400||mass==2500)doPlot=true;
+   if(mass==650||mass==1000||mass==1700||mass==2000||mass==2200||mass==2500)doPlot=true;
+   //if(mass==2200)doPlot=true;
   if(doPlot){
     const int nBinsTMP=nBins1;
     double binsTMP[nBinsTMP];
@@ -609,21 +622,22 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
     xf->SetTitle(("Sideband fit ("+ ssnxj.str() +"Jet "+ pur_str+", "+leptType_str+" leptons) - M="+ssM.str()+")").c_str());
     if(unblind)dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
     std::cout<<" 1 "<<std::flush;
-    if(pur==1&&isZZChannel){
-      expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
-      std::cout<<" 2 "<<std::flush;
-      expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
-      expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
-      std::cout<<" 3 "<<std::flush;
-    }
-    else{
+//     if(pur==1&&isZZChannel){
+//       expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+//       std::cout<<" 2 "<<std::flush;
+//       expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+//       expo_fit->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+//       std::cout<<" 3 "<<std::flush;
+//     }
+//     else{
       background_decorr->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
       std::cout<<" 2 "<<std::flush;
       background_decorr->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
       background_decorr->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
       std::cout<<" 3 "<<std::flush;
 
-    }
+      //  }//end else  if(pur==1&&isZZChannel)
+
     if(nxj==1){
       CB_SIG->plotOn(xf,RooFit::Normalization(MATCH.getVal()*rate_gg*1000.0,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
     }
@@ -857,7 +871,9 @@ double expo_interp(double s2, double s1,  double newM,double m2,double m1){
 
 
 
-double get_signalParameter(int nxj,  const std::string& purType_str, const std::string& leptType_str, double massH, std::string varname) {
+double get_signalParameter(int nxj,  const std::string& purType_str,const  std::string& leptType_str, double massH, std::string varname) {
+
+  // std::string leptType_str2="ELE";//hack for using only ELE shapes
 
   const int nMasses=20;
   int masses[nMasses] = {600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500};
