@@ -1,8 +1,0 @@
-1) copy the card directory to scripts_combine_xww
-
-2) edit MakeScripts.sh, change CARDDIR=your crard dir
-sh MakeScripts.sh
-A foldre AllKindsOfCards will be created, with 14 card directories. They have same datacards, but different scripts for different channels.
-
-3) sh runAllCats.sh
-This will copy the 14 folders to /ExoDiBosonResonances/EDBRCommon/test/fits , and loop over them , run limits.

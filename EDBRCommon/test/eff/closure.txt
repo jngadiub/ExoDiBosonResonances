@@ -1,5 +1,0 @@
-root://eoscms//eos/cms/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_0.root
-root://eoscms//eos/cms/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_1.root
-root://eoscms//eos/cms/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_2.root
-root://eoscms//eos/cms/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_3.root
-root://eoscms//eos/cms/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_4.root
