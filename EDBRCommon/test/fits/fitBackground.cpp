@@ -37,10 +37,10 @@
 #include "PdfDiagonalizer.h"
 #include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
 
-//#include "Config_XWW.h" 
-//#include "binningFits_XWW.h"
-#include "Config_XZZ.h"
-#include "binningFits_XZZ.h"
+#include "Config_XWW.h" 
+#include "binningFits_XWW.h"
+//#include "Config_XZZ.h"
+//#include "binningFits_XZZ.h"
 
 using namespace std ;
 using namespace RooFit ;
@@ -291,18 +291,18 @@ int main(){
 	  if(InTreeName=="SelectedCandidatesAB")
 	    {
 	      // for A->B
-	      if(leptType=="ELE"&&purityCut==0)normalizationNEW=92.0078;
-	      if(leptType=="ELE"&&purityCut==1)normalizationNEW=121.251;
-	      if(leptType=="MU"&&purityCut==0)normalizationNEW=175.52;
-	      if(leptType=="MU"&&purityCut==1)normalizationNEW=197.085;
+	      if(leptType=="ELE"&&purityCut==0)normalizationNEW=91.7039;
+	      if(leptType=="ELE"&&purityCut==1)normalizationNEW=121.074;
+	      if(leptType=="MU"&&purityCut==0)normalizationNEW=175.271;
+	      if(leptType=="MU"&&purityCut==1)normalizationNEW=198.2;
 	    }
 	  else if(InTreeName=="SelectedCandidates")
 	    {
 	      //for Ana , wjets 180
-	      if(leptType=="ELE"&&purityCut==0)normalizationNEW=547.448;
-	      if(leptType=="ELE"&&purityCut==1)normalizationNEW=340.821;
-	      if(leptType=="MU"&&purityCut==0)normalizationNEW=836.169;
-	      if(leptType=="MU"&&purityCut==1)normalizationNEW=538.237;
+	      if(leptType=="ELE"&&purityCut==0)normalizationNEW=546.608;
+	      if(leptType=="ELE"&&purityCut==1)normalizationNEW=339.861;
+	      if(leptType=="MU"&&purityCut==0)normalizationNEW=835.742;
+	      if(leptType=="MU"&&purityCut==1)normalizationNEW=536.198;
 	    }
 	}//end if(!isZZChannel&&inxj==1)
 
