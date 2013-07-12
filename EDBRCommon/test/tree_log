@@ -134,6 +134,16 @@ For WW:
 	cmgtuple     : cmgTuple_0627
 	updates      : add btag weight
 
+/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv10/
+	date         : 20130711
+	cmgtuple     : cmgTuple_0627
+	updates      : 
+                      1) Vtag scale factor: 0.93 for HP, 1.1 for LP. Apply to signal and VV.
+                      2) remove bad events from ecalLaserCorrection. (94 events out of 9303)
+                      3) We did not make new trees for TTbar control region. 
+                         We think these two updates will not change much the ttbar scale factor.
+        
+
 
 ###################################################################################################################
 
