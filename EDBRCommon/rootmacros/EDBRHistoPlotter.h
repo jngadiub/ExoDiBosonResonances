@@ -228,6 +228,7 @@ void EDBRHistoPlotter::setOutDir(std::string outDirNew){
   printf("%s\n",buffer);
   gSystem->mkdir(buffer,true);
   
+  /*
   sprintf(buffer,"%s/root",nameOutDir_.c_str());
   printf("%s\n",buffer);
   gSystem->mkdir(buffer,true);
@@ -235,6 +236,7 @@ void EDBRHistoPlotter::setOutDir(std::string outDirNew){
   sprintf(buffer,"%s/png",nameOutDir_.c_str());
   printf("%s\n",buffer);
   gSystem->mkdir(buffer,true);
+  */
 }
 
 void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
@@ -667,9 +669,9 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   sprintf(buffer,"%s/pdf/can_%s.pdf",nameOutDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
   sprintf(buffer,"%s/png/can_%s.png",nameOutDir_.c_str(),histoName.c_str());
-  cv->SaveAs(buffer);
+  //cv->SaveAs(buffer);
   sprintf(buffer,"%s/root/can_%s.root",nameOutDir_.c_str(),histoName.c_str());
-  cv->SaveAs(buffer);
+  //cv->SaveAs(buffer);
   if(makeRatio_ && isDataPresent_)
     {      
       fPads1->cd();
@@ -685,9 +687,9 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   sprintf(buffer,"%s/pdf/LOG_can_%s.pdf",nameOutDir_.c_str(),histoName.c_str());
   cv->SaveAs(buffer);
   sprintf(buffer,"%s/png/LOG_can_%s.png",nameOutDir_.c_str(),histoName.c_str());
-  cv->SaveAs(buffer);
+  //cv->SaveAs(buffer);
   sprintf(buffer,"%s/root/LOG_can_%s.root",nameOutDir_.c_str(),histoName.c_str());
-  cv->SaveAs(buffer);
+  //cv->SaveAs(buffer);
 
   if(debug_) {
     printf("***********************\n");

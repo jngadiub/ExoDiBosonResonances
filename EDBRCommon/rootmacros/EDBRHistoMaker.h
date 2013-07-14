@@ -654,15 +654,15 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("phiStar1",100,-3.7,3.7);
 	hs.setHisto("ptlep1",120,0,1200);
 	hs.setHisto("ptlep2",60,0,600);
-	hs.setHisto("ptjet1",50,0,500);
-	hs.setHisto("ptjet2",50,0,500);
+	hs.setHisto("ptjet1",160,0,1600);
+	hs.setHisto("ptjet2",160,0,1600);
 	hs.setHisto("ptZll",76,80,1600); // 20 GeV bins
 	hs.setHisto("ptZjj",76,80,1600); // 20 GeV bins
 	hs.setHisto("yZll",28,-2.8,2.8);
 	hs.setHisto("yZjj",28,-2.8,2.8);
 	hs.setHisto("phiZll",100,-3.7,3.7);
 	hs.setHisto("phiZjj",100,-3.7,3.7);
-	hs.setHisto("etalep1",25,-251,2.5);
+	hs.setHisto("etalep1",25,-2.5,2.5);
 	hs.setHisto("etalep2",25,-2.5,2.5);
 	hs.setHisto("etajet1",25,-2.5,2.5);
 	hs.setHisto("etajet2",25,-2.5,2.5);
@@ -679,7 +679,7 @@ void EDBRHistoMaker::createAllHistos() {
 	hs.setHisto("ptmzzNoKinFit",35,0,350);
 	hs.setHisto("mLL",40,70,110);
 	hs.setHisto("mJJ",20,40,140);
-	hs.setHisto("prunedmass",28,0,140);   // 5 GeV bins
+	hs.setHisto("prunedmass",24,40,160);   // 5 GeV bins
 	hs.setHisto("mJJNoKinFit",24,40,160); // 5 GeV bins
 	hs.setHisto("met",35,0,600);//35      0       600
 	hs.setHisto("metSign",20,0,10);
@@ -947,10 +947,8 @@ bool EDBRHistoMaker::eventPassesCut(int i, double ptZll_threshold, double ptlep1
 		passesRegion &&
 		passesNXJet && 
 		passesLep1Pt &&
-	  passesLeptonicZPt;// && passesVTag;
-
-
-
+	        passesLeptonicZPt; 
+	
 	return result;//&&passesVTag&&passesMZZ;
 }
 
