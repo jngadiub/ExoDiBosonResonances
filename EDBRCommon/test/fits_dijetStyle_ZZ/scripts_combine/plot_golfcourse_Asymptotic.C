@@ -16,9 +16,9 @@
 #include "TStyle.h"
 #include "TPaveText.h"
 //void getSigmaBands(string fileName);
-void plot_golfcourse_Asymptotic(bool unblind=false);
+void plot_golfcourse_Asymptotic(bool unblind=true);
 void setFPStyle();
-bool isZZChannel=false;
+bool isZZChannel=true;
 double expo_interp(double s2, double s1,  double newM,double m2,double m1){
 
   if(m1>m2){
@@ -284,7 +284,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
   grthSM10->SetName("SMXSection_2nd");
  
   // cout<<"Plotting"<<endl;
-  double fr_left=590.0, fr_down=0.0005,fr_right=2020.0,fr_up=1.0;
+  double fr_left=590.0, fr_down=0.0005,fr_right=2610.0,fr_up=1.0;
   if(!isZZChannel){fr_left=500.0, fr_down=0.0000005,fr_right=2600.0,fr_up=10.0;}
   TCanvas *cMCMC=new TCanvas("c_lim_Asymp","canvas with limits for Asymptotic CLs",630,600);
   cMCMC->cd();
@@ -450,9 +450,11 @@ void plot_golfcourse_Asymptotic(bool unblind){
   cMCMC->Update();
   cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.root");
   cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.eps");
+  cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.pdf");
   cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.png");
   gPad->SetLogy();
   cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.eps");
+  cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.pdf");
   cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.png");
   // cMCMC->SaveAs("ClsLimit_1fb.png");
    
