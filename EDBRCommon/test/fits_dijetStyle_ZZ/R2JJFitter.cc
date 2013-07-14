@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.1 2013/05/07 08:11:51 tomei Exp $
+ * $Id: R2JJFitter.cc,v 1.2 2013/06/07 09:28:04 tomei Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -116,8 +116,8 @@ using namespace RooFit;
 using namespace RooStats ;
 
 static const Int_t NCAT = 4;
-static const Double_t MMIN = 600;
-static const Double_t MMAX = 2500;
+static const Double_t MMIN = 500;
+static const Double_t MMAX = 2800;
 
 void AddSigData(RooWorkspace*, Float_t);
 void AddBkgData(RooWorkspace*);
@@ -219,11 +219,7 @@ void runfits(const Float_t mass=1000, bool isWW = true, Bool_t dobands = false)
 
 void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 
-  //TString inDir   = "./MiniTrees/Signal_VV/";
-  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/"; 
-  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/"; 
-  //TString inDir   = "/afs/cern.ch/user/b/bonato/public/unrolled_trees_2013-04-27/";
-  TString inDir   = "/afs/cern.ch/work/t/tomei/public/EXOVV_2012/unrolled_trees_20130504/";
+  TString inDir   = "/afs/cern.ch/work/t/tomei/public/EXOVV_2012/unrolled_trees_v2c/";
   
   int iMass = abs(mass);       
   /*
@@ -248,7 +244,7 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
       
   cout << "iMassOfFileToOpen = " << iMassOfFileToOpen << endl;
 
-  TFile sigFile1(inDir+TString(Form("EXOVVTree_BulkG_ZZ_lljj_c0p2_M%d_SIG_NOcut.root", iMassOfFileToOpen)));
+  TFile sigFile1(inDir+TString(Form("EXOVVTree_BulkG_ZZ_lljj_c0p2_M%d_SIG.root", iMassOfFileToOpen)));
   
   /*
   if (!isWW) {
@@ -266,7 +262,7 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
   TString mainCut("region==1"); //sideband + ignore 2jet categories (for the moment)
 
   // Luminosity:
-  Float_t Lum = 19500.0;
+  Float_t Lum = 19770.0;
   RooRealVar lumi("lumi","lumi",Lum);
   w->import(lumi); 
 
@@ -291,7 +287,16 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
   // Scale factor for the signal
   //Float_t scaleX  = lumi.getVal()*xs_ggqq * br /n_ggqq;
 
-  TTree* sigTree1 = (TTree*) sigFile1.Get("SelectedCandidatesV3");
+  TTree* sigTree1 = (TTree*) sigFile1.Get("SelectedCandidatesV2");
+  if(sigTree1==0) {
+    cout << endl; 
+    cout << "================================================================" << endl;
+    cout << "The sigTree1 in AddSigData is 0... aborting." << endl;
+    cout << "================================================================" << endl;
+    cout << endl;
+    abort();
+  }
+  
 
   // Variables
   RooArgSet* ntplVars = defineVariables();
@@ -318,9 +323,13 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
   cout << "=========" << endl;
   cout << "========= sigScaled" << endl;
   cout << "=========" << endl;
+  
+  /// If it's not used, why do we make it?
   RooDataSet sigScaled("sigScaled","dataset",sigTree1,*ntplVars,mainCut,"weight");
+  
   //RooDataSet sigScaled("sigScaled","dataset",sigTree1,*ntplVars,mainCut); //NO WEIGHTS
-  sigScaled.Print("v");
+  
+  ///sigScaled.Print("v");
 
   cout << "=========" << endl;
   cout << "========= sigToFit vs category" << endl;
@@ -335,11 +344,12 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 					     calculatedLep,calculatedVT);
     cout << "Using cut: " << endl;
     cout << theCut.Data() << endl;
-    sigToFit[c] =  (RooDataSet*) sigScaled.reduce(*w->var("mZZ"),mainCut+TString::Format(" && lep==%d && vTagPurity==%d",
-											 calculatedLep,calculatedVT));
+    sigToFit[c] =  (RooDataSet*) sigScaled.reduce(*w->var("mZZ"),theCut);
     w->import(*sigToFit[c],Rename(TString::Format("Sig_cat%d",c)));
     sigToFit[c]->Print("v");
   }
+  
+  w->Print();
           
   // Create full signal data set without categorization
   cout << "=========" << endl;
@@ -415,15 +425,8 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 
 void AddBkgData(RooWorkspace* w) {
 
-  //TString inDir   = "./MiniTrees/Data_VV/";
-  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSBTree_from50_noConv/"; 
-  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv7_newMJ/AnaSigTree_from50_noConv/"; 
-  //TString inDir   = "/afs/cern.ch/user/b/bonato/public/unrolled_trees_2013-04-27/";
-  TString inDir   = "/afs/cern.ch/work/t/tomei/public/EXOVV_2012/unrolled_trees_20130504/";
-
-  //TFile dataFile(inDir+"dijetWtag_Moriond_Mar6_miniTree.root");   
-  //TFile dataFile(inDir+"treeEDBR_data_xww.root");   
-  //TFile dataFile(inDir+"treeEDBR_allBkg_xww.root");   
+  //TString inDir   = "/afs/cern.ch/user/b/bonato/public/unrolled_trees_prodv2c/";
+  TString inDir   = "/afs/cern.ch/work/t/tomei/public/EXOVV_2012/unrolled_trees_v2c/";
   TFile dataFile(inDir+"EXOVVTree_DATASIG_NOcut.root");
   
   // common preselection cut
@@ -433,8 +436,16 @@ void AddBkgData(RooWorkspace* w) {
   Int_t ncat = NCAT;
   Float_t minMassFit(MMIN),maxMassFit(MMAX); 
 
-  TTree* dataTree     = (TTree*) dataFile.Get("SelectedCandidatesV3");
-
+  TTree* dataTree     = (TTree*) dataFile.Get("SelectedCandidatesV2");
+  if(dataTree==0) {
+    cout << endl; 
+    cout << "================================================================" << endl;
+    cout << "The dataTree in AddBkgData is 0... aborting." << endl;
+    cout << "================================================================" << endl;
+    cout << endl;
+    abort();
+  }
+  
   // Variables
   RooArgSet* ntplVars = defineVariables();
 
@@ -745,6 +756,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     //   y = exp( -x / ( sigma + alpha*x + beta*x^2 ) )
     RooFormulaVar *xNoScale = new RooFormulaVar(TString::Format("x_NoScale_cat%d",c),"","@0",RooArgList(*mgg));    
     RooAbsPdf* MggBkgTmp0 = new RooGenericPdf(TString::Format("LevelExpoBackground_%d",c), "exp(- @0 / (@1 + @2*@0 + @3*@0*@0) )", RooArgList(*xNoScale, *p1mod, *p2mod, *p3mod)); 
+    //RooAbsPdf* MggBkgTmp0 = new RooGenericPdf(TString::Format("LevelExpoBackground_%d",c), "exp(- @0 / (@1 + @2*@0) )", RooArgList(*xNoScale, *p1mod, *p2mod)); 
     //
     //
 
@@ -1237,36 +1249,30 @@ void MakeSigWS(RooWorkspace* w, const char* fileBaseName) {
 
   // (2) Systematics on energy scale and resolution
 
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat0[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat1[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat2[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat3[1,1.0,1.0]");
+  wAll->factory("CMS_hgg_sig_m0_absShift[1,0.5,1.5]");
 
   //multiply by scale factor
-  wAll->factory("prod::CMS_hgg_sig_m0_cat0(mgg_sig_m0_cat0, CMS_hgg_sig_m0_absShift_cat0)");
-  wAll->factory("prod::CMS_hgg_sig_m0_cat1(mgg_sig_m0_cat1, CMS_hgg_sig_m0_absShift_cat1)");
-  wAll->factory("prod::CMS_hgg_sig_m0_cat2(mgg_sig_m0_cat2, CMS_hgg_sig_m0_absShift_cat2)");
-  wAll->factory("prod::CMS_hgg_sig_m0_cat3(mgg_sig_m0_cat3, CMS_hgg_sig_m0_absShift_cat3)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat0(mgg_sig_m0_cat0, CMS_hgg_sig_m0_absShift)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat1(mgg_sig_m0_cat1, CMS_hgg_sig_m0_absShift)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat2(mgg_sig_m0_cat2, CMS_hgg_sig_m0_absShift)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat3(mgg_sig_m0_cat3, CMS_hgg_sig_m0_absShift)");
 
   // (3) Systematics on resolution: create new sigmas
   
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat0[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat1[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat2[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat3[1,1.0,1.0]");
+  wAll->factory("CMS_hgg_sig_sigmaScale[1,0.5,1.5]");
 
   //multiply by scale factor
-  wAll->factory("prod::CMS_hgg_sig_sigma_cat0(mgg_sig_sigma_cat0, CMS_hgg_sig_sigmaScale_cat0)");
-  wAll->factory("prod::CMS_hgg_sig_sigma_cat1(mgg_sig_sigma_cat1, CMS_hgg_sig_sigmaScale_cat1)");
-  wAll->factory("prod::CMS_hgg_sig_sigma_cat2(mgg_sig_sigma_cat2, CMS_hgg_sig_sigmaScale_cat2)");
-  wAll->factory("prod::CMS_hgg_sig_sigma_cat3(mgg_sig_sigma_cat3, CMS_hgg_sig_sigmaScale_cat3)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat0(mgg_sig_sigma_cat0, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat1(mgg_sig_sigma_cat1, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat2(mgg_sig_sigma_cat2, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat3(mgg_sig_sigma_cat3, CMS_hgg_sig_sigmaScale)");
 
   // (4) do reparametrization of signal
   for (int c = 0; c < ncat; ++c) {
     wAll->factory(
 		  TString::Format("EDIT::CMS_hgg_sig_cat%d(MggSig_cat%d,",c,c) +
 		  TString::Format(" mgg_sig_m0_cat%d=CMS_hgg_sig_m0_cat%d, ", c,c) +
-		  TString::Format(" mgg_sig_sigma_cat%d=CMS_hgg_sig_sigma_cat%d)", c,c)
+		  TString::Format(" mgg_sig_sigma_cat%d=CMS_hgg_sig_sigma_cat%d) ", c,c)
 		  );
   }
 
@@ -1327,11 +1333,13 @@ void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
     double max = wAll->var(TString::Format("mgg_bkg_8TeV_norm_cat%d",c))->getMax();
     wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_cat%d_norm[%g,%g,%g]", c, mean, min, max));
 
+    // From pure ROOT: should be around 100.0
     mean = wAll->var(TString::Format("mgg_bkg_8TeV_slope1_cat%d",c))->getVal();
     min = wAll->var(TString::Format("mgg_bkg_8TeV_slope1_cat%d",c))->getMin();
     max = wAll->var(TString::Format("mgg_bkg_8TeV_slope1_cat%d",c))->getMax();
     wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope1_cat%d[%g,%g,%g]", c, mean, min, max));
 
+    // From pure ROOT: should be around 0.05
     mean = wAll->var(TString::Format("mgg_bkg_8TeV_slope2_cat%d",c))->getVal();
     min = wAll->var(TString::Format("mgg_bkg_8TeV_slope2_cat%d",c))->getMin();
     max = wAll->var(TString::Format("mgg_bkg_8TeV_slope2_cat%d",c))->getMax();
@@ -1552,14 +1560,30 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   //should we put the correct rate of events?
   outFile << "--------------------------------" << endl;
 
-  
-  outFile << "lumi_8TeV       lnN  0.950/1.050    - " << endl;
-  outFile << "CMS_VV_eff_g         lnN  0.8/1.20      - # Signal Efficiency" << endl;
+  //== Uncertainties on SIGNAL NORMALIZATION ==
 
+  // Lumi
+  outFile << "lumi_8TeV       lnN  0.956/1.044    - " << endl;
+
+  // Trigger
+  outFile <<   "CMS_Trigger_eff_g      lnN    0.99/1.01    - " << endl;
+  
+  // JES
+  double sigmaJES = 0.03; // For ZZ It's 3% flat, right?
+  outFile << Form("CMS_JES_eff_g           lnN  %f/%f      - # Signal Efficiency",1-sigmaJES,1+sigmaJES) << endl;
+
+  // W-tag efficiency 
+  if(iChan==0 || iChan==2)
+    outFile << "CMS_VV_eff_g_LP         lnN  1.10/0.90      - # Signal Efficiency" << endl;
+  if(iChan==1 || iChan==3)
+    outFile << "CMS_VV_eff_g_HP         lnN  0.90/1.10      - # Signal Efficiency" << endl;
+  
+  //== Uncertainties on SIGNAL SHAPE ==    
+
+  // JES and JER
   outFile << "# Parametric shape uncertainties, entered by hand." << endl;
-  outFile << Form("CMS_hgg_sig_m0_absShift_cat%d    param   1   0.0125   # displacement of the mean",iChan) << endl;
-  outFile << Form("CMS_hgg_sig_sigmaScale_cat%d     param   1   0.1   # jet resolution",iChan) << endl;
-  //what about gsigmaScale?
+  outFile << Form("CMS_hgg_sig_m0_absShift    param   1   0.005   # uncertainty of the mean",iChan) << endl;
+  outFile << Form("CMS_hgg_sig_sigmaScale     param   1   0.036   # uncertainty on the sigma",iChan) << endl;
  
   outFile << Form("CMS_hgg_bkg_8TeV_cat%d_norm           flatParam  # Normalization uncertainty on background slope",iChan) << endl;
   outFile << Form("CMS_hgg_bkg_8TeV_slope1_cat%d         flatParam  # Mean and absolute uncertainty on background slope",iChan) << endl;
