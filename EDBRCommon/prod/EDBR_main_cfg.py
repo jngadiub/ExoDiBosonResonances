@@ -89,7 +89,9 @@ process.badEventFilter = cms.EDFilter("HLTHighLevel",
                                                   'trackingFailureFilterPath',
                                                   'CSCTightHaloFilterPath',
                                                   'eeBadScFilterPath',
-                                                  'EcalDeadCellTriggerPrimitiveFilterPath'
+                                                  'EcalDeadCellTriggerPrimitiveFilterPath',
+                                                  'ecalLaserFilterPath'
+                                                  'trkPOGFiltersPath' ### present only in DATA
     #                                              'totalKinematicsFilterPath' #only for Madgraph MC
                                                   ),
                                       eventSetupPathsKey = cms.string(''),
