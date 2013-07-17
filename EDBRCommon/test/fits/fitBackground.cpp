@@ -414,6 +414,11 @@ int main(){
       logf<<"Normalization errors: Nent="<<Nent->getVal()<<" NormErr="<<NormErr->getVal()<<"  Nerr="<<Nerr->getVal()<<std::endl;
       logf<<"Exp fit done: Norm In Range ALL = "<<NbkgRange->getVal()<<"   Slope="<<a0->getVal()<<std::endl;
       logf<<"Exp fit done: Norm In Range ELE = "<<NbkgRangeELE->getVal()<<"  MU = "<<NbkgRangeMU->getVal()<<endl; 
+      if(unblind){
+	logf<<dsDataSIG->GetName()<<"  -> ALL: "<<dsDataSIG->numEntries()<<" ELE: "<<dsDataSIG->reduce("lep==0")->numEntries()<<" MU: "<<dsDataSIG->reduce("lep==1")->numEntries()<<endl;
+
+	logf<<dsDataSIG->GetName()<<" in [500, 2200]  -> ALL: "<<dsDataSIG->reduce("mZZ>500.0&&mZZ<2200.0")->numEntries()<<" ELE: "<<dsDataSIG->reduce("lep==0&&mZZ>500.0&&mZZ<2200.0")->numEntries()<<" MU: "<<dsDataSIG->reduce("lep==1&&mZZ>500.0&&mZZ<2200.0")->numEntries()<<endl;
+      }
       r_sig2->printMultiline(logf,99,true);
       logf<<"\nNow fitting with Leveled Expo:"<<endl;
       //for levelled exponential
@@ -557,7 +562,8 @@ int main(){
       if(doPseudoExp){
 	char tmpTname[32];
 	char fitResultNamePseudo[128];
-	bool doPseudoTwoPars=true;//use lev expo for ZZ, only 1JLP and 2J
+	bool doPseudoTwoPars=true;//use lev expo 
+	//if(isZZChannel)doPseudoTwoPars=false;
 	//if(purityCut==1&&isZZChannel){//XZZ-1JHP : simple expo with only one param
 	//  doPseudoTwoPars=false;
 	//	}
@@ -631,7 +637,7 @@ int main(){
       TCanvas *can1=new TCanvas("canvas1", "can1",800,800);
       can1->cd();
       RooPlot *xf;
-      if(!plotFixedBinning)xf=mZZ->frame();
+      if(!plotFixedBinning)xf=mZZ->frame(minMZZ,maxFitRange);
       else xf=mZZ->frame((bins[nBins-1]-bins[0])/FixedBinWidth);//definition of FixedBinWidth in Config_XWW.h and Config_XZZ.h
       string frameTitle="Bkgd Estimation from Data Sidebands ("+ssnxj.str()+"J "+pur_str +" - "+leptType+" lept flav)";
       xf->SetTitle(frameTitle.c_str());
@@ -639,7 +645,7 @@ int main(){
       if(!plotFixedBinning)
 	{
 	  dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed),RooFit::Range("plotRange"));
-	  if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack),RooFit::Range("fitRange"));
+	  if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack),RooFit::Range("fitRange"),RooFit::Range("plotRange"));
 	}
       else
 	{
@@ -678,8 +684,8 @@ int main(){
 
       if(!plotFixedBinning)
 	{
-	  dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));//,Normalization(dsDataSB2->numEntries(),RooAbsPdf::NumEvent)
-	  if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
+	  dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed),RooFit::Range("plotRange"));//,Normalization(dsDataSB2->numEntries(),RooAbsPdf::NumEvent)
+	  if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack),RooFit::Range("plotRange"));
 	}
       else
 	{

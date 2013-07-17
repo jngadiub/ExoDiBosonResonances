@@ -1,5 +1,5 @@
 
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130716_prodv2d_M2000_ALL/";
+const std::string myOutDir="FitSidebandsMJJ_ZZ_20130717_prodv2d_M2000_ALL/";//_Unblinded
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2d/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2d/fullsb/";
 
@@ -13,13 +13,13 @@ const float lumi =19770.0;
 
 
 const bool doPseudoExp=false;//true; //if true, for for different psuedo-alpha 
-const bool unblind=false;//default is not to plot the data in signal region
+const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=true;//choose what to plot as main fit function
 
 const bool alphaPoisson=true;//use Poisson errors for alpha uncertainties
-const bool plotFitPull=false;//plot pull plot with the fit result
-const bool plotFixedBinning=false;//plot fit result with fixed binning
+const bool plotFitPull=true;//plot pull plot with the fit result
+const bool plotFixedBinning=true;//plot fit result with fixed binning
 const double FixedBinWidth =50;
 
 std::string channel_marker="xzz";
@@ -27,7 +27,7 @@ std::string channel_marker="xzz";
 std::string bkgd_decorr_name="levexp_dcr_xzz";
 
 
-const std::string datacardDir("DataCards_XZZ_20130716_prodv2d_M2000/");
+const std::string datacardDir("DataCards_XZZ_20130717_prodv2d_M2000/");
 float mZZmax_=2200;
 
 //**********systematics***********

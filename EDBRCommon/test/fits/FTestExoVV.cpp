@@ -56,7 +56,7 @@ const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
 			    1000,1100,1250,1400};
 
 //bins for plots and chi2
-const int nbchi2=16;
+const int nbchi2=32;
 const double lowbinchi2=500.0;
 const double hibinchi2=2200.0;
 
@@ -349,13 +349,16 @@ int main(){
 	  double p3_tmpChi2=(bincont-p3val)*(bincont-p3val)/(binerr*binerr);
 	  rss3+=(bincont-p3val)*(bincont-p3val);
 
+	  std::string chi2Status="---";
 	  if(binerr>0.10){//otherwise it is a dodgy bin with only MC VV
 	    p1_totChi2+=p1_tmpChi2;
 	    p2_totChi2+=p2_tmpChi2;
 	    p3_totChi2+=p3_tmpChi2;
 	    ndof+=1.0;
+	    chi2Status="OK";
 	  }
-	  logf<<"  OK\t\t"<<center << "\t\t"<<bincont<<"\t\t"<<binerr<<"\t\t"<<p1_tmpChi2<<"\t\t"<<p2_tmpChi2<<"\t\t"<<p3_tmpChi2<<endl;//"\t\t"<<bincont-p1val<<"\t\t"<<bincont-p3val <<endl;
+	  else  chi2Status="BAD";
+	  logf<<"  "<<chi2Status.c_str() <<"\t\t"<<center << "\t\t"<<bincont<<"\t\t"<<binerr<<"\t\t"<<p1_tmpChi2<<"\t\t"<<p2_tmpChi2<<"\t\t"<<p3_tmpChi2<<endl;//"\t\t"<<bincont-p1val<<"\t\t"<<bincont-p3val <<endl;
 	}
 	else{
 	  logf<<"  ZERO ! BinCenter="<<center <<"  BinCont="<<bincont<<"   BinErr="<<binerr<<endl;
@@ -379,6 +382,9 @@ int main(){
       //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/DiJetHighMass/test/fitcode/F_test_default.C?revision=1.3&view=markup
       const double alphaFTest=0.05;
       logf<<"\nStarting F-Test evaluation with alpha-value="<<alphaFTest<<endl;
+      logf<<"Simple expo (1 par): rss1 = "<<rss1<<endl;
+      logf<<"Level  expo (2 par): rss2 = "<<rss2<<endl;
+      logf<<"Level  expo (3 par): rss3 = "<<rss3<<endl;
       double Ftest_21 = (rss1-rss2)*p2_ndof/ (rss2*1.0);
       double Ftest_32 = (rss2-rss3)*p3_ndof/ (rss3*1.0);
       logf << "Ftest 21 value = " << Ftest_21 << endl;

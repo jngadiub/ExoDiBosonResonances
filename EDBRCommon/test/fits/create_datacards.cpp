@@ -81,7 +81,7 @@ TheorSigParameters get_thParameters( float mass );
 
 double linear_interp( double x, double x_old, double mass, double mH, double mH_old );
 double expo_interp(double s2, double s1,  double newM,double m2,double m1);
-TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float mZZmin );
+TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float mZZmin, float mZZmax );
 
 
 double get_signalParameter(int nxj,  const std::string& purType_str, const std::string& leptType_str, double massH, std::string varname);
@@ -116,15 +116,15 @@ int main( int argc, char* argv[] ) {
   std::cout<<"Lumi MU="<<lumi_MU<<"  ELE="<<lumi_ELE<<std::endl<<std::endl;
 
   //first loop over available signal MC files to fit efficiency:
-  TF1* f1_eff_vs_mass_MU_1JHP = get_eff_vs_mass("MU", 1,1, mZZmin_);
-  TF1* f1_eff_vs_mass_MU_1JLP = get_eff_vs_mass("MU", 1,0, mZZmin_);
+  TF1* f1_eff_vs_mass_MU_1JHP = get_eff_vs_mass("MU", 1,1, mZZmin_, 2000);
+  TF1* f1_eff_vs_mass_MU_1JLP = get_eff_vs_mass("MU", 1,0, mZZmin_, 2000);
   TF1* f1_eff_vs_mass_MU_2J   = 0;
-  if(jetCats>1)f1_eff_vs_mass_MU_2J = get_eff_vs_mass("MU", 2,-1, mZZmin_);//set purity to -1 for 2J cat
+  if(jetCats>1)f1_eff_vs_mass_MU_2J = get_eff_vs_mass("MU", 2,-1, mZZmin_,1400);//set purity to -1 for 2J cat
 
-  TF1* f1_eff_vs_mass_ELE_1JHP = get_eff_vs_mass("ELE", 1,1, mZZmin_);
-  TF1* f1_eff_vs_mass_ELE_1JLP = get_eff_vs_mass("ELE", 1,0, mZZmin_);
+  TF1* f1_eff_vs_mass_ELE_1JHP = get_eff_vs_mass("ELE", 1,1, mZZmin_, 2000);
+  TF1* f1_eff_vs_mass_ELE_1JLP = get_eff_vs_mass("ELE", 1,0, mZZmin_, 2000);
   TF1* f1_eff_vs_mass_ELE_2J   = 0;
-  if(jetCats>1)f1_eff_vs_mass_ELE_2J = get_eff_vs_mass("ELE", 2,-1, mZZmin_);
+  if(jetCats>1)f1_eff_vs_mass_ELE_2J = get_eff_vs_mass("ELE", 2,-1, mZZmin_, 1400);
 
   std::ifstream ifs;
   if(isZZChannel)
@@ -136,7 +136,7 @@ int main( int argc, char* argv[] ) {
 
     float mass;
     ifs >> mass;	
-    //if(mass!=2200)continue;
+    if(mass!=1000)continue;
     std::cout << std::endl << std::endl;;
     std::cout << "++++++++++++++++++++++" << std::endl;
     std::cout << "+++ MASS: " << mass << std::endl;
@@ -245,7 +245,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
   //////////////////////////////
   ////->  get main variable from input workspace:
-  if(nxj==2)mZZmin_=600.0;//get in sync with was done in fitBackground for 2J category
+  if(nxj==2)mZZmin_=500.0;//get in sync with was done in fitBackground for 2J category
+  else if(pur==0)mZZmin_=650.0;//get in sync with was done in fitBackground for 1JLP category
   else mZZmin_ = startFit;
   RooRealVar* CMS_xzz_mZZ = new RooRealVar("mZZ","mZZ",mZZmin_,mZZmax_);//it works
   //   RooRealVar* CMS_hzz2l2q_mZZ = bgws->var("mZZ");//it does not work
@@ -283,11 +284,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   RooDataSet* dataset_obs = DataCardUtils::get_observedDataset( bgws , leptType_str, nxj,pur, name_dataobs );
   dataset_obs->SetName(( dataset_obs->GetName()+rename_str).c_str());
   std::cout<<"Statistics of the observed dataset straight from the ws: "<<dataset_obs->numEntries()<<"  "<<dataset_obs->sumEntries() <<std::endl;
-  double mzzRangeMinCut=0.0;
-  if(isZZChannel){
-    mzzRangeMinCut=bins1[0];
-    if(nxj==1&&pur==0)mzzRangeMinCut=600.0;
-  }
+  double mzzRangeMinCut=bins1[0];
   std::stringstream ssMinRangeCut;
   ssMinRangeCut << mzzRangeMinCut;
   std::string mzzRangeMinStr="mZZ>"+ssMinRangeCut.str();
@@ -676,7 +673,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
 
 
-TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float mZZmin ) {
+TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float mZZmin , float mZZmax ) {
 
 
   TH1F::AddDirectory(kTRUE);
@@ -695,6 +692,8 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
 
     double mass,efficiency[6];//one for each category: EE1JHP, MM1JHP ,EE1JLP, MM1JLP , EE2J ,MM2J
     ifsMC >> mass >> efficiency[0] >> efficiency[1] >> efficiency[2] >>efficiency[3] >> efficiency[4] >>efficiency[5] ; 
+
+    if(mass<mZZmin||mass>mZZmax)continue;
 
     int index = DataCardUtils::convert_leptType(leptType_str) + (nxj-1) + 2*(1-pur);
     if(nxj==2)index--;
