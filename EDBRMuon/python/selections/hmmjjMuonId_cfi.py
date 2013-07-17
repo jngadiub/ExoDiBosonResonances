@@ -23,6 +23,7 @@ HPTmuonTKId2012 = cms.PSet(
     #Updated for 2012 with new cut from the Muon POG
     #numberOfValidTrackerHits = cms.string('numberOfValidTrackerHits() > 10'),
     #    trackerLayersWithMeasurement = cms.string('trackerLayersWithMeasurement() > 8'),
+    isGoodFit = cms.string('sourcePtr().userFloat("muonTrackError") < 0.3'),
     trackerLayersWithMeasurement = cms.string('trackerLayersWithMeasurement() > 5'),
     numberOfValidPixelHits = cms.string('numberOfValidPixelHits() > 0'),
     numberOfMatches = cms.string('numberOfMatchedStations() > 1'),
@@ -38,6 +39,7 @@ HPTmuonGlobalId2012 = cms.PSet(
     #Updated for 2012 with new cut from the Muon POG
     #numberOfValidTrackerHits = cms.string('numberOfValidTrackerHits() > 10'),
     #    trackerLayersWithMeasurement = cms.string('trackerLayersWithMeasurement() > 8'),
+    isGoodFit = cms.string('sourcePtr().userFloat("muonTrackError") < 0.3'),
     trackerLayersWithMeasurement = cms.string('trackerLayersWithMeasurement() > 5'),
     numberOfValidPixelHits = cms.string('numberOfValidPixelHits() > 0'),
     numberOfValidMuonHits = cms.string('numberOfValidMuonHits() > 0'),
