@@ -8,12 +8,12 @@ bool isZZChannel=true;//this will change only the file list
 string leptType="ALL";//"MU" //"ELE"//"ALL"
 const std::string InTreeName="SelectedCandidates";
 const bool useAlphaVV=false;
-const unsigned int nToys = 5;
+const unsigned int nToys = 500;
 const float lumi =19770.0;
 
 
 const bool doPseudoExp=false;//true; //if true, for for different psuedo-alpha 
-const bool unblind=true;//default is not to plot the data in signal region
+const bool unblind=false;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=true;//choose what to plot as main fit function
 
@@ -27,7 +27,7 @@ std::string channel_marker="xzz";
 std::string bkgd_decorr_name="levexp_dcr_xzz";
 
 
-const std::string datacardDir("DataCards_XZZ_20130718_LevExpo/");
+const std::string datacardDir("DataCards_XZZ_20130716_prodv2d_M2000/");
 float mZZmax_=2200;
 
 //**********systematics***********

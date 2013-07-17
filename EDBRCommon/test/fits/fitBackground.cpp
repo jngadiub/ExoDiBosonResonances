@@ -37,10 +37,10 @@
 #include "PdfDiagonalizer.h"
 #include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
 
-#include "Config_XWW.h" 
-#include "binningFits_XWW.h"
-//#include "Config_XZZ.h"
-//#include "binningFits_XZZ.h"
+//#include "Config_XWW.h" 
+//#include "binningFits_XWW.h"
+#include "Config_XZZ.h"
+#include "binningFits_XZZ.h"
 
 using namespace std ;
 using namespace RooFit ;
@@ -145,7 +145,7 @@ int main(){
   // gROOT->cd(); //magic!
 
   const double minMZZ=bins1[0];
-  const double maxMZZ=mZZmax_;//bins1[nBins1-1];
+  const double maxMZZ=bins1[nBins1-1];
   int inxj=0;
   RooRealVar* mZZ = new RooRealVar("mZZ","mZZ",minMZZ,maxMZZ);//bins[nBins-1]);
   RooRealVar *nXjets=new RooRealVar("nXjets","nXjets",-0.1,2.1);
@@ -367,11 +367,11 @@ int main(){
       //fit the weighted dataset with a custom function
       double minFitRange=((inxj==1&&purityCut==0&&isZZChannel) ? 650.0 : startFit);//if 1JLP of ZZ channel, start at 600 GeV
      
-      double maxFitRange=(inxj==1 ? maxMZZ : bins[nBins-1]);
+      double maxFitRange=(inxj==1 ? mZZmax_ : bins[nBins-1]);
       std::cout<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;
       logf<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;
       mZZ->setRange("fitRange",minFitRange,maxFitRange) ;
-
+      mZZ->setRange("plotRange",minMZZ,maxFitRange) ;
       double inislope;
       if(inxj==1)inislope=-0.25;
       if(inxj==2)inislope=-0.25;
@@ -638,8 +638,8 @@ int main(){
       //DO NOT CHANGE THE ORDER !!!!!!! DATA AS FIRST ONES !!!!
       if(!plotFixedBinning)
 	{
-	  dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed));
-	  if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack));
+	  dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed),RooFit::Range("plotRange"));
+	  if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack),RooFit::Range("fitRange"));
 	}
       else
 	{
@@ -649,29 +649,29 @@ int main(){
 
       if(plotDecorrLevExpoMain){
 	//plot error bands of fit			  
-	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));//
-	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
+	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("plotRange"));//
+	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("plotRange"));
 
 	//plot normalization unc of fits		
-	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal()+Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kViolet-2), LineStyle(kDashed),RooFit::Range("fitRange"));
-	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal()-Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kViolet-2), LineStyle(kDashed),RooFit::Range("fitRange"));
+	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal()+Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kViolet-2), LineStyle(kDashed),RooFit::Range("plotRange"));
+	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal()-Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kViolet-2), LineStyle(kDashed),RooFit::Range("plotRange"));
 	//plot fits		
 	expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
-	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kViolet-2),RooFit::Range("fitRange"));//,RooFit::Range("fitRange")
+	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kViolet-2),RooFit::Range("plotRange"));//,RooFit::Range("plotRange")
 
       }
       else{
-	expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig2,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
-	expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig2,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
+	expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig2,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("plotRange"));
+	expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig2,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("plotRange"));
 
 	//
-	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2)); 
+	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("plotRange"), LineColor(kViolet-2)); 
 	expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kSolid));
 
 	//
 	expo_fit->plotOn(xf, Normalization(NbkgRange->getVal()+Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
 	expo_fit->plotOn(xf, Normalization(NbkgRange->getVal()-Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
-	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2));
+	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("plotRange"), LineColor(kViolet-2));
 	expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kSolid));      }
 
       //	expLev_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kOrange+5), LineStyle(kDashed));//RooAbsPdf::NumEvent
@@ -900,8 +900,8 @@ void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws ,int seed,char*
     //    ModSideband.Print("v");
     ModSideband.reduce(CutRange("fitRange"))->plotOn(tmpfitfr,MarkerStyle(20),MarkerColor(kBlue));
     cout<<"CP4 "<<normTMP<<"  "<<flush;
-    ws.pdf(bkgd_decorr_name.c_str())->plotOn(tmpfitfr,Normalization(normTMP,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kOrange+3));
-    //ws.pdf("levelled_exp_fit")->plotOn(tmpfitfr,Normalization(normTMP,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kRed));
+    ws.pdf(bkgd_decorr_name.c_str())->plotOn(tmpfitfr,Normalization(normTMP,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("plotRange"), LineColor(kOrange+3));
+    //ws.pdf("levelled_exp_fit")->plotOn(tmpfitfr,Normalization(normTMP,RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("plotRange"), LineColor(kRed));
 
     ModSideband.reduce(CutRange("fitRange"))->plotOn(tmpfitfr,MarkerStyle(20),MarkerColor(kBlue));
     tmpfitfr->GetYaxis()->SetRangeUser(0.01,500.0);

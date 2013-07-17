@@ -45,12 +45,12 @@ Double_t myfunction(Double_t *x, Double_t *par){
   return f;
 }
 
-//binning for merged Jet topology 
-const int nBins1=23;
-const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
-			    1000,1100,1200,1300,1500,1700,1900,2100,2300,2600,2800};
+// //binning for merged Jet topology 
 
-//binning for double Jet topology 
+const int nBins1=21;
+const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
+			    1000,1100,1200,1300,1500,1700,1900,2100,2300};//,2600,2800};
+// //binning for double Jet topology 
 const int nBins2=16;
 const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
 			    1000,1100,1250,1400};
@@ -99,9 +99,7 @@ int main(){
       // RooCurve *curve_AlphaErr_UP=(RooCurve*)fcurve->Get("upper_staterr_alpha");
       // RooCurve *curve_AlphaErr_DOWN=(RooCurve*)fcurve->Get("lower_staterr_alpha");
       
-      const int nBins1=21;
-      const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
-				  1000,1100,1200,1300,1500,1700,1900,2100,2300};//,2600,2800};
+ 
 
 
       std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, leptType_str ,outDir,channel_marker);
@@ -125,8 +123,9 @@ int main(){
       double minFitRange=500;// (nxj==1 ? 600.0 : 600);
       if(nxj==1&&ipur==0)minFitRange=650;
       double maxFitRange=(nxj==1 ? maxMZZ : bins2[nBins2-1]);
+      logf<<"FitRange defined as ["<<minFitRange<<" , "<<maxFitRange<<" ]"<<endl;
       x->setRange("fitRange",minFitRange,maxFitRange) ;
-
+      //      x->printMultiline(logf,99,true);
       cout<<"Loaded RooRealVar "<<std::flush;
 
       //  x->setRange(bins0[0],bins0[nBins-1]);
@@ -279,6 +278,7 @@ int main(){
 
       ////////////////
       // Chi2 from binned histo
+
       RooDataHist* dsetBinned =new RooDataHist("dhALLData","My Binned dataset",RooArgSet(*x), *SBdset);
       cout<<"Datahist loaded"<<endl;
       // TH1D *hbin2=(TH1D*)SIGdsetFULL->reduce("mZZ>375&&mZZ<1250")->createHistogram( ("h_dsbinned2_M"+ssM.str()+sscat.str()+"b").c_str(),*x,Binning(RooBinning(nBins-1,bins0)));
@@ -290,8 +290,13 @@ int main(){
       double p1_totChi2=0.0,p2_totChi2=0.0,p3_totChi2=0.0,totObs=0.0;
       double ndof=0.0,p1_ndof=0.0,p2_ndof=0.0,p3_ndof=0.0;
       const double normFit=Nbkgd->getVal();
-      const double normFitRange=SBdset->reduce(RooFit::CutRange("fitRange"))->sumEntries();
+      double normFitRange=SBdset->reduce(RooFit::CutRange("fitRange"))->sumEntries();
+      if(ipur==0&&nxj==1){
+	//normFitRange=509.084;
+	normFitRange=SBdset->reduce(RooFit::Cut("mZZ>650&&mZZ<2200"))->sumEntries();
+      }
       logf<<"normFit="<<normFit<<"   normFitRange="<<normFitRange<<endl;
+      // if(ipur==1&&nxj==1)normFitRange=normFit;
       //integral of fit func
       double fit_1parIntFitR=fit_1par->createIntegral(*x,RooFit::Range("fitRange"))->getVal();
       double fit_1parInt=fit_1par->createIntegral(*x,RooFit::NormSet(*x))->getVal();
@@ -314,6 +319,7 @@ int main(){
 	double binerr=hbin2->GetBinError(ib);
 	//x->setVal(center);
 
+	if(ipur==0&&nxj==1&&low<650.0)continue;//restricted fit range fo 1JLP in ZZ
 	char rangeName[128];
 	sprintf(rangeName,"rangeIntegral%d",ib);
 	x->setRange(rangeName,low,high);
@@ -331,19 +337,24 @@ int main(){
 	double p3val=Fit3pFrac*normFitRange;
 
 	totObs+=bincont;
+
 	if(bincont>0&&binerr>0){
 	  //fits are done on the same exptrap SB, don't double count errors
 	  double p1_tmpChi2=(bincont-p1val)*(bincont-p1val)/(binerr*binerr);
 	  rss1+=(bincont-p1val)*(bincont-p1val);
-	  p1_totChi2+=p1_tmpChi2;
 
 	  double p2_tmpChi2=(bincont-p2val)*(bincont-p2val)/(binerr*binerr);
 	  rss2+=(bincont-p2val)*(bincont-p2val);
-	  p2_totChi2+=p2_tmpChi2;
+	 
 	  double p3_tmpChi2=(bincont-p3val)*(bincont-p3val)/(binerr*binerr);
 	  rss3+=(bincont-p3val)*(bincont-p3val);
-	  p3_totChi2+=p3_tmpChi2;
-	  ndof+=1.0;
+
+	  if(binerr>0.10){//otherwise it is a dodgy bin with only MC VV
+	    p1_totChi2+=p1_tmpChi2;
+	    p2_totChi2+=p2_tmpChi2;
+	    p3_totChi2+=p3_tmpChi2;
+	    ndof+=1.0;
+	  }
 	  logf<<"  OK\t\t"<<center << "\t\t"<<bincont<<"\t\t"<<binerr<<"\t\t"<<p1_tmpChi2<<"\t\t"<<p2_tmpChi2<<"\t\t"<<p3_tmpChi2<<endl;//"\t\t"<<bincont-p1val<<"\t\t"<<bincont-p3val <<endl;
 	}
 	else{
