@@ -657,7 +657,7 @@ TH1D* SidebandFitter::dummyAlphaHist( float alpha , TH1D* inhist , char* histNam
 
 
 TH1D* SidebandFitter::DivideAndSmoothAlphaHist( TH1D hnum, TH1D hden,TH1D &halpha){
-  std::cout<<"Creating alpha ratio"<<std::endl;
+  // std::cout<<"Creating alpha ratio"<<std::endl;
   TH1D *hfin=(TH1D*)halpha.Clone();
   char newname[200];
   sprintf(newname,"%s_smoothened",halpha.GetName());
@@ -798,6 +798,13 @@ int SidebandFitter::smoothHist(TH1 &h, bool forceCorrZero,int smoothLevel){
       binerrP=h.GetBinError(b+1);
     }
   
+    //calculate average of last 5 bins (or less if b<5)
+    int brun=5;
+    if(b<5)brun=b;
+    double runSum=0.0;
+    for(int b2=b;b2>b-brun;b2--){ runSum+=h.GetBinContent(b2); }
+    double runAvg=runSum/brun;
+
     //if any of the two neighbouring bins is null,
     //try to use the value of the next non-null bin for smoothing.
     //Don't be so aggressive if the switch forceCorrZero is false
@@ -830,6 +837,22 @@ int SidebandFitter::smoothHist(TH1 &h, bool forceCorrZero,int smoothLevel){
 	binerrP=h.GetBinError(b-2);
       }
     }
+
+
+    //do not average with some bin clearly out of the trend
+    if((bincontP>3.0*runAvg) && (binerrP/bincontP>0.50) ){
+      int i2=2;
+      std::cout<<"Fixing outlier binPlus "<<bincontP<<" >> "<<runAvg<<endl;
+      while(bincontP>3.0*runAvg && (b+i2<nbins)){
+
+	 
+	bincontP=h.GetBinContent(b+i2);
+	binerrP=h.GetBinError(b+i2);
+	i2++;
+	 
+	
+      }//end while bincontP>3.0*runAvg
+    }//end if bincontP>3.0*runAvg
     
     //well, in the end we do an average
     double avgRef=(bincontP+bincontM) / 2.0;

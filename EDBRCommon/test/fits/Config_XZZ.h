@@ -1,15 +1,15 @@
 
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130711_prodv2c_ALL_LevExpo/";
-const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2c/fullsig/";
-const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2c/fullsb/";
+const std::string myOutDir="FitSidebandsMJJ_ZZ_20130716_prodv2d_M2000_ALL/";
+const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2d/fullsig/";
+const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2d/fullsb/";
 
 unsigned int jetCats = 2;//1 for only 1 jet case, 2 for both
 bool isZZChannel=true;//this will change only the file list
 string leptType="ALL";//"MU" //"ELE"//"ALL"
 const std::string InTreeName="SelectedCandidates";
 const bool useAlphaVV=false;
-const unsigned int nToys = 500;
-const float lumi =19538.85;
+const unsigned int nToys = 5;
+const float lumi =19770.0;
 
 
 const bool doPseudoExp=false;//true; //if true, for for different psuedo-alpha 
@@ -27,8 +27,8 @@ std::string channel_marker="xzz";
 std::string bkgd_decorr_name="levexp_dcr_xzz";
 
 
-const std::string datacardDir("DataCards_XZZ_20130711_LevExpo/");
-float mZZmax_=2800;
+const std::string datacardDir("DataCards_XZZ_20130718_LevExpo/");
+float mZZmax_=2200;
 
 //**********systematics***********
 

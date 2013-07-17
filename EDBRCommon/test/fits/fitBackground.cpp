@@ -145,7 +145,7 @@ int main(){
   // gROOT->cd(); //magic!
 
   const double minMZZ=bins1[0];
-  const double maxMZZ=bins1[nBins1-1];
+  const double maxMZZ=mZZmax_;//bins1[nBins1-1];
   int inxj=0;
   RooRealVar* mZZ = new RooRealVar("mZZ","mZZ",minMZZ,maxMZZ);//bins[nBins-1]);
   RooRealVar *nXjets=new RooRealVar("nXjets","nXjets",-0.1,2.1);
@@ -164,7 +164,7 @@ int main(){
     double purityCut=-1;
     for(int iP=0;iP<nPurities;iP++){//loop over purity categories
       if(inxj==1)purityCut=iP;//for 2J category, no cut on Purity
-      ///// if(inxj!=1||iP!=1)continue;
+      //if(inxj!=1||iP!=1)continue;
       int nBins;
       const double* bins=0;
 
@@ -365,7 +365,8 @@ int main(){
       }
 
       //fit the weighted dataset with a custom function
-      double minFitRange=((inxj==1&&purityCut==0&&isZZChannel) ? 600.0 : startFit);//if 1JLP of ZZ channel, start at 600 GeV
+      double minFitRange=((inxj==1&&purityCut==0&&isZZChannel) ? 650.0 : startFit);//if 1JLP of ZZ channel, start at 600 GeV
+     
       double maxFitRange=(inxj==1 ? maxMZZ : bins[nBins-1]);
       std::cout<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;
       logf<<"STARTING TO FIT WITH CUSTOM FUNCTION in range [ "<<minFitRange<<" , "<<maxFitRange <<" ]"<<std::endl;
@@ -420,7 +421,7 @@ int main(){
       if(inxj==1)initf0=200.0;
       if(inxj==2)initf0=200.0;
       double initf1=0.0;
-      if(inxj==1)initf1=0.05;
+      if(inxj==1)initf1=0.015;
       if(inxj==2)initf1=0.0;
       double initf1b=0.0;
       if(inxj==1)initf1b=0.0;
@@ -428,7 +429,7 @@ int main(){
       double initm=480.0;
       if(inxj==2)initm=400.0;
       RooRealVar *f0=new RooRealVar("f0","sigma",initf0,0.0,300.0);
-      RooRealVar *f1=new RooRealVar("f1","alpha",initf1,-0.1,0.25);
+      RooRealVar *f1=new RooRealVar("f1","alpha",initf1,-0.05,0.05);
       RooRealVar *f1b=new RooRealVar("f1b","beta",initf1b,-0.1,2.0);
       RooRealVar *f2=new RooRealVar("f2","m",initm,200.0,500.0);
       RooRealVar *f3=new RooRealVar("f3","theta",0.0);
@@ -648,15 +649,15 @@ int main(){
 
       if(plotDecorrLevExpoMain){
 	//plot error bands of fit			  
-	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
+	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,2.0,kFALSE),FillColor(kYellow),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));//
 	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent), LineColor(kViolet-2),VisualizeError(*r_sig_expLev_decorr,1.0,kFALSE),FillColor(kGreen),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"));
 
 	//plot normalization unc of fits		
-	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal()+Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2), LineStyle(kDashed));
-	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal()-Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2), LineStyle(kDashed));
+	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal()+Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kViolet-2), LineStyle(kDashed),RooFit::Range("fitRange"));
+	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal()-Nerr->getVal()*NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kViolet-2), LineStyle(kDashed),RooFit::Range("fitRange"));
 	//plot fits		
 	expo_fit->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kBlue), LineStyle(kDashed));
-	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"),RooFit::Range("fitRange"), LineColor(kViolet-2));
+	background_decorr_->plotOn(xf, Normalization(NbkgRange->getVal(),RooAbsPdf::NumEvent),RooFit::NormRange("fitRange"), LineColor(kViolet-2),RooFit::Range("fitRange"));//,RooFit::Range("fitRange")
 
       }
       else{

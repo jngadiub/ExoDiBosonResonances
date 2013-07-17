@@ -58,7 +58,7 @@ const double bins2[nBins2]={480,500,520,560,600,640,680,720,760,800,840,920,
 //bins for plots and chi2
 const int nbchi2=16;
 const double lowbinchi2=500.0;
-const double hibinchi2=2800.0;
+const double hibinchi2=2200.0;
 
 int main(){
   RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING) ;
@@ -66,7 +66,7 @@ int main(){
 
   string leptType_str="ALL";//ELE // "MU"
   // const string outDir="FitSidebandsAlphaHistSmoothenedWithToys";
-  const string outDir="FitSidebandsMJJ_ZZ_20130701_prodv2c_ALL_MCVVdiv2/";
+  const string outDir="FitSidebandsMJJ_ZZ_20130716_prodv2d_M2000_ALL/";
 
   ofstream logf((outDir+"./log_FTest_MZZ_Std.log").c_str(),ios::out);
 
@@ -99,9 +99,9 @@ int main(){
       // RooCurve *curve_AlphaErr_UP=(RooCurve*)fcurve->Get("upper_staterr_alpha");
       // RooCurve *curve_AlphaErr_DOWN=(RooCurve*)fcurve->Get("lower_staterr_alpha");
       
-      const int nBins1=23;
+      const int nBins1=21;
       const double bins1[nBins1]={480,500,520,560,600,640,680,720,760,800,840,920,
-				  1000,1100,1200,1300,1500,1700,1900,2100,2300,2600,2800};
+				  1000,1100,1200,1300,1500,1700,1900,2100,2300};//,2600,2800};
 
 
       std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, leptType_str ,outDir,channel_marker);
@@ -120,7 +120,7 @@ int main(){
       // w1->Print();
 
       const double minMZZ=bins1[0];
-      const double maxMZZ=bins1[nBins1-1];
+      const double maxMZZ=2200;//bins1[nBins1-1];
       RooRealVar *x=w1->var("mZZ");
       double minFitRange=500;// (nxj==1 ? 600.0 : 600);
       if(nxj==1&&ipur==0)minFitRange=650;
@@ -163,8 +163,8 @@ int main(){
       double initm=60.0;
       if(nxj==2)initm=400.0;
       RooRealVar *f0a=new RooRealVar("f0a","sigma",initf0a,0.0,300.0);
-      RooRealVar *f1a=new RooRealVar("f1a","alpha",0.0,-0.5,2.0);
-      RooRealVar *f2a=new RooRealVar("f2a","beta",0.0,-0.5,2.0);
+      RooRealVar *f1a=new RooRealVar("f1a","alpha",0.0,-0.15,0.25);
+      RooRealVar *f2a=new RooRealVar("f2a","beta",0.0,-0.15,0.25);
       RooRealVar *ma=new RooRealVar("ma","m",initm,200.0,500.0);
       RooRealVar *ta=new RooRealVar("ta","theta",0.0);
       f1a->setConstant(kTRUE);
@@ -189,7 +189,7 @@ int main(){
 
       ///for lev expo 
       RooRealVar *f0b=new RooRealVar("f0b","sigma",initf0a,0.0,300.0);
-      RooRealVar *f1b=new RooRealVar("f1b","alpha",initf1a,-0.05,2.0);
+      RooRealVar *f1b=new RooRealVar("f1b","alpha",initf1a,-0.05,0.5);
       RooRealVar *f2b=new RooRealVar("f2b","beta",0.0,-0.05,2.0);
       RooRealVar *mb=new RooRealVar("mb","m",initm,200.0,500.0);
       RooRealVar *tb=new RooRealVar("tb","theta",0.0);
