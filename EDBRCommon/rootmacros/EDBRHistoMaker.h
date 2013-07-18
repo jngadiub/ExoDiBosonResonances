@@ -1076,7 +1076,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//-- END of ALL CUTS --
 
 					//Printout for debugging	
-										       		       
+					/*				       		       
 					if(mZZ_type2_ptUncorrected[ivec]>1800)
 					  {
 					    //RunNumber:LumiSection:EvtNumber
@@ -1089,7 +1089,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					         << ptjet1[ivec]      << " * " << etajet1[ivec] << " * " << phijet1[ivec]   << " * " 
 					         << mJJNoKinFit[ivec] << " * " << nsubj21[ivec] << endl << endl; 					    
 					  }
-					  
+					*/
 					
 				       
 					
