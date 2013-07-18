@@ -26,20 +26,20 @@ void loopPlot(){
   bool wantSignal    = true; // Will make histograms for signal region
   bool wantFullRange = false; // Will not check signal or sideband, ie, pick all jet mass range
   int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
-  int  isZZchannel   = 1; //plot label for zz (1) or ww (0)
+  int  isZZchannel   = 0; //plot label for zz (1) or ww (0)
   int  flavour = 0; 
   if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
   
   /// Luminosity value in pb^-1
-  //double lumiValue = 19531.85;// for singleEle2012
-  double lumiValue = 19747; // for doubleMu2012
+  double lumiValue = 19531.85;// for singleEle2012
+  //double lumiValue = 19747; // for doubleMu2012
   //double lumiValue = 19788; // for doubleEle2012
   /// Should we scale the histograms to data?
-  bool scaleToData = true;
+  bool scaleToData = false;
   // Should we scale only wjets to make total MC = DATA?
-  bool scaleOnlyWJets = false;
+  bool scaleOnlyWJets = true;
   /// Should we plot the Data/Bkg and Data-Bkg/Error ratios?
-  bool makeRatio = true;
+  bool makeRatio = false;
   /// Should we REDO histograms?
   bool redoHistograms = true;
   /// Should we put the signal MC stacked on top of the background (or just plot the signal alone)?
@@ -47,11 +47,13 @@ void loopPlot(){
 
   /// Path to wherever the files with the trees are. 
   //CA8 (cmgTuple_08032013_CA8)
-
-  std::string pathToTrees="/afs/cern.ch/user/b/bonato/scratch0/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2b/fullsig/";
+  std::string pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv10/fullallrange/";
+  //std::string pathToTrees="/afs/cern.ch/user/b/bonato/scratch0/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2b/fullsig/";
 
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./plots_productionv2b_fullsig_HP_ELE";
+  //std::string outputDir = "./plots_productionv2b_fullsig_HP_ELE";
+  //std::string outputDir = "./plots_WW_signal_ELE";
+  std::string outputDir = "./plots_WW_ttbar_MU";
  
 
   /// Setup names of data files for trees.
@@ -79,14 +81,14 @@ void loopPlot(){
 				"DoubleMuParked_Run2012C_22Jan2013",
 				"DoubleMuParked_Run2012D_22Jan2013"};
   */
- 
+  /*
   const int nDATA=4;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"Photon_Run2012A_22Jan2013",
                                 "DoublePhotonHighPt_Run2012B_22Jan2013",
                                 "DoublePhotonHighPt_Run2012B_22Jan2013",
                                 "DoublePhotonHighPt_Run2012B_22Jan2013"
 				};
-
+  */
   
 /* 
   const int nDATA=7;//set to zero if you don't want to plot
@@ -109,10 +111,10 @@ void loopPlot(){
                  "SingleMu_Run2012D_PromptReco_xww"};
 */
 
-/*
+
   const int nDATA=1;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"data_xww"};
-*/
+
 
 /*   
   const int nDATA=0;//set to zero if you don't want to plot
@@ -125,7 +127,7 @@ void loopPlot(){
   }
 
   /// Setup names of MC files for trees.
-
+  /*
   const int nMC=6;//set to zero if you don't want to plot
   std::string mcLabels[nMC]={"TTBARpowheg",
 			     "WW",
@@ -134,8 +136,9 @@ void loopPlot(){
 			     "DYJetsPt70To100",
 			     "DYJetsPt100",
   };
-  double kFactorsMC_array[nMC] = {1, 1, 1, 1, 1, 1};
-  
+  double kFactorsMC_array[nMC] = {1, 1, 1, 1, 1, 1}; 
+  */
+
   /*
   const int nMC=7;//set to zero if you don't want to plot
   std::string mcLabels[nMC]={"TTBARpowheg",
@@ -149,7 +152,6 @@ void loopPlot(){
   */  
 
   
-  /*
   const int nMC=5;//set to zero if you don't want to plot
   std::string mcLabels[nMC]={//"TTBAR_xww",
                                "TTBARpowheg_xww",
@@ -173,9 +175,8 @@ void loopPlot(){
 			     // "WJetsPt180_xww",
 			        "WJetsPt100_xww",
 			     };
-  */
   //WW, muon channel
-  //double kFactorsMC_array[nMC] = {1, 1., 1., 1., 1.3};
+  double kFactorsMC_array[nMC] = {1., 1., 1., 1., 1.};
   //WW, electron channel
 
   std::vector<std::string> fMC;
@@ -193,11 +194,13 @@ void loopPlot(){
 
   /// Setup names of MC signal files for trees.
   const int nMCSig=1;//set to zero if you don't want to plot
-  std::string mcLabelsSig[nMCSig]={"BulkG_ZZ_lljj_c0p2_M1000"
-				   //"BulkG_WW_lvjj_c0p2_M1000_xww",				   
+  std::string mcLabelsSig[nMCSig]={//"BulkG_ZZ_lljj_c0p2_M1000"
+				   "BulkG_WW_lvjj_c0p2_M1500_xww"				   
                                    //"BulkG_WW_lvjj_c0p2_M2000_xww"				   
                                   };
-  double kFactorsSig_array[nMCSig] = {20000.0};
+  double kFactorsSig_array[nMCSig] = {
+                                        36100.0
+                                     };
 
 
   std::vector<double> kFactorsMCSig;
@@ -384,6 +387,7 @@ void loopPlot(){
 
   
   //For ZZ
+  /*
   ////// {"TTBAR","WW","WZ","ZZ","DYJetsPt50To70","DYJetsPt70To100","DYJetsPt100","WJetsPt50To70","WJetsPt70To100","WJetsPt100"};
   std::vector<int> fColorsMC;
   fColorsMC.push_back(kGreen-3);
@@ -402,21 +406,22 @@ void loopPlot(){
   //fColorsMC.push_back(kRed+3);
   //fColorsMC.push_back(kRed);
   //fColorsMC.push_back(kRed-4);
+  */
   
   //For WW
-  //{ "TTBARpowheg_xww", "SingleTop_xww", "VV_xww", "DYJets_xww", "WJetsPt100_xww"}
-  //std::vector<int> fColorsMC;
-  //fColorsMC.push_back(kGreen-3);
-  //fColorsMC.push_back(kYellow-9);
-  //fColorsMC.push_back(kMagenta-9);
-  //fColorsMC.push_back(kBlue-3);
-  //fColorsMC.push_back(kRed-4);
+  //////{ "TTBARpowheg_xww", "SingleTop_xww", "VV_xww", "DYJets_xww", "WJetsPt100_xww"}
+  std::vector<int> fColorsMC;
+  fColorsMC.push_back(kGreen-3);
+  fColorsMC.push_back(kYellow-9);
+  fColorsMC.push_back(kMagenta-9);
+  fColorsMC.push_back(kBlue-3);
+  fColorsMC.push_back(kRed-4);
 
-  ////// {"BulkG_WW_lvjj_c1p0_M600_xww","BulkG_WW_lvjj_c1p0_M1000_xww","BulkG_WW_lvjj_c1p0_M1500_xww"};
+  //////{"BulkG_WW_lvjj_c1p0_M600_xww","BulkG_WW_lvjj_c1p0_M1000_xww","BulkG_WW_lvjj_c1p0_M1500_xww"};
   std::vector<int> fColorsMCSig;
   //  fColorsMCSig.push_back(kPink);
-  fColorsMCSig.push_back(kOrange+7);
-  fColorsMCSig.push_back(kMagenta);
+  //fColorsMCSig.push_back(kOrange+7);
+  //fColorsMCSig.push_back(kMagenta);
   fColorsMCSig.push_back(kBlue+3);
   
   plotter->setFillColor(fColorsMC);
