@@ -406,14 +406,19 @@ int main(){
       RooRealVar *NbkgMU=new RooRealVar("bkgdNormalizationFullRangeMU",("Background normalization in ["+strmcut.str()+", maxMZZ]  (MU)").c_str(),dsDataSB2->reduce("lep==1")->sumEntries(),0.0,10000.0);
       Nbkg->setConstant(kTRUE);
       RooRealVar *NbkgRange=new RooRealVar("bkgdNormalizationFitRange","Background normalization in range of fit (ELE+MU)",dsDataSB2->reduce(CutRange("fitRange"))->sumEntries(),0.0,10000.0);
-      RooRealVar *NbkgRangeELE=new RooRealVar("bkgdNormalizationELE","Background normalization in range of fit (ELE)",dsDataSB2->reduce(CutRange("fitRange"))->reduce("lep==0")->sumEntries(),0.0,10000.0);
-      RooRealVar *NbkgRangeMU=new RooRealVar("bkgdNormalizationMU","Background normalization in range of fit (MU)",dsDataSB2->reduce(CutRange("fitRange"))->reduce("lep==1")->sumEntries(),0.0,10000.0);
+      RooRealVar *NbkgRangeELE=new RooRealVar("bkgdNormalizationFitRangeELE","Background normalization in range of fit (ELE)",dsDataSB2->reduce(CutRange("fitRange"))->reduce("lep==0")->sumEntries(),0.0,10000.0);
+      RooRealVar *NbkgRangeMU=new RooRealVar("bkgdNormalizationFitRangeMU","Background normalization in range of fit (MU)",dsDataSB2->reduce(CutRange("fitRange"))->reduce("lep==1")->sumEntries(),0.0,10000.0);
+      RooRealVar *Nbkg500=new RooRealVar("bkgdNormalization500","Background normalization starting at M_VV=500 GeV",dsDataSB2->reduce(Cut("mZZ>500.0"))->sumEntries(),0.0,10000.0);
+      RooRealVar *Nbkg500ELE=new RooRealVar("bkgdNormalization500ELE","Background normalization  starting at M_VV=500 GeV (ELE)",dsDataSB2->reduce(Cut("mZZ>500.0&&lep==0"))->sumEntries(),0.0,10000.0);
+      RooRealVar *Nbkg500MU=new RooRealVar("bkgdNormalization500MU","Background normalization  starting at M_VV=500 GeV (MU)",dsDataSB2->reduce(Cut("mZZ>500.0&&lep==1"))->sumEntries(),0.0,10000.0);
       NbkgRange->setConstant(kTRUE);
       // a0->setConstant(kTRUE);
       logf<<"Normalization in full range : ELE="<<NbkgELE->getVal()<<"  MU="<<NbkgMU->getVal()<<"  ALL="<<Nbkg->getVal()<<endl;
       logf<<"Normalization errors: Nent="<<Nent->getVal()<<" NormErr="<<NormErr->getVal()<<"  Nerr="<<Nerr->getVal()<<std::endl;
-      logf<<"Exp fit done: Norm In Range ALL = "<<NbkgRange->getVal()<<"   Slope="<<a0->getVal()<<std::endl;
-      logf<<"Exp fit done: Norm In Range ELE = "<<NbkgRangeELE->getVal()<<"  MU = "<<NbkgRangeMU->getVal()<<endl; 
+      logf<<"Norm In Range ALL = "<<NbkgRange->getVal()<<"   Expo-fit Slope="<<a0->getVal()<<std::endl;
+      logf<<"Norm In Range ELE = "<<NbkgRangeELE->getVal()<<"  MU = "<<NbkgRangeMU->getVal()<<endl; 
+      logf<<"Norm In [500, INF] = "<<Nbkg500->getVal()<<"   Expo-fit Slope="<<a0->getVal()<<std::endl;
+      logf<<"Norm In [500, INF] ELE = "<<Nbkg500ELE->getVal()<<"  MU = "<<Nbkg500MU->getVal()<<endl; 
       if(unblind){
 	logf<<dsDataSIG->GetName()<<"  -> ALL: "<<dsDataSIG->numEntries()<<" ELE: "<<dsDataSIG->reduce("lep==0")->numEntries()<<" MU: "<<dsDataSIG->reduce("lep==1")->numEntries()<<endl;
 
@@ -538,6 +543,9 @@ int main(){
       wsnew->import(*NbkgRange);
       wsnew->import(*NbkgRangeELE);
       wsnew->import(*NbkgRangeMU);
+      wsnew->import(*Nbkg500);
+      wsnew->import(*Nbkg500ELE);
+      wsnew->import(*Nbkg500MU);
       wsnew->import(*Nent);
       wsnew->import(*alphaErr);
       wsnew->import(*NormErr);

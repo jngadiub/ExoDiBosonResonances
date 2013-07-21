@@ -1,5 +1,5 @@
 
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130717_prodv2d_M2000_ALL/";//_Unblinded
+const std::string myOutDir="FitSidebandsMJJ_ZZ_20130718_prodv2d_ALL/";//_Unblinded
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2d/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2d/fullsb/";
 
@@ -12,14 +12,14 @@ const unsigned int nToys = 500;
 const float lumi =19770.0;
 
 
-const bool doPseudoExp=false;//true; //if true, for for different psuedo-alpha 
+const bool doPseudoExp=true;//true; //if true, for for different psuedo-alpha 
 const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=true;//choose what to plot as main fit function
 
 const bool alphaPoisson=true;//use Poisson errors for alpha uncertainties
-const bool plotFitPull=true;//plot pull plot with the fit result
-const bool plotFixedBinning=true;//plot fit result with fixed binning
+const bool plotFitPull=false;//plot pull plot with the fit result
+const bool plotFixedBinning=false;//plot fit result with fixed binning
 const double FixedBinWidth =50;
 
 std::string channel_marker="xzz";
@@ -27,7 +27,7 @@ std::string channel_marker="xzz";
 std::string bkgd_decorr_name="levexp_dcr_xzz";
 
 
-const std::string datacardDir("DataCards_XZZ_20130717_prodv2d_M2000/");
+const std::string datacardDir("DataCards_XZZ_20130718_prodv2d_V3");
 float mZZmax_=2200;
 
 //**********systematics***********
@@ -46,8 +46,8 @@ const double CMS_scale_j_down= 0.99;
 //signal shape: p1 for mean and p2 for sigma
 const double CMS_sig1J_p1_jes = 0.005;
 const double CMS_sig1J_p2_jes = 0.02;
-const double CMS_sig1J_p1_jer = 0.02;
-const double CMS_sig1J_p2_jer = 0.03;
+const double CMS_sig1J_p1_jer = 0.00;
+const double CMS_sig1J_p2_jer = 0.02;
 
 ////2) Electron energy scale and resoluation
 //signal efficiency
@@ -58,7 +58,7 @@ const double CMS_sig1Je_p2_scale = 0.0004 ;
 
 ////3) Mu energy scale and resoluation
 //signal efficiency
-const double CMS_scale_m = 1.04;
+const double CMS_scale_m = 1.01;
 //signal shape: p1 for mean and p2 for sigma
 const double CMS_sig1Jm_p1_scale = 0.006;
 const double CMS_sig1Jm_p2_scale = 0.018;

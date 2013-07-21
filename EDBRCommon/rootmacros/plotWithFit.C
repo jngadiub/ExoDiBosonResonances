@@ -44,69 +44,68 @@ void plotWithFit(){
   string purType[3]={"1JLP","1JHP","2J"};
   const double targetLumi=19538.0;//in pb
 
-  const double bkgNorm[2][3]={{263.1, 226.5,618.37},//ee1JLP, ee1JHP, ee2J
-			      {407.5, 302.2,986.37}//mm1JLP, mm1JHP, mm2J			      
+  const double bkgNorm[2][3]={{419.4, 398.1, 1577.2},//ee1JLP, ee1JHP, ee2J
+			      {598.3, 545.4, 2240.9}//mm1JLP, mm1JHP, mm2J			      
   };
   
-  const double bkgPar1[2][3]={{195.9, -5.1E-03, 85.94},//ee1JLP, ee1JHP, ee2J
-			      {195.9, -5.1E-03, 85.94}//mm1JLP, mm1JHP,mm2J
+  const double bkgPar1[2][3]={{185.0, 193.3, 85.94},//ee1JLP, ee1JHP, ee2J
+			      {185.0, 193.3, 85.94}//mm1JLP, mm1JHP,mm2J
   };
-  const double bkgPar2[2][3]={{0.019, 0.0, 0.05976},//ee1JLP, ee1JHP
-			      {0.019, 0.0, 0.05976},//mm1JLP, mm1JHP
+  const double bkgPar2[2][3]={{0.028, 0.0026, 0.05976},//ee1JLP, ee1JHP
+			      {0.028, 0.0026, 0.05976},//mm1JLP, mm1JHP
   };
-  double fitLow=600;
-  double fitHigh=2400;
-
+  double fitLow=500;
+  double fitHigh=2200;
+  const bool mergeOB=true;
 
   //  take histos done by loopPlot and EDBRHistoMaker
   int ilep=0; int ipur=0;
-  const int nDATA=6;//set to zero if you don't want to plot
+  const int nDATA=4;//set to zero if you don't want to plot
   std::string dataLabelsMu[nDATA]={
-     "DoubleMu_Run2012A_13Jul2012",
-     "DoubleMu_Run2012A_recover",
-     "DoubleMu_Run2012B_13Jul2012",
-     "DoubleMu_Run2012C_24Aug2012",
-     "DoubleMu_Run2012C_PRv2",
-     "DoubleMu_Run2012D_PRv1"};
+     "DoubleMu_Run2012A_22Jan2013",
+     "DoubleMuParked_Run2012B_22Jan2013",
+     "DoubleMuParked_Run2012C_22Jan2013",
+     "DoubleMuParked_Run2012D_22Jan2013",
+  };
+
   std::string dataLabelsEle[nDATA]={
-    "Photon_Run2012A_13Jul2012",
-    "Photon_Run2012A_recover",
-    "DoublePhotonHighPt_Run2012B_13Jul2012",
-    "DoublePhotonHighPt_Run2012C_24Aug2012",
-    "DoublePhotonHighPt_Run2012C_PRv2",
-    "DoublePhotonHighPt_Run2012D_PRv1"
+       "Photon_Run2012A_22Jan2013",
+       "DoublePhotonHighPt_Run2012B_22Jan2013",
+       "DoublePhotonHighPt_Run2012C_22Jan2013",
+       "DoublePhotonHighPt_Run2012D_22Jan2013"
   };
    
-  const int nMC=7;//set to zero if you don't want to plot
+  const int nMC=5;//set to zero if you don't want to plot
   std::string mcLabels[nMC]={"TTBARpowheg",
-			     "WW",
+			     // "WW",
 			     "WZ",
 			     "ZZ",
-			     "DYJetsPt50To70",
+			     //	     "DYJetsPt50To70",
 			     "DYJetsPt70To100",
 			     "DYJetsPt100"};
 
   const int nMCSig=1;//set to zero if you don't want to plot
-  std::string mcLabelsSig[nMCSig]={"BulkG_ZZ_lljj_c0p2_M1600"};
+  std::string mcLabelsSig[nMCSig]={"BulkG_ZZ_lljj_c0p2_M1000"};
 
   
   std::vector<int> fColorsMC;
-  fColorsMC.push_back(kGreen-3);
-  fColorsMC.push_back(kMagenta-9);
-  fColorsMC.push_back(kMagenta-6);
-  fColorsMC.push_back(kMagenta-3);
-  fColorsMC.push_back(kBlue-3);
-  fColorsMC.push_back(kBlue-6);
-  fColorsMC.push_back(kBlue-9);
+  fColorsMC.push_back(kGreen-3);//ttbar
+  //  fColorsMC.push_back(kMagenta-9); //WW
+  fColorsMC.push_back(kMagenta-6); //WZ
+  fColorsMC.push_back(kMagenta-3); //ZZ
+     //  fColorsMC.push_back(kBlue-3); //DY pt 50-70
+  fColorsMC.push_back(kBlue-6); //DY pt 70 -100
+  fColorsMC.push_back(kBlue-9); //DY pt>100
 
   for(ilep=0;ilep<2;ilep++){
     for(ipur=0;ipur<3;ipur++){
 
-      //   if(ipur!=1)continue;
+      //if(ipur!=1)continue;
       if(ipur==2)fitHigh=1400.0;
-      else fitHigh=2400.0;
+      else fitHigh=2200.0;
+
       cout<<"Starting with lep="<<leptType[ilep]<<"  Pur="<<purType[ipur]<<endl;
-      string inDir="plots_productionv1e_fullsig_"+purType[ipur]+"_"+leptType[ilep]+"/";
+      string inDir="plots_productionv2d_fullsig_"+purType[ipur]+"_"+leptType[ilep]+"_forPAS/";
       
 
   //sum up data
@@ -120,7 +119,7 @@ void plotWithFit(){
     TFile *fData=new TFile((inDir+fDataName).c_str(),"READ");
     cout<<"Take data file from "<<(inDir+fDataName).c_str()<<endl;
     TH1D* histo = (TH1D*)(fData->Get("h_mZZ"));
-    histo->Rebin(2);
+    // histo->Rebin(2);
     for(int j=1;j<=histo->GetNbinsX();j++){
       double binContNew=histo->GetBinContent(j)/histo->GetBinWidth(j);
       double binErrNew=histo->GetBinError(j)/histo->GetBinWidth(j); 
@@ -141,17 +140,23 @@ void plotWithFit(){
   for(int i=0; i!= nDATA; ++i) {
     hData->Add(datahistos.at(i));
   }
-  cout<<"Area of DataTOT is "<<hData->Integral()<<endl;
+  cout<<"Area of DataTOT is "<<hData->Integral("width")<<endl;
+
+
   //stack MC bkgds
   cout<<"Starting loop on MC bkgd"<<endl;
   THStack* hs = new THStack("hs","");
+  double bkgdMCIntegral=0.0;
   std::vector<TH1D*> mchistos;
+  TH1D* histoDYMC=NULL;
+  TH1D* histoOBMC=NULL;//OB--> Other backgrounds, not DY
+  bool initDYMC=false,initOBMC=false;
   for(int i=0; i!= nMC; ++i) {
     TFile *fMC=new TFile((inDir+"histos_"+mcLabels[i]+".root").c_str(),"READ");
     cout<<"Take MC file from "<<(inDir+"histos_"+mcLabels[i]+".root").c_str()<<endl;
     TH1D* histo = (TH1D*)(fMC->Get("h_mZZ"));
     cout<<"histoMC has "<<histo->GetEntries()<<" entries  "<<flush;
-    histo->Rebin(2);
+    // histo->Rebin(2);
     histo->SetFillColor(fColorsMC.at(i));
 
     for(int j=1;j<=histo->GetNbinsX();j++){
@@ -159,32 +164,68 @@ void plotWithFit(){
       histo->SetBinContent(j,binContNew);
       histo->SetBinError(j,0.0);
     }
-    cout<<"Old integral="<<histo->Integral()<<flush;
+    cout<<"Old integral="<<histo->Integral("width")<<flush;
     histo->Scale(targetLumi);
-    cout<<"  New integral="<<histo->Integral()<<flush;
+    cout<<"  New integral="<<histo->Integral("width")<<flush;
+    bkgdMCIntegral+=histo->Integral();
     mchistos.push_back((TH1D*)histo->Clone(("h_mZZ_"+mcLabels[i]).c_str()));
-    cout<<"\tAdd to stack"<<endl;
-    hs->Add(mchistos.at(i));
-  
+
+    if(mergeOB){
+      if(mcLabels[i].find("DY")!=std::string::npos){
+	if(!initDYMC ){
+	  histoDYMC= ((TH1D*)mchistos.at(i)->Clone("MCDY"));
+	  histoDYMC->Reset();
+	  initDYMC=true;
+	}
+	histoDYMC->Add(mchistos.at(i));
+      }//end if it is DY MC
+      else{//other background, not DY
+	if(!initOBMC ){
+	  histoOBMC= ((TH1D*)mchistos.at(i)->Clone("MCOB"));
+	  histoOBMC->Reset();
+	  initOBMC=true;
+	}
+	histoOBMC->Add(mchistos.at(i));
+      }//end else it is other bkgd
+    }//end if clump together non-DY bkgds
+    else{
+      cout<<"\tAdd to stack"<<endl;
+      hs->Add(mchistos.at(i));
+    }  
     //delete histo;
     //delete fMC;
   }//end loop over MC bkgd
- cout<<"Finished loop on MC"<<endl;
+
+
+  if(mergeOB){
+    histoOBMC->SetFillColor(kGreen-3);
+    histoDYMC->SetFillColor(kBlue-9);
+    hs->Add(histoOBMC);
+    hs->Add(histoDYMC);
+  }
+
+  cout<<"Finished loop on MC. Total area of stacked MC backgrounds: "<<bkgdMCIntegral<<endl;
+
+
   TH1D *hMCTOT=NULL;
   if(mchistos.size() !=0) {
     hMCTOT = ((TH1D*)mchistos.at(0)->Clone("MCTOT"));
     hMCTOT->Reset();
   }  
- for(int i=0; i!= nMC; ++i) {
-   hMCTOT->Add(mchistos.at(i));
-    }
+  for(int i=0; i!= nMC; ++i) {
+    hMCTOT->Add(mchistos.at(i));
+  }
+  cout<<"Area of total bkgd MC : "<<hMCTOT->Integral("width")<<endl;
+
+
+
 
  //take MCsig
  std::vector<TH1D*> sighistos;
   for(int i=0; i!= nMCSig; ++i) {
     TFile *fMCSig=new TFile((inDir+"histos_"+mcLabelsSig[i]+".root").c_str(),"READ");
     TH1D* histo = (TH1D*)(fMCSig->Get("h_mZZ"));
-    histo->Rebin(2);
+    // histo->Rebin(2);
     histo->SetLineColor(kOrange+1);
     histo->SetFillColor(kOrange+1);
     histo->SetFillStyle(3004);
@@ -195,10 +236,10 @@ void plotWithFit(){
     }
     histo->Scale(targetLumi*1000.0);
     sighistos.push_back((TH1D*)histo->Clone(("h_mZZ_"+mcLabelsSig[i]).c_str()));
-
   }
 
   TF1 *fit1=0;
+  /*
   if(ipur==1){//1JHP
   //Fit function is a simple expo
   fit1=new TF1("fitfunc1",simpleExpo,fitLow,fitHigh,3);
@@ -224,7 +265,7 @@ void plotWithFit(){
 
   }//end if ipur==1
   else{//1JLP or 2J
-
+  */
     //Fit function is a simple expo
     fit1=new TF1("fitfunc2",levExpo,fitLow,fitHigh,4);
     fit1->SetParName(0,"Normalization");
@@ -249,7 +290,7 @@ void plotWithFit(){
     cout<<"Integral of fit func is "<<fit1->Integral(fitLow,fitHigh)<<endl;
     cout<<"BACKGROUND INTEGRAL with TF1 built in. Before rescaling:"<< fit1Int0<<"  after:"<<fit1->Integral(fitLow,fitHigh)<<endl;
 
-  }//end if ipur different from 1
+    //  }//end if ipur different from 1
 
   //find max
   double maxData=hData->GetBinContent(hData->GetMaximumBin());
@@ -257,8 +298,8 @@ void plotWithFit(){
   double mymax=maxData;
   if(maxMC>maxData)mymax=maxMC;
   if(ipur==2)mymax*=2.5;//1.45;
-  else mymax*=1.15;
-  double mymin=0.002;
+  else mymax*=1.65;
+  double mymin=0.0004;
 
   string canName="plot_mzz_"+leptType[ilep]+purType[ipur];
   TCanvas *c1=new TCanvas(canName.c_str(),canName.c_str(),900,900);
@@ -266,8 +307,8 @@ void plotWithFit(){
   gPad->SetRightMargin(0.07);
   gPad->SetTopMargin(0.08);
   gPad->SetLeftMargin(-0.03);
-  hData->GetXaxis()->SetTitle("m_{ZZ} [GeV]");
-  hData->GetYaxis()->SetTitle("events / GeV");
+  hData->GetXaxis()->SetTitle("M_{ZZ} [GeV]");
+  hData->GetYaxis()->SetTitle("Events / GeV");
 
   hData->SetMarkerStyle(20);
   hData->SetMarkerSize(2.);
@@ -279,8 +320,8 @@ void plotWithFit(){
  
   hs->Draw("HIST");
   if(ipur==2)hs->GetXaxis()->SetRangeUser(0.0,1370.0);
-  hs->GetXaxis()->SetTitle("m_{ZZ} [GeV]");
-  hs->GetYaxis()->SetTitle("events / GeV"); 
+  hs->GetXaxis()->SetTitle("M_{ZZ} [GeV]");
+  hs->GetYaxis()->SetTitle("Events / GeV"); 
   hs->GetXaxis()->SetLabelSize(0.035);
   hs->GetYaxis()->SetLabelSize(0.035);
   hs->GetXaxis()->SetTitleSize(0.045);
@@ -294,23 +335,32 @@ void plotWithFit(){
   fit1->SetLineWidth(3.5);
   fit1->Draw("Lsame");
 
-  TLegend *l1=new TLegend(0.40,0.65,0.85,0.88);
+  TLegend *l1=new TLegend(0.47,0.65,0.9,0.88);
   char type[32];
   if(ilep==0&&ipur==0)sprintf(type,"ee, 1JLP");
   else if(ilep==0&&ipur==1)sprintf(type,"ee, 1JHP");
   else if(ilep==1&&ipur==0)sprintf(type,"mm, 1JLP");
   else if(ilep==1&&ipur==1)sprintf(type,"mm, 1JHP");
+  else if(ilep==0&&ipur==2)sprintf(type,"mm, 2J");
+  else if(ilep==1&&ipur==2)sprintf(type,"mm, 2J");
   else sprintf(type,"UNKNOWN");
 
   char legEntry[128];
   sprintf(legEntry,"CMS 2012 (%s)",type);
   l1->AddEntry(hData,legEntry,"P");
   l1->AddEntry(fit1,"Background estimation","L");
-  l1->AddEntry(mchistos.at(nMC-1),"Z+jets (Madgraph)","F");
-  l1->AddEntry(mchistos.at(2),"WZ (Pythia)","F");
-  l1->AddEntry(mchistos.at(3),"ZZ (Pythia)","F");
-  l1->AddEntry(mchistos.at(0),"t#bar{t} (POWHEG)","F");
-  l1->AddEntry(sighistos.at(0),"Bulk G (M_{1}=1600 GeV, #tilde{k}=0.2 (x1000) )","F");
+  if(mergeOB){
+    l1->AddEntry(histoDYMC,"Z+jets (Madgraph)","F");
+    l1->AddEntry(histoOBMC,"Other Backgrounds (t#bar{t}, VV)","F");
+  }
+  else{
+    l1->AddEntry(mchistos.at(nMC-1),"Z+jets (Madgraph)","F");
+    //    l1->AddEntry(mchistos.at(2),"WW (Pythia)","F");
+    l1->AddEntry(mchistos.at(2),"WZ (Pythia)","F");
+    l1->AddEntry(mchistos.at(3),"ZZ (Pythia)","F");
+    l1->AddEntry(mchistos.at(0),"t#bar{t} (POWHEG)","F");
+  }
+  l1->AddEntry(sighistos.at(0),"Bulk G (M_{1}=1000 GeV, #tilde{k}=0.2 (x1000) )","F");
   l1->SetFillColor(kWhite);
   l1->SetBorderSize(0);
   l1->Draw();
@@ -320,7 +370,7 @@ void plotWithFit(){
   // Nice labels
   TLatex* txt1 = makeCMSPreliminaryTop(8,0.10,0.945);
   txt1->Draw();
-  txt1 = makeCMSLumi(19.5,0.75,0.945);
+  txt1 = makeCMSLumi(19.8,0.75,0.945);
   txt1->Draw();
   //  l = makeChannelLabel(wantNXJets_,flavour_,isZZchannel_);
   //l->Draw();

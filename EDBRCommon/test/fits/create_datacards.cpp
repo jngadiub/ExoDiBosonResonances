@@ -91,7 +91,7 @@ std::pair<double,double> theorSyst( double errMinus, double errPlus, double addM
 std::pair<double,double> theorSyst_HighmH( double mHVal );
 std::pair<double,double> leptTriggerSyst( const std::string& leptType_str);
 std::pair<double,double> leptEffSyst( const std::string& leptType_str);
-std::pair<double,double> leptScaleSyst( const std::string& leptType_str);
+std::pair<double,double> leptScaleSyst( const std::string& leptType_str, double mass=0.0);
 
 std::pair<double,double> jetScaleSyst( double mass );
 std::pair<double,double> puSyst( double mass );
@@ -107,8 +107,8 @@ int main( int argc, char* argv[] ) {
 
   float lumi_ELE;
   float lumi_MU;
-  lumi_ELE=19531.85; //pb^-1
-  lumi_MU =19538.85; //pb^-1
+  lumi_ELE=19760.; //pb^-1
+  lumi_MU =19780.; //pb^-1
 
   std::cout<<"Starting card creation with the following settings:"<<endl;
   std::cout<<"InputDir with fits: "<<myOutDir.c_str()<<endl;
@@ -125,7 +125,7 @@ int main( int argc, char* argv[] ) {
   TF1* f1_eff_vs_mass_ELE_1JLP = get_eff_vs_mass("ELE", 1,0, mZZmin_, 2000);
   TF1* f1_eff_vs_mass_ELE_2J   = 0;
   if(jetCats>1)f1_eff_vs_mass_ELE_2J = get_eff_vs_mass("ELE", 2,-1, mZZmin_, 1400);
-
+  return 0;
   std::ifstream ifs;
   if(isZZChannel)
     ifs.open("masses.txt");
@@ -136,7 +136,7 @@ int main( int argc, char* argv[] ) {
 
     float mass;
     ifs >> mass;	
-    if(mass!=1000)continue;
+    //if(mass!=800)continue;
     std::cout << std::endl << std::endl;;
     std::cout << "++++++++++++++++++++++" << std::endl;
     std::cout << "+++ MASS: " << mass << std::endl;
@@ -173,8 +173,11 @@ int main( int argc, char* argv[] ) {
 
 void create_singleDatacard( float mass, float lumi, const std::string& leptType_str, int nxj,int pur, TF1* f1_eff_vs_mass ) {
 
+  std::cout<<"\n------------------------------------------------"<<std::endl;
+  std::cout<<"Creating new datacard: "<< leptType_str.c_str()<<"  "<<nxj<<"J ; Purity="<<pur<<std::endl;
+
   if( leptType_str!="ELE" && leptType_str!="MU" ) {
-    std::cout << "Unkown Lept Type '" << leptType_str << "'. Exiting." << std::endl;
+    std::cout << "Unkown Lept Type '" << leptType_str.c_str() << "'. Exiting." << std::endl;
     exit(12333);
   }
 
@@ -245,13 +248,24 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
   //////////////////////////////
   ////->  get main variable from input workspace:
-  if(nxj==2)mZZmin_=500.0;//get in sync with was done in fitBackground for 2J category
-  else if(pur==0)mZZmin_=650.0;//get in sync with was done in fitBackground for 1JLP category
-  else mZZmin_ = startFit;
+  if(nxj==2){mZZmin_=bins2[0];mZZmax_=bins2[nBins2-1];}//get in sync with was done in fitBackground for 2J category
+  //  else {mZZmin_ =bins1[0];mZZmax_=bins1[nBins1-1];}//get in sync with was done in fitBackground for 2J category
+  else {mZZmin_ =500;mZZmax_=bins1[nBins1-1];}
   RooRealVar* CMS_xzz_mZZ = new RooRealVar("mZZ","mZZ",mZZmin_,mZZmax_);//it works
-  //   RooRealVar* CMS_hzz2l2q_mZZ = bgws->var("mZZ");//it does not work
+  CMS_xzz_mZZ->setMin(mZZmin_);  
+  std::cout<<"\n==== Printing multiline verbose of variable created on-the-fly: ===="<<endl;
+  CMS_xzz_mZZ->printMultiline(cout,99,true);
+  cout<<"Dump other info:"<<endl;
+  cout<<CMS_xzz_mZZ->getBin()<<"  "<<CMS_xzz_mZZ->getBins()<<"  "<<CMS_xzz_mZZ->getMin()<<"  "<<CMS_xzz_mZZ->getMax()<<"  "<<endl;
+  std::cout<<"===== End printing multiline ======\n"<<endl;
+  std::cout<<"\n*** Printing multiline verbose of variable in WS named \"mZZ\": *****"<<endl;
+  // RooRealVar* CMS_hzz2l2q_mZZ = bgws->var("mZZ");//it does not work
+  bgws->var("mZZ")->printMultiline(cout,99,true);
+  cout<<"Dump other info:"<<endl;
+  cout<<bgws->var("mZZ")->getBin()<<"  "<<bgws->var("mZZ")->getBins()<<"  "<<bgws->var("mZZ")->getMin()<<"  "<<bgws->var("mZZ")->getMax()<<"  "<<endl;
+  std::cout<<"**** End printing multiline *******\n"<<endl;
   //   RooRealVar* CMS_hzz2l2q_mZZ = mzzws->var("mZZ");//reading it from MZZ-sideband ws works
-  CMS_xzz_mZZ->setMin(mZZmin_); 
+ 
 
 
   char suffix[100];
@@ -284,7 +298,18 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   RooDataSet* dataset_obs = DataCardUtils::get_observedDataset( bgws , leptType_str, nxj,pur, name_dataobs );
   dataset_obs->SetName(( dataset_obs->GetName()+rename_str).c_str());
   std::cout<<"Statistics of the observed dataset straight from the ws: "<<dataset_obs->numEntries()<<"  "<<dataset_obs->sumEntries() <<std::endl;
-  double mzzRangeMinCut=bins1[0];
+
+  //FIXME !!! unsolved problem: if datasets with different cuts on mzz 
+  //are combined (e.g.: HP starting at 500 and LP startting at 650 )
+  //instabilities in combine after combination  
+  double mzzRangeMinCut=0.0;	 
+  if(isZZChannel){	 
+    mzzRangeMinCut=startFit;//mZZmin_  //bins1[0];	 
+ 
+     // if(nxj==1&&pur==0)mzzRangeMinCut=600.0;
+     //if(nxj==1&&pur==1)mzzRangeMinCut=480.0;
+  }
+
   std::stringstream ssMinRangeCut;
   ssMinRangeCut << mzzRangeMinCut;
   std::string mzzRangeMinStr="mZZ>"+ssMinRangeCut.str();
@@ -411,8 +436,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   //for ww, use a line from 2% to 3% from 600 to 2500
   if(!isZZChannel)widthSystFactor = 0.02 + (0.03-0.02)/(2500-600)*(hp.mH-600);
 
-
-  ofs << std::string(sigSystp1_JetScale) << " param 1.0 "  << peakSystFactor << endl; 
+  //in ZZ, negligible size of syst on peak shift from JES, omit it
+  if(!isZZChannel)ofs << std::string(sigSystp1_JetScale) << " param 1.0 "  << peakSystFactor << endl; 
   ofs << std::string(sigSystp2_JetScale) << " param 1.0 "  << widthSystFactor << endl;
 
   //jet resolution: same and fully correlated between ele and mu
@@ -422,7 +447,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   sprintf(sigSystp2_JetRes,"CMS_%s_sig%dJ_p2_jer",channel_marker.c_str(),nxj);//,pur_str.c_str());
   peakSystFactor=CMS_sig1J_p1_jer;  // Defined in Config_XZZ.h and Config_XWW.h
   widthSystFactor=CMS_sig1J_p2_jer;  // Defined in Config_XZZ.h and Config_XWW.h
-  ofs << std::string(sigSystp1_JetRes) << " param 1.0 "  << peakSystFactor << endl; 
+  //in ZZ, negligible size of syst on peak shift from JER, omit it
+  if(!isZZChannel)ofs << std::string(sigSystp1_JetRes) << " param 1.0 "  << peakSystFactor << endl; 
   ofs << std::string(sigSystp2_JetRes) << " param 1.0 "  << widthSystFactor << endl;
 	
   ofs.close();
@@ -598,8 +624,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
   bool doPlot=false;
   // if(mass==650||mass==1000||mass==1500||mass==1600||mass==1700||mass==1900||mass==2000||mass==2100||mass==2400||mass==2500)doPlot=true;
-   if(mass==650||mass==1000||mass==1700||mass==2000||mass==2200||mass==2500)doPlot=true;
-   //if(mass==2200)doPlot=true;
+  if(mass==650||mass==800||mass==1000||mass==1700||mass==2000||mass==2200||mass==2500)doPlot=true;
+  // if(mass==2200)doPlot=true;
   if(doPlot){
     const int nBinsTMP=nBins1;
     double binsTMP[nBinsTMP];
@@ -607,6 +633,8 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
       binsTMP[ibtmp]= bins1[ibtmp];
     }
 	  
+    double sigSF=200.0;//just for plotting
+    //    if(mass<1050)sigSF=100.0;
     TCanvas *can1=new TCanvas("canvasCardsMZZ1", "MZZ-cards-CANVAS1",800,800);
     can1->cd();
     RooPlot *xf=CMS_xzz_mZZ->frame();
@@ -636,7 +664,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
       //  }//end else  if(pur==1&&isZZChannel)
 
     if(nxj==1){
-      CB_SIG->plotOn(xf,RooFit::Normalization(MATCH.getVal()*rate_gg*1000.0,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+      CB_SIG->plotOn(xf,RooFit::Normalization(MATCH.getVal()*rate_gg*sigSF,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
     }
     else{
       TRI_SMEAR->plotOn(xf,RooFit::Normalization((1-MATCH.getVal())*rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kOrange+3),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
@@ -686,6 +714,7 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
 	  
 
   TGraph* gr_eff_vs_mass = new TGraph(0);
+  double highestMass=-1.0;
 
   int iPoint=0;
   while( ifsMC.good() ) {
@@ -698,8 +727,8 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
     int index = DataCardUtils::convert_leptType(leptType_str) + (nxj-1) + 2*(1-pur);
     if(nxj==2)index--;
     gr_eff_vs_mass->SetPoint( iPoint++, mass, efficiency[index] );
-
-    gr_eff_vs_mass->Print("v");
+    if(mass>highestMass)highestMass=mass;
+    //    gr_eff_vs_mass->Print("v");
 
   } //while masses
 
@@ -715,7 +744,7 @@ TF1* get_eff_vs_mass( const std::string& leptType_str, int nxj, int pur, float m
   TCanvas* c1 = new TCanvas("c1", "", 600, 600);
   c1->cd();
 
-  TH2D* axes = new TH2D("axes", "", 10, 550., 2750., 10, 0., 0.25);
+  TH2D* axes = new TH2D("axes", "", 10, 550., highestMass*1.10, 10, 0., 0.25);
   axes->SetStats(0);
   axes->SetXTitle("m_{H} [GeV]");
   axes->SetYTitle("Efficiency");
@@ -1021,11 +1050,23 @@ std::pair<double,double> leptEffSyst( const std::string& leptType_str) {
 
 }
 
-std::pair<double,double> leptScaleSyst( const std::string& leptType_str) {
+std::pair<double,double> leptScaleSyst( const std::string& leptType_str, double mass) {
 
   double syst;
 
-  if( leptType_str=="MU" )  syst = CMS_scale_m; // Defined in Config_XZZ.h and Config_XWW.h
+  if( leptType_str=="MU" ){
+    syst = CMS_scale_m; // Defined in Config_XZZ.h and Config_XWW.h
+
+    //following comes from prelim study by Thiago, to be revisited
+    //if(isZZChannel){//
+    //  if(mass<=1200)syst=-0.00678 + 1.22E-05*mass;
+    //  else       syst= -0.14218 + 12.177E-05*mass;
+    // }
+    
+
+  }
+
+
   if( leptType_str=="ELE" ) syst = CMS_scale_e; // Defined in Config_XZZ.h and Config_XWW.h
 
   std::pair<double,double> returnPair;
@@ -1069,12 +1110,13 @@ std::pair<double,double> jetScaleSyst( double mass ) {
 
 std::pair<double,double> puSyst( double mass ) {
 
-
-  float c0=-0.824   , c1=0.00446 ;
+  double systPU=0.006;// 0.6 permille for ZZ
 
   std::pair<double,double> returnPair;
-  returnPair.first  = 1.0 + 0.01*(c0+c1*mass);
-  returnPair.second = 1.0 + 0.01*(c0+c1*mass);
+  returnPair.first  = 1.0 - systPU;
+  returnPair.second = 1.0 + systPU;
+
+
 
   return returnPair;
 
@@ -1084,11 +1126,11 @@ std::pair<double,double> puSyst( double mass ) {
 std::pair<double,double> VTagEffSyst( const std::string& leptType_str, int nxj, double mass, int purity ) {
 
   std::pair<double,double> returnPair;
-  returnPair.first  = 0.9;
-  returnPair.second = 1.1; 
-  if(purity == 1){
-    returnPair.first  = 1.1;
-    returnPair.second = 0.9; 
+  returnPair.first  = 0.70;//30% unc for 1JLP
+  returnPair.second = 1.30; 
+  if(purity == 1){//1J HP
+    returnPair.first  = 1.08;//8% unc for 1JHP
+    returnPair.second = 0.92; 
   }
 	
   return returnPair;

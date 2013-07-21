@@ -83,10 +83,10 @@ double DataCardUtils::get_backgroundNormalization( RooWorkspace* bgws, std::stri
 
   //  RooRealVar *N=bgws->var("bkgdNormalization"); 
   std::string varName="bkgdNormalization";
-  if(!(leptType_str=="" || leptType_str=="ALL" )){
-    varName=varName+leptType_str ;
+  if(!(leptType_str=="" || leptType_str=="ALL" )){//if it is ELE or MU
+    varName=varName+"500"+leptType_str ;
   }
-  else varName=varName+"FitRange";
+  else varName=varName+"500";//"FitRange";
   // else varName=varName+leptType_str ;
   return bgws->var(varName.c_str())->getVal();
 }
