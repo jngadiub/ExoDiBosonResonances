@@ -275,8 +275,8 @@ class doFit_wj_and_wlvj:
         self.lep_eff_uncertainty=0.02;
 
         #b tag scale uncertainty
-        self.btag_scale=0.98;
-        self.btag_scale_uncertainty=0.025;
+        self.btag_scale=1;
+        self.btag_scale_uncertainty=0.0025;
 
         # shape parameter uncertainty
         self.FloatingParams=RooArgList("floatpara_list");
