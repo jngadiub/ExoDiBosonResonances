@@ -40,7 +40,7 @@ parser.add_option('--closuretest', action='store',type="int", dest='closuretest'
 parser.add_option('--cprime', action="store",type="int",dest="cprime",default=10)
 parser.add_option('--BRnew', action="store",type="int",dest="BRnew",default=0)
 parser.add_option('--inPath', action="store",type="string",dest="inPath",default="./")
-parser.add_option('-c','--category', action="store",type="int",dest="category",default="0")#0  LP ; 1: HP
+parser.add_option('-c','--category', action="store",type="int",dest="category",default="0")#0  eleLP, 1 eleHP, 2 mu LP, 3 mu HP
 
 
 (options, args) = parser.parse_args()
@@ -2530,6 +2530,7 @@ class doFit_wj_and_wlvj:
                 tmp_event_weight= treeIn.weight*tmp_lumi;
                 tmp_event_weight4fit= treeIn.weight/treeIn.lumiweight;
                 tmp_event_weight4fit=tmp_event_weight4fit*treeIn.lumiweight*tmp_lumi/tmp_scale_to_lumi
+
 
                 #wtagger_eff_reweight
                 if not label=="_data": 
