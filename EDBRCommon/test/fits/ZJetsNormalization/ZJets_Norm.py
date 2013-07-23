@@ -186,20 +186,17 @@ class doFit_wj_and_wlvj:
 		
 		####for the analysis A->SIG
         if options.category==0: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1); self.rrv_wtagger_eff_reweight_forT.setError(0.068222*self.rrv_wtagger_eff_reweight_forT.getVal());            
-            self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1); self.rrv_wtagger_eff_reweight_forT.setError(0*self.rrv_wtagger_eff_reweight_forT.getVal());            
+            self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0*self.rrv_wtagger_eff_reweight_forV.getVal());
         elif options.category==1: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1); self.rrv_wtagger_eff_reweight_forT.setError(0.032807*self.rrv_wtagger_eff_reweight_forT.getVal());                        
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1); self.rrv_wtagger_eff_reweight_forT.setError(0*self.rrv_wtagger_eff_reweight_forT.getVal());                        
+            self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0*self.rrv_wtagger_eff_reweight_forV.getVal());
+        elif options.category==2: 
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1); self.rrv_wtagger_eff_reweight_forT.setError(0*self.rrv_wtagger_eff_reweight_forT.getVal());          
+            self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0*self.rrv_wtagger_eff_reweight_forV.getVal());
+        elif options.category==3: 
+            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1); self.rrv_wtagger_eff_reweight_forT.setError(0.078879*self.rrv_wtagger_eff_reweight_forT.getVal());          
             self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
-        '''
-		###for closure test A->B
-        if options.category==0: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",1.296917); self.rrv_wtagger_eff_reweight_forT.setError(0.156032*self.rrv_wtagger_eff_reweight_forT.getVal());          
-            self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
-        elif options.category==1: 
-            self.rrv_wtagger_eff_reweight_forT=RooRealVar("rrv_wtagger_eff_reweight_forT","rrv_wtagger_eff_reweight_forT",0.957699); self.rrv_wtagger_eff_reweight_forT.setError(0.078879*self.rrv_wtagger_eff_reweight_forT.getVal());          
-            self.rrv_wtagger_eff_reweight_forV=RooRealVar("rrv_wtagger_eff_reweight_forV","rrv_wtagger_eff_reweight_forV",1); self.rrv_wtagger_eff_reweight_forV.setError(0.1*self.rrv_wtagger_eff_reweight_forV.getVal());
-'''
         self.mean_shift=1.1; self.sigma_scale=1.167; #correct the W-jet mass peak difference between data and MC
 
         #PU study: 0-11,11-15,15-100
@@ -2526,7 +2523,9 @@ class doFit_wj_and_wlvj:
                 tmp_scale_to_lumi=treeIn.lumiweight*tmp_lumi;
     
             tmp_jet_mass=getattr(treeIn, "mJJNoKinFit");
-            if treeIn.vTagPurity==options.category and treeIn.mZZ> rrv_mass_lvj.getMin() and treeIn.mZZ<rrv_mass_lvj.getMax() and tmp_jet_mass>rrv_mass_j.getMin() and tmp_jet_mass<rrv_mass_j.getMax() :
+            rightcate=0
+            if (options.category==0 and treeIn.vTagPurity==0 and treeIn.lep==0) or (options.category==1 and treeIn.vTagPurity==1 and treeIn.lep==0) or (options.category==2 and treeIn.vTagPurity==0 and treeIn.lep==1) or (options.category==3 and treeIn.vTagPurity==1 and treeIn.lep==1) : rightcate =1
+            if rightcate and treeIn.mZZ> rrv_mass_lvj.getMin() and treeIn.mZZ<rrv_mass_lvj.getMax() and tmp_jet_mass>rrv_mass_j.getMin() and tmp_jet_mass<rrv_mass_j.getMax() :
 
                 tmp_event_weight= treeIn.weight*tmp_lumi;
                 tmp_event_weight4fit= treeIn.weight/treeIn.lumiweight;
@@ -2909,9 +2908,9 @@ class doFit_wj_and_wlvj:
         hist_data.GetXaxis().SetLabelSize(0.04);
         hist_data.GetYaxis().SetLabelSize(0.04);
 
-        if self.channel == "el": channellable="LP"
-        if self.channel == "mu": channellable="HP"
-        banner = TLatex(0.18,0.96,("CMS Preliminary, %.1f fb^{-1} at #sqrt{s}=8TeV  2e/2#mu-1j-%s"%(self.GetLumi(),channellable)));
+        #if self.channel == "el": channellable="LP"
+        #if self.channel == "mu": channellable="HP"
+        banner = TLatex(0.18,0.96,("CMS Preliminary, %.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
         banner.SetNDC(); banner.SetTextSize(0.028);
         banner.Draw();
 
@@ -3985,9 +3984,9 @@ class doFit_wj_and_wlvj:
 
         pad2.cd();
         mplot.Draw();
-        if self.channel == "el": channellable="LP"
-        if self.channel == "mu": channellable="HP"
-        banner = TLatex(0.18,0.96,("CMS Preliminary, %.1f fb^{-1} at #sqrt{s}=8TeV  2e/2#mu-1j-%s"%(self.GetLumi(),channellable)));
+        #if self.channel == "el": channellable="LP"
+        #if self.channel == "mu": channellable="HP"
+        banner = TLatex(0.18,0.96,("CMS Preliminary, %.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
         banner.SetNDC(); banner.SetTextSize(0.028);
         banner.Draw();
 
@@ -4057,9 +4056,9 @@ class doFit_wj_and_wlvj:
         in_obj.GetXaxis().SetLabelSize(0.04);
         in_obj.GetYaxis().SetLabelSize(0.04);
 
-        if self.channel == "el": channellable="LP"
-        if self.channel == "mu": channellable="HP"
-        banner = TLatex(0.18,0.96,("CMS Preliminary, %.1f fb^{-1} at #sqrt{s}=8TeV  2e/2#mu-1j-%s"%(self.GetLumi(),channellable)));
+        #if self.channel == "el": channellable="LP"
+        #if self.channel == "mu": channellable="HP"
+        banner = TLatex(0.18,0.96,("CMS Preliminary, %.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
         banner.SetNDC(); banner.SetTextSize(0.028);
         banner.Draw();
 
@@ -4124,7 +4123,7 @@ class doFit_wj_and_wlvj:
     def fit_VV(self):
         print "fit_VV"
         self.get_mj_and_mlvj_dataset(self.file_VV_mc,"_VV")# to get the shape of m_lvj
-        if options.category==1:
+        if options.category==1 or options.category==3:
             self.fit_mj_single_MC(self.file_VV_mc,"_VV","2_2Gaus");
         else:
             self.fit_mj_single_MC(self.file_VV_mc,"_VV","2Gaus_ErfExp");
@@ -4362,11 +4361,17 @@ if __name__ == '__main__':
 
     #parser.add_option('--category', action="store",type="int",dest="category",default="0")#0 ele LP ; 1: ele HP; 2: mu LP;  3: mu HP
     if options.category==0: 
-        channel="el"; print("Category = LP" );
-        options.additioninformation="EXO_ZZ_LP";
+        channel="el"; print("Category = elLP" );
+        options.additioninformation="EXO_ZZ_el_LP";
     elif options.category==1:
-        channel="mu"; print("Category = HP" );
-        options.additioninformation="EXO_ZZ_HP";
+        channel="el"; print("Category = elHP" );
+        options.additioninformation="EXO_ZZ_el_HP";
+    elif options.category==2: 
+        channel="mu"; print("Category = muLP" );
+        options.additioninformation="EXO_ZZ_mu_LP";
+    elif options.category==3:
+        channel="mu"; print("Category = muHP" );
+        options.additioninformation="EXO_ZZ_mu_HP";
     else: 
         raw_input( "Wrong category=%s"%(options.category) );
 
