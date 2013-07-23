@@ -1155,8 +1155,10 @@ class doFit_wj_and_wlvj:
 
         if in_model_name == "User1":
             rrv_p0=RooRealVar("rrv_p0_User1"+label+"_"+self.channel,"rrv_p0_User1"+label+"_"+self.channel, 30,  10, 90);
-            rrv_p1=RooRealVar("rrv_p1_User1"+label+"_"+self.channel,"rrv_p1_User1"+label+"_"+self.channel, -4,  -9, -2);
-            #rrv_p2=RooRealVar("rrv_p2_User1"+label+"_"+self.channel,"rrv_p2_User1"+label+"_"+self.channel, 0)#,-100,100)#,200,1000)#,50,1000)#,-200,200);
+            if options.category==1:
+                rrv_p1=RooRealVar("rrv_p1_User1"+label+"_"+self.channel,"rrv_p1_User1"+label+"_"+self.channel, -4,  -9, -2);
+            else:
+                rrv_p1=RooRealVar("rrv_p1_User1"+label+"_"+self.channel,"rrv_p1_User1"+label+"_"+self.channel, -2,  -4, 0.);
             model_pdf=RooUser1Pdf("model_pdf"+label+"_"+self.channel+mass_spectrum,"model_pdf"+label+"_"+self.channel+mass_spectrum,rrv_x,rrv_p0,rrv_p1);
 
         if in_model_name == "QCD":
@@ -1722,7 +1724,7 @@ class doFit_wj_and_wlvj:
         mplot.GetYaxis().SetRangeUser(1e-2,mplot.GetMaximum()*1.1);
         self.draw_canvas_with_pull( mplot, mplot_pull,parameters_list,"plots_%s_%s/m_j_fitting%s_wtaggercut%s_nPV%sto%s/"%(options.additioninformation, self.PS_model, additioninformation, self.wtagger_label, self.nPV_min, self.nPV_max), label+in_file_name, in_model_name)
         rfresult.Print(); 
-        #rfresult.covarianceMatrix().Print(); #raw_input("ENTER"); 
+        rfresult.covarianceMatrix().Print(); #raw_input("ENTER"); 
         
         #normalize the number of total events to lumi
         self.workspace4fit_.var("rrv_number"+label+"_"+self.channel+"_mj").setVal( self.workspace4fit_.var("rrv_number"+label+"_"+self.channel+"_mj").getVal()*self.workspace4fit_.var("rrv_scale_to_lumi"+label+"_"+self.channel).getVal()  )
@@ -1756,6 +1758,7 @@ class doFit_wj_and_wlvj:
                     param.setVal(param.getVal()/self.sigma_scale);
                     #param.Print(); raw_input("sigma"+label);
             param=par.Next()
+        rfresult.Print(); 
         #raw_input("over"+label);
 
     ############# ---------------------------------------------------
@@ -3165,7 +3168,7 @@ class doFit_wj_and_wlvj:
         print "error=%s"%(rrv_number_WJets_in_mj_signal_region_from_fitting.getError());
         getattr(self.workspace4fit_,"import")(rrv_number_WJets_in_mj_signal_region_from_fitting);
         rrv_number_WJets_in_mj_signal_region_from_fitting.Print();
-
+        #self.workspace4fit_.var("rrv_number%s_%s_mj"%(label,self.channel)).Print();
    ######## ++++++++++++++
     def fit_mlvj_in_Mj_sideband(self, label, mlvj_region, mlvj_model): 
         rrv_mass_j = self.workspace4fit_.var("rrv_mass_j") 
