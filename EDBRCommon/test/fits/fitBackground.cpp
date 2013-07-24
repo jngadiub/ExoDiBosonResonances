@@ -325,8 +325,8 @@ int main(){
 	char vvweightstring[100];
 	sprintf(vvweightstring,"weight*%f",lumi);
 	RooFormulaVar weightVV("vvWeight",vvweightstring,*mcweight) ;
-
-	VVDataSetNoWeight=new RooDataSet("VVDS","VVDS",treeVV_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*mcweight),cutSIG.c_str()) ;
+	std::string cutSIGVV=cutSIG+"&&mZZ<2200";
+	VVDataSetNoWeight=new RooDataSet("VVDS","VVDS",treeVV_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*mcweight),cutSIGVV.c_str()) ;
 
 	RooRealVar* wVV = (RooRealVar*)VVDataSetNoWeight->addColumn(weightVV);			
 	// VVDataSetNoWeight->Print("v");
@@ -431,15 +431,15 @@ int main(){
       if(inxj==1)initf0=200.0;
       if(inxj==2)initf0=200.0;
       double initf1=0.0;
-      if(inxj==1)initf1=0.015;
-      if(inxj==2)initf1=0.0;
+      if(inxj==1)initf1=0.05;
+      if(inxj==2)initf1=0.05;
       double initf1b=0.0;
       if(inxj==1)initf1b=0.0;
       if(inxj==2)initf1b=0.0;
       double initm=480.0;
       if(inxj==2)initm=400.0;
       RooRealVar *f0=new RooRealVar("f0","sigma",initf0,0.0,300.0);
-      RooRealVar *f1=new RooRealVar("f1","alpha",initf1,-0.05,0.05);
+      RooRealVar *f1=new RooRealVar("f1","alpha",initf1,-0.5,0.5);
       RooRealVar *f1b=new RooRealVar("f1b","beta",initf1b,-0.1,2.0);
       RooRealVar *f2=new RooRealVar("f2","m",initm,200.0,500.0);
       RooRealVar *f3=new RooRealVar("f3","theta",0.0);
