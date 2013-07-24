@@ -112,7 +112,8 @@ def main():
     #shapes with parameters to be fixed signal shape
     signame = load_signal(ws,args.njets,args.purity,args.lep,args.mass)
     create_bkg(ws,args.fgen,"genfunc")
-    
+
+    #ws.var("mZZ").setMax(2000)   
     #ws.Print()
 
     #set up generator function
@@ -139,7 +140,7 @@ def main():
 
     #roomcstudy
     create_bkg(ws,args.fres,"resfunc")
-    ws.factory("RooAddPdf::fitf(resfunc,"+signame+",sigfrac[0.99,0,1])")
+    ws.factory("RooAddPdf::fitf("+signame+",resfunc,sigfrac[0.01,-1.,1])")
     mcs = root.RooMCStudy(ws.pdf("genfunc"),root.RooArgSet(ws.var("mZZ")),root.RooFit.FitModel(ws.pdf("fitf")),root.RooFit.FitOptions(root.RooFit.Save(root.kTRUE)),root.RooFit.Silence())
 
     numevents = ref.data("dsDataSIG").sumEntries()
@@ -151,19 +152,19 @@ def main():
     #pars = mcs.fitResult(0).floatParsFinal()
     #pars.Print()
 
-    frame1 = mcs.plotParam(ws.var("sigfrac"),root.RooFit.Bins(40),root.RooFit.Range(0.99,1.0)) ;
+    frame1 = mcs.plotParam(ws.var("sigfrac"),root.RooFit.Bins(40),root.RooFit.Range(-0.1,1.0)) ;
     #frame1.Draw()
     #plotname = "biasplots/biasresult_"+fun_str(args.fgen)+"_"+fun_str(args.fres)+"_"+str(args.mass)+lep_str(args.lep)+pur_str(args.purity)+".eps"
     #canv.SaveAs(plotname)
 
 
-    pullhist = root.TH1F("pullhist","pullhist",40,0,3)
+    pullhist = root.TH1F("pullhist","pullhist",40,-3,3)
 
     for i in xrange(args.nexp):
-        pullhist.Fill( (1.-mcs.fitResult(i).floatParsFinal().find("sigfrac").getVal())/mcs.fitResult(i).floatParsFinal().find("sigfrac").getError() )
+        pullhist.Fill( (mcs.fitResult(i).floatParsFinal().find("sigfrac").getVal())/mcs.fitResult(i).floatParsFinal().find("sigfrac").getError() )
         
     root.gStyle.SetOptFit()
-    pullhist.Fit("gaus","","",0.1,3)
+    pullhist.Fit("gaus","","",-2,2)
     pullhist.Draw()    
     plotname = "biasplots/pull_"+fun_str(args.fgen)+"_"+fun_str(args.fres)+"_"+str(args.mass)+lep_str(args.lep)+pur_str(args.purity)+".eps"
     canv.SaveAs(plotname)
