@@ -20,19 +20,19 @@ genSelectorZQQ = cms.EDFilter("GenParticleSelector", # matches Z and W with hadr
 
 genSelectorZDaughter = cms.EDFilter("GenParticleSelector",# matches leptons from Z and W
     src = cms.InputTag("genParticles"),
-    cut = cms.string(' (abs(pdgId)==11 || abs(pdgId)==13)&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24) ')
+    cut = cms.string(' (abs(pdgId)==11 || abs(pdgId)==13) && numberOfMothers> 0&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24) ')
 )
 genSelectorZQDaughter = cms.EDFilter("GenParticleSelector",# matches quarks from Z and W
     src = cms.InputTag("genParticles"),
-    cut = cms.string(' (abs(pdgId) < 9 )&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24)')
+    cut = cms.string(' (abs(pdgId) < 9 ) && numberOfMothers> 0&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24)')
 )
 genSelectorZRQDaughter = cms.EDFilter("GenParticleSelector",# matches quarks (not antiquarks) from Z and W
     src = cms.InputTag("genParticles"),
-    cut = cms.string(' (pdgId < 9 && pdgId > 0)&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24)')
+    cut = cms.string(' (pdgId < 9 && pdgId > 0) && numberOfMothers> 0&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24)')
 )
 genSelectorZAQDaughter = cms.EDFilter("GenParticleSelector",# matches anti-quarks (not quarks) from Z and W
     src = cms.InputTag("genParticles"),
-    cut = cms.string(' (pdgId > -9 && pdgId < 0)&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24)')
+    cut = cms.string(' (pdgId > -9 && pdgId < 0) && numberOfMothers> 0&& (abs(mother.pdgId)==23 || abs(mother.pdgId)==24)')
 )
 
 
