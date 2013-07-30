@@ -1,16 +1,18 @@
 import FWCore.ParameterSet.Config as cms
-
-cmgFiles = cms.untracked.vstring()
-source = cms.Source("PoolSource",
-                    noEventSort = cms.untracked.bool(True),
-                    duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-                    fileNames = cmgFiles
-                   )
-
-cmgFiles.extend([
-    '/store/cmst3/group/exovv/tomei/EDBR_PATtuple_edbr_zz_20130605_Summer12MC_Herwig_20130618_081716/tomei/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130605/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_1_1_NGg.root',
-    '/store/cmst3/group/exovv/tomei/EDBR_PATtuple_edbr_zz_20130605_Summer12MC_Herwig_20130618_081716/tomei/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130605/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_2_1_7DC.root',
-    '/store/cmst3/group/exovv/tomei/EDBR_PATtuple_edbr_zz_20130605_Summer12MC_Herwig_20130618_081716/tomei/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130605/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_3_1_oZb.root',
-    '/store/cmst3/group/exovv/tomei/EDBR_PATtuple_edbr_zz_20130605_Summer12MC_Herwig_20130618_081716/tomei/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130605/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_4_1_kd8.root',
-    '/store/cmst3/group/exovv/tomei/EDBR_PATtuple_edbr_zz_20130605_Summer12MC_Herwig_20130618_081716/tomei/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130605/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_5_1_EtC.root',
+maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+readFiles = cms.untracked.vstring()
+secFiles = cms.untracked.vstring()
+source = cms.Source ('PoolSource',fileNames = readFiles, secondaryFileNames = secFiles)
+readFiles.extend([
+      '/store//cmst3/group/exovv/bonato/EDBR_PATtuple_edbr_zz_20130729_Summer12MC_BulkGtoZZ_HERWIG_20130729_234201/bonato/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130729/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_10_1_rEf.root',
+       '/store//cmst3/group/exovv/bonato/EDBR_PATtuple_edbr_zz_20130729_Summer12MC_BulkGtoZZ_HERWIG_20130729_234201/bonato/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130729/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_11_1_3lq.root',
+       '/store//cmst3/group/exovv/bonato/EDBR_PATtuple_edbr_zz_20130729_Summer12MC_BulkGtoZZ_HERWIG_20130729_234201/bonato/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130729/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_1_1_kLj.root',
+       '/store//cmst3/group/exovv/bonato/EDBR_PATtuple_edbr_zz_20130729_Summer12MC_BulkGtoZZ_HERWIG_20130729_234201/bonato/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130729/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_2_1_gct.root',
+       '/store//cmst3/group/exovv/bonato/EDBR_PATtuple_edbr_zz_20130729_Summer12MC_BulkGtoZZ_HERWIG_20130729_234201/bonato/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130729/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_3_1_qBd.root',
+       '/store//cmst3/group/exovv/bonato/EDBR_PATtuple_edbr_zz_20130729_Summer12MC_BulkGtoZZ_HERWIG_20130729_234201/bonato/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130729/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_4_1_O2w.root',
+       '/store//cmst3/group/exovv/bonato/EDBR_PATtuple_edbr_zz_20130729_Summer12MC_BulkGtoZZ_HERWIG_20130729_234201/bonato/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130729/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_5_1_qXR.root',
+       '/store//cmst3/group/exovv/bonato/EDBR_PATtuple_edbr_zz_20130729_Summer12MC_BulkGtoZZ_HERWIG_20130729_234201/bonato/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130729/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_6_1_jkt.root',
+       '/store//cmst3/group/exovv/bonato/EDBR_PATtuple_edbr_zz_20130729_Summer12MC_BulkGtoZZ_HERWIG_20130729_234201/bonato/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130729/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_7_1_TJF.root',
+       '/store//cmst3/group/exovv/bonato/EDBR_PATtuple_edbr_zz_20130729_Summer12MC_BulkGtoZZ_HERWIG_20130729_234201/bonato/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130729/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_8_1_7ah.root',
+       '/store//cmst3/group/exovv/bonato/EDBR_PATtuple_edbr_zz_20130729_Summer12MC_BulkGtoZZ_HERWIG_20130729_234201/bonato/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig/EDBR_PATtuple_edbr_zz_20130729/1b325ddfb984c14533be7920e22baeef/BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig__tomei-BulkG_ZZ_llnunu_c0p2_M800-JHU-herwig-c8f8ed334db8a7d6f56c62266b1dfa5b__USER_9_1_3Kn.root'
     ])
