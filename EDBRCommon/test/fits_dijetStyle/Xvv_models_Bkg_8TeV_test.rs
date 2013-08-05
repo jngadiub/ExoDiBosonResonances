@@ -1,5 +1,5 @@
-mZZ[800,3200];
-mgg_sig_m0[2000.0, 800.0, 4000.0];
+mZZ[700.0,3200];
+mgg_sig_m0[2000.0, 700.0, 4000.0];
 mgg_sig_sigma[100, 10.0, 200.0];
 mgg_sig_alpha1[2.0, 0.5, 3]; 
 mgg_sig_n1[1.0, 0.00001, 1000.0]; 
@@ -10,7 +10,7 @@ MggSig = DoubleCB(mZZ, mgg_sig_m0, mgg_sig_sigma, mgg_sig_alpha1, mgg_sig_n1, mg
 
 
 
-mgg_sig_m0_cat0[2000.0, 800.0, 4000.0];
+mgg_sig_m0_cat0[2000.0, 700.0, 4000.0];
 mgg_sig_sigma_cat0[60, 10.0, 200.0];
 mgg_sig_alpha1_cat0[2.0, 0.5, 3]; 
 mgg_sig_n1_cat0[1.0, 0.00001, 1000.0]; 
@@ -21,7 +21,7 @@ MggSig_cat0 = DoubleCB(mZZ, mgg_sig_m0_cat0, mgg_sig_sigma_cat0, mgg_sig_alpha1_
 
 
 
-mgg_sig_m0_cat1[2000.0, 800.0, 4000.0];
+mgg_sig_m0_cat1[2000.0, 700.0, 4000.0];
 mgg_sig_sigma_cat1[100, 10.0, 200.0];
 mgg_sig_alpha1_cat1[2.0, 0.5, 3]; 
 mgg_sig_n1_cat1[1.0, 0.00001, 1000.0]; 
@@ -32,7 +32,7 @@ MggSig_cat1 = DoubleCB(mZZ, mgg_sig_m0_cat1, mgg_sig_sigma_cat1, mgg_sig_alpha1_
 
 
 
-mgg_sig_m0_cat2[2000.0, 800.0, 4000.0];
+mgg_sig_m0_cat2[2000.0, 700.0, 4000.0];
 mgg_sig_sigma_cat2[100, 10.0, 200.0];
 mgg_sig_alpha1_cat2[2.0, 0.5, 3]; 
 mgg_sig_n1_cat2[1.0, 0.00001, 1000.0]; 
@@ -43,7 +43,7 @@ MggSig_cat2 = DoubleCB(mZZ, mgg_sig_m0_cat2, mgg_sig_sigma_cat2, mgg_sig_alpha1_
 
 
 
-mgg_sig_m0_cat3[2000.0, 800.0, 4000.0];
+mgg_sig_m0_cat3[2000.0, 700.0, 4000.0];
 mgg_sig_sigma_cat3[100, 10.0, 200.0];
 mgg_sig_alpha1_cat3[2.0, 0.5, 3]; 
 mgg_sig_n1_cat3[1.0, 0.00001, 1000.0]; 
