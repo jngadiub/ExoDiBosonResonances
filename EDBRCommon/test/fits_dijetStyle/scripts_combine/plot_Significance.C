@@ -27,7 +27,7 @@ void plot_Significance(bool unblind){
   gROOT->ProcessLine(".x tdrstyle.cc");
   gStyle->SetPadLeftMargin(0.16);
  
-  double XMIN=1000;
+  double XMIN=800;
   double XMAX=2500;
 
 

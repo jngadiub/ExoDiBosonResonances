@@ -285,7 +285,7 @@ void plot_golfcourse_Asymptotic(bool unblind){
  
   // cout<<"Plotting"<<endl;
   double fr_left=590.0, fr_down=0.0005,fr_right=2020.0,fr_up=1.0;
-  if(!isZZChannel){fr_left=1000.0, fr_down=0.0000005,fr_right=2500.0,fr_up=10.0;}
+  if(!isZZChannel){fr_left=800.0, fr_down=0.0000005,fr_right=2500.0,fr_up=10.0;}
   TCanvas *cMCMC=new TCanvas("c_lim_Asymp","canvas with limits for Asymptotic CLs",630,600);
   cMCMC->cd();
   cMCMC->SetGridx(1);
