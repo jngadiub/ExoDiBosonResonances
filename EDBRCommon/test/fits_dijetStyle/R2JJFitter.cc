@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.11 2013/06/11 17:56:52 santanas Exp $
+ * $Id: R2JJFitter.cc,v 1.12 2013/07/04 08:59:51 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -116,11 +116,12 @@ using namespace RooFit;
 using namespace RooStats ;
 
 static const Int_t NCAT = 4;
-static const Double_t MMIN = 800;
+static const Double_t MMIN = 700;
 static const Double_t MMAX = 3200;
-static const Double_t BINSIZEPLOT = 50; //GeV
+static const Double_t BINSIZEPLOT = 100; //GeV
 static const Double_t BINSIZEPLOTSIGNAL = 10; //GeV
-static const Double_t BINSIZEPLOTTEST = 50; //GeV
+static const Double_t BINSIZEPLOTTEST = 100; //GeV
+static const Double_t MassForFtest = 700; //GeV
 
 void AddSigData(RooWorkspace*, Float_t);
 void AddBkgData(RooWorkspace*);
@@ -216,7 +217,8 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
   //TString inDir   = "./MiniTrees/Signal_VV/";
   //TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/"; 
   //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree/"; 
-  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSigTree/"; 
+  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSigTree/"; 
+  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv10/AnaSigTree/"; 
 
   int iMass = abs(mass);       
   /*
@@ -389,7 +391,7 @@ void AddBkgData(RooWorkspace* w) {
   //TString inDir   = "./MiniTrees/Data_VV/";
   //TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/"; 
   //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree/"; 
-  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSigTree/"; 
+  TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv10/AnaSigTree/"; 
 
   //TFile dataFile(inDir+"dijetWtag_Moriond_Mar6_miniTree.root");   
   TFile dataFile(inDir+"treeEDBR_data_xww.root");   
@@ -1196,7 +1198,7 @@ void BkgModelTest(RooWorkspace* w, Bool_t dobands) {
     double rss2=0;
     double rss3=0;
 
-    for(int ib=1;ib<=h_data[c]->GetNbinsX();ib++)
+    for(int ib=h_data[c]->FindBin(MassForFtest);ib<=h_data[c]->GetNbinsX();ib++)
       {
 	double low=h_data[c]->GetBinLowEdge(ib);
 	double center=h_data[c]->GetBinCenter(ib);
@@ -1256,6 +1258,7 @@ void BkgModelTest(RooWorkspace* w, Bool_t dobands) {
     //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/DiJetHighMass/test/fitcode/F_test_default.C?revision=1.3&view=markup
     const double alphaFTest=0.05;
     cout <<"\nStarting F-Test evaluation with alpha-value="<<alphaFTest<<endl;
+    cout <<"Mass for f-test: " << MassForFtest << " , corresponding to bin " << h_data[c]->FindBin(MassForFtest) << endl;
     double Ftest_21 = (rss1-rss2)*ndof_expo_2par/ (rss2*1.0);
     double Ftest_32 = (rss2-rss3)*ndof_expo_3par/ (rss3*1.0);
     cout  << "Ftest 21 value = " << Ftest_21 << endl;
@@ -2130,15 +2133,15 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
 
   //W-tag efficiency
   if(iChan==0 || iChan==2)
-    outFile << "CMS_VV_eff_g_LP         lnN  1.10/0.90      - # Signal Efficiency" << endl;
+    outFile << "CMS_VV_eff_g_LP         lnN  1.27/0.73      - # Signal Efficiency" << endl;
   if(iChan==1 || iChan==3)
-    outFile << "CMS_VV_eff_g_HP         lnN  0.90/1.10      - # Signal Efficiency" << endl;
+    outFile << "CMS_VV_eff_g_HP         lnN  0.91/1.09      - # Signal Efficiency" << endl;
 
 
   //== Uncertainties on SIGNAL SHAPE ==
   outFile << "# Parametric shape uncertainties, entered by hand." << endl;
   outFile << "CMS_hgg_sig_m0_absShift    param   1   0.013   # uncertainty on the mean" << endl;
-  outFile << "CMS_hgg_sig_sigmaScale     param   1   0.04   # uncertainty on the sigma" << endl;
+  outFile << "CMS_hgg_sig_sigmaScale     param   1   0.045   # uncertainty on the sigma" << endl;
   /*
   outFile << Form("CMS_hgg_sig_m0_absShift_cat%d    param   1   0.013   # uncertainty on the mean",iChan) << endl;
   outFile << Form("CMS_hgg_sig_sigmaScale_cat%d     param   1   0.04   # uncertainty on the sigma",iChan) << endl;
