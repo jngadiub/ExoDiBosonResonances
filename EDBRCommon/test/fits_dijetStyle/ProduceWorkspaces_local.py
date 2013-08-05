@@ -3,16 +3,17 @@ import os
 #--------------------------------------------------
 # EDIT HERE
 
-masses =[1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500]
+masses =[800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500]
+#masses =[1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500]
 #masses =[1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500]
 #masses =[1000]
 
 #NewDir = "mWWFit_DATA_06_06_2013_Scale1_From1000_v1"
-NewDir = "mWWFit_DATA_03_07_2013_Scale1_From1000_v1"
-#NewDir = "mWWFit_DATA_unbin_11_06_2013_Scale1_SigFrom1000_BkgFrom800To3200_v1"
-#NewDir = "mWWFit_MC_bin_11_06_2013_Scale1_SigFrom1000_BkgFrom800To3200_v1"
-#NewDir = "mWWFit_DATA_09_06_2013_Scale1_Test_v1"
-#NewDir = "MYTEST"
+NewDir = "mWWFit_DATA_16_07_2013_Scale1_FitFrom700_v2"
+#NewDir = "mWWFit_DATA_M700_Bin100_v1"
+#NewDir = "mWWFit_DATA_M700_Bin50_v1"
+#NewDir = "mWWFit_MC_M700_Bin100_v1"
+#NewDir = "mWWFit_MC_M700_Bin50_v1"
 
 #--------------------------------------------------
 
