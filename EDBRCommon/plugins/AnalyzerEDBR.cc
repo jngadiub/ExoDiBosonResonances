@@ -524,19 +524,19 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("genPT_qP"         ,&genPTqP       ,"genPT_qP/d"           );
   outTree_->Branch("genEta_qP"        ,&genEtaqP      ,"genEta_qP/d"             );
   outTree_->Branch("genPhi_qP"        ,&genPhiqP      ,"genPhi_qP/d"              );
-  outTree_->Branch("genFlav_qP"       ,&genFlavqP     ,"genFlav_qP/d"              );
+  outTree_->Branch("genFlav_qP"       ,&genFlavqP     ,"genFlav_qP/I"              );
   outTree_->Branch("genPT_qM"         ,&genPTqM       ,"genPT_qM/d"           );
   outTree_->Branch("genEta_qM"        ,&genEtaqM      ,"genEta_qM/d"             );
   outTree_->Branch("genPhi_qM"        ,&genPhiqM      ,"genPhi_qM/d"              );
-  outTree_->Branch("genFlav_qM"       ,&genFlavqM     ,"genFlav_qM/d"              );
+  outTree_->Branch("genFlav_qM"       ,&genFlavqM     ,"genFlav_qM/I"              );
   outTree_->Branch("genPT_lP"         ,&genPTlP       ,"genPT_lP/d"           );
   outTree_->Branch("genEta_lP"        ,&genEtalP      ,"genEta_lP/d"             );
   outTree_->Branch("genPhi_lP"        ,&genPhilP      ,"genPhi_lP/d"              );
-  outTree_->Branch("genFlav_lP"       ,&genFlavlP     ,"genFlav_lP/d"              );
+  outTree_->Branch("genFlav_lP"       ,&genFlavlP     ,"genFlav_lP/I"              );
   outTree_->Branch("genPT_lM"         ,&genPTlM       ,"genPT_lM/d"           );
   outTree_->Branch("genEta_lM"        ,&genEtalM      ,"genEta_lM/d"          );
   outTree_->Branch("genPhi_lM"        ,&genPhilM      ,"genPhi_lM/d"          );
-  outTree_->Branch("genFlav_lM"       ,&genFlavlM     ,"genFlav_lM/d"         );
+  outTree_->Branch("genFlav_lM"       ,&genFlavlM     ,"genFlav_lM/I"         );
   //
   outTree_->Branch("nLooseMu"        ,&nLooseMu      ,"nLooseMu/I"             );
   outTree_->Branch("nLooseEle"       ,&nLooseEle     ,"nLooseEle/I"            );
@@ -679,8 +679,8 @@ void AnalyzerEDBR::initDataMembers(){
   genPTqM=-999.0; genEtaqM=-999.0;  genPhiqM =-999.0; 
   genPTlP=-999.0; genEtalP=-999.0;  genPhilP=-999.0; 
   genPTlM=-999.0; genEtalM=-999.0;  genPhilM =-999.0; 
-  genFlavqP=-999; genFlavqM=-999;
-  genFlavlP=-999; genFlavlM=-999;
+  genFlavqP=-999.0; genFlavqM=-999.0;
+  genFlavlP=-999.0; genFlavlM=-999.0;
 
 
 }//end AnalyzeEDBR::initDataMembers()
@@ -790,21 +790,21 @@ void AnalyzerEDBR::analyzeGenLevel(edm::Event const& iEvent, edm::EventSetup con
 	genPTqP=genP->daughter(0)->pt();
 	genEtaqP=genP->daughter(0)->eta();
 	genPhiqP=genP->daughter(0)->phi();
-	genFlavqP=genP->daughter(0)->pdgId();
+	genFlavqP=int(genP->daughter(0)->pdgId());
 	genPTqM=genP->daughter(1)->pt();
 	genEtaqM=genP->daughter(1)->eta();
 	genPhiqM=genP->daughter(1)->phi();
-	genFlavqM=genP->daughter(1)->pdgId();
+	genFlavqM=int(genP->daughter(1)->pdgId());
       }
       else{
 	genPTqP=genP->daughter(1)->pt();
 	genEtaqP=genP->daughter(1)->eta();
 	genPhiqP=genP->daughter(1)->phi();
-	genFlavqP=genP->daughter(1)->pdgId();
+	genFlavqP=int(genP->daughter(1)->pdgId());
 	genPTqM=genP->daughter(0)->pt();
 	genEtaqM=genP->daughter(0)->eta();
 	genPhiqM=genP->daughter(0)->phi();
-	genFlavqM=genP->daughter(0)->pdgId();
+	genFlavqM=int(genP->daughter(0)->pdgId());
       }
     }
 
@@ -827,21 +827,21 @@ void AnalyzerEDBR::analyzeGenLevel(edm::Event const& iEvent, edm::EventSetup con
 	  genPTlP=genP->daughter(0)->pt();
 	  genEtalP=genP->daughter(0)->eta();
 	  genPhilP=genP->daughter(0)->phi();
-	  genFlavlP=genP->daughter(0)->pdgId();
+	  genFlavlP=double(genP->daughter(0)->pdgId());
 	  genPTlM=genP->daughter(1)->pt();
 	  genEtalM=genP->daughter(1)->eta();
 	  genPhilM=genP->daughter(1)->phi();
-	  genFlavlM=genP->daughter(1)->pdgId();
+	  genFlavlM=double(genP->daughter(1)->pdgId());
 	}
 	else{
 	  genPTlP=genP->daughter(1)->pt();
 	  genEtalP=genP->daughter(1)->eta();
 	  genPhilP=genP->daughter(1)->phi();
-	  genFlavlP=genP->daughter(1)->pdgId();
+	  genFlavlP=double(genP->daughter(1)->pdgId());
 	  genPTlM=genP->daughter(0)->pt();
 	  genEtalM=genP->daughter(0)->eta();
 	  genPhilM=genP->daughter(0)->phi();
-	  genFlavlM=genP->daughter(0)->pdgId();
+	  genFlavlM=double(genP->daughter(0)->pdgId());
 	}
 
       }
