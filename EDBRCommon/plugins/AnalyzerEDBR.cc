@@ -39,6 +39,12 @@ AnalyzerEDBR::AnalyzerEDBR(const edm::ParameterSet &ps){
     VpdgId_=24;
     VMass_= 80.4;
   } 
+  else if(VType_=="H"){
+    cmgEDBRMu_="cmgEDBRZZMu";
+    cmgEDBREle_="cmgEDBRZZEle";
+    VpdgId_=25;
+    VMass_= 125.5;
+  } 
   else{
     throw cms::Exception("Wrong parameter")<<"Unrecognized VType paramter: "<<VType_.c_str()<<" . Allowed options are : W ; Z ."<<std::endl;
 
