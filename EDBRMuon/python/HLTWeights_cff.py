@@ -57,25 +57,25 @@ tkMuIdSF_Run2012= cms.VPSet(
 )
 
 doubleMuTrigEff_Run2012= cms.VPSet(
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 0.0,0.9 ,1.01433)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 0.9,1.2 ,1.00292)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 1.2,2.1 ,1.03275)),
-    cms.PSet(bin = cms.vdouble(0.0,0.9, 2.1,2.4 ,1.05949)),
+    cms.PSet(bin = cms.vdouble(0.0,0.9, 0.0,0.9 ,0.983689)),
+    cms.PSet(bin = cms.vdouble(0.0,0.9, 0.9,1.2 ,0.988776)),
+    cms.PSet(bin = cms.vdouble(0.0,0.9, 1.2,2.1 ,1.01425)),
+    cms.PSet(bin = cms.vdouble(0.0,0.9, 2.1,2.4 ,0.925808)),
 
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 0.0,0.9 ,1.01337)),
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 0.9,1.2 ,0.997885)),
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 1.2,2.1 ,1.02847)),
-    cms.PSet(bin = cms.vdouble(0.9, 1.2, 2.1,2.4 ,1.05961)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 0.0,0.9 ,0.971349)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 0.9,1.2 ,1.03600)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 1.2,2.1 ,1.00243)),
+    cms.PSet(bin = cms.vdouble(0.9, 1.2, 2.1,2.4 ,0.981699)),
 
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 0.0,0.9 ,1.04444)),
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 0.9,1.2 ,1.03207)),
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 1.2,2.1 ,1.06805)),
-    cms.PSet(bin = cms.vdouble(1.2, 2.1, 2.1,2.4 ,1.11474)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 0.0,0.9 ,1.00282)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 0.9,1.2 ,1.01962)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 1.2,2.1 ,1.00827)),
+    cms.PSet(bin = cms.vdouble(1.2, 2.1, 2.1,2.4 ,0.983534)),
 
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 0.0,0.9 ,1.04875)),
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 0.9,1.2 ,1.04035)),
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 1.2,2.1 ,1.08910)),
-    cms.PSet(bin = cms.vdouble(2.1, 2.4, 2.1,2.4 ,1.22225))
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 0.0,0.9 ,1.03590)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 0.9,1.2 ,1.08973)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 1.2,2.1 ,0.971467)),
+    cms.PSet(bin = cms.vdouble(2.1, 2.4, 2.1,2.4 ,0.981039))
     )
 
 #### to be expanded according to the modifications of the HLT triggers that we use
