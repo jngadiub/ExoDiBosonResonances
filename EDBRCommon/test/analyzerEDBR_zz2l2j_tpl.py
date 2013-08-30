@@ -47,14 +47,14 @@ process.ANEDBR = AnalyzerXZZ.clone(
 processFullSel=True
 
 if processFullSel :
-       process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
-       process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
-       process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
-       process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
-       #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
-       #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
-       #process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
-       #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
+        process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
+        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
+        process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
+        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
+#        process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
+#        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
+#        process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
+#        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
 
 #    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
 #    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
@@ -296,6 +296,22 @@ elif "BulkG_ZZ_lljj_M2000_G120" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(10690)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M800-JHU-herwig" in "<SAMPLE>" : 
+    process.ANEDBR.Ngen=cms.uint32(8097)
+    process.ANEDBR.xsec=cms.double(0.000384) 
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M1100-JHU-herwig" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(7693)
+    process.ANEDBR.xsec=cms.double(4.40e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M1400-JHU-herwig" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(8897)
+    process.ANEDBR.xsec=cms.double(7.43e-06) 
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_ZZ_lljj_c0p2_M1800-JHU-herwig" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(9680)
+    process.ANEDBR.xsec=cms.double(9.65e-07) 
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)    
 ###### RS Graviton, ZZ, c = 0.05
 elif "RSG_ZZ_lljj_c0p05_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(38022)
@@ -544,6 +560,9 @@ print '---> Ngen=',process.ANEDBR.Ngen,'  Xsect=',process.ANEDBR.xsec
 if "BulkG_ZZ_lljj_" in "<SAMPLE>" or "RSG_ZZ_lljj_" in "<SAMPLE>" or "WW"=="<SAMPLE>" or "WZ"=="<SAMPLE>" or "ZZ"=="<SAMPLE>":
        process.ANEDBR.VTaggingScaleFactorHP=cms.double(0.93)
        process.ANEDBR.VTaggingScaleFactorLP=cms.double(1.1)
+
+
+       
 if "BulkG_WW_lvjj_" in "<SAMPLE>" or "RSG_WW_lvjj_" in "<SAMPLE>" or "WW_xww"=="<SAMPLE>" or "WZ_xww"=="<SAMPLE>" or "ZZ_xww"=="<SAMPLE>":
        process.ANEDBR.VTaggingScaleFactorHP=cms.double(0.93)
        process.ANEDBR.VTaggingScaleFactorLP=cms.double(1.1)
