@@ -1,7 +1,7 @@
 
 Works in CMSSW_5_3_9 (not tested with higher releases)
 Based on CMG V5_15_0
-Most recent recommended tag for analysis code : edbr_vv_20130527b
+Most recent recommended tag for analysis code : edbr_post-ZZ-approval_pre-Git
 
 
 
@@ -27,7 +27,7 @@ cvs co -r V00-02-03  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/Bst
 cvs co -r edbr_vv_20130605b -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 cvs co -A -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 # The PATtuplization code itself
-cvs co -r edbr_vv_20130605b -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
+cvs co -A -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
 # Add the TOBTEC filter
 cvs co -A -d KStenson/TrackingFilters UserCode/KStenson/TrackingFilters
 # and add the missing BuildFile, as well as move the plugins directory to the src one
@@ -58,10 +58,10 @@ cvs co -r edbr_vv_20130524 -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBoson
 
 ### OR, IF YOU WANT TO RUN WITH THE NEW VERSION OF THE CODE
 ### (CMSSW_5_3_9), use this tag
-cvs co -r edbr_vv_20130608 -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
-cvs co -r edbr_vv_20130608 -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
-cvs co -r edbr_vv_20130608 -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
-cvs co -r edbr_vv_20130608 -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
+cvs co -r edbr_post-ZZ-approval_pre-Git -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
+cvs co -r edbr_post-ZZ-approval_pre-Git -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
+cvs co -r edbr_post-ZZ-approval_pre-Git -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
+cvs co -r edbr_post-ZZ-approval_pre-Git -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 
 
 rm -rf ExoDiBosonResonances/AnalysisDataFormats
