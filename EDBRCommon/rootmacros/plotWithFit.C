@@ -19,10 +19,22 @@
 #include "TSystem.h"
 #include "TVectorD.h"
 #include "TGraph.h"
+#include "TGaxis.h"
 #include "TMath.h"
 #include "CMSLabels.h"
 
+#include "Math/QuantFuncMathCore.h"
+#include "TMath.h"
+#include "TGraphAsymmErrors.h"
+
+
+//////////////
+//
+//    /afs/cern.ch/cms/slc5_amd64_gcc462/lcg/root/5.34.01-cms9/bin/root -b
+//
+
 double mySpecIntegral(TF1 *f1,TH1 *h1,double minVal, double maxVal);
+void SetPoissonianErrors( TGraphAsymmErrors * g,TH1* h=NULL,bool ErrBinZeroContent=true);
 Double_t simpleExpo(Double_t *x, Double_t *par)
    {
       Float_t xx =x[0]-par[1];
@@ -55,7 +67,7 @@ void plotWithFit(){
 			      {0.028, 0.0026, 0.05976},//mm1JLP, mm1JHP
   };
   double fitLow=500;
-  double fitHigh=2200;
+  double fitHigh=2800;
   const bool mergeOB=true;
 
   //  take histos done by loopPlot and EDBRHistoMaker
@@ -100,12 +112,16 @@ void plotWithFit(){
   for(ilep=0;ilep<2;ilep++){
     for(ipur=0;ipur<3;ipur++){
 
+      if(ipur==2)continue;
+      //if(ipur==2)fitHigh=1400.0;
+      // else fitHigh=2800.0;
+
       //if(ipur!=1)continue;
-      if(ipur==2)fitHigh=1400.0;
-      else fitHigh=2200.0;
+      //if(ilep!=1)continue;
 
       cout<<"Starting with lep="<<leptType[ilep]<<"  Pur="<<purType[ipur]<<endl;
-      string inDir="plots_productionv2d_fullsig_"+purType[ipur]+"_"+leptType[ilep]+"_forPAS/";
+      string inDir="plots_productionv2d_fullsig_"+purType[ipur]+"_"+leptType[ilep]+"_postARC/";
+      //string inDir="plots_productionv2d_fullsig_"+purType[ipur]+"_"+leptType[ilep]+"_testDip/";
       
 
   //sum up data
@@ -119,13 +135,22 @@ void plotWithFit(){
     TFile *fData=new TFile((inDir+fDataName).c_str(),"READ");
     cout<<"Take data file from "<<(inDir+fDataName).c_str()<<endl;
     TH1D* histo = (TH1D*)(fData->Get("h_mZZ"));
+    // cout<<"Data file has "<<histo->GetNbinsX()<<"  bins up to "<<histo->GetBinLowEdge(histo->GetNbinsX())<<endl;
     // histo->Rebin(2);
-    for(int j=1;j<=histo->GetNbinsX();j++){
-      double binContNew=histo->GetBinContent(j)/histo->GetBinWidth(j);
-      double binErrNew=histo->GetBinError(j)/histo->GetBinWidth(j); 
-      histo->SetBinContent(j,binContNew);
-      histo->SetBinError(j,binErrNew);
+
+    TH1D* histoORIG=(TH1D*)histo->Clone("h_mZZ_STDErrs");
+    TFile *ff1=new TFile("histo_withPoissonErrs.root","RECREATE");
+    ff1->cd();
+ 
+    // cout<<"Data File has bin20content="<<histo->GetBinContent(20) <<"  err on bin20="<<histo->GetBinErrorUp(20)<<flush;
+    histo->SetBinErrorOption(TH1::kPoisson);//add poissonian errors (Garwood intervals); works only with ROOT >=5.33
+    if(ipur==1&&ilep==1){//mu 1JHP
+      histoORIG->Write();
+      histo->Write();
     }
+    delete ff1;
+    fData->cd();  
+
 
     datahistos.push_back((TH1D*)histo->Clone(("h_mZZ_"+dataLabelTMP).c_str()));
   // delete histo;
@@ -140,8 +165,38 @@ void plotWithFit(){
   for(int i=0; i!= nDATA; ++i) {
     hData->Add(datahistos.at(i));
   }
+
+  cout<<"Data File has bin28content="<<hData->GetBinContent(28) <<"  err on bin28="<<hData->GetBinErrorUp(28)/hData->GetBinWidth(28)<<flush;
+  hData->SetBinErrorOption(TH1::kPoisson);
+  TH1D* hDataORIG=(TH1D*)hData->Clone("h_mZZ_nonScaled");
+  for(int j=1;j<=hData->GetNbinsX();j++){
+    double binErrNew=hData->GetBinErrorUp(j)/hData->GetBinWidth(j); 
+    double binContNew=hData->GetBinContent(j)/hData->GetBinWidth(j);
+
+    //    double binErrUpNew=hData->GetBinErrorUp(j)/hData->GetBinWidth(j); 
+    // double binErrLowNew=hData->GetBinErrorLow(j)/hData->GetBinWidth(j); 
+    if(j>28)cout<<"Data binCenter="<<hData->GetBinCenter(j)<<" has old="<<hData->GetBinContent(j)<<"  new="<<binContNew<<"  newErr="<<binErrNew<<endl;
+    hData->SetBinContent(j,binContNew);
+    //    hData->SetBinError(j,binErrNew);
+    hData->SetBinError(j,0.0);//we draw errors via the TGraph gData
+
+
+  }
+
+  cout<<"  NEW err on bin28="<<hData->GetBinErrorUp(28)<<endl;
   cout<<"Area of DataTOT is "<<hData->Integral("width")<<endl;
 
+ //we are in ROOT 5.32, we must use a work around
+  TGraphAsymmErrors * gData = new TGraphAsymmErrors(hData);
+  /*    cout<<"Filling TGraph: "<<endl;
+  for (int i = 0; i < g->GetN(); ++i) {
+    gData->SetPointEYlow(i, hData->GetBinErrorLow(i+1));
+    gData->SetPointEYhigh(i,hData->GetBinErrorUp(i+1) );
+    gData->SetPoint(i, hData->GetBinContent(i+1));
+    cout<<"i="<<i<<"  "<<gData->GetPoint(i)<<" +"<<  gData->GetPointEYhigh(i)<<"  -"<<  gData->GetPointEYlow(i)<<endl;
+    }*/
+
+  SetPoissonianErrors(gData,hDataORIG, true);
 
   //stack MC bkgds
   cout<<"Starting loop on MC bkgd"<<endl;
@@ -155,12 +210,14 @@ void plotWithFit(){
     TFile *fMC=new TFile((inDir+"histos_"+mcLabels[i]+".root").c_str(),"READ");
     cout<<"Take MC file from "<<(inDir+"histos_"+mcLabels[i]+".root").c_str()<<endl;
     TH1D* histo = (TH1D*)(fMC->Get("h_mZZ"));
-    cout<<"histoMC has "<<histo->GetEntries()<<" entries  "<<flush;
+    // cout<<"histoMC has "<<histo->GetNbinsX()<<"  bins up to "<<histo->GetBinLowEdge(histo->GetNbinsX())<<endl;
+    // cout<<"histoMC has "<<histo->GetEntries()<<" entries  "<<flush;
     // histo->Rebin(2);
     histo->SetFillColor(fColorsMC.at(i));
 
     for(int j=1;j<=histo->GetNbinsX();j++){
       double binContNew=histo->GetBinContent(j)/histo->GetBinWidth(j);
+      //if(j>28)cout<<"MC binCenter="<<histo->GetBinCenter(j)<<" has old="<<histo->GetBinContent(j)<<"  new="<<binContNew<<endl;
       histo->SetBinContent(j,binContNew);
       histo->SetBinError(j,0.0);
     }
@@ -234,7 +291,8 @@ void plotWithFit(){
       histo->SetBinContent(j,binContNew);
       histo->SetBinError(j,0.0);
     }
-    histo->Scale(targetLumi*1000.0);
+    const double sfKtilde=6.21777;// ratio of xsect of BulkG wioth k=0.5 and k=0.2 at M=1000;
+    histo->Scale(targetLumi*100.0*sfKtilde);
     sighistos.push_back((TH1D*)histo->Clone(("h_mZZ_"+mcLabelsSig[i]).c_str()));
   }
 
@@ -315,39 +373,55 @@ void plotWithFit(){
   hData->SetMarkerColor(kBlack);
   hData->SetMinimum(mymin);
   hData->SetMaximum(mymax);
+
+  //need TGraph for Poissonian errors
+  gData->GetXaxis()->SetTitle("M_{ZZ} [GeV]");
+  gData->GetYaxis()->SetTitle("Events / GeV");
+  gData->SetMarkerStyle(20);
+  gData->SetMarkerSize(2.);
+  gData->SetMarkerColor(kBlack);
+  gData->SetMinimum(mymin);
+  gData->SetMaximum(mymax);
+
   hs->SetMinimum(mymin);
   hs->SetMaximum(mymax);
  
+
   hs->Draw("HIST");
   if(ipur==2)hs->GetXaxis()->SetRangeUser(0.0,1370.0);
+  else hs->GetXaxis()->SetLimits(500.0,3000.0);
+  //hs->GetXaxis()->SetNdivisions(510,kTRUE);
   hs->GetXaxis()->SetTitle("M_{ZZ} [GeV]");
   hs->GetYaxis()->SetTitle("Events / GeV"); 
-  hs->GetXaxis()->SetLabelSize(0.035);
-  hs->GetYaxis()->SetLabelSize(0.035);
+  hs->GetXaxis()->SetLabelSize(0.032);
+  hs->GetYaxis()->SetLabelSize(0.032);
   hs->GetXaxis()->SetTitleSize(0.045);
   hs->GetYaxis()->SetTitleSize(0.045);
   hs->GetYaxis()->SetTitleOffset(1.15);
   hs->GetYaxis()->CenterTitle(); 
   cout<<"Signal integral="<<sighistos.at(0)->Integral()<<endl;
+  hs->GetXaxis()->SetRangeUser(fitLow,fitHigh);
   sighistos.at(0)->Draw("HISTsame");
-  hData->Draw("E1Psame");
+  gData->Draw("E0Psame");
+  // hData->Draw("P0same");
   fit1->SetLineColor(kRed);
   fit1->SetLineWidth(3.5);
   fit1->Draw("Lsame");
 
-  TLegend *l1=new TLegend(0.47,0.65,0.9,0.88);
+  TLegend *l1=new TLegend(0.362,0.65,0.88,0.88);
   char type[32];
   if(ilep==0&&ipur==0)sprintf(type,"ee, 1JLP");
   else if(ilep==0&&ipur==1)sprintf(type,"ee, 1JHP");
-  else if(ilep==1&&ipur==0)sprintf(type,"mm, 1JLP");
-  else if(ilep==1&&ipur==1)sprintf(type,"mm, 1JHP");
-  else if(ilep==0&&ipur==2)sprintf(type,"mm, 2J");
-  else if(ilep==1&&ipur==2)sprintf(type,"mm, 2J");
+  else if(ilep==1&&ipur==0)sprintf(type,"#mu#mu, 1JLP");
+  else if(ilep==1&&ipur==1)sprintf(type,"#mu#mu, 1JHP");
+  else if(ilep==0&&ipur==2)sprintf(type,"ee, 2J");
+  else if(ilep==1&&ipur==2)sprintf(type,"#mu#mu, 2J");
   else sprintf(type,"UNKNOWN");
+
 
   char legEntry[128];
   sprintf(legEntry,"CMS 2012 (%s)",type);
-  l1->AddEntry(hData,legEntry,"P");
+  l1->AddEntry(gData,legEntry,"PE");
   l1->AddEntry(fit1,"Background estimation","L");
   if(mergeOB){
     l1->AddEntry(histoDYMC,"Z+jets (Madgraph)","F");
@@ -360,7 +434,9 @@ void plotWithFit(){
     l1->AddEntry(mchistos.at(3),"ZZ (Pythia)","F");
     l1->AddEntry(mchistos.at(0),"t#bar{t} (POWHEG)","F");
   }
-  l1->AddEntry(sighistos.at(0),"Bulk G (M_{1}=1000 GeV, #tilde{k}=0.2 (x1000) )","F");
+  l1->AddEntry(sighistos.at(0),"Bulk G* (M_{G*}=1000 GeV, #tilde{k}=0.5 (x100) )","F");
+  l1->SetTextFont(42);
+  l1->SetTextSize(0.0275);
   l1->SetFillColor(kWhite);
   l1->SetBorderSize(0);
   l1->Draw();
@@ -423,4 +499,39 @@ double mySpecIntegral(TF1 *f1,TH1 *h1,double minVal, double maxVal){
 
   cout<<"mySpecIntegral("<<f1->GetName()<<" , "<<h1->GetName()<<"): TF1 int ="<<myInt<<"  TH1 int="<<myHistInt<<endl;
   return myInt;
+}
+
+
+void SetPoissonianErrors( TGraphAsymmErrors * g, TH1* h,bool ErrBinZeroContent){
+
+
+  const double alpha = 1 - 0.6827;
+
+  bool t0=false,t1=false,t2=false,t3=false;
+  for (int i = 0; i < g->GetN(); ++i) {
+    int N = g->GetY()[i];
+
+    if(h!=NULL)N=h->GetBinContent(i+1);
+
+
+    double L =  (N==0) ? 0  : (ROOT::Math::gamma_quantile(alpha/2,N,1.));
+    double U =  ROOT::Math::gamma_quantile_c(alpha/2,N+1,1) ;
+
+    double SF= 1.0/h->GetBinWidth(i+1) ;
+
+    //cout<<"TGraph "<<g->GetName()<<"  Point i="<<i<<" at MZZ="<< g->GetX()[i]<<"  Cont="<< g->GetY()[i]<<"  OldErrLow="<<g->GetErrorYlow(i)<<"  OldErrHigh="<< g->GetErrorYhigh(i)<<endl;
+    //  if(!t0&&N==0){ cout<<"N==0 ; NewLowErr="<<N-L<<"  NewHighErr="<<U-N<<endl;t0=true;}
+    // if(!t1&&N==1){ cout<<"N==1 ; NewLowErr="<<N-L<<"  NewHighErr="<<U-N<<endl;t1=true;}
+    // if(!t2&&N==2){ cout<<"N==2 ; NewLowErr="<<N-L<<"  NewHighErr="<<U-N<<endl;t2=true;}
+    // if(!t3&&N==3){ cout<<"N==3 ; NewLowErr="<<N-L<<"  NewHighErr="<<U-N<<endl;t3=true;}
+
+    double errLowNew=(N-L)*SF;
+    double errHighNew=(U-N)*SF;
+    if(!ErrBinZeroContent && N==0){errLowNew=0.0;errHighNew=0.0;}
+    g->SetPointEYlow(i, errLowNew);
+    g->SetPointEYhigh(i, errHighNew);
+
+    //cout<<"TGraph "<<g->GetName()<<"  Point i="<<i<<" at MZZ="<< g->GetX()[i]<<"  Cont="<< g->GetY()[i]<<"  NewErrLow="<<(N-L)*SF<<"  NewErrHigh="<< (U-N)*SF<<endl;
+  }
+
 }

@@ -205,6 +205,9 @@ void EDBRHistoPlotter::makeLabels() {
     TString s2 = "_.";
     TObjArray* tokens = s1.Tokenize(s2);
     std::string aLabel = ((TObjString*)(tokens->At(1)))->String().Data();
+    // bool isMJJ=aLabel.find("mJJ")!=std::string::npos;
+    //bool isMZZ=aLabel.find("mZZ")!=std::string::npos;
+    //if(!isMJJ && !isMZZ)continue;
     labels.push_back(aLabel);
   }
   for(size_t i = 0; i != fileNamesMCSig.size(); i++){
@@ -536,7 +539,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
   // Nice labels
   TLatex* l = makeCMSPreliminaryTop(8,0.10,0.935);
   l->Draw();
-  l = makeCMSLumi(19.6,0.5,0.935);
+  l = makeCMSLumi(19.8,0.5,0.935);
   l->Draw();
   l = makeChannelLabel(wantNXJets_,flavour_,isZZchannel_);
   l->Draw();

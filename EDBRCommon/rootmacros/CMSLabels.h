@@ -6,14 +6,14 @@ TLatex* makeCMSPreliminaryURC(int energy = 7, double x = 0.67, double y = 0.85) 
   TLatex* tex = new TLatex(x,y,buffer);
   tex->SetNDC();
   tex->SetTextFont(42);
-  tex->SetTextSize(0.035);
+  tex->SetTextSize(0.04);
   tex->Draw();
 
   sprintf(buffer,"#sqrt{s} = %i TeV",energy);
   tex = new TLatex(x,y-0.05,buffer);
   tex->SetNDC();
   tex->SetTextFont(42);
-  tex->SetTextSize(0.035);
+  tex->SetTextSize(0.04);
   tex->Draw();
   return tex;
 }
@@ -24,14 +24,14 @@ TLatex* makeCMSFinalURC(int energy = 7, double x = 0.67, double y = 0.85) {
   TLatex* tex = new TLatex(x,y,buffer);
   tex->SetNDC();
   tex->SetTextFont(42);
-  tex->SetTextSize(0.035);
+  tex->SetTextSize(0.04);
   tex->Draw();
 
   sprintf(buffer,"#sqrt{s} = %i TeV",energy);
   tex = new TLatex(x,y-0.05,buffer);
   tex->SetNDC();
   tex->SetTextFont(42);
-  tex->SetTextSize(0.035);
+  tex->SetTextSize(0.04);
   tex->Draw();
   return tex;
 }
@@ -52,7 +52,7 @@ TLatex* makeCMSPreliminaryTop(int energy = 7, double x = 0.15, double y = 0.94) 
   TLatex* tex = new TLatex(x,y,buffer);
   tex->SetNDC();
   tex->SetTextFont(42);
-  tex->SetTextSize(0.030);
+  tex->SetTextSize(0.040);
   tex->Draw();
   return tex;
 }
