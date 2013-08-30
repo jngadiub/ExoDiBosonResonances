@@ -522,10 +522,12 @@ void AnalyzerEDBR::initTree(){
   outTree_->Branch("genPT_Vll"        ,&genPTZll      ,"genPT_Vll/d"             );
   outTree_->Branch("genY_Vll"         ,&genYZll       ,"genY_Vll/d"              );
   outTree_->Branch("genPhi_Vll"       ,&genPhiZll     ,"genPhi_Vll/d"            );
+  outTree_->Branch("genDeltaRll_Vll"  ,&genDRZll     ,"genDeltaRll_Vll/d"   );
   outTree_->Branch("genMass_Vqq"      ,&genMassZqq    ,"genMass_Vqq/d"           );
   outTree_->Branch("genPT_Vqq"        ,&genPTZqq      ,"genPT_Vqq/d"             );
   outTree_->Branch("genY_Vqq"         ,&genYZqq       ,"genY_Vqq/d"              );
   outTree_->Branch("genPhi_Vqq"       ,&genPhiZqq     ,"genPhi_Vqq/d"            );
+  outTree_->Branch("genDeltaRqq_Vqq"       ,&genDRZqq     ,"genDeltaRqq_Vqq/d"   );
   //
   outTree_->Branch("genPT_qP"         ,&genPTqP       ,"genPT_qP/d"           );
   outTree_->Branch("genEta_qP"        ,&genEtaqP      ,"genEta_qP/d"             );
@@ -687,6 +689,7 @@ void AnalyzerEDBR::initDataMembers(){
   genPTlM=-999.0; genEtalM=-999.0;  genPhilM =-999.0; 
   genFlavqP=-999.0; genFlavqM=-999.0;
   genFlavlP=-999.0; genFlavlM=-999.0;
+  genDRZqq=-99.0;genDRZll=-99.0;
 
 
 }//end AnalyzeEDBR::initDataMembers()
@@ -791,6 +794,8 @@ void AnalyzerEDBR::analyzeGenLevel(edm::Event const& iEvent, edm::EventSetup con
       genPTZqq=genP->pt();
       genYZqq=genP->rapidity();
       genPhiZqq=genP->phi();
+      genDRZqq=deltaR(genP->daughter(0)->phi(),genP->daughter(0)->eta(),
+		      genP->daughter(1)->phi(),genP->daughter(1)->phi());
 
       if(genP->daughter(0)->charge()>0){//dau #0 is the positively charged quark
 	genPTqP=genP->daughter(0)->pt();
@@ -824,6 +829,8 @@ void AnalyzerEDBR::analyzeGenLevel(edm::Event const& iEvent, edm::EventSetup con
 	  genPTZll=genP->pt();
 	  genYZll=genP->rapidity();
 	  genPhiZll=genP->phi();
+	  genDRZll=deltaR(genP->daughter(0)->phi(),genP->daughter(0)->eta(),
+			  genP->daughter(1)->phi(),genP->daughter(1)->phi());
 	}
 	else if(abs(pdgId_2)==15 || abs(pdgId_2)==16){// Z->tautau or W->taunu
 	  foundZll=true;  
