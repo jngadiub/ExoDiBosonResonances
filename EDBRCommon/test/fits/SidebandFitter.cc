@@ -209,6 +209,7 @@ RooWorkspace* SidebandFitter::getAlphaFit(TTree* treeMC, int nxjCategory, const 
   sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s.eps", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
   c1->SaveAs(canvasName);
   sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s.png", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
+  sprintf( canvasName, "%s/mZZ_alpha_%dJ%s_%s%s.root", outdir_.c_str(), nxjCategory,pur_str.c_str(), leptType_str.c_str(),canvas_label_.c_str());
   c1->SaveAs(canvasName);
 
   TCanvas* c1sig = new TCanvas("c1Sig", "can_fit_hist_SigReg", 600, 600);

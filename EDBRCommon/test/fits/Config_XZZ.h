@@ -1,5 +1,5 @@
 
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130723_prodv2d_ALL_fot2800b/";//_Unblinded
+const std::string myOutDir="FitSidebandsMJJ_ZZ_20130726_prodv2d_ALL_MCHM/";//_Unblinded
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2d/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2d/fullsb/";
 
@@ -7,13 +7,15 @@ unsigned int jetCats = 2;//1 for only 1 jet case, 2 for both
 bool isZZChannel=true;//this will change only the file list
 string leptType="ALL";//"MU" //"ELE"//"ALL"
 const std::string InTreeName="SelectedCandidates";
-const bool useAlphaVV=false;
+const bool useAlphaVV=false;//include VV into alpha (true) or take it directly from MC (false)
+const bool useMCHM=true;
+const double DATAMC_HMSF[2]={1.0,0.5};//1JLP ; 1JHP
 const unsigned int nToys = 500;
 const float lumi =19770.0;
 
 
 const bool doPseudoExp=false;//true; //if true, for for different psuedo-alpha 
-const bool unblind=true;//default is not to plot the data in signal region
+const bool unblind=false;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=true;//choose what to plot as main fit function
 
@@ -27,7 +29,7 @@ std::string channel_marker="xzz";
 std::string bkgd_decorr_name="levexp_dcr_xzz";
 
 
-const std::string datacardDir("DataCards_XZZ_20130718_prodv2d_V3");
+const std::string datacardDir("DataCards_XZZ_20130731_prodv2d_MCHM");
 float mZZmax_=2800;
 
 //**********systematics***********

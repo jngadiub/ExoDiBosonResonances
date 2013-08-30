@@ -43,6 +43,13 @@ FTest: FTestExoVV.cpp DataCardUtils.o
 DataCardUtils.o: DataCardUtils.cc 
 	$(CC) $(CFLAGS) $(INCLUDES) DataCardUtils.cc  $(ROOTFLAG) $(EXTRALIBS)
 
+###normalizeZJets: normalize_ZJet.cpp
+###	$(CC) -Wall $(INCLUDES) $(ROOFITINCS) normalize_ZJet.cpp   $(ROOTFLAG) $(EXTRALIBS) -lHiggsAnalysisCombinedLimit    -o normalizeZJets
+
+
 
 clean:
-	rm *.o
+	rm *.o 
+
+cleanALL:
+	rm *.o  plotBackgroundFit create_datacards chi2BackgroundFit FTest fitSidebands fitBackground

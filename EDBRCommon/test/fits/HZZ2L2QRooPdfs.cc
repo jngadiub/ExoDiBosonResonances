@@ -410,3 +410,68 @@ double RooLevelledExp2::evaluate() const
 
   return res;
 }
+
+
+///////////////////
+
+
+
+ClassImp(RooLevExpFlatTail)
+
+  RooLevExpFlatTail::RooLevExpFlatTail(){}
+
+RooLevExpFlatTail::RooLevExpFlatTail(const char *name, const char *title,
+				     RooAbsReal& _x,
+				     RooAbsReal& _sigma, 
+				     RooAbsReal& _alpha,
+				     RooAbsReal& _beta,
+				     RooAbsReal& _m,
+				     RooAbsReal& _theta,
+				     RooAbsReal& _tail):
+  RooAbsPdf(name,title),
+  x("x","x",this,_x),
+  sigma("sigma","sigma",this,_sigma),
+  alpha("alpha","alpha",this,_alpha),
+  beta("beta","beta",this,_beta),
+  m("m","m",this,_m),
+  //  k("k","k",this,_k),
+  theta("theta","theta",this,_theta),
+  tail("tail","tail",this,_tail)
+{
+}
+
+RooLevExpFlatTail::RooLevExpFlatTail(const RooLevExpFlatTail& other, const char* name) :
+  RooAbsPdf(other,name),
+  x("x",this,other.x),
+  sigma("sigma",this,other.sigma),
+  alpha("alpha",this,other.alpha),
+  beta("beta",this,other.beta),
+  m("m",this,other.m),
+  theta("theta",this,other.theta),
+  tail("tail",this,other.tail)
+{
+}
+
+double RooLevExpFlatTail::evaluate() const
+{
+  double res=0.0;
+  double s = cos(theta)*sigma - sin(theta)*alpha;
+  double a = sin(theta)*sigma + cos(theta)*alpha;
+
+
+   
+  double t = fabs(x-m);
+
+  //to be tested:
+  if(x>2200)t=fabs(2200-m);
+
+  double den = (s + a*t + beta*t*t);
+  res=exp(-1.0*t/den);
+  //original
+  //if(x<2200)res=exp(-1.0*t/den);
+  // else res=tail;
+
+
+
+  return res;
+}

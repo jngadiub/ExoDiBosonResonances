@@ -55,6 +55,10 @@ void fitPseudoTwoPars( RooDataSet& ModSideband, RooWorkspace& ws,int seed,char* 
 void pseudoMassgeOnePar(int nxj ,std::string inPurStr,const std::string& leptType, RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1);
 void pseudoMassgeTwoPars(int nxj, int pur ,const std::string& leptType, RooFitResult* r_nominal, RooWorkspace& ws,char* initialvalues, double NormRelErr, RooRealVar &errV1, RooRealVar &errV2);
 void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::string t2Name,int nxjCut=-1);
+void CreateUnrolledTreesDATA(std::string inDir,std::string tmpFileName,std::string tmpTreeName,std::string weighting,int nxjCut,ostream &outlog);
+void CreateUnrolledTreesDYMCSIG(std::string inDirSIG,std::string tmpFileName,std::string tmpTreeName,std::string weighting,int nxjCut,ostream &outlog);
+void CreateUnrolledTreesVVMCSIG(std::string inDirSIG,std::string tmpFileName,std::string tmpTreeName,std::string weighting,int nxjCut,ostream &outlog);
+
 
 /*****************
  *
@@ -66,44 +70,6 @@ int main(){
   //DEBUG=0, INFO=1, PROGRESS=2, WARNING=3, ERROR=4, FATAL=5
   ofstream logf((myOutDir+"./log_fitBackground_"+leptType+".log").c_str(),ios::out);
 
-  TChain* chainData = new TChain(InTreeName.c_str());
-  if(isZZChannel)
-    {
-      chainData->Add( (inDirSB+"treeEDBR_DoubleMuParked_Run2012*.root").c_str()  );
-      chainData->Add( (inDirSB+"treeEDBR_DoubleMu_Run2012A*.root").c_str()  );
-      chainData->Add( (inDirSB+"treeEDBR_DoublePhotonHighPt_Run2012*.root").c_str()  );
-      chainData->Add( (inDirSB+"treeEDBR_Photon_Run2012A*.root").c_str()  );
-      /*
-	chainData->Add( (inDirSB+"treeEDBR_DoubleMu_*.root").c_str()  );
-	chainData->Add( (inDirSB+"treeEDBR_DoublePhotonHighPt_*.root").c_str()  );
-	chainData->Add( (inDirSB+"treeEDBR_Photon_*.root").c_str()  );*/
-    }
-  else
-    {
-      chainData->Add( (inDirSB+"treeEDBR_data_xww.root").c_str()  );
-    }
-
-  logf<<"In the data chain there are "<<chainData->GetEntries()<<" events"<<endl;
-
-  TChain* chainDataSig = new TChain(InTreeName.c_str());
-  if(isZZChannel)
-    {
-      chainDataSig->Add( (inDirSIG+"treeEDBR_DoubleMuParked_Run2012*.root").c_str()  );
-      chainDataSig->Add( (inDirSIG+"treeEDBR_DoubleMu_Run2012A*.root").c_str()  );
-      chainDataSig->Add( (inDirSIG+"treeEDBR_DoublePhotonHighPt_Run2012*.root").c_str()  );
-      chainDataSig->Add( (inDirSIG+"treeEDBR_Photon_Run2012A*.root").c_str()  );
-
-      /*     chainDataSig->Add( (inDirSIG+"treeEDBR_DoubleMu_Run2012*.root").c_str()  );
-      //      chainDataSig->Add( (inDirSIG+"treeEDBR_DoubleMu_Run2012A*.root").c_str()  );
-      chainDataSig->Add( (inDirSIG+"treeEDBR_DoublePhotonHighPt_*.root").c_str()  );
-      chainDataSig->Add( (inDirSIG+"treeEDBR_Photon_*.root").c_str()  );*/
-    }
-  else
-    {
-      chainDataSig->Add( (inDirSIG+"treeEDBR_data_xww.root").c_str()  );
-    }
-
-
   //write in a plain tree because RooFit does not like trees with branches storing vectors 
   const int nxjCut=-1;//if negative: no cut
   const std::string tmpTreeName="SelectedCandidatesV2";
@@ -112,17 +78,15 @@ int main(){
   else   sprintf(foutn,"EXOVVTree_DATASB_NOcut.root");
   std::string tmpFileName=foutn;
   std::string weighting = "weight";
-  CopyTreeVecToPlain(chainData,weighting,tmpFileName,tmpTreeName,nxjCut);//(TTree*)
-  delete chainData;
+  CreateUnrolledTreesDATA(inDirSB,tmpFileName, tmpTreeName,weighting,nxjCut,logf);
 
   const std::string tmpSigTreeName="SelectedCandidatesSIG";
   char foutSig[64];
   if(nxjCut>=0)  sprintf(foutSig,"EXOVVTree_DATASIG_%d.root",nxjCut);
   else   sprintf(foutSig,"EXOVVTree_DATASIG_NOcut.root");
   std::string tmpSigFileName=foutSig;
-  CopyTreeVecToPlain(chainDataSig,weighting,tmpSigFileName,tmpSigTreeName,nxjCut);//(TTree*)
-  delete chainDataSig;
-
+  CreateUnrolledTreesDATA(inDirSIG,tmpSigFileName, tmpSigTreeName,weighting,nxjCut,logf);
+ 
   TFile *ftree=new TFile(foutn,"READ");
   TTree *treeDATA_tmp=(TTree*)ftree->Get(tmpTreeName.c_str());
 
@@ -132,7 +96,7 @@ int main(){
   TFile *ftreeVV=0;
   TTree *treeVV_sig=0;
 
-  if(!useAlphaVV){
+  if(!useAlphaVV){//load VV MC in SIG region already created by fitSidebands
     char foutVV[64];
     if(nxjCut>=0)  sprintf(foutVV,"EXOVVTree_MCVV_SIG_%dJ.root",nxjCut);
     else   sprintf(foutVV,"EXOVVTree_MCVV_SIG_NOcut.root");
@@ -141,6 +105,34 @@ int main(){
     treeVV_sig=(TTree*)ftreeVV->Get(tmpTreeName.c_str());
 
   }//end if not useAlphaVV
+
+  TFile *ftreeHM=0;
+  TChain *treeHM_sig=0;
+  if(useMCHM){
+
+    //create unrolled tree for DY MC in signal region
+    char foutDYMC[64];
+    char foutVV[64];
+    if(nxjCut>=0)  sprintf(foutDYMC,"EXOVVTree_DYMC_SIG_%dJ.root",nxjCut);
+    else   sprintf(foutDYMC,"EXOVVTree_DYMC_SIG_NOcut.root");
+    tmpFileName=foutDYMC;
+
+    if(nxjCut>=0)  sprintf(foutVV,"EXOVVTree_MCVV_SIG_%dJ.root",nxjCut);
+    else   sprintf(foutVV,"EXOVVTree_MCVV_SIG_NOcut.root");
+  
+    CreateUnrolledTreesDYMCSIG(inDirSIG,tmpFileName,tmpTreeName,weighting, nxjCut,logf);
+
+    if(useAlphaVV){//we include VV in the alpha calculation, hence we didn't create the unrolled trees yet
+      tmpFileName=foutVV;
+      CreateUnrolledTreesVVMCSIG(inDirSIG,tmpFileName,tmpTreeName,weighting, nxjCut,logf);
+    }
+
+    
+    treeHM_sig=new TChain(tmpTreeName.c_str());
+    treeHM_sig->Add(foutDYMC);
+    treeHM_sig->Add(foutVV);
+  
+  }//end if not use MC at High Masses
 
   // gROOT->cd(); //magic!
 
@@ -319,8 +311,10 @@ int main(){
       dsDataSB2->Print("v");
       if(unblind)logf<<dsDataSIG->GetName()<<"  -> "<<dsDataSIG->numEntries()<<"  "<<dsDataSIG->sumEntries()<<std::endl;
 
+      //add the MC VV from MC if requested
       RooDataSet *VVDataSetNoWeight = 0, *VVDataSetWeight = 0;
       if(!useAlphaVV){
+
 	logf<<"Adding the VV-MC events to the sideband control region. SumEntries of dsDATASB2 before adding VV-MC: "<<dsDataSB2->sumEntries()<<"  "<<flush;
 	char vvweightstring[100];
 	sprintf(vvweightstring,"weight*%f",lumi);
@@ -363,6 +357,45 @@ int main(){
 	cout<<"ERROR! Not enough stat in data sidebands ("<<dsDataSB2->numEntries()<<" entries). Quitting."<<endl;
 	continue;
       }
+
+      //at high masses, add the MC DY+VV from MC if requested (can help if no data in SB to constrain fit)
+      RooDataSet *HMDataSetNoWeight = 0, *HMDataSetWeight = 0;//HM->High Mass
+      RooRealVar *HM_Norm=new RooRealVar("HighMassBkgMCNorm","Integral of DY+VV MC in [2200, 2800] divided by 600",0.0,0.0,10.0);
+      if(useMCHM){
+
+	logf<<"Adding MC events at high mass (sig region) to the sideband control region. SumEntries of dsDATASB2 before adding HM-MC: "<<dsDataSB2->sumEntries()<<"  "<<flush;
+	char hmweightstring[100];
+	sprintf(hmweightstring,"weight*%f*%f",lumi,1.0/DATAMC_HMSF[iP]);
+	RooFormulaVar weightHM("hmWeight",hmweightstring,*mcweight) ;
+	std::string cutSIGHM=cutSIG+"&&mZZ>2200&&mZZ<2800";
+	HMDataSetNoWeight=new RooDataSet("HighMassDS","HighMassDS",treeVV_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*mcweight),cutSIGHM.c_str()) ;
+
+	RooRealVar* wHM = (RooRealVar*)HMDataSetNoWeight->addColumn(weightHM);			
+	HMDataSetWeight = new RooDataSet("VVDSW","VVDS",HMDataSetNoWeight,*HMDataSetNoWeight->get(),0,wHM->GetName());
+	HM_Norm->setVal(HMDataSetWeight->sumEntries()/600.0);
+	HM_Norm->setConstant(kTRUE);
+	//VVDataSetWeight->Print("v");
+	dsDataSB2->append(*HMDataSetWeight);
+	//dsDataSB2->Print("v");
+
+	std::cout << "We just added the VV-MC to the extrapolated SB. Now snaity check plot." << std::endl;
+
+	logf<<"; after addition of HM-MC: "<<dsDataSB2->sumEntries()<<"  MC added has density of "<<HM_Norm->getVal() <<endl;
+	cout<<"Finished to add the HM MC to the extrapolated SB."<<endl;
+      }//end if not usealphavv
+
+      delete HMDataSetNoWeight;
+  
+
+      // dsDataSB->Print();
+
+      if(dsDataSB2->numEntries()<5){
+	cout<<"ERROR! Not enough stat in data sidebands ("<<dsDataSB2->numEntries()<<" entries). Quitting."<<endl;
+	continue;
+      }
+      //end if add the pure MC at high masses when you run out of data in SB
+
+
 
       //fit the weighted dataset with a custom function
       double minFitRange=((inxj==1&&purityCut==0&&isZZChannel) ? 650.0 : startFit);//if 1JLP of ZZ channel, start at 600 GeV
@@ -412,6 +445,13 @@ int main(){
       RooRealVar *Nbkg500ELE=new RooRealVar("bkgdNormalization500ELE","Background normalization  starting at M_VV=500 GeV (ELE)",dsDataSB2->reduce(Cut("mZZ>500.0&&lep==0"))->sumEntries(),0.0,10000.0);
       RooRealVar *Nbkg500MU=new RooRealVar("bkgdNormalization500MU","Background normalization  starting at M_VV=500 GeV (MU)",dsDataSB2->reduce(Cut("mZZ>500.0&&lep==1"))->sumEntries(),0.0,10000.0);
       NbkgRange->setConstant(kTRUE);
+
+      //for High mass (>2000)
+      RooRealVar *Nbkg2000=new RooRealVar("bkgdNormalization500","Background normalization starting at M_VV=500 GeV",dsDataSB2->reduce(Cut("mZZ>2000.0"))->sumEntries(),0.0,10000.0);
+      RooRealVar *Nbkg2000ELE=new RooRealVar("bkgdNormalization500ELE","Background normalization  starting at M_VV=500 GeV (ELE)",dsDataSB2->reduce(Cut("mZZ>2000.0&&lep==0"))->sumEntries(),0.0,10000.0);
+      RooRealVar *Nbkg2000MU=new RooRealVar("bkgdNormalization500MU","Background normalization  starting at M_VV=500 GeV (MU)",dsDataSB2->reduce(Cut("mZZ>2000.0&&lep==1"))->sumEntries(),0.0,10000.0);
+      RooRealVar *SFDYHM=new RooRealVar("sfMCHighMass","Data/MC scale factor applied to DY+VV MC at high mass (applied only if requested)",DATAMC_HMSF[iP],0.0,10.0);
+      SFDYHM->setConstant(kTRUE);
       // a0->setConstant(kTRUE);
       logf<<"Normalization in full range : ELE="<<NbkgELE->getVal()<<"  MU="<<NbkgMU->getVal()<<"  ALL="<<Nbkg->getVal()<<endl;
       logf<<"Normalization errors: Nent="<<Nent->getVal()<<" NormErr="<<NormErr->getVal()<<"  Nerr="<<Nerr->getVal()<<std::endl;
@@ -419,10 +459,12 @@ int main(){
       logf<<"Norm In Range ELE = "<<NbkgRangeELE->getVal()<<"  MU = "<<NbkgRangeMU->getVal()<<endl; 
       logf<<"Norm In [500, INF] = "<<Nbkg500->getVal()<<"   Expo-fit Slope="<<a0->getVal()<<std::endl;
       logf<<"Norm In [500, INF] ELE = "<<Nbkg500ELE->getVal()<<"  MU = "<<Nbkg500MU->getVal()<<endl; 
+      logf<<"Norm In [2000, INF] ELE = "<<Nbkg2000ELE->getVal()<<"  MU = "<<Nbkg2000MU->getVal()<<endl; 
       if(unblind){
 	logf<<dsDataSIG->GetName()<<"  -> ALL: "<<dsDataSIG->numEntries()<<" ELE: "<<dsDataSIG->reduce("lep==0")->numEntries()<<" MU: "<<dsDataSIG->reduce("lep==1")->numEntries()<<endl;
 
 	logf<<dsDataSIG->GetName()<<" in [500, 2200]  -> ALL: "<<dsDataSIG->reduce("mZZ>500.0&&mZZ<2200.0")->numEntries()<<" ELE: "<<dsDataSIG->reduce("lep==0&&mZZ>500.0&&mZZ<2200.0")->numEntries()<<" MU: "<<dsDataSIG->reduce("lep==1&&mZZ>500.0&&mZZ<2200.0")->numEntries()<<endl;
+	logf<<dsDataSIG->GetName()<<" in [2000, INF]  -> ALL: "<<dsDataSIG->reduce("mZZ>2000.0")->numEntries()<<" ELE: "<<dsDataSIG->reduce("lep==0&&mZZ>2000.0")->numEntries()<<" MU: "<<dsDataSIG->reduce("lep==1&&mZZ>2000.0")->numEntries()<<endl;
       }
       r_sig2->printMultiline(logf,99,true);
       logf<<"\nNow fitting with Leveled Expo:"<<endl;
@@ -431,23 +473,27 @@ int main(){
       if(inxj==1)initf0=200.0;
       if(inxj==2)initf0=200.0;
       double initf1=0.0;
-      if(inxj==1)initf1=0.05;
-      if(inxj==2)initf1=0.05;
+      if(inxj==1)initf1=0.010;
+      if(inxj==2)initf1=0.050;
       double initf1b=0.0;
       if(inxj==1)initf1b=0.0;
       if(inxj==2)initf1b=0.0;
       double initm=480.0;
       if(inxj==2)initm=400.0;
       RooRealVar *f0=new RooRealVar("f0","sigma",initf0,0.0,300.0);
-      RooRealVar *f1=new RooRealVar("f1","alpha",initf1,-0.5,0.5);
+      RooRealVar *f1=new RooRealVar("f1","alpha",initf1,-0.050,0.5);
       RooRealVar *f1b=new RooRealVar("f1b","beta",initf1b,-0.1,2.0);
       RooRealVar *f2=new RooRealVar("f2","m",initm,200.0,500.0);
       RooRealVar *f3=new RooRealVar("f3","theta",0.0);
+      RooRealVar *f4=new RooRealVar("f4","tail",HM_Norm->getVal(),0.0,10.0);
+      f4->setError(HM_Norm->getVal()*1.0);
       f2->setConstant(kTRUE);
       f3->setConstant(kTRUE);
+      f4->setConstant(kTRUE);
       f1b->setConstant(kTRUE);//if both f1 and f1b set constant to zero, levelled expo becomes a normal exponential
-      //  RooGenericPdf *expLev_fit=new RooGenericPdf("levelled_exp_fit","exp(-1.0*(mZZ-f2)/(f0 + f1*(mZZ-f2)))",RooArgList(*mZZ,*f0,*f1,*f2));
+         
       RooLevelledExp2 *expLev_fit=new RooLevelledExp2("levelled_exp_fit","levelled_exp_fit",*mZZ,*f0,*f1,*f1b,*f2,*f3);
+      //RooLevExpFlatTail *expLev_fit=new RooLevExpFlatTail("levelled_exp_fit","levelled_exp_fit",*mZZ,*f0,*f1,*f1b,*f2,*f3,*f4);
       RooFitResult* r_sig_expLev = expLev_fit->fitTo(*dsDataSB2,Save(kTRUE),SumW2Error(kTRUE),RooFit::PrintLevel(-1),Range("fitRange")) ;//,Range("fitRange"),SumW2Error(kTRUE)
 
       logf<<"LevExpo fit done: Sigma = "<<f0->getVal()<<"   alpha="<<f1->getVal()<<"   beta="<<f1b->getVal()<<"   m="<<f2->getVal()<<"  Theta="<<f3->getVal()<<std::endl;
@@ -546,8 +592,12 @@ int main(){
       wsnew->import(*Nbkg500);
       wsnew->import(*Nbkg500ELE);
       wsnew->import(*Nbkg500MU);
+      wsnew->import(*Nbkg2000);
+      wsnew->import(*Nbkg2000ELE);
+      wsnew->import(*Nbkg2000MU);
       wsnew->import(*Nent);
       wsnew->import(*alphaErr);
+      wsnew->import(*SFDYHM);
       wsnew->import(*NormErr);
       wsnew->import(*Nerr);
       wsnew->import(*expo_fit);
@@ -654,11 +704,13 @@ int main(){
 	{
 	  dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed),RooFit::Range("plotRange"));
 	  if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack),RooFit::Range("fitRange"),RooFit::Range("plotRange"));
+	  if(useMCHM)HMDataSetWeight->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kBlue-7),RooFit::Range("plotRange"));
 	}
       else
 	{
 	  dsDataSB2->plotOn(xf,MarkerStyle(21),MarkerColor(kRed));
 	  if(unblind)dsDataSIG->plotOn(xf,MarkerStyle(20),MarkerColor(kBlack));
+	  if(useMCHM)HMDataSetWeight->plotOn(xf,MarkerStyle(21),MarkerColor(kBlue-7));
 	}
 
       if(plotDecorrLevExpoMain){
@@ -694,11 +746,13 @@ int main(){
 	{
 	  dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed),RooFit::Range("plotRange"));//,Normalization(dsDataSB2->numEntries(),RooAbsPdf::NumEvent)
 	  if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack),RooFit::Range("plotRange"));
+	  if(useMCHM)HMDataSetWeight->plotOn(xf,MarkerStyle(21),MarkerColor(kBlue-7),Binning(RooBinning(nBins-1,bins)),RooFit::Range("plotRange"));
 	}
       else
 	{
 	  dsDataSB2->plotOn(xf,MarkerStyle(21),MarkerColor(kRed));
 	  if(unblind)dsDataSIG->plotOn(xf,MarkerStyle(20),MarkerColor(kBlack));
+	  if(useMCHM)HMDataSetWeight->plotOn(xf,MarkerStyle(21),MarkerColor(kBlue-7));
 	}
 
       logf<<"Check nromalization: NumEntries of dsDataSIG= "<<dsDataSIG->numEntries() <<"("<<dsDataSIG->sumEntries() <<")    SumEntries of dsDataSB2="<<dsDataSB2->sumEntries()<<"   numEntries="<<dsDataSB2->numEntries()<<"    Nbkg (NORM)="<<NbkgRange->getVal()<<"   Nent="<<Nent->getVal()<<"     Nerr="<<Nerr->getVal() <<std::endl;
@@ -1524,3 +1578,68 @@ void CopyTreeVecToPlain(TTree *t1, std::string wType, std::string f2Name,std::st
 
   //  cout<<"returning"<<endl;
 }
+
+
+void CreateUnrolledTreesDATA(std::string inDir,std::string tmpFileName,std::string tmpTreeName,std::string weighting,int nxjCut,ostream &outlog){
+  outlog<<"Creating unrolled tree for DATA in "<<inDirSIG.c_str()<<endl;
+
+  TChain* chainData = new TChain(InTreeName.c_str());
+  if(isZZChannel)
+    {
+      chainData->Add( (inDir+"treeEDBR_DoubleMuParked_Run2012*.root").c_str()  );
+      chainData->Add( (inDir+"treeEDBR_DoubleMu_Run2012A*.root").c_str()  );
+      chainData->Add( (inDir+"treeEDBR_DoublePhotonHighPt_Run2012*.root").c_str()  );
+      chainData->Add( (inDir+"treeEDBR_Photon_Run2012A*.root").c_str()  );
+    }
+  else
+    {
+      chainData->Add( (inDirSIG+"treeEDBR_data_xww.root").c_str()  );
+    }
+  outlog<<"In the data chain there are "<<chainData->GetEntries()<<" events"<<endl;
+  CopyTreeVecToPlain(chainData,weighting,tmpFileName,tmpTreeName,nxjCut);//(TTree*)
+  delete chainData;
+
+
+}//end CreateUnrolledTreesDATA()
+
+
+
+
+void CreateUnrolledTreesDYMCSIG(std::string inDirSIG,std::string tmpFileName,std::string tmpTreeName,std::string weighting,int nxjCut,ostream &outlog){
+
+  outlog<<"Creating unrolled tree for DY MC"<<endl;
+  TChain* chainDYSig = new TChain(InTreeName.c_str());
+ 
+  if(isZZChannel){
+    chainDYSig->Add( (inDirSIG+"treeEDBR_DYJetsPt70To100.root").c_str()  );
+    chainDYSig->Add( (inDirSIG+"treeEDBR_DYJetsPt100.root").c_str()  );
+  }//end if isZZChannel
+
+
+  CopyTreeVecToPlain(chainDYSig,weighting,tmpFileName,tmpTreeName,nxjCut);
+  delete chainDYSig;
+ 
+
+}//end CreateUnrolledTreesDYMC()
+
+
+void CreateUnrolledTreesVVMCSIG(std::string inDirSIG,std::string tmpFileName,std::string tmpTreeName,std::string weighting,int nxjCut,ostream &outlog){
+
+  outlog<<"Creating unrolled tree for VV MC (signal region)"<<endl;
+  TChain* chainVVSig = new TChain(InTreeName.c_str());
+  if(isZZChannel){
+    chainVVSig->Add( (inDirSIG+"treeEDBR_WW.root").c_str()  );
+    chainVVSig->Add( (inDirSIG+"treeEDBR_WZ.root").c_str()  );
+    chainVVSig->Add( (inDirSIG+"treeEDBR_ZZ.root").c_str()  );
+  }//end if isZZChannel
+  else{
+    chainVVSig->Add( (inDirSIG+"treeEDBR_TTBARpowheg_xww.root").c_str());
+    chainVVSig->Add( (inDirSIG+"treeEDBR_SingleTop_xww.root").c_str());
+    chainVVSig->Add( (inDirSIG+"treeEDBR_VV_xww.root").c_str());
+  }
+
+  CopyTreeVecToPlain(chainVVSig,weighting,tmpFileName,tmpTreeName,nxjCut);
+  delete chainVVSig;
+
+
+}//end CreateUnrolledTreesVVMCSIG()

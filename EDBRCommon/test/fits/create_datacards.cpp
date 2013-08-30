@@ -116,16 +116,16 @@ int main( int argc, char* argv[] ) {
   std::cout<<"Lumi MU="<<lumi_MU<<"  ELE="<<lumi_ELE<<std::endl<<std::endl;
 
   //first loop over available signal MC files to fit efficiency:
-  TF1* f1_eff_vs_mass_MU_1JHP = get_eff_vs_mass("MU", 1,1, mZZmin_, 2000);
-  TF1* f1_eff_vs_mass_MU_1JLP = get_eff_vs_mass("MU", 1,0, mZZmin_, 2000);
+  TF1* f1_eff_vs_mass_MU_1JHP = get_eff_vs_mass("MU", 1,1, mZZmin_, 2500);
+  TF1* f1_eff_vs_mass_MU_1JLP = get_eff_vs_mass("MU", 1,0, mZZmin_, 2500);
   TF1* f1_eff_vs_mass_MU_2J   = 0;
   if(jetCats>1)f1_eff_vs_mass_MU_2J = get_eff_vs_mass("MU", 2,-1, mZZmin_,1400);//set purity to -1 for 2J cat
 
-  TF1* f1_eff_vs_mass_ELE_1JHP = get_eff_vs_mass("ELE", 1,1, mZZmin_, 2000);
-  TF1* f1_eff_vs_mass_ELE_1JLP = get_eff_vs_mass("ELE", 1,0, mZZmin_, 2000);
+  TF1* f1_eff_vs_mass_ELE_1JHP = get_eff_vs_mass("ELE", 1,1, mZZmin_, 2500);
+  TF1* f1_eff_vs_mass_ELE_1JLP = get_eff_vs_mass("ELE", 1,0, mZZmin_, 2500);
   TF1* f1_eff_vs_mass_ELE_2J   = 0;
   if(jetCats>1)f1_eff_vs_mass_ELE_2J = get_eff_vs_mass("ELE", 2,-1, mZZmin_, 1400);
-  return 0;
+
   std::ifstream ifs;
   if(isZZChannel)
     ifs.open("masses.txt");
@@ -165,7 +165,7 @@ int main( int argc, char* argv[] ) {
 
   } //while masses
 
-  return 0;
+  /////  return 0;
 
 }
 
@@ -243,6 +243,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   //-> get global alpha uncertainty
   //the +0.5 effectively leaves the bkgd normalization free to float when profiling the nuisances
   double globalAlphaErr =  bgws->var("alphaNormErr")->getVal();//+0.5
+  if(mass>2000) globalAlphaErr+=0.5;
   //std::cout << globalAlphaErr << std::endl;
   //exit(0);
 
@@ -624,7 +625,7 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 
   bool doPlot=false;
   // if(mass==650||mass==1000||mass==1500||mass==1600||mass==1700||mass==1900||mass==2000||mass==2100||mass==2400||mass==2500)doPlot=true;
-  if(mass==650||mass==800||mass==1000||mass==1700||mass==2000||mass==2200||mass==2500)doPlot=true;
+  if(mass==650||mass==1000||mass==1750||mass==2000||mass==2250||mass==2500)doPlot=true;
   // if(mass==2200)doPlot=true;
   if(doPlot){
     const int nBinsTMP=nBins1;
