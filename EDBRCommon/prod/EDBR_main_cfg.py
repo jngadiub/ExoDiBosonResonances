@@ -91,8 +91,7 @@ process.badEventFilter = cms.EDFilter("HLTHighLevel",
                                                   'eeBadScFilterPath',
                                                   'EcalDeadCellTriggerPrimitiveFilterPath',
                                                   'ecalLaserFilterPath'
-                                                  'trkPOGFiltersPath' ### present only in DATA
-    #                                              'totalKinematicsFilterPath' #only for Madgraph MC
+##                                                  'trkPOGFiltersPath' ### present only in DATA
                                                   ),
                                       eventSetupPathsKey = cms.string(''),
                                        # how to deal with multiple triggers: True (OR) accept if ANY is true, False
