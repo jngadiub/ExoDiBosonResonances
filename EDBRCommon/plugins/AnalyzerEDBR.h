@@ -800,6 +800,7 @@ class AnalyzerEDBR : public edm::EDAnalyzer{
   double genMassZqq, genPTZqq,genYZqq, genPhiZqq;
   double genPTqP,genEtaqP,genPhiqP,genPTqM,genEtaqM, genPhiqM ;
   double genPTlP,genEtalP, genPhilP,genPTlM,genEtalM, genPhilM ;
+  double genDRZqq,genDRZll;
   int pdgIdGenX,genFlavqP,genFlavqM,genFlavlP,genFlavlM;
 
 
