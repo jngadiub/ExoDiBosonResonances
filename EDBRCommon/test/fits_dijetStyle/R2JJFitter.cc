@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.12 2013/07/04 08:59:51 santanas Exp $
+ * $Id: R2JJFitter.cc,v 1.13 2013/08/05 15:36:57 santanas Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -392,6 +392,7 @@ void AddBkgData(RooWorkspace* w) {
   //TString inDir   = "/afs/cern.ch/work/s/santanas/public/EXOVV_2012/ntuples/WW_02_05_2013_ForUnblinding/fullallrange/AnaSigTree_mWW_Type2_corrected/"; 
   //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv8/AnaSigTree/"; 
   TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv10/AnaSigTree/"; 
+  //TString inDir   = "/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv10/AnaSBTree/"; 
 
   //TFile dataFile(inDir+"dijetWtag_Moriond_Mar6_miniTree.root");   
   TFile dataFile(inDir+"treeEDBR_data_xww.root");   
