@@ -27,3 +27,30 @@
 ./createJobsWithCrabEOS_PHYEXO.pl  -d Outputs_2012DATA -v EDBR_PATtuple_edbr_zz_20130605_DoublePhotonHighPt_Run2012C-22Jan2013-v1 -i Inputs_Data2012/InputList_DoublePhotonHighPt_Run2012C-22Jan2013-v1.txt -t Inputs_Data2012/template_crab_grid_copyToEOS_DATA.cfg  -c Inputs_Data2012/PATCMG_cfg_DATA.py  -n $USER -p EDBR_PATtuple_edbr_zz_20130605_DoublePhotonHighPt_Run2012C-22Jan2013-v1
 
 ./createJobsWithCrabEOS_PHYEXO.pl  -d Outputs_2012DATA -v EDBR_PATtuple_edbr_zz_20130605_DoublePhotonHighPt_Run2012D-22Jan2013-v1 -i Inputs_Data2012/InputList_DoublePhotonHighPt_Run2012D-22Jan2013-v1.txt -t Inputs_Data2012/template_crab_grid_copyToEOS_DATA.cfg  -c Inputs_Data2012/PATCMG_cfg_DATA.py  -n $USER -p EDBR_PATtuple_edbr_zz_20130605_DoublePhotonHighPt_Run2012D-22Jan2013-v1
+
+#------------------------------------------------------------
+# SingleMu
+#------------------------------------------------------------
+
+./createJobsWithCrabEOS_PHYEXO.pl  -d Outputs_2012DATA -v EDBR_PATtuple_edbr_zz_20130605_SingleMu_Run2012A-22Jan2013-v1 -i Inputs_Data2012/InputList_SingleMu_Run2012A-22Jan2013-v1.txt -t Inputs_Data2012/template_crab_grid_copyToEOS_DATA.cfg  -c Inputs_Data2012/PATCMG_cfg_DATA.py  -n $USER -p EDBR_PATtuple_edbr_zz_20130605_SingleMu_Run2012A-22Jan2013-v1
+
+./createJobsWithCrabEOS_PHYEXO.pl  -d Outputs_2012DATA -v EDBR_PATtuple_edbr_zz_20130605_SingleMu_Run2012B-22Jan2013-v1 -i Inputs_Data2012/InputList_SingleMu_Run2012B-22Jan2013-v1.txt -t Inputs_Data2012/template_crab_grid_copyToEOS_DATA.cfg  -c Inputs_Data2012/PATCMG_cfg_DATA.py  -n $USER -p EDBR_PATtuple_edbr_zz_20130605_SingleMu_Run2012B-22Jan2013-v1
+
+./createJobsWithCrabEOS_PHYEXO.pl  -d Outputs_2012DATA -v EDBR_PATtuple_edbr_zz_20130605_SingleMu_Run2012C-22Jan2013-v1 -i Inputs_Data2012/InputList_SingleMu_Run2012C-22Jan2013-v1.txt -t Inputs_Data2012/template_crab_grid_copyToEOS_DATA.cfg  -c Inputs_Data2012/PATCMG_cfg_DATA.py  -n $USER -p EDBR_PATtuple_edbr_zz_20130605_SingleMu_Run2012C-22Jan2013-v1
+
+./createJobsWithCrabEOS_PHYEXO.pl  -d Outputs_2012DATA -v EDBR_PATtuple_edbr_zz_20130605_SingleMu_Run2012D-22Jan2013-v1 -i Inputs_Data2012/InputList_SingleMu_Run2012D-22Jan2013-v1.txt -t Inputs_Data2012/template_crab_grid_copyToEOS_DATA.cfg  -c Inputs_Data2012/PATCMG_cfg_DATA.py  -n $USER -p EDBR_PATtuple_edbr_zz_20130605_SingleMu_Run2012D-22Jan2013-v1
+
+#------------------------------------------------------------
+# SingleElectron
+#------------------------------------------------------------
+
+./createJobsWithCrabEOS_PHYEXO.pl  -d Outputs_2012DATA -v EDBR_PATtuple_edbr_zz_20130605_SingleElectron_Run2012A-22Jan2013-v1 -i Inputs_Data2012/InputList_SingleElectron_Run2012A-22Jan2013-v1.txt -t Inputs_Data2012/template_crab_grid_copyToEOS_DATA.cfg  -c Inputs_Data2012/PATCMG_cfg_DATA.py  -n $USER -p EDBR_PATtuple_edbr_zz_20130605_SingleElectron_Run2012A-22Jan2013-v1
+
+./createJobsWithCrabEOS_PHYEXO.pl  -d Outputs_2012DATA -v EDBR_PATtuple_edbr_zz_20130605_SingleElectron_Run2012B-22Jan2013-v1 -i Inputs_Data2012/InputList_SingleElectron_Run2012B-22Jan2013-v1.txt -t Inputs_Data2012/template_crab_grid_copyToEOS_DATA.cfg  -c Inputs_Data2012/PATCMG_cfg_DATA.py  -n $USER -p EDBR_PATtuple_edbr_zz_20130605_SingleElectron_Run2012B-22Jan2013-v1
+
+./createJobsWithCrabEOS_PHYEXO.pl  -d Outputs_2012DATA -v EDBR_PATtuple_edbr_zz_20130605_SingleElectron_Run2012C-22Jan2013-v1 -i Inputs_Data2012/InputList_SingleElectron_Run2012C-22Jan2013-v1.txt -t Inputs_Data2012/template_crab_grid_copyToEOS_DATA.cfg  -c Inputs_Data2012/PATCMG_cfg_DATA.py  -n $USER -p EDBR_PATtuple_edbr_zz_20130605_SingleElectron_Run2012C-22Jan2013-v1
+
+./createJobsWithCrabEOS_PHYEXO.pl  -d Outputs_2012DATA -v EDBR_PATtuple_edbr_zz_20130605_SingleElectron_Run2012D-22Jan2013-v1 -i Inputs_Data2012/InputList_SingleElectron_Run2012D-22Jan2013-v1.txt -t Inputs_Data2012/template_crab_grid_copyToEOS_DATA.cfg  -c Inputs_Data2012/PATCMG_cfg_DATA.py  -n $USER -p EDBR_PATtuple_edbr_zz_20130605_SingleElectron_Run2012D-22Jan2013-v1
+
+
+
