@@ -49,6 +49,12 @@
 
 ./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130605_Summer12MC_WToLNuBinsPtW_MADGRAPH -i Inputs_MCSummer2012/InputList_WToLNuBinsPtW_MADGRAPH.txt -t Inputs_MCSummer2012/template_crab_grid_copyToEOS_MC.cfg -c Inputs_MCSummer2012/PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130605
 
+#------------------------------------------------------------
+# WToLNuBinsPtW_HERWIGPP
+#------------------------------------------------------------
+
+./createJobsWithCrabEOS_PHYEXO.pl -d Outputs_Summer2012MC -v EDBR_PATtuple_edbr_zz_20130605_Summer12MC_WToLNuBinsPtW_HERWIGPP -i Inputs_MCSummer2012/InputList_WToLNuBinsPtW_HERWIGPP.txt -t Inputs_MCSummer2012/template_crab_grid_copyToEOS_MC.cfg -c Inputs_MCSummer2012/PATCMG_cfg_MC.py -n $USER -p EDBR_PATtuple_edbr_zz_20130605
+
 
 ##--- Signal samples ---##
 
