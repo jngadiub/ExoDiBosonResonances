@@ -9,3 +9,6 @@ diElectronSequence = cms.Sequence(
     cmgDiElectronEDBR +
     cmgDiElectronSelEDBR
 )
+
+
+##test Git number 2
