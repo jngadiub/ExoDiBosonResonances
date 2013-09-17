@@ -15,6 +15,23 @@ else
     exit 1
 fi
 
+ONED=1
+
+if [ $# -eq 2 ]
+then
+    WIDTH=$2
+    ONED=0
+fi
+
+
+if [ $ONED -eq 1 ]
+    then
+    BASED=${MASS}
+else
+    BASED=${MASS}_${WIDTH}
+fi
+
+
 DIR="output_EXOZZ_Asymptotic_comb_xzz"
 LISTFILES_EXP=""
 LISTFILES_OBS=""
@@ -27,47 +44,53 @@ STEMASYMPT="higgsCombineEXOZZ.Asymptotic.mH${MASS}."
 STEMEXPSIGNIF="higgsCombineEXOZZExpSignif.ProfileLikelihood.mH${MASS}."
 STEMOBSSIGNIF="higgsCombineEXOZZObsSignif.ProfileLikelihood.mH${MASS}."
 
-for file in $( /bin/ls "${MASS}/${DIR}/${STEMEXP}"[0-9]*root  )
+for file in $( /bin/ls "${BASED}/${DIR}/${STEMEXP}"[0-9]*root  )
   do
  # echo $file
   LISTFILES_EXP=${LISTFILES_EXP}" $file "
 done
 
-for file in $( /bin/ls "${MASS}/${DIR}/${STEMOBS}"[0-9]*root  )
+for file in $( /bin/ls "${BASED}/${DIR}/${STEMOBS}"[0-9]*root  )
   do
  # echo $file
   LISTFILES_OBS=${LISTFILES_OBS}" $file "
 done
 
-for file in $( /bin/ls "${MASS}/${DIR}/${STEMASYMPT}"[0-9]*root  )
+for file in $( /bin/ls "${BASED}/${DIR}/${STEMASYMPT}"[0-9]*root  )
   do
  # echo $file
   LISTFILES_ASYMPT=${LISTFILES_ASYMPT}" $file "
 done
 
-for file in $( /bin/ls "${MASS}/${DIR}/${STEMEXPSIGNIF}"[0-9]*root  )
+for file in $( /bin/ls "${BASED}/${DIR}/${STEMEXPSIGNIF}"[0-9]*root  )
   do
  # echo $file
   LISTFILES_EXPSIGNIF=${LISTFILES_EXPSIGNIF}" $file "
 done
 
 
-for file in $( /bin/ls "${MASS}/${DIR}/${STEMOBSSIGNIF}"root  )
+for file in $( /bin/ls "${BASED}/${DIR}/${STEMOBSSIGNIF}"root  )
   do
  # echo $file
   LISTFILES_OBSSIGNIF=${LISTFILES_OBSSIGNIF}" $file "
 done
 
 
+if [ $ONED -eq 1 ]
+    then
+    FMOD=""
+else
+    FMOD=${WIDTH}"."
+fi
 
 
 echo "Merging: $LISTFILES"
 #hadd ${MASS}/$DIR/${STEMEXP}"TOTAL.root" $LISTFILES_EXP
 #hadd ${MASS}/$DIR/${STEMOBS}"TOTAL.root" $LISTFILES_OBS
-hadd -f ${MASS}/$DIR/${STEMASYMPT}"TOTAL.root" $LISTFILES_ASYMPT
-hadd -f ${MASS}/$DIR/${STEMEXPSIGNIF}"TOTAL.root" $LISTFILES_EXPSIGNIF
-hadd -f ${MASS}/$DIR/${STEMOBSSIGNIF}"TOTAL.root" $LISTFILES_OBSSIGNIF
+hadd -f ${BASED}/$DIR/${STEMASYMPT}${FMOD}"TOTAL.root" $LISTFILES_ASYMPT
+hadd -f ${BASED}/$DIR/${STEMEXPSIGNIF}${FMOD}"TOTAL.root" $LISTFILES_EXPSIGNIF
+hadd -f ${BASED}/$DIR/${STEMOBSSIGNIF}${FMOD}"TOTAL.root" $LISTFILES_OBSSIGNIF
 
 mkdir harvestedTrees/
-cp ${MASS}/$DIR/*"TOTAL.root" harvestedTrees/
+cp ${BASED}/$DIR/*"TOTAL.root" harvestedTrees/
 

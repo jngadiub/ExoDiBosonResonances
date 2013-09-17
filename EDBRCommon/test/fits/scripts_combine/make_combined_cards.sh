@@ -1,8 +1,24 @@
 #!/bin/bash
 if [[ "$1" == "" ]]; then echo "Usage: $0 mass"; exit 1; fi;
-if test -d $1; then MASS=$1; else echo "Usage: $0 mass"; exit 1; fi; 
-cd $MASS
-WHAT=$2
+if test -d $1 
+    then 
+    MASS=$1; 
+    DIR=$1 ; 
+else 
+    #echo "Usage: $0 mass"; FOUND=0; fi; 
+    if test -d $1_$2; 
+	then 
+	MASS=$1; 
+	DIR=$1_$2 ; 
+	FOUND=1 ; 
+    else 
+	echo "Usage: $0 mass [width]"; 
+	exit 1
+    fi;
+fi
+
+cd $DIR
+
 
 COMB=""
 

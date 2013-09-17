@@ -16,7 +16,7 @@
 #include "TStyle.h"
 #include "TPaveText.h"
 //void getSigmaBands(string fileName);
-void plot_golfcourse_Asymptotic(bool unblind=false);
+void plot_golfcourse_Asymptotic(bool unblind=false, char* width=0);
 void setFPStyle();
 bool isZZChannel=true;
 double expo_interp(double s2, double s1,  double newM,double m2,double m1){
@@ -54,12 +54,19 @@ double linear_interp( double s2, double s1, double mass, double m2, double m1 ) 
 
 const float intLumi=19.5;
 const float BRZZ2l2q=isZZChannel?0.0941:0.2882464;
-void plot_golfcourse_Asymptotic(bool unblind){
+void plot_golfcourse_Asymptotic(bool unblind, char* width){
 
   bool useNewStyle=true;
   if(useNewStyle)  setFPStyle();
 
-  TFile *fFREQ=new TFile("higgsCombineEXOZZ.Asymptotic.TOTAL.root","READ");
+  TFile *fFREQ=0;
+  if(width==0)
+    fFREQ = new TFile("higgsCombineEXOZZ.Asymptotic.TOTAL.root","READ");
+  else{
+    char fnam[50];
+    sprintf(fnam,"higgsCombineEXOZZ.Asymptotic.%s.TOTAL.root",width);
+    fFREQ=new TFile(fnam,"READ");
+  }
 
   TTree *t=(TTree*)fFREQ->Get("limit");
 
@@ -452,16 +459,36 @@ void plot_golfcourse_Asymptotic(bool unblind){
    gPad->RedrawAxis("");
    // hr->GetYaxis()->DrawClone();
    cMCMC->Update();
-   cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.root");
-   cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.eps");
-   cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.png");
-   gPad->SetLogy();
-   cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.eps");
-   cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.png");
+   char fnam[50];
+   if(width != 0){
+     sprintf(fnam,"EXOZZ_2l2q_UL_Asymptotic_%s.root",width);
+     cMCMC->SaveAs(fnam);
+     sprintf(fnam,"EXOZZ_2l2q_UL_Asymptotic_%s.eps",width);
+     cMCMC->SaveAs(fnam);
+     sprintf(fnam,"EXOZZ_2l2q_UL_Asymptotic_%s.png",width);
+     cMCMC->SaveAs(fnam);
+     gPad->SetLogy();
+     sprintf(fnam,"EXOZZ_2l2q_UL_Asymptotic_%s_log.eps",width);
+     cMCMC->SaveAs(fnam);
+     sprintf(fnam,"EXOZZ_2l2q_UL_Asymptotic_%s_log.png",width);
+     cMCMC->SaveAs(fnam);
+   }
+   else{
+     cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.root");
+     cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.eps");
+     cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.png");
+     gPad->SetLogy();
+     cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.eps");
+     cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.png");
   // cMCMC->SaveAs("ClsLimit_1fb.png");
-   
+   }
 
-   TFile *outfile=new TFile("AsymptoticCLs_TGraph.root","RECREATE");
+   if(width==0)
+     sprintf(fnam,"AsymptoticCLs_TGraph.root");
+   else
+     sprintf(fnam,"AsymptoticCLs_TGraph_%s.root",width);
+
+   TFile *outfile=new TFile(fnam,"RECREATE");
    outfile->cd();
    if(unblind)grobslim_cls->Write();
    grmedian_cls->Write();

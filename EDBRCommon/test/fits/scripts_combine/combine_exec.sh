@@ -2,13 +2,17 @@
 
 myrand=$1
 mass=$2
-OUTDIR=DataCards_XWW_V8_blind/
+
+ONED=0
+if [[ "$3" == "" ]]; then ONED=1 ; else width=$3 ;fi;
+
+OUTDIR=DataCards_XZZ_20130731_prodv2d_2DTestX/
 echo "Starting HiggsCombination with seed=$myrand at $( date +%c ) on $hostname."
 
 startdir=$( pwd )
 
 #set CMSSW environment
-RELEASEDIR=/afs/cern.ch/work/s/shuai/public/diboson/update0128_cmg/CMGTools/CMSSW_5_3_3_patch3/src/
+RELEASEDIR=/afs/cern.ch/work/m/mmozer/VV/CMGTools/CMSSW_5_3_9/src/
 
 #algo="MarkovChainMC"
 algo="Asymptotic"
@@ -17,7 +21,11 @@ hint="ProfileLikelihood" # before the algo method, run the hint method for restr
 label="EXOZZ"
 ntoys=1000
 #WORKDIR=${RELEASEDIR}/HiggsAna/HLLJJCommon/test/fits//${OUTDIR}/${mass}
-WORKDIR=/afs/cern.ch/work/s/shuai/public/diboson/update0128_cmg/CMGTools/CMSSW_5_3_3_patch3/src/ExoDiBosonResonances/EDBRCommon/test/fits/${OUTDIR}/${mass}
+WORKDIR=/afs/cern.ch/work/m/mmozer/VV/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/fits/${OUTDIR}/${mass}
+if [ $ONED -eq 0 ]
+    then
+    WORKDIR=/afs/cern.ch/work/m/mmozer/VV/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/fits/${OUTDIR}/${mass}_${width}
+fi
 datacard="comb_xzz" 
 OUTDIR="output_${label}_${algo}_"${datacard}
 
@@ -39,6 +47,8 @@ if [ ! -d ${WORKDIR}/$OUTDIR/ ]
     then
     mkdir -p ${WORKDIR}/$OUTDIR/
 fi
+
+
 echo "Datacard: $datacard"
 # if algo=HybridNew
 #combine -M $algo -n $label -m 400 -s $myrand -t $ntoys -U  -d $WORKDIR/$datacard --freq --singlePoint 1

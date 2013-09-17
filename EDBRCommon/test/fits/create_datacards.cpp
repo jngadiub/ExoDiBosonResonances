@@ -19,6 +19,7 @@
 #include "RooRealVar.h"
 #include "RooDataHist.h"
 #include "RooCBShape.h"
+#include "RooBreitWigner.h"
 #include "RooProdPdf.h"
 #include "RooAddPdf.h"
 #include "RooFFTConvPdf.h"
@@ -75,7 +76,7 @@ double sign( double x ) {
 
 
 
-void create_singleDatacard( float mass, float lumi, const std::string& leptType_str, int nxj, int pur, TF1* f1_eff_vs_mass );
+void create_singleDatacard( float mass,float width, float lumi, const std::string& leptType_str, int nxj, int pur, TF1* f1_eff_vs_mass );
 
 TheorSigParameters get_thParameters( float mass );
 
@@ -135,34 +136,51 @@ int main( int argc, char* argv[] ) {
   while( ifs.good() ) {
 
     float mass;
-    ifs >> mass;	
-    //if(mass!=800)continue;
-    std::cout << std::endl << std::endl;;
-    std::cout << "++++++++++++++++++++++" << std::endl;
-    std::cout << "+++ MASS: " << mass << std::endl;
-    std::cout << "++++++++++++++++++++++" << std::endl;
-    std::cout << std::endl;
-
-    //    std::string datacardDir("DataCards_20120210") ;
-    char mkdir_command[100];
-    sprintf( mkdir_command, "mkdir -p %s/%.0f", datacardDir.c_str(), mass);
-    system(mkdir_command);
-
-    if(leptType=="ELE"||leptType=="ALL")
-      {
-	create_singleDatacard( mass, lumi_ELE, "ELE", 1,1, f1_eff_vs_mass_ELE_1JHP);
-	create_singleDatacard( mass, lumi_ELE, "ELE", 1,0, f1_eff_vs_mass_ELE_1JLP);
+    ifs >> mass;
+    std::vector<float> widths;
+    if(dims=="1d")
+      widths.push_back(0.0);
+    if(dims=="2d"){
+      std::ifstream widthf;
+      widthf.open("widths.txt");
+      float width;
+      while (widthf.good()){
+	widthf >> width;
+	widths.push_back(width);
       }
-    if(leptType=="MU"||leptType=="ALL")
-      {
-	create_singleDatacard( mass, lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
-	create_singleDatacard( mass, lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
-      }
-    if(jetCats>1&&mass<=800){
-      if(leptType=="ELE"||leptType=="ALL")create_singleDatacard( mass, lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
-      if(leptType=="MU"||leptType=="ALL")create_singleDatacard( mass, lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
     }
+    
+    //    std::string datacardDir("DataCards_20120210") ;
+    for(int i =0; i < widths.size() ; i++ ){
+      //if(mass!=800)continue;
+      std::cout << std::endl << std::endl;;
+      std::cout << "++++++++++++++++++++++" << std::endl;
+      std::cout << "+++ MASS: " << mass << std::endl;
+      if (dims=="2d") std::cout << "+++ WIDTH: " << widths[i] <<  std::endl;
+      std::cout << "++++++++++++++++++++++" << std::endl;
+      std::cout << std::endl;
+      char mkdir_command[100];
+      if (dims=="1d")
+	sprintf( mkdir_command, "mkdir -p %s/%.0f", datacardDir.c_str(), mass);
+      if (dims=="2d")
+	sprintf( mkdir_command, "mkdir -p %s/%.0f_%.3f", datacardDir.c_str(), mass,widths[i]);
+      system(mkdir_command);
 
+      if(leptType=="ELE"||leptType=="ALL")
+	{
+	  create_singleDatacard( mass,widths[i], lumi_ELE, "ELE", 1,1, f1_eff_vs_mass_ELE_1JHP);
+	  create_singleDatacard( mass,widths[i], lumi_ELE, "ELE", 1,0, f1_eff_vs_mass_ELE_1JLP);
+	}
+      if(leptType=="MU"||leptType=="ALL")
+	{
+	  create_singleDatacard( mass,widths[i], lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
+	  create_singleDatacard( mass,widths[i], lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
+	}
+      if(jetCats>1&&mass<=800){
+	if(leptType=="ELE"||leptType=="ALL")create_singleDatacard( mass,widths[i], lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
+	if(leptType=="MU"||leptType=="ALL")create_singleDatacard( mass,widths[i], lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
+      }
+    } // for widths
   } //while masses
 
   /////  return 0;
@@ -171,7 +189,7 @@ int main( int argc, char* argv[] ) {
 
 
 
-void create_singleDatacard( float mass, float lumi, const std::string& leptType_str, int nxj,int pur, TF1* f1_eff_vs_mass ) {
+void create_singleDatacard( float mass,float width, float lumi, const std::string& leptType_str, int nxj,int pur, TF1* f1_eff_vs_mass ) {
 
   std::cout<<"\n------------------------------------------------"<<std::endl;
   std::cout<<"Creating new datacard: "<< leptType_str.c_str()<<"  "<<nxj<<"J ; Purity="<<pur<<std::endl;
@@ -278,7 +296,11 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   //////////
   //->  START TO PRINT THE DATACARD
   char datacardName[400];
-  sprintf( datacardName, "%s/%.0f/%s_%s.%.0f.txt", datacardDir.c_str(), mass, channel_marker.c_str(),suffix, mass);
+  if(dims=="1d")
+    sprintf( datacardName, "%s/%.0f/%s_%s.%.0f.txt", datacardDir.c_str(), mass, channel_marker.c_str(),suffix, mass);
+  if(dims=="2d")
+    sprintf( datacardName, "%s/%.0f_%.3f/%s_%s.%.0f.txt", datacardDir.c_str(), mass,width ,channel_marker.c_str(),suffix, mass);
+
   std::ofstream ofs(datacardName);
 
   std::string bkgd_shape_name=("background_decorrLevExpo"+rename_str);
@@ -464,7 +486,11 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   // datacard is done. now create output workspace and write it to rootfile
 
   char outfileName[900];
-  sprintf( outfileName, "%s/%.0f/%s_%s.input.root", datacardDir.c_str(), mass,channel_marker.c_str(), suffix);
+  if(dims=="1d")
+    sprintf( outfileName, "%s/%.0f/%s_%s.input.root", datacardDir.c_str(), mass,channel_marker.c_str(), suffix);
+  if(dims=="2d")
+    sprintf( outfileName, "%s/%.0f_%.3f/%s_%s.input.root", datacardDir.c_str(), mass,width,channel_marker.c_str(), suffix);
+
   TFile* outfile = TFile::Open( outfileName, "RECREATE");
   outfile->cd();
   RooWorkspace* w = new RooWorkspace("w","w");
@@ -513,30 +539,35 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   char sigp4name[200];//pow coeff of left pow law
   char sigp5name[200];//junction point of right pow law
   char sigp6name[200];//pow coeff of right pow law
+  char sigp7name[200];//gamma
   sprintf(sigp1name,"CMS_%s_sig%dJ%s%s_p1",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
   sprintf(sigp2name,"CMS_%s_sig%dJ%s%s_p2",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
   sprintf(sigp3name,"CMS_%s_sig%dJ%s%s_p3",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
   sprintf(sigp4name,"CMS_%s_sig%dJ%s%s_p4",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
   sprintf(sigp5name,"CMS_%s_sig%dJ%s%s_p5",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str()); 
   sprintf(sigp6name,"CMS_%s_sig%dJ%s%s_p6",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str()); 
+  sprintf(sigp7name,"CMS_%s_sig%dJ%s%s_p7",channel_marker.c_str(),nxj,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str()); 
   char sigp1name_nom[200];//m
   char sigp2name_nom[200];//width
   char sigp3name_nom[200];//junction point of left pow law
   char sigp4name_nom[200];//pow coeff of left pow law
   char sigp5name_nom[200];//junction point of right pow law
   char sigp6name_nom[200];//pow coeff of right pow law
+  char sigp7name_nom[200];//bw gamma
   sprintf(sigp1name_nom,"%s_nom",sigp1name);
   sprintf(sigp2name_nom,"%s_nom",sigp2name);
   sprintf(sigp3name_nom,"%s_nom",sigp3name);
   sprintf(sigp4name_nom,"%s_nom",sigp4name);
   sprintf(sigp5name_nom,"%s_nom",sigp5name);
   sprintf(sigp6name_nom,"%s_nom",sigp6name);
+  sprintf(sigp7name_nom,"%s_nom",sigp7name);
   RooRealVar CB_mean_nom(sigp1name_nom,sigp1name_nom, get_signalParameter(nxj,pur_str,leptType_str, massH,"mean_match"));
   RooRealVar CB_sigma_nom(sigp2name_nom,sigp2name_nom,get_signalParameter(nxj,pur_str,leptType_str,massH,"sigma_match"));
   RooRealVar CB_alpha1_nom(sigp3name_nom,sigp3name_nom,get_signalParameter(nxj,pur_str,leptType_str,massH,"alpha1_match"));
   RooRealVar CB_n1_nom(sigp4name_nom,sigp4name_nom,get_signalParameter(nxj,pur_str,leptType_str,massH,"n1_match"));
   RooRealVar CB_alpha2_nom(sigp5name_nom,sigp5name_nom,get_signalParameter(nxj,pur_str,leptType_str,massH,"alpha2_match"));
   RooRealVar CB_n2_nom(sigp6name_nom,sigp6name_nom,get_signalParameter(nxj,pur_str,leptType_str,massH,"n2_match"));
+  RooRealVar CB_gamma_nom(sigp7name_nom,sigp7name_nom,mass*width);
 
   //used for systematics
   RooRealVar CB_mean_lepscale(sigSystp1_LepScale,sigSystp1_LepScale,1.0);
@@ -554,9 +585,25 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
   RooProduct CB_mean(sigp1name,sigp1name,mean_sigshape_vars);
   RooProduct CB_sigma(sigp2name,sigp2name,sigma_sigshape_vars);
 
-  RooDoubleCB* CB_SIG = new RooDoubleCB("CB_SIG","Crystal Ball",*CMS_xzz_mZZ,CB_mean,CB_sigma,CB_alpha1_nom,CB_n1_nom,CB_alpha2_nom,CB_n2_nom);
+  RooAbsPdf* CB_SIG=0;
+  
+  if(dims=="1d")
+    CB_SIG = new RooDoubleCB("CB_SIG","Crystal Ball",*CMS_xzz_mZZ,CB_mean,CB_sigma,CB_alpha1_nom,CB_n1_nom,CB_alpha2_nom,CB_n2_nom);
 
-  cout<<"List of params of DoubleCB: CB_mean="<<CB_mean.getVal()<<"  CB_sigma="<<CB_sigma.getVal()<<"  CB_alpha1="<<CB_alpha1_nom.getVal()<<"  CB_n1="<<CB_n1_nom.getVal()<<"  CB_alpha2="<<CB_alpha2_nom.getVal()<<"   CB_n2="<<CB_n2_nom.getVal()<<endl;
+  RooRealVar zero("zero","zero",0);
+  
+  if(dims=="2d"){
+    RooDoubleCB* Resol = new RooDoubleCB("CB_SIG","Crystal Ball",*CMS_xzz_mZZ,zero,CB_sigma,CB_alpha1_nom,CB_n1_nom,CB_alpha2_nom,CB_n2_nom);
+  
+    RooBreitWigner* Core = new RooBreitWigner("Core","Core",*CMS_xzz_mZZ,CB_mean,CB_gamma_nom);
+    
+    RooFFTConvPdf* CB_TMP = new RooFFTConvPdf("PlotFunc","PlotFunc",*CMS_xzz_mZZ, *Core, *Resol);
+    
+    CB_TMP->setBufferFraction(1.0);
+    CB_SIG=CB_TMP;
+  }
+
+  cout<<"List of params of DoubleCB: CB_mean="<<CB_mean.getVal()<<"  CB_sigma="<<CB_sigma.getVal()<<"  CB_alpha1="<<CB_alpha1_nom.getVal()<<"  CB_n1="<<CB_n1_nom.getVal()<<"  CB_alpha2="<<CB_alpha2_nom.getVal()<<"   CB_n2="<<CB_n2_nom.getVal()<<"   CB_gamma="<<CB_gamma_nom.getVal()<<endl;
 
   // ------------------- SmearedTriangle (jets un-matched to gen-level) -------------------------------
   char sigUMp1name[200];//mean of CB
@@ -656,9 +703,9 @@ void create_singleDatacard( float mass, float lumi, const std::string& leptType_
 //       std::cout<<" 3 "<<std::flush;
 //     }
 //     else{
-      background_decorr->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+    if(dims=="1d") background_decorr->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,2.0,kFALSE),RooFit::FillColor(kYellow),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
       std::cout<<" 2 "<<std::flush;
-      background_decorr->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+    if(dims=="1d")   background_decorr->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::VisualizeError(*bgFitResult,1.0,kFALSE),RooFit::FillColor(kGreen),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
       background_decorr->plotOn(xf, RooFit::Normalization(rate_background,RooAbsPdf::NumEvent), RooFit::LineColor(kViolet-2),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
       std::cout<<" 3 "<<std::flush;
 

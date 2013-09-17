@@ -2,7 +2,7 @@
 
 if [ $# -lt 1 ]
 then
-    echo "Usage: ./parallelizeCombine.sh <mass> [LXB queue]"
+    echo "Usage: ./parallelizeCombine.sh <mass> [width]"
     exit 1
 fi
 
@@ -14,13 +14,23 @@ mass=$1
 queue="dummyqueue"
 OUTDIR=$startdir
 LOGDIRNAME="logs"
-mkdir -p ${OUTDIR}/${mass}/${LOGDIRNAME}
+
+queue=1nh
+
 
 if [ $# -gt 1 ]
 then
-    queue=$2
+    width=$2
+    twod=1
 else
-    queue=1nh
+    twod=0
+fi
+
+if [ $twod -eq 1 ]
+    then
+    mkdir -p ${OUTDIR}/${mass}_${width}/${LOGDIRNAME}
+else
+    mkdir -p ${OUTDIR}/${mass}/${LOGDIRNAME}
 fi
 
 ijob=1
@@ -34,10 +44,20 @@ do
 
   if [ $RUN_LOCALLY -eq 1 ]
       then
-      ${startdir}/combine_exec.sh $myrand $mass &> ${OUTDIR}/${mass}/$LOGFILE
- 
+      if [ $twod -eq 1 ]
+	  then
+	  ${startdir}/combine_exec.sh $myrand $mass $width &> ${OUTDIR}/${mass}_${width}/$LOGFILE
+      else
+	  ${startdir}/combine_exec.sh $myrand $mass &> ${OUTDIR}/${mass}/$LOGFILE
+      fi
+
   else
-      bsub -q $queue -J $JOBNAME -oo ${OUTDIR}/${mass}/$LOGFILE ${startdir}/combine_exec.sh $myrand $mass
+      if [ $twod -eq 1 ]
+	  then
+	  bsub -q $queue -J $JOBNAME -oo ${OUTDIR}/${mass}_${width}/$LOGFILE ${startdir}/combine_exec.sh $myrand $mass $width
+      else
+	  bsub -q $queue -J $JOBNAME -oo ${OUTDIR}/${mass}/$LOGFILE ${startdir}/combine_exec.sh $myrand $mass
+      fi
   fi
   let ijob=ijob+1
 done

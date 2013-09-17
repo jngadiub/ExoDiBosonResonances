@@ -28,6 +28,7 @@ const double FixedBinWidth =50;
 
 std::string bkgd_decorr_name="levexp_dcr_xww";
 
+std::string dims = "1d";
 
 const std::string datacardDir("DataCards_XWW_V24/");
 float mZZmax_=3000;

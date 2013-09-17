@@ -28,8 +28,10 @@ std::string channel_marker="xzz";
 
 std::string bkgd_decorr_name="levexp_dcr_xzz";
 
+std::string dims = "2d";
 
-const std::string datacardDir("DataCards_XZZ_20130731_prodv2d_MCHM");
+
+const std::string datacardDir("DataCards_XZZ_20130731_prodv2d_2DTestX");
 float mZZmax_=2800;
 
 //**********systematics***********
