@@ -1,7 +1,7 @@
 
 Works in CMSSW_5_3_9 (not tested with higher releases)
 Based on CMG V5_15_0
-Most recent recommended tag for analysis code : edbr_post-ZZ-approval_pre-Git
+Most recent recommended branch for analysis code : edbr_post-ZZ-approval_pre-Git2
 
 
 
@@ -23,13 +23,13 @@ scram b -j 4
 # Add the HEEP code and the modified HEEP isolation for boosted case.
 cvs co -r V00-09-03 -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer
 cvs co -r V00-02-03  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/BstdZeeTools
-# Add the new TuneP muons
-cvs co -r edbr_vv_20130605b -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
-cvs co -A -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
-# The PATtuplization code itself
-cvs co -A -d ExoDiBosonResonances/PATtupleProduction/ UserCode/ExoDiBosonResonances/PATtupleProduction/
 # Add the TOBTEC filter
 cvs co -A -d KStenson/TrackingFilters UserCode/KStenson/TrackingFilters
+
+# with Git you are forced to checkout the entire repository
+# Follow the instructions for preparing your Git area: https://twiki.cern.ch/twiki/bin/view/CMS/ExoDiBosonResonancesGitHowto
+git clone git://github.com/cms-edbr/ExoDiBosonResonances
+
 # and add the missing BuildFile, as well as move the plugins directory to the src one
 mv ExoDiBosonResonances/PATtupleProduction/data/Buildfile_KStenson KStenson/TrackingFilters/BuildFile.xml
 rm -rf KStenson/TrackingFilters/src
@@ -51,17 +51,13 @@ scram b -j 4
 ###########################################
 ### if you want to run the analysis, you need also the following
 
-cvs co -r edbr_vv_20130524 -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
-cvs co -r edbr_vv_20130524 -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
-cvs co -r edbr_vv_20130524 -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
-cvs co -r edbr_vv_20130524 -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 
-### OR, IF YOU WANT TO RUN WITH THE NEW VERSION OF THE CODE
-### (CMSSW_5_3_9), use this tag
-cvs co -r edbr_post-ZZ-approval_pre-Git -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
-cvs co -r edbr_post-ZZ-approval_pre-Git -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
-cvs co -r edbr_post-ZZ-approval_pre-Git -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
-cvs co -r edbr_post-ZZ-approval_pre-Git -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
+### This part is out-dated as it is still based on CVS. Now you should have already everything
+### (CMSSW_5_3_9)
+### cvs co -r edbr_post-ZZ-approval_pre-Git -d AnalysisDataFormats/ExoDiBosonResonances UserCode/ExoDiBosonResonances/AnalysisDataFormats
+### cvs co -r edbr_post-ZZ-approval_pre-Git -d ExoDiBosonResonances/EDBRCommon/ UserCode/ExoDiBosonResonances/EDBRCommon/
+### cvs co -r edbr_post-ZZ-approval_pre-Git -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
+### cvs co -r edbr_post-ZZ-approval_pre-Git -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 
 
 rm -rf ExoDiBosonResonances/AnalysisDataFormats
