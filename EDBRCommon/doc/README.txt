@@ -26,8 +26,12 @@ cvs co -r V00-02-03  -d TSWilliams/BstdZeeTools  UserCode/TSWilliams/BstdZee/Bst
 # Add the TOBTEC filter
 cvs co -A -d KStenson/TrackingFilters UserCode/KStenson/TrackingFilters
 
-# with Git you are forced to checkout the entire repository
-# Follow the instructions for preparing your Git area: https://twiki.cern.ch/twiki/bin/view/CMS/ExoDiBosonResonancesGitHowto
+# Install the EDBR analysis package.
+# With Git you are forced to checkout the entire repository
+# Follow the instructions for preparing your Git area
+# -> https://twiki.cern.ch/twiki/bin/view/CMS/ExoDiBosonResonancesGitHowto
+# (refer in particular to the sections "Still some configuration" and "Check-out the analysis code") 
+git init
 git clone git://github.com/cms-edbr/ExoDiBosonResonances
 
 # and add the missing BuildFile, as well as move the plugins directory to the src one
