@@ -12,7 +12,7 @@ AnalysisJSON=${BaseDir}/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Col
 echo "The final analysis JSON is: $AnalysisJSON"
 
 # Pileup JSON
-LumiJSON=${BaseDir}/PileUp/pileup_JSON_DCSONLY_190389-208686_corr.txt
+LumiJSON=${BaseDir}/PileUp/pileup_JSON_DCSONLY_190389-208686_All_2012_pixelcorr.txt
 
 #JSON file used to filter events (from DCSOnly or Prompt subdir)
 
