@@ -34,6 +34,11 @@ cvs co -A -d KStenson/TrackingFilters UserCode/KStenson/TrackingFilters
 git init
 git clone git://github.com/cms-edbr/ExoDiBosonResonances
 
+### remove analysis directories not needed for PAT production (they increase the crab sandobx)
+### this is not needed if you don't want to submit PAT-production jobs to CRAB 
+rm -fr AnalysisDataFormats/ EDBRCommon  EDBRElectron  EDBRMuon
+
+
 # and add the missing BuildFile, as well as move the plugins directory to the src one
 mv ExoDiBosonResonances/PATtupleProduction/data/Buildfile_KStenson KStenson/TrackingFilters/BuildFile.xml
 rm -rf KStenson/TrackingFilters/src
@@ -63,6 +68,10 @@ scram b -j 4
 ### cvs co -r edbr_post-ZZ-approval_pre-Git -d ExoDiBosonResonances/EDBRElectron/ UserCode/ExoDiBosonResonances/EDBRElectron/
 ### cvs co -r edbr_post-ZZ-approval_pre-Git -d ExoDiBosonResonances/EDBRMuon/ UserCode/ExoDiBosonResonances/EDBRMuon/
 
+
+### if you deleted the analysis directories for producing the PAT-tuples, bring them back
+git checkout -- AnalysisDataFormats/ EDBRCommon  EDBRElectron  EDBRMuon
+mkdir -p AnalysisDataFormats/; mv ExoDiBosonResonances/AnalysisDataFormats AnalysisDataFormats/ExoDiBosonResonances
 
 rm -rf ExoDiBosonResonances/AnalysisDataFormats
 cvs co -d Francesco/KinFitter/src UserCode/pandolf/KinematicFit
