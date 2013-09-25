@@ -3,8 +3,10 @@
 *** additional packages ***
 
 cd ${CMSSW_BASE}/src
+
 cvs co -r  CMSSW_5_3_9 HiggsAnalysis/CombinedLimit/
 
+cvs co -r  V03-01-12 HiggsAnalysis/CombinedLimit/interface/HWWLVJRooPdfs.h HiggsAnalysis/CombinedLimit/src/HWWLVJRooPdfs.cxx 
 # these should be put in release of HiggsAnalysis/CombinedLimit/, needed for RooLevelledExp2
 cp ${CMSSW_BASE}/src/ExoDiBosonResonances/EDBRCommon/test/fits/HZZ2L2QRooPdfs.h ${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/interface/
 cp ${CMSSW_BASE}/src/ExoDiBosonResonances/EDBRCommon/test/fits/HZZ2L2QRooPdfs.cc ${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/src/
