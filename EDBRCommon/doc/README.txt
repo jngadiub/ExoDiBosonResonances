@@ -9,7 +9,8 @@ Most recent recommended branch for analysis code : edbr_post-ZZ-approval_pre-Git
 
 # Follow these: https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsReleasesExperimental#Colin_539_V5_15_0
 # BUT before compiling, update class def for CaloClusters
-cvs up -r 1.15 DataFormats/CaloRecHit/src/classes_def.xml
+cvs up -r 1.15 DataFormats/CaloRecHit/src/classes_def.xml 
+# (depending on the setup, either 1.14 or 1.15 actually works)
 # Remove the H2TauTau package and other stuff since it is not useful and we want to keep the sandbox < 100 MB
 rm -r CMGTools/RootTools 
 rm -r CMGTools/ZJetsTutorial 
@@ -36,7 +37,8 @@ git clone git://github.com/cms-edbr/ExoDiBosonResonances
 
 ### remove analysis directories not needed for PAT production (they increase the crab sandobx)
 ### this is not needed if you don't want to submit PAT-production jobs to CRAB 
-rm -fr AnalysisDataFormats/ EDBRCommon  EDBRElectron  EDBRMuon
+rm -fr AnalysisDataFormats/ EDBRCommon  EDBRElectron GeneratorStudies
+# EDBRMuon needed for new tuneP
 
 
 # and add the missing BuildFile, as well as move the plugins directory to the src one
@@ -70,7 +72,7 @@ scram b -j 4
 
 
 ### if you deleted the analysis directories for producing the PAT-tuples, bring them back
-git checkout -- AnalysisDataFormats/ EDBRCommon  EDBRElectron  EDBRMuon
+git checkout -- AnalysisDataFormats/ EDBRCommon  EDBRElectron GeneratorStudies
 mkdir -p AnalysisDataFormats/; mv ExoDiBosonResonances/AnalysisDataFormats AnalysisDataFormats/ExoDiBosonResonances
 
 rm -rf ExoDiBosonResonances/AnalysisDataFormats
