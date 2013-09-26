@@ -77,22 +77,23 @@ process.rndmEventBlinding = cms.EDFilter("EDBREventSampler",
                                          SamplingFactor = cms.double(0.2) # 1/5 events pass the filter
                                          )
 
+eventFiltersList=['primaryVertexFilterPath',
+                  'noscrapingFilterPath',
+                  'hcalLaserEventFilterPath',
+                  'HBHENoiseFilterPath',
+                  'trackingFailureFilterPath',
+                  'CSCTightHaloFilterPath',
+                  'eeBadScFilterPath',
+                  'EcalDeadCellTriggerPrimitiveFilterPath',
+                  'ecalLaserFilterPath']
 
+if "DATA" in options.mcordata :
+     eventFiltersList.append('trkPOGFiltersPath')
+     
 process.badEventFilter = cms.EDFilter("HLTHighLevel",
                                      TriggerResultsTag =
                                       cms.InputTag("TriggerResults","","PAT"),
-                                      HLTPaths =
-                                      cms.vstring('primaryVertexFilterPath',
-                                                  'noscrapingFilterPath',
-                                                  'hcalLaserEventFilterPath',
-                                                  'HBHENoiseFilterPath',
-                                                  'trackingFailureFilterPath',
-                                                  'CSCTightHaloFilterPath',
-                                                  'eeBadScFilterPath',
-                                                  'EcalDeadCellTriggerPrimitiveFilterPath',
-                                                  'ecalLaserFilterPath'
-##                                                  'trkPOGFiltersPath' ### present only in DATA
-                                                  ),
+                                      HLTPaths = cms.vstring(eventFiltersList),
                                       eventSetupPathsKey = cms.string(''),
                                        # how to deal with multiple triggers: True (OR) accept if ANY is true, False
                                       #(AND) accept if ALL are true
