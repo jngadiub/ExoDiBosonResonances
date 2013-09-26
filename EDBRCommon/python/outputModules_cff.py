@@ -8,7 +8,7 @@ out = cms.OutputModule("PoolOutputModule",
                               fileName = cms.untracked.string("cmgTuple.root"),
                               outputCommands = cms.untracked.vstring('drop *',
                                                                      'keep *_*_*_CMG',
-																	 'keep *_patMetShiftCorrected_*_*'
+                                                                     'keep *_patMetShiftCorrected_*_*'
                                                                      )
                               )
 
@@ -61,6 +61,6 @@ if options.selection == "presel":
     if options.lepton == "both" or options.lepton == "ele":
         out.SelectEvents.SelectEvents.append("preselElePath")
         out.SelectEvents.SelectEvents.append("preselEleMergedPath")
-if options.lepton == "both" or options.lepton == "mu":
+    if options.lepton == "both" or options.lepton == "mu":
         out.SelectEvents.SelectEvents.append("preselMuPath")
         out.SelectEvents.SelectEvents.append("preselMuMergedPath")
