@@ -199,6 +199,8 @@ process.analysisSequenceElectrons = cms.Sequence(
     process.selectedZSequence
     )
 
+if options.selection=="none":
+     process.selectedZeeCandFilter.minNumber=0
      
 ##############
 # PU weights #
@@ -229,7 +231,10 @@ process.analysisSequenceMuons = cms.Sequence(
 if not ( options.lepton == "both" or options.lepton == "ele"): #only muon
      process.muonSequence.insert(0,process.PUseq)
 
+if options.selection=="none":
+     process.selectedZeeCandFilter.minNumber=0
 
+          
 
 ###################################################################
 # Jet Sequence: select jets and build di-jets from them           #
