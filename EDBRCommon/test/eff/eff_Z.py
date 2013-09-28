@@ -84,7 +84,9 @@ def processSubsample(file):
         nevent += 1
         if nevent % 10000 ==0:
             print "event: " + str(nevent)
-        
+            
+        #print str(event.eventAuxiliary().run())
+        #print str(event.object().triggerResultsByName("CMG").accept("preselEleMergedPath"))
         # determine generated flavor and get generated kinematics
         haveleptons=0
         havejet=0
@@ -201,6 +203,14 @@ def processSubsample(file):
             if histo_jet_genMatch.FindBin(genjetp4.pt(),abs(genjetp4.eta())) == histo_jet_genMatch.FindBin(recojets[index].pt(),abs(recojets[index].eta())):
                 histo_jet_stab.Fill(genjetp4.pt(),abs(genjetp4.eta()))
                 histo_jet_pur.Fill(recojets[index].pt(),abs(recojets[index].eta()))
+
+        #only proceed to leptons if event filters pass
+        #this ensures trigger eff is taken into account
+        #other event fitlers could go anywhere but need to be restricted to
+        #either leptons or jets to avoid double counting
+        if not event.object().triggerResultsByName("CMG").accept("eventFilterPath"):
+            print "failed trigger"
+            continue
 
         #print "startele"
         # fill matched electrons objects
