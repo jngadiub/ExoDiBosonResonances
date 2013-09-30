@@ -40,6 +40,8 @@ and fit results are stored in
 pars/outpars_BulkG_WW_lvjj_c0p2_M1000_xww_<njet>.config and
 plots/BulkG_WW_lvjj_c0p2_M1000_xww_<njet><category><scale>.eps
 
+suitable input files for electrons/muons are stored in pars/inpars_ZZ_1J_PROD_V2D/input_pars_ZZ_1J_ELE(MU)
+ 
 The "outpars..." files serve as input for the datacards.
 
 
