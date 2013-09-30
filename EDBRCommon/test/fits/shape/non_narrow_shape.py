@@ -60,9 +60,6 @@ def deduceBosonType(filepath):
 
 # make the PDF, currently uses one functional form for all channels, may need extension  
 def ConstructPdf(workspace):
-    #FitFunc   = root.RooDoubleCB("FitFunc","FitFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("alpha1_match"),workspace.var("n1_match"),workspace.var("alpha2_match"),workspace.var("n2_match")) 
-    #FitFunc   = root.RooRelBW("FitFunc","FitFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("sigma_match"),workspace.var("n1_match")) 
-    FitFunc   = root.RooVoigtian("FitFunc","FitFunc",workspace.var("mZZ"),workspace.var("mean_match"),workspace.var("width_match"),workspace.var("sigma_match")) 
 
     workspace.var("mZZ").setBins(10000,"cache") 
 
@@ -73,12 +70,10 @@ def ConstructPdf(workspace):
     PlotFunc = root.RooFFTConvPdf("PlotFunc","PlotFunc",workspace.var("mZZ"),Core, Resol)
     PlotFunc.setBufferFraction(1.0)
     
-    
-    getattr(workspace,'import')(FitFunc)
     getattr(workspace,'import')(PlotFunc)
 
 # set up the variables to be used in the fit. Will need ot be extended if we use different funcional forms for different channels
-def defineVars(descriptor,workspace):
+def defineVars(descriptor,workspace,inputpath,lep):
     # matched parameters
     mean_match = root.RooRealVar("mean_match","mean_match",0)
     sigma_match = root.RooRealVar("sigma_match","sigma_match",0)
@@ -97,6 +92,8 @@ def defineVars(descriptor,workspace):
 
     workspace.defineSet("pars",fitpars,True)
 
+
+    #read nominal input parameters to set mass range
     filename ="pars/inpars_"
     filename += descriptor +".config"
     print 'Initializing par values from ',filename
@@ -126,6 +123,31 @@ def defineVars(descriptor,workspace):
     getattr(workspace,'import')(mzz)
     getattr(workspace,'import')(weight)
     print 'TEMP NBINS: ', workspace.var("mZZ").getBins()
+
+    #now read the CB shape from the narrow width fits
+    mass = 0
+    flavor = 0
+    lep_str=""
+    if lep==0 :
+        lep_str="ELE"
+    elif lep==1 :
+        lep_str="MU"
+    else:
+        lep_str="ALL"
+
+    substrings = inputpath.split("_")
+    for substr in substrings:
+        if len(substr)>1 and substr[0]=="M" and substr[1]!="U":
+            mass = substr[1:]
+            
+    fnam = "pars/outpars_BulkG_ZZ_lljj_c0p2_M"
+    fnam = fnam + mass + "_1J__"+ lep_str + ".config"
+    print "override:take nominal parameters from:" + fnam
+    workspace.defineSet("old","mean_match,sigma_match,alpha1_match,n1_match,alpha2_match,n2_match")
+    workspace.set("old").readFromFile(fnam)
+    print str(workspace.var("mean_match").getVal())
+
+
 
 def readTree(filename,pur,lep, workspace):
     # set up dataset, filtering for the proper jet category
@@ -233,7 +255,7 @@ def processSubsample(inputpath,pur, lep):
 
     # set up variables, functions, datasets
     workspace = root.RooWorkspace("ws","ws")
-    defineVars(descriptor,workspace)           
+    defineVars(descriptor,workspace,inputpath,lep)           
     readTree(inputpath,pur,lep,workspace)
     ConstructPdf(workspace)
 
@@ -244,9 +266,7 @@ def processSubsample(inputpath,pur, lep):
     print 'Goint to fit dataset containing ',    data.sumEntries()
 
     workspace.Print("v")
-    result = workspace.pdf("FitFunc").fitTo( data , root.RooFit.Save(),root.RooFit.SumW2Error(root.kTRUE) )
-    result.Print("v")
-
+    
     pur_str=""
     if pur==0 :
         pur_str="LP"
@@ -264,24 +284,7 @@ def processSubsample(inputpath,pur, lep):
         lep_str="ALL"
        
     suffix= pur_str+"_"+lep_str
-            
-    workspace.set("pars").writeToFile("pars/outpars_"+descriptor +"_" +suffix+  ".config")
-    
-    #XXX
-    mass = 0
-    flavor = 0
-    substrings = inputpath.split("_")
-    for substr in substrings:
-        if len(substr)>1 and substr[0]=="M" and substr[1]!="U":
-            mass = substr[1:]
-            
-    fnam = "pars/outpars_BulkG_ZZ_lljj_c0p2_M"
-    fnam = fnam + mass + "_1J__"+ lep_str + ".config"
-    print "override:take nominal parameters from:" + fnam
-    workspace.defineSet("old","mean_match,sigma_match")#,alpha1_match,n1_match,alpha2_match,n2_match")
-    #workspace.set("old").readFromFile(fnam)
-    #XXX
-    print str(workspace.var("mean_match").getVal())
+        
     plot(workspace,descriptor+"_"+suffix)
 
     workspace.Print("v")

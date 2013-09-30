@@ -123,8 +123,8 @@ def defineVars(descriptor,njets,workspace,plotonly):
     if workspace.var("mean_match").getVal()>1500 :
         windowSF=6.0
     mzzLow=workspace.var("mean_match").getVal()- workspace.var("sigma_match").getVal()*windowSF
-    if mzzLow < 400.0 :
-        mzzLow=400.0
+    if mzzLow < 500.0 :
+        mzzLow=500.0
     mzzHigh=workspace.var("mean_match").getVal()+ workspace.var("sigma_match").getVal()*windowSF
     if mzzHigh > 3000.0 :
         mzzHigh=3000.0
