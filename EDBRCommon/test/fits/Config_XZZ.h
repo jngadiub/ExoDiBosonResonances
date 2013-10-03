@@ -11,11 +11,11 @@ const bool useAlphaVV=false;//include VV into alpha (true) or take it directly f
 const bool useMCHM=true;
 const double DATAMC_HMSF[2]={1.0,0.5};//1JLP ; 1JHP
 const unsigned int nToys = 500;
-const float lumi =19770.0;
+const float lumi =19710.0;
 
 
 const bool doPseudoExp=true;//true; //if true, for for different psuedo-alpha 
-const bool unblind=true;//default is not to plot the data in signal region
+const bool unblind=false;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=true;//choose what to plot as main fit function
 
@@ -31,7 +31,7 @@ std::string bkgd_decorr_name="levexp_dcr_xzz";
 std::string dims = "2d";
 
 
-const std::string datacardDir("DataCards_XZZ_20130731_prodv2d_2DTestX");
+const std::string datacardDir("DataCards_XZZ_20131004_prodv2f");
 float mZZmax_=2800;
 
 //**********systematics***********

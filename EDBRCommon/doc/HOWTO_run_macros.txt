@@ -87,7 +87,9 @@ python shuai_exo_doFit_class.py -c 3 --closuretest 2
 6. the macro will create plots for each category. The normalization
 to apply to the bkgd prediction will be printed at the last line 
 of the (long) log of the macro (the variable is called
-"rrv_number_WJets0_in_mj_signal_region_from_fitting_xx", where xx= el or mu)
+"rrv_number_WJets0_in_mj_signal_region_from_fitting_xx", where xx= el or mu).
+These numbers should be put inside fitBackground.cpp in order to be used
+when estimating the background from the fits.
 
 
 ------------
