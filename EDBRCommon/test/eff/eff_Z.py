@@ -10,10 +10,10 @@ from array import array
 root.gROOT.SetBatch()        # don't pop up canvases
 root.gROOT.SetStyle('Plain') # white background
 
-elebins_pt  = [20,40,60,90,120,150,200,250,300,400,500,600,700,800,900,1000,1200,1500]
-elebins_eta = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.2,1.5,2.0,2.5,3.0]
+elebins_pt  = [20,40,60,90,120,150,200,250,300,400,500,600,700,800,900,1000,1200,1500,2000]
+elebins_eta = [0.0,0.2,0.4,0.6,0.8,1.0,1.2,1.5,2.0,2.5,3.0]
 
-jetbins_pt =  [30,50,80,120,150,200,250,300,400,500,600,700,800,900,1000,1200,1500]
+jetbins_pt =  [30,50,80,120,150,200,250,300,400,500,600,700,800,900,1000,1200,1500,2000]
 jetbins_eta=  [0.,0.3,0.9,1.2,1.5,1.8,2.1,2.4]
 
 mubins_pt  =  elebins_pt
@@ -209,7 +209,7 @@ def processSubsample(file):
         #other event fitlers could go anywhere but need to be restricted to
         #either leptons or jets to avoid double counting
         if not event.object().triggerResultsByName("CMG").accept("eventFilterPath"):
-            print "failed trigger"
+            #print "failed trigger"
             continue
 
         #print "startele"
