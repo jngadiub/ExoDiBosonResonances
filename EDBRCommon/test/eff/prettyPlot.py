@@ -7,7 +7,7 @@ root.gROOT.SetStyle('Plain') # white background
 root.gStyle.SetOptStat(0) # white background
 root.gStyle.SetOptTitle(0)
 root.gStyle.SetPadRightMargin(0.12)
-root.gStyle.SetPaintTextFormat(".3f")
+root.gStyle.SetPaintTextFormat(".2f")
 
 def plotPretty(histo,filename):
     c=root.TCanvas("c","c",600,600)
