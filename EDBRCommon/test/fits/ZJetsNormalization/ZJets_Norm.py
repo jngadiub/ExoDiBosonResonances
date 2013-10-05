@@ -6,10 +6,11 @@ import array
 import ROOT
 import ntpath
 
-from ROOT import gROOT, TPaveLabel, gStyle, gSystem, TGaxis, TStyle, TLatex, TString, TF1,TFile,TLine, TLegend, TH1D,TH2D,THStack,TChain, TCanvas, TMatrixDSym, TMath, TText, TPad, RooFit, RooArgSet, RooArgList, RooArgSet, RooAbsData, RooAbsPdf, RooAddPdf, RooWorkspace, RooExtendPdf,RooCBShape, RooLandau, RooFFTConvPdf, RooGaussian, RooBifurGauss, RooArgusBG, RooDataSet, RooExponential,RooBreitWigner, RooVoigtian, RooNovosibirsk, RooRealVar,RooFormulaVar, RooDataHist, RooHistPdf,RooCategory, RooChebychev, RooSimultaneous, RooGenericPdf,RooConstVar, RooKeysPdf, RooHistPdf, RooEffProd, RooProdPdf, TIter, kTRUE, kFALSE, kGray, kRed, kDashed, kGreen,kAzure, kOrange, kBlack,kBlue,kYellow,kCyan, kMagenta, kWhite
+from ROOT import gROOT, TPaveLabel, gStyle, gSystem, TGaxis, TStyle, TLatex, TString, TF1,TFile,TLine, TLegend, TH1D,TH2D,THStack,TChain, TCanvas, TMatrixDSym, TMath, TText, TPad, RooFit, RooArgSet, RooArgList, RooArgSet, RooAbsData, RooAbsPdf, RooAddPdf, RooWorkspace, RooExtendPdf,RooCBShape, RooLandau, RooFFTConvPdf, RooGaussian, RooBifurGauss, RooArgusBG, RooDataSet, RooExponential,RooBreitWigner, RooVoigtian, RooNovosibirsk, RooRealVar,RooFormulaVar, RooDataHist, RooHistPdf,RooCategory, RooChebychev, RooSimultaneous, RooGenericPdf,RooConstVar, RooKeysPdf, RooHistPdf, RooEffProd, RooProdPdf, TIter, kTRUE, kFALSE, kGray, kRed, kDashed, kGreen,kAzure, kOrange, kBlack,kBlue,kYellow,kCyan, kMagenta, kWhite,RooMsgService
 import subprocess
 from subprocess import Popen
 from optparse import OptionParser
+RooMsgService.instance().setGlobalKillBelow(RooFit.WARNING) ;
 
 #from sampleWrapperClass import *
 #from trainingClass      import *
@@ -54,7 +55,7 @@ from ROOT import draw_error_band, draw_error_band_extendPdf, draw_error_band_Dec
 
 
 class doFit_wj_and_wlvj:
-    def __init__(self, in_channel,in_signal_sample, in_mlvj_signal_region_min=500, in_mlvj_signal_region_max=700, in_mj_min=30, in_mj_max=140, in_mlvj_min=400., in_mlvj_max=1400., fit_model="ErfExp_v1", fit_model_alter="ErfPow_v1", input_workspace=None):
+    def __init__(self, in_channel,in_signal_sample, in_mlvj_signal_region_min=500, in_mlvj_signal_region_max=700, in_mj_min=50, in_mj_max=130, in_mlvj_min=400., in_mlvj_max=1400., fit_model="ErfExp_v1", fit_model_alter="ErfPow_v1", input_workspace=None):
         self.setTDRStyle();#set plots style
         print "Begin to fit"
 
@@ -122,14 +123,14 @@ class doFit_wj_and_wlvj:
         if options.fitwtagger or options.fitwtaggersim:
             self.file_Directory="trainingtrees_exo_%s/"%(self.channel);
         else: 
-            self.file_Directory="DATA/";
+            self.file_Directory="Data/";
 
         self.PS_model= options.psmodel
-        self.file_data=("EXOVVTree_DATA_SIGSB_NOcut.root");#keep blind!!!!
+        self.file_data=("EXOVVTree_unrolled_DATA_SIG.root");#keep blind!!!!
         #WJets0 is the default PS model, WJets1 is the alternative PS model
-        self.file_WJets0_mc=("EXOVVTree_MCDY_SIGSB_NOcut.root");
-        self.file_VV_mc=("EXOVVTree_MCVV_SIGSB_NOcut.root");# WW+WZ 
-        self.file_TTbar_mc=("EXOVVTree_MCTT_SIGSB_NOcut.root");
+        self.file_WJets0_mc=("EXOVVTree_unrolled_VJets_SIG.root");
+        self.file_VV_mc=("EXOVVTree_unrolled_VV_SIG.root");# WW+WZ 
+        self.file_TTbar_mc=("EXOVVTree_unrolled_TT_SIG.root");
         
         #result files: The event number, parameters and error write into a txt file. The dataset and pdfs write into a root file
         if not os.path.isdir("cards_%s_%s"%(options.additioninformation, self.channel)): os.system("mkdir cards_%s_%s"%(options.additioninformation, self.channel));
@@ -2516,6 +2517,8 @@ class doFit_wj_and_wlvj:
         hnum_2region=TH1D("hnum_2region"+label+"_"+self.channel,"hnum_2region"+label+"_"+self.channel,2,-0.5,1.5);# m_lvj  0: signal_region; 1: total
         if self.channel=="el": tmp_lumi=19770.0;
         else: tmp_lumi=19770.0;
+
+        count_sb_low=0
         for i in range(treeIn.GetEntries()):
             if i % 100000 == 0: print "i: ",i
             treeIn.GetEntry(i);
@@ -2547,11 +2550,14 @@ class doFit_wj_and_wlvj:
                 rrv_mass_j.setVal( tmp_jet_mass );
                 rdataset_mj.add( RooArgSet( rrv_mass_j ), tmp_event_weight );
                 rdataset4fit_mj.add( RooArgSet( rrv_mass_j ), tmp_event_weight4fit );
-                if tmp_jet_mass >=self.mj_sideband_lo_min and tmp_jet_mass <self.mj_sideband_lo_max: hnum_4region.Fill(-1,tmp_event_weight );
+                if tmp_jet_mass >=self.mj_sideband_lo_min and tmp_jet_mass <self.mj_sideband_lo_max:
+                    hnum_4region.Fill(-1,tmp_event_weight );
+                    count_sb_low=(count_sb_low+1)
                 if tmp_jet_mass >=self.mj_signal_min      and tmp_jet_mass <self.mj_signal_max     : hnum_4region.Fill(0,tmp_event_weight);
                 if tmp_jet_mass >=self.mj_sideband_hi_min and tmp_jet_mass <self.mj_sideband_hi_max: hnum_4region.Fill(1,tmp_event_weight);
                 hnum_4region.Fill(2,tmp_event_weight);
-
+                
+        print '(a) Finished to fill norm histogram for ', in_file_name,' . HistoName: ',hnum_4region.GetName(),' ; The bin contents are ',hnum_4region.GetBinContent(1),'  ',hnum_4region.GetBinContent(2),'  ',hnum_4region.GetBinContent(3), '  The count of lower sb is ',count_sb_low
         if not label=="_data": 
             if TString(label).Contains("_TTbar") or TString(label).Contains("_STop") :
                 tmp_scale_to_lumi=tmp_scale_to_lumi*self.rrv_wtagger_eff_reweight_forT.getVal();
@@ -2570,7 +2576,9 @@ class doFit_wj_and_wlvj:
         getattr(self.workspace4fit_,"import")(rrv_number_dataset_AllRange_mlvj)
                
         #prepare m_j dataset
+        print '(2) Creating variable rrv_number_dataset_sb_lo_mj. Histo ',hnum_4region.GetName(),'  Nbins: ',hnum_4region.GetNbinsX(),'  Nentries: ',hnum_4region.GetEntries()
         rrv_number_dataset_sb_lo_mj=RooRealVar("rrv_number_dataset_sb_lo"+label+"_"+self.channel+"_mj","rrv_number_dataset_sb_lo"+label+"_"+self.channel+"_mj",hnum_4region.GetBinContent(1));
+        print '+*+*+*+*===> ', rrv_number_dataset_sb_lo_mj.Print()
         rrv_number_dataset_signal_region_mj=RooRealVar("rrv_number_dataset_signal_region"+label+"_"+self.channel+"_mj","rrv_number_dataset_signal_region"+label+"_"+self.channel+"_mj",hnum_4region.GetBinContent(2));
         rrv_number_dataset_sb_hi_mj=RooRealVar("rrv_number_dataset_sb_hi"+label+"_"+self.channel+"_mj","rrv_number_dataset_sb_hi"+label+"_"+self.channel+"_mj",hnum_4region.GetBinContent(3));
         getattr(self.workspace4fit_,"import")(rrv_number_dataset_sb_lo_mj)
@@ -2583,7 +2591,7 @@ class doFit_wj_and_wlvj:
 
         rrv_number_dataset_signal_region_mlvj.Print()
         rrv_number_dataset_AllRange_mlvj.Print()
-        rrv_number_dataset_sb_lo_mj.Print()
+        print '-*-*-* ===> ',rrv_number_dataset_sb_lo_mj.Print()
         rrv_number_dataset_signal_region_mj.Print()
         rrv_number_dataset_sb_hi_mj.Print()
         #raw_input("ENTER");
@@ -2746,6 +2754,8 @@ class doFit_wj_and_wlvj:
         getattr(self.workspace4fit_,"import")(combData_p_f);
         self.file_out.write("\n%s events number in m_lvj from dataset: %s"%(label,rdataset_signal_region_mlvj.sumEntries()))
         #prepare m_j dataset
+        print '(1) Creating variable rrv_number_dataset_sb_lo_mj. Histo ',hnum_4region.GetName(),'  Nbins: ',hnum_4region.GetNbinsX(),'  Nentries: ',hnum_4region.GetEntries()
+        
         rrv_number_dataset_sb_lo_mj=RooRealVar("rrv_number_dataset_sb_lo"+label+"_"+self.channel+"_mj","rrv_number_dataset_sb_lo"+label+"_"+self.channel+"_mj",hnum_4region.GetBinContent(1));
         rrv_number_dataset_signal_region_mj=RooRealVar("rrv_number_dataset_signal_region"+label+"_"+self.channel+"_mj","rrv_number_dataset_signal_region"+label+"_"+self.channel+"_mj",hnum_4region.GetBinContent(2));
         rrv_number_dataset_signal_region_error2_mj=RooRealVar("rrv_number_dataset_signal_region_error2"+label+"_"+self.channel+"_mj","rrv_number_dataset_signal_region_error2"+label+"_"+self.channel+"_mj",hnum_4region_error2.GetBinContent(2));
@@ -2777,7 +2787,7 @@ class doFit_wj_and_wlvj:
         rdataset4fit_mj.Print();
         rrv_number_dataset_signal_region_mlvj.Print()
         rrv_number_dataset_AllRange_mlvj.Print()
-        rrv_number_dataset_sb_lo_mj.Print()
+        print '+*+*+*+*===> ', rrv_number_dataset_sb_lo_mj.Print()
         rrv_number_dataset_signal_region_mj.Print()
         rrv_number_dataset_signal_region_before_mva_mj.Print()
         rrv_number_dataset_sb_hi_mj.Print()
@@ -3046,7 +3056,7 @@ class doFit_wj_and_wlvj:
         rrv_WJets01.Print();
         total_uncertainty=TMath.Sqrt( TMath.Power(rrv_WJets0.getError(),2)+ TMath.Power(rrv_WJets1.getVal()-rrv_WJets0.getVal(),2)+ TMath.Power(rrv_WJets01.getVal()-rrv_WJets0.getVal(),2) );
         rrv_WJets0.setError(total_uncertainty);
-        rrv_WJets0.Print();
+#$$##
 
         #jet mass uncertainty on WJets normalization
         rrv_WJets0massup=self.workspace4fit_.var("rrv_number_WJets0massup_in_mj_signal_region_from_fitting_%s"%(self.channel)); 
@@ -3166,8 +3176,9 @@ class doFit_wj_and_wlvj:
         #error
         rrv_number_WJets_in_mj_signal_region_from_fitting.setError( Calc_error_extendPdf(rdataset_data_mj, model_WJets, rfresult,"signal_region") );
         print "error=%s"%(rrv_number_WJets_in_mj_signal_region_from_fitting.getError());
-        getattr(self.workspace4fit_,"import")(rrv_number_WJets_in_mj_signal_region_from_fitting);
-        rrv_number_WJets_in_mj_signal_region_from_fitting.Print();
+        getattr(self.workspace4fit_,"import")(rrv_number_WJets_in_mj_signal_region_from_fitting)
+        print ''
+        print 'Final normalization for Z+jets ===> ',rrv_number_WJets_in_mj_signal_region_from_fitting.Print();
         #self.workspace4fit_.var("rrv_number%s_%s_mj"%(label,self.channel)).Print();
    ######## ++++++++++++++
     def fit_mlvj_in_Mj_sideband(self, label, mlvj_region, mlvj_model): 
@@ -3431,6 +3442,11 @@ class doFit_wj_and_wlvj:
         sb_hiInt_val=sb_hiInt.getVal()/fullInt_val
         signalInt_val=signalInt.getVal()/fullInt_val
 
+        print 'fullInt_val ',fullInt_val
+        print 'sb_loInt_val ',sb_loInt_val
+        print 'sb_hiInt_val ',sb_hiInt_val
+        print 'signalInt_val ',signalInt_val
+
         print "Events Number in MC Dataset:"
         self.workspace4fit_.var("rrv_number_dataset_sb_lo"+label+"_"+self.channel+"_mj").Print();
         self.workspace4fit_.var("rrv_number_dataset_signal_region"+label+"_"+self.channel+"_mj").Print();
@@ -3451,7 +3467,10 @@ class doFit_wj_and_wlvj:
         self.file_out.write( "\nEvents Number in Signal Region from dataset:%s"%(self.workspace4fit_.var("rrv_number_dataset_signal_region"+label+"_"+self.channel+"_mj").getVal() ) )
         self.file_out.write( "\nEvents Number in sideband_high from dataset:%s"%(self.workspace4fit_.var("rrv_number_dataset_sb_hi"+label+"_"+self.channel+"_mj").getVal() ) )
         self.file_out.write( "\nTotal  Number in sidebands     from dataset:%s"%(self.workspace4fit_.var("rrv_number_dataset_sb_lo"+label+"_"+self.channel+"_mj").getVal()+ self.workspace4fit_.var("rrv_number_dataset_sb_hi"+label+"_"+self.channel+"_mj").getVal() ) )
-        self.file_out.write( "\nRatio signal_region/sidebands  from dataset:%s"%(self.workspace4fit_.var("rrv_number_dataset_signal_region"+label+"_"+self.channel+"_mj").getVal()/(self.workspace4fit_.var("rrv_number_dataset_sb_lo"+label+"_"+self.channel+"_mj").getVal()+ self.workspace4fit_.var("rrv_number_dataset_sb_hi"+label+"_"+self.channel+"_mj").getVal()) ) )
+
+        print '---> Signal=',self.workspace4fit_.var("rrv_number_dataset_signal_region"+label+"_"+self.channel+"_mj").getVal(),'   Sideband=',self.workspace4fit_.var("rrv_number_dataset_sb_lo"+label+"_"+self.channel+"_mj").getVal(),'  +  ',self.workspace4fit_.var("rrv_number_dataset_sb_hi"+label+"_"+self.channel+"_mj").getVal()
+        
+        self.file_out.write( "\nRatio signal_region/sidebands  from dataset:%s"%(self.workspace4fit_.var("rrv_number_dataset_signal_region"+label+"_"+self.channel+"_mj").getVal()/ (self.workspace4fit_.var("rrv_number_dataset_sb_lo"+label+"_"+self.channel+"_mj").getVal()+ self.workspace4fit_.var("rrv_number_dataset_sb_hi"+label+"_"+self.channel+"_mj").getVal()) ) )
 
         self.file_out.write( "\nEvents Number in sideband_low  from fitting:%s"%(rrv_tmp.getVal()*sb_loInt_val) )
         self.file_out.write( "\nEvents Number in Signal Region from fitting:%s"%(rrv_tmp.getVal()*signalInt_val) )
@@ -4025,6 +4044,8 @@ class doFit_wj_and_wlvj:
         cMassFit.SaveAs(rlt_file.Data());
         rlt_file.ReplaceAll(".png",".pdf"); 
         cMassFit.SaveAs(rlt_file.Data());
+        rlt_file.ReplaceAll(".pdf",".root"); 
+        cMassFit.SaveAs(rlt_file.Data());
 
         string_file_name=TString(in_file_name);
         if string_file_name.EndsWith(".root"): string_file_name.ReplaceAll(".root","_"+in_model_name);
@@ -4037,6 +4058,8 @@ class doFit_wj_and_wlvj:
             rlt_file.ReplaceAll(".pdf","_log.pdf"); 
             cMassFit.SaveAs(rlt_file.Data());
             rlt_file.ReplaceAll(".pdf",".png"); 
+            cMassFit.SaveAs(rlt_file.Data());
+            rlt_file.ReplaceAll(".png",".root"); 
             cMassFit.SaveAs(rlt_file.Data());
 
         self.draw_canvas(mplot,in_directory,string_file_name.Data(),0,logy);

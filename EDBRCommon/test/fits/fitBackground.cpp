@@ -275,29 +275,43 @@ int main(){
 
       double normalizationOLD=dsDataSB2tmp->sumEntries();
       delete weightedData;delete dsDataSB2tmp;
-      // assign wjets normalization
+
+      // assign wjets normalization from external info (for example: fit to MJ sidebands)
+      // do it only if you are taking the other bkgds from MC (this is an assumption
+      // done when calculating the new V+jets normalization)
       double normalizationNEW=normalizationOLD;
 
-      if(!isZZChannel&&inxj==1)
-	{
-	  if(InTreeName=="SelectedCandidatesAB")
-	    {
-	      // for A->B
+      if(inxj==1&&!useAlphaVV){
+	  if(InTreeName=="SelectedCandidatesAB"){ // for closure test A->B
+	    if(isZZChannel) normalizationNEW=normalizationOLD;
+	    else{
 	      if(leptType=="ELE"&&purityCut==0)normalizationNEW=91.7039;
 	      if(leptType=="ELE"&&purityCut==1)normalizationNEW=121.074;
 	      if(leptType=="MU"&&purityCut==0)normalizationNEW=175.271;
 	      if(leptType=="MU"&&purityCut==1)normalizationNEW=198.2;
 	    }
-	  else if(InTreeName=="SelectedCandidates")
-	    {
-	      //for Ana , wjets 180
+	  }
+	  else if(InTreeName=="SelectedCandidates"){
+	    if(isZZChannel){
+	      if(leptType=="ELE"&&purityCut==0)normalizationNEW=418.995;
+	      if(leptType=="ELE"&&purityCut==1)normalizationNEW=325.129;
+	      if(leptType=="MU"&&purityCut==0)normalizationNEW=678.327;
+	      if(leptType=="MU"&&purityCut==1)normalizationNEW=563.395;
+	      if(leptType=="ALL"&&purityCut==0)normalizationNEW=1097.322;
+	      if(leptType=="ALL"&&purityCut==1)normalizationNEW=888.524;
+	    }
+	    else{//WW analysis; for Ana , wjets 180
 	      if(leptType=="ELE"&&purityCut==0)normalizationNEW=546.608;
 	      if(leptType=="ELE"&&purityCut==1)normalizationNEW=339.861;
 	      if(leptType=="MU"&&purityCut==0)normalizationNEW=835.742;
 	      if(leptType=="MU"&&purityCut==1)normalizationNEW=536.198;
 	    }
-	}//end if(!isZZChannel&&inxj==1)
-
+	  }
+	  else{
+	    logf<<"WARNING !!! Requested to normalize V+jets bkgd to externally provided values, but tree name does not match. TreeName: "<<InTreeName.c_str()<<std::endl;
+	  }
+      }//end if(!useAlphaVV&&inxj==1)
+      //      normalizationNEW=normalizationOLD;
       logf<<" normalizationNEW "<<normalizationNEW<<" normalizationOLD  "<<normalizationOLD<<endl;
 
       name_datasb2="dsDataSB2";
@@ -745,14 +759,17 @@ int main(){
       if(!plotFixedBinning)
 	{
 	  dsDataSB2->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(21),MarkerColor(kRed),RooFit::Range("plotRange"));//,Normalization(dsDataSB2->numEntries(),RooAbsPdf::NumEvent)
-	  if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack),RooFit::Range("plotRange"));
 	  if(useMCHM)HMDataSetWeight->plotOn(xf,MarkerStyle(21),MarkerColor(kBlue-7),Binning(RooBinning(nBins-1,bins)),RooFit::Range("plotRange"));
+	  if(unblind)dsDataSIG->plotOn(xf,Binning(RooBinning(nBins-1,bins)),MarkerStyle(20),MarkerColor(kBlack),RooFit::Range("plotRange"));
+
 	}
       else
 	{
+
 	  dsDataSB2->plotOn(xf,MarkerStyle(21),MarkerColor(kRed));
-	  if(unblind)dsDataSIG->plotOn(xf,MarkerStyle(20),MarkerColor(kBlack));
 	  if(useMCHM)HMDataSetWeight->plotOn(xf,MarkerStyle(21),MarkerColor(kBlue-7));
+	  if(unblind)dsDataSIG->plotOn(xf,MarkerStyle(20),MarkerColor(kBlack));
+
 	}
 
       logf<<"Check nromalization: NumEntries of dsDataSIG= "<<dsDataSIG->numEntries() <<"("<<dsDataSIG->sumEntries() <<")    SumEntries of dsDataSB2="<<dsDataSB2->sumEntries()<<"   numEntries="<<dsDataSB2->numEntries()<<"    Nbkg (NORM)="<<NbkgRange->getVal()<<"   Nent="<<Nent->getVal()<<"     Nerr="<<Nerr->getVal() <<std::endl;
@@ -772,7 +789,7 @@ int main(){
 
 
 	  fPads1->cd();
-	  RooHist* hpull = xf->pullHist() ;
+	  RooHist* hpull = xf->pullHist();
 	  xf->Draw();
 	  fPads1->Update();
 

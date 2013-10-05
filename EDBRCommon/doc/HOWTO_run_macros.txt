@@ -41,26 +41,37 @@ read the numbers in ttbar_scale_plots/ttbar_scale_factor.txt
 
 
 -----------------
-WJets normalization
+VJets normalization :
 
-cd ExoDiBosonResonances/EDBRCommon/test/fits/WJetsNormalization
-1. put sample in Data
-cd Data/
-Edit Path in cp.sh
+#### NOTE: the following instructions apply to the WW case,
+#### for the ZZ things work in the same way just using a different python
+#### script ("ZJets_norm.py" instead of "shuai_exo_doFit_class.py")
+
+1. create special unrolled trees. The format is slightly different from
+what is needed in the rest of the stat analysis.
+
+cd ExoDiBosonResonances/EDBRCommon/test/fits/
+# edit paths and outputs in unroll_trees.C
+root -b
+[0] .L unroll_trees.C++
+[1] unroll_trees()
+
+2. put sample in Data
+cd ExoDiBosonResonances/EDBRCommon/test/fits/WJetsNormalization/Data/
+# Edit Path and filenames in cp.sh such that they match 
+# what is required in shuai_exo_doFit_class.py
 sh cp.sh
 
-2. compile
+3. compile
 cd PDFs 
 cmsenv
 rt -b
 gSystem->AddIncludePath("-I$ROOFITSYS/include")
-.L  HWWLVJRooPdfs.cxx++
-.L  PdfDiagonalizer.cc++
 
-3. put the ttbar scale factors in 
+4. put the ttbar scale factors in 
 shuai_exo_doFit_class.py, line 206
 
-4. run
+5. run
 read the numbers in the last line of the print out
 For the analysis
 python shuai_exo_doFit_class.py  -c 0  
@@ -72,6 +83,14 @@ python shuai_exo_doFit_class.py -c 0 --closuretest 2
 python shuai_exo_doFit_class.py -c 1 --closuretest 2   
 python shuai_exo_doFit_class.py -c 2 --closuretest 2   
 python shuai_exo_doFit_class.py -c 3 --closuretest 2   
+
+6. the macro will create plots for each category. The normalization
+to apply to the bkgd prediction will be printed at the last line 
+of the (long) log of the macro (the variable is called
+"rrv_number_WJets0_in_mj_signal_region_from_fitting_xx", where xx= el or mu).
+These numbers should be put inside fitBackground.cpp in order to be used
+when estimating the background from the fits.
+
 
 ------------
 Background estimation

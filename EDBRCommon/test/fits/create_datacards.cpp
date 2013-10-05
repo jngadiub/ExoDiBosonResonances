@@ -108,8 +108,8 @@ int main( int argc, char* argv[] ) {
 
   float lumi_ELE;
   float lumi_MU;
-  lumi_ELE=19760.; //pb^-1
-  lumi_MU =19780.; //pb^-1
+  lumi_ELE=19712.; //pb^-1
+  lumi_MU =19671.; //pb^-1
 
   std::cout<<"Starting card creation with the following settings:"<<endl;
   std::cout<<"InputDir with fits: "<<myOutDir.c_str()<<endl;
@@ -364,7 +364,7 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   ////////////////////
   //->  and now systematics:
 
-  ofs << "lumi_8TeV\t\t\tlnN\t1.044\t\t\t1.0" << std::endl;
+  ofs << "lumi_8TeV\t\t\tlnN\t1.026\t\t\t1.0" << std::endl;
 
   //std::pair<double,double> pdf_gg  = theorSyst( hp.XSpdfgg_m, hp.XSpdfgg_p, 0.04, 0.015 );
   //ofs << "pdf_gg\t\tlnN\t" << systString(pdf_gg) << "\t1.0" << std::endl;
