@@ -47,14 +47,14 @@ process.ANEDBR = AnalyzerXZZ.clone(
 processFullSel=True
 
 if processFullSel :
-        process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
-        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
-        process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
-        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
-#        process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
-#        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
-#        process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
-#        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
+#	process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
+#        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
+#        process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
+#        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
+        process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
+        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
+        process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
+        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
 
 #    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
 #    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
@@ -441,52 +441,20 @@ elif "BulkG_WW_lvjj_c0p2_M2500" in "<SAMPLE>" :
 
 ### Data
 #zz--doublemu
-elif "<SAMPLE>"=="DoubleMu_Run2012A_13Jul2012" :
+elif "<SAMPLE>"=="DoubleMu_Run2012A_22Jan2013" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoubleMu_Run2012A_recover" :
-    process.ANEDBR.Ngen=cms.uint32(1)
-    process.ANEDBR.xsec=cms.double(1)
-    process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoubleMu_Run2012B_13Jul2012" :
-    process.ANEDBR.Ngen=cms.uint32(1)
-    process.ANEDBR.xsec=cms.double(1)
-    process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoubleMu_Run2012C_24Aug2012" :
-    process.ANEDBR.Ngen=cms.uint32(1)
-    process.ANEDBR.xsec=cms.double(1)
-    process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoubleMu_Run2012C_PRv2" :
-    process.ANEDBR.Ngen=cms.uint32(1)
-    process.ANEDBR.xsec=cms.double(1)
-    process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoubleMu_Run2012D_PRv1" :
+elif "DoubleMuParked_Run2012" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
 ##zz--doubleEle
-elif "<SAMPLE>"=="Photon_Run2012A_13Jul2012" :
+elif "<SAMPLE>"=="Photon_Run2012A_22Jan2013" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="Photon_Run2012A_recover" :
-    process.ANEDBR.Ngen=cms.uint32(1)
-    process.ANEDBR.xsec=cms.double(1)
-    process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoublePhotonHighPt_Run2012B_13Jul2012" :
-    process.ANEDBR.Ngen=cms.uint32(1)
-    process.ANEDBR.xsec=cms.double(1)
-    process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoublePhotonHighPt_Run2012C_24Aug2012" :
-    process.ANEDBR.Ngen=cms.uint32(1)
-    process.ANEDBR.xsec=cms.double(1)
-    process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoublePhotonHighPt_Run2012C_PRv2" :
-    process.ANEDBR.Ngen=cms.uint32(1)
-    process.ANEDBR.xsec=cms.double(1)
-    process.ANEDBR.isMC=cms.bool(False)
-elif "<SAMPLE>"=="DoublePhotonHighPt_Run2012D_PRv1" :
+elif "DoublePhotonHighPt_Run2012" in  "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(1)
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)

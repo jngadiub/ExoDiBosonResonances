@@ -15,7 +15,7 @@ const float lumi =19710.0;
 
 
 const bool doPseudoExp=true;//true; //if true, for for different psuedo-alpha 
-const bool unblind=false;//default is not to plot the data in signal region
+const bool unblind=true;//default is not to plot the data in signal region
 const bool decorrLevExpo=true;
 const bool plotDecorrLevExpoMain=true;//choose what to plot as main fit function
 
@@ -28,7 +28,7 @@ std::string channel_marker="xzz";
 
 std::string bkgd_decorr_name="levexp_dcr_xzz";
 
-std::string dims = "2d";
+std::string dims = "1d";
 
 
 const std::string datacardDir("DataCards_XZZ_20131004_prodv2f");
