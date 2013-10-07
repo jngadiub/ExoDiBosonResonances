@@ -1,5 +1,5 @@
 
-const std::string myOutDir="FitSidebandsMJJ_ZZ_20130930_prodv2f_ALL/";//_Unblinded
+const std::string myOutDir="FitSidebandsMJJ_ZZ_20131007_prodv2f_ALL/";//_Unblinded
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2f/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2f/fullsb/";
 
@@ -31,7 +31,7 @@ std::string bkgd_decorr_name="levexp_dcr_xzz";
 std::string dims = "1d";
 
 
-const std::string datacardDir("DataCards_XZZ_20131004_prodv2f");
+const std::string datacardDir("DataCards_XZZ_20131007_prodv2f");
 float mZZmax_=2800;
 
 //**********systematics***********

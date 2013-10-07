@@ -274,6 +274,13 @@ int main(){
       RooDataSet *dsDataSB2tmp=new RooDataSet(name_datasb2.c_str(),name_datasb2.c_str(),weightedData,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
 
       double normalizationOLD=dsDataSB2tmp->sumEntries();
+
+      //for ZZ, 1JLP, define correction for normalization usign only fit range
+      if(isZZChannel&&purityCut==0){
+	normalizationOLD=(dsDataSB2tmp->reduce(Cut("mZZ>650.0&&mZZ<2800.0")))->sumEntries();
+      }
+
+
       delete weightedData;delete dsDataSB2tmp;
 
       // assign wjets normalization from external info (for example: fit to MJ sidebands)
@@ -293,11 +300,15 @@ int main(){
 	  }
 	  else if(InTreeName=="SelectedCandidates"){
 	    if(isZZChannel){
-	      if(leptType=="ELE"&&purityCut==0)normalizationNEW=418.995;
+	      //LP norm calculated in [650, 2800]
+	      //if(leptType=="ELE"&&purityCut==0)normalizationNEW=418.995;//in [500, 2800]
+	      if(leptType=="ELE"&&purityCut==0)normalizationNEW=198.801;
 	      if(leptType=="ELE"&&purityCut==1)normalizationNEW=325.129;
-	      if(leptType=="MU"&&purityCut==0)normalizationNEW=678.327;
+	      //if(leptType=="MU"&&purityCut==0)normalizationNEW=678.327;//in [500, 2800]
+	      if(leptType=="MU"&&purityCut==0)normalizationNEW=331.899;
 	      if(leptType=="MU"&&purityCut==1)normalizationNEW=563.395;
-	      if(leptType=="ALL"&&purityCut==0)normalizationNEW=1097.322;
+	      //if(leptType=="ALL"&&purityCut==0)normalizationNEW=1097.322;//in [500, 2800]
+	      if(leptType=="ALL"&&purityCut==0)normalizationNEW=530.700;
 	      if(leptType=="ALL"&&purityCut==1)normalizationNEW=888.524;
 	    }
 	    else{//WW analysis; for Ana , wjets 180
@@ -312,10 +323,12 @@ int main(){
 	  }
       }//end if(!useAlphaVV&&inxj==1)
       //      normalizationNEW=normalizationOLD;
+
+      double normCorrection=normalizationNEW/normalizationOLD;
       logf<<" normalizationNEW "<<normalizationNEW<<" normalizationOLD  "<<normalizationOLD<<endl;
 
       name_datasb2="dsDataSB2";
-      TTree* weightedData2 = weightTree(treeDATA_tmp , (TH1D*)falpha->Get(alphahname)  ,"alphaWeightedTree2",false,normalizationNEW/normalizationOLD );
+      TTree* weightedData2 = weightTree(treeDATA_tmp , (TH1D*)falpha->Get(alphahname)  ,"alphaWeightedTree2",false,normCorrection );
       RooDataSet *dsDataSB2=new RooDataSet(name_datasb2.c_str(),name_datasb2.c_str(),weightedData2,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity,*alphaWeight),cutSB.c_str(),"alphaWeight") ;
       std::string name_datasig="dsDataSIG";//"_"+ssnxj.str()+"J"+pur_str;
       RooDataSet *dsDataSIG=new RooDataSet(name_datasig.c_str(),name_datasig.c_str(),(TTree*)treeDATA_sig,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*vTagPurity),cutSIG.c_str()) ;//real data in signal region; cuts on mjj and nXjets
@@ -359,6 +372,7 @@ int main(){
 	delete mccontrol;
 	delete canX;
 	logf<<"; after addition of VV-MC: "<<dsDataSB2->sumEntries()<<endl;
+	logf<<"Norm of VV MC in mZZ [650, 2800] -> ELE= "<<(VVDataSetWeight->reduce(Cut("lep==0&&mZZ>650&&mZZ<2800")))->sumEntries()<<"  MU= "<<(VVDataSetWeight->reduce(Cut("lep==1&&mZZ>650&&mZZ<2800")))->sumEntries()<<endl;
 	cout<<"Finished to add the VV MC to the extrapolated SB."<<endl;
       }//end if not usealphavv
 
@@ -452,6 +466,11 @@ int main(){
       RooRealVar *NbkgELE=new RooRealVar("bkgdNormalizationFullRangeELE",("Background normalization in ["+strmcut.str()+", maxMZZ]  (ELE)").c_str(),dsDataSB2->reduce("lep==0")->sumEntries(),0.0,10000.0);
       RooRealVar *NbkgMU=new RooRealVar("bkgdNormalizationFullRangeMU",("Background normalization in ["+strmcut.str()+", maxMZZ]  (MU)").c_str(),dsDataSB2->reduce("lep==1")->sumEntries(),0.0,10000.0);
       Nbkg->setConstant(kTRUE);
+      //normalizations in fit range
+      //for ZZ: normalization in [500, 2800] always, also for LP
+      //reason is that one must create workspaces for HiggsComb tool
+      //using same RooRealVar otherwise mess with RooStats when 
+      //combining channels
       RooRealVar *NbkgRange=new RooRealVar("bkgdNormalizationFitRange","Background normalization in range of fit (ELE+MU)",dsDataSB2->reduce(CutRange("fitRange"))->sumEntries(),0.0,10000.0);
       RooRealVar *NbkgRangeELE=new RooRealVar("bkgdNormalizationFitRangeELE","Background normalization in range of fit (ELE)",dsDataSB2->reduce(CutRange("fitRange"))->reduce("lep==0")->sumEntries(),0.0,10000.0);
       RooRealVar *NbkgRangeMU=new RooRealVar("bkgdNormalizationFitRangeMU","Background normalization in range of fit (MU)",dsDataSB2->reduce(CutRange("fitRange"))->reduce("lep==1")->sumEntries(),0.0,10000.0);
@@ -461,9 +480,9 @@ int main(){
       NbkgRange->setConstant(kTRUE);
 
       //for High mass (>2000)
-      RooRealVar *Nbkg2000=new RooRealVar("bkgdNormalization500","Background normalization starting at M_VV=500 GeV",dsDataSB2->reduce(Cut("mZZ>2000.0"))->sumEntries(),0.0,10000.0);
-      RooRealVar *Nbkg2000ELE=new RooRealVar("bkgdNormalization500ELE","Background normalization  starting at M_VV=500 GeV (ELE)",dsDataSB2->reduce(Cut("mZZ>2000.0&&lep==0"))->sumEntries(),0.0,10000.0);
-      RooRealVar *Nbkg2000MU=new RooRealVar("bkgdNormalization500MU","Background normalization  starting at M_VV=500 GeV (MU)",dsDataSB2->reduce(Cut("mZZ>2000.0&&lep==1"))->sumEntries(),0.0,10000.0);
+      RooRealVar *Nbkg2000=new RooRealVar("bkgdNormalization2000","Background normalization starting at M_VV=500 GeV",dsDataSB2->reduce(Cut("mZZ>2000.0"))->sumEntries(),0.0,10000.0);
+      RooRealVar *Nbkg2000ELE=new RooRealVar("bkgdNormalization2000ELE","Background normalization  starting at M_VV=500 GeV (ELE)",dsDataSB2->reduce(Cut("mZZ>2000.0&&lep==0"))->sumEntries(),0.0,10000.0);
+      RooRealVar *Nbkg2000MU=new RooRealVar("bkgdNormalization2000MU","Background normalization  starting at M_VV=500 GeV (MU)",dsDataSB2->reduce(Cut("mZZ>2000.0&&lep==1"))->sumEntries(),0.0,10000.0);
       RooRealVar *SFDYHM=new RooRealVar("sfMCHighMass","Data/MC scale factor applied to DY+VV MC at high mass (applied only if requested)",DATAMC_HMSF[iP],0.0,10.0);
       SFDYHM->setConstant(kTRUE);
       // a0->setConstant(kTRUE);
@@ -478,6 +497,7 @@ int main(){
 	logf<<dsDataSIG->GetName()<<"  -> ALL: "<<dsDataSIG->numEntries()<<" ELE: "<<dsDataSIG->reduce("lep==0")->numEntries()<<" MU: "<<dsDataSIG->reduce("lep==1")->numEntries()<<endl;
 
 	logf<<dsDataSIG->GetName()<<" in [500, 2200]  -> ALL: "<<dsDataSIG->reduce("mZZ>500.0&&mZZ<2200.0")->numEntries()<<" ELE: "<<dsDataSIG->reduce("lep==0&&mZZ>500.0&&mZZ<2200.0")->numEntries()<<" MU: "<<dsDataSIG->reduce("lep==1&&mZZ>500.0&&mZZ<2200.0")->numEntries()<<endl;
+	logf<<dsDataSIG->GetName()<<" in [650, 2800]  -> ALL: "<<dsDataSIG->reduce("mZZ>650.0&&mZZ<2800.0")->numEntries()<<" ELE: "<<dsDataSIG->reduce("lep==0&&mZZ>650.0&&mZZ<2800.0")->numEntries()<<" MU: "<<dsDataSIG->reduce("lep==1&&mZZ>650.0&&mZZ<2800.0")->numEntries()<<endl;
 	logf<<dsDataSIG->GetName()<<" in [2000, INF]  -> ALL: "<<dsDataSIG->reduce("mZZ>2000.0")->numEntries()<<" ELE: "<<dsDataSIG->reduce("lep==0&&mZZ>2000.0")->numEntries()<<" MU: "<<dsDataSIG->reduce("lep==1&&mZZ>2000.0")->numEntries()<<endl;
       }
       r_sig2->printMultiline(logf,99,true);
@@ -647,7 +667,7 @@ int main(){
 	  if(n%50==0)std::cout<<"Throwing toy #"<<n<<"/"<<nToys<<" "<<std::endl;
 	  sprintf(alphahname,"tmp_%d",n);
 	  sprintf(tmpTname,"pseudoTree_%s",alphahname);    
-	  TTree* weightedPseudo = weightTree(treeDATA_tmp ,(TH1D*)falpha->Get(alphahname), tmpTname, false, normalizationNEW/normalizationOLD);
+	  TTree* weightedPseudo = weightTree(treeDATA_tmp ,(TH1D*)falpha->Get(alphahname), tmpTname, false, normCorrection);
 	  RooDataSet pseudoSB2("pseudoSB2","pseudoSB2",weightedPseudo,RooArgSet(*mZZ,*nXjets,*region,*mJJ,*lep,*alphaWeight,*vTagPurity),cutSB.c_str(),"alphaWeight") ;
 	  pseudoSB2.append(*VVDataSetWeight);
 	  //std::cout << "XXX " <<doPseudoTwoPars << "  " <<decorrLevExpo <<std::endl;

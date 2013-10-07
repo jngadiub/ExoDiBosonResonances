@@ -4364,14 +4364,12 @@ def control_single_sb_correction(method, channel, signal_sample="BulkG_c0p2_M100
 
 def pre_limit_simple(channel):
     print "pre_limit_simple for %s sampel"%(channel)
-    #pre_limit_sb_correction_without_systermatic(channel,"rsg1000_kMpl01_hw",800,1200,40,130, 800,2500,"Exp","Pow")
-    #pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M1000",800,1200,40,130, 700,2500,"Exp","Pow")
-    #pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M1600",1500,1700,40,130,  800,2500,"Exp","Pow")
-    #pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,40,130,  800,3000,"Exp","Pow")
-    #pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,40,130,  800,3000,"2Exp","Exp")
-    #pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,40,130,  800,2800,"ExpN","ExpTail")
-    pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,50,130,  500, 2200,"ExpTail","Exp")
-  
+##    pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,50,130,  500, 2200,"ExpTail","Exp")
+    if (options.category==0 or options.category==2) :
+        pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,50,130,  650, 2800,"ExpTail","Exp")
+##        pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,50,130,  500, 2800,"ExpTail","Exp")
+    else:
+        pre_limit_sb_correction_without_systermatic(channel,"BulkG_c0p2_M2000",1900,2100,50,130,  500, 2800,"ExpTail","Exp")
 def control_single(channel):
     print "control_single for %s sampel"%(channel)
     #control_single_sb_correction("method1",channel, "BulkG_c0p2_M1000",500,700,30,140,400,1000,"ErfExp_v1")
