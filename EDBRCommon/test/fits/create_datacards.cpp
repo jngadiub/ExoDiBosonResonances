@@ -151,7 +151,7 @@ int main( int argc, char* argv[] ) {
     }
     
     //    std::string datacardDir("DataCards_20120210") ;
-    for(int i =0; i < widths.size() ; i++ ){
+    for(unsigned int i =0; i < widths.size() ; i++ ){
       //if(mass!=800)continue;
       std::cout << std::endl << std::endl;;
       std::cout << "++++++++++++++++++++++" << std::endl;
@@ -509,23 +509,24 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
 
   ////////////////////
   //->  get Bkgd shape:
-  RooAbsPdf *expo_fit =0;
+
   RooAbsPdf* background_decorr =0;
   bgws->Print("v");
- //  if(pur==1 && isZZChannel){	  
-//     expo_fit =bgws->pdf(("exp_fit_"+channel_marker).c_str());
-//     expo_fit->SetName(bkgd_shape_name.c_str());
-//     // and import it:
-//     w->import(*expo_fit, RooFit::RecycleConflictNodes());
-//   }
-//   else{
+  //  RooAbsPdf *expo_fit =0;
+  //  if(pur==1 && isZZChannel){	  
+  //     expo_fit =bgws->pdf(("exp_fit_"+channel_marker).c_str());
+  //     expo_fit->SetName(bkgd_shape_name.c_str());
+  //     // and import it:
+  //     w->import(*expo_fit, RooFit::RecycleConflictNodes());
+  //   }
+  //   else{
  
-   //This if you want ot use the leveled expo
-    background_decorr = bgws->pdf(("levexp_dcr_"+channel_marker).c_str());
-    background_decorr->SetName(bkgd_shape_name.c_str());
-    w->import(*background_decorr, RooFit::RecycleConflictNodes());
-    //  }
-
+  //This if you want ot use the leveled expo
+  background_decorr = bgws->pdf(("levexp_dcr_"+channel_marker).c_str());
+  background_decorr->SetName(bkgd_shape_name.c_str());
+  w->import(*background_decorr, RooFit::RecycleConflictNodes());
+  //  }
+  
   //// now define signal shape:
   //// (didn manage to do use get_signalShape without a crash):
 
@@ -672,7 +673,7 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
 
   bool doPlot=false;
   // if(mass==650||mass==1000||mass==1500||mass==1600||mass==1700||mass==1900||mass==2000||mass==2100||mass==2400||mass==2500)doPlot=true;
-  if(mass==650||mass==1000||mass==1750||mass==2000||mass==2250||mass==2500)doPlot=true;
+  if(mass==650||mass==1000||mass==1750||mass==1900||mass==2250||mass==2500)doPlot=true;
   // if(mass==2200)doPlot=true;
   if(doPlot){
     const int nBinsTMP=nBins1;
@@ -860,10 +861,10 @@ TheorSigParameters get_thParameters( float mass ) {
   xsect_file.clear();
   xsect_file.seekg(0);
 
-  float mH, XSgg, XSgg_p, XSgg_m, XSpdfgg_p,XSpdfgg_m, BRXtoZZ, BRZZto2l2q;
+  float mH(-99.0), XSgg(-99.0), XSgg_p(-99.0), XSgg_m(-99.0), XSpdfgg_p(-99.0),XSpdfgg_m(-99.0), BRXtoZZ(-99.0), BRZZto2l2q(0.0941);
   //XSvbf, XSvbf_p, XSvbf_m,XSpdfvbf_p,XSpdfvbf_m,    Gamma;
 
-  float mH_old, XSgg_old, XSgg_p_old, XSgg_m_old, XSpdfgg_p_old,XSpdfgg_m_old, BRXtoZZ_old, BRZZto2l2q_old;
+  float mH_old, XSgg_old, XSgg_p_old, XSgg_m_old, XSpdfgg_p_old,XSpdfgg_m_old;// BRXtoZZ_old, BRZZto2l2q_old;
   //XSvbf_old, XSvbf_p_old, XSvbf_m_old,XSpdfvbf_p_old,XSpdfvbf_m_old,   Gamma_old;
 
   TheorSigParameters hp;
@@ -876,8 +877,8 @@ TheorSigParameters get_thParameters( float mass ) {
     XSgg_m_old = XSgg_m;
     XSpdfgg_p_old = XSpdfgg_p;
     XSpdfgg_m_old = XSpdfgg_m;
-    BRXtoZZ_old = BRXtoZZ;
-    BRZZto2l2q_old = BRZZto2l2q;
+    //    BRXtoZZ_old = BRXtoZZ;
+    // BRZZto2l2q_old = BRZZto2l2q;
 
     xsect_file >> mH >> XSgg;
     BRXtoZZ=0.0;//unknown to me in this moment
