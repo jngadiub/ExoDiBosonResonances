@@ -2,17 +2,18 @@
 const std::string myOutDir="FitSidebandsMJJ_ZZ_20131007_prodv2f_ALL/";//_Unblinded
 const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2f/fullsig/";
 const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2f/fullsb/";
+const bool unrollTrees=false;
 
-unsigned int jetCats = 2;//1 for only 1 jet case, 2 for both
-bool isZZChannel=true;//this will change only the file list
-string leptType="ALL";//"MU" //"ELE"//"ALL"
+const unsigned int jetCats = 2;//1 for only 1 jet case, 2 for both
+const bool isZZChannel=true;//this will change only the file list
+const string leptType="ALL";//"MU" //"ELE"//"ALL"
 const std::string InTreeName="SelectedCandidates";
 const bool useAlphaVV=false;//include VV into alpha (true) or take it directly from MC (false)
 const bool useMCHM=true;
 const double DATAMC_HMSF[2]={1.0,0.5};//1JLP ; 1JHP
 const unsigned int nToys = 500;
 const float lumi =19710.0;
-
+const bool useVJetsNormFromMJFit=true;
 
 const bool doPseudoExp=true;//true; //if true, for for different psuedo-alpha 
 const bool unblind=true;//default is not to plot the data in signal region
@@ -31,8 +32,19 @@ std::string bkgd_decorr_name="levexp_dcr_xzz";
 std::string dims = "1d";
 
 
-const std::string datacardDir("DataCards_XZZ_20131007_prodv2f");
+const std::string datacardDir("DataCards_XZZ_20131007_prodv2f_NEW");
 float mZZmax_=2800;
+
+//********** Externally provided Normalizations *********
+//
+// From MJ sidebands fits; 
+//first index is lepton flavor (==0 -> ELE, ==1 ->MU), 
+//second index is the purity category (==0 -> LP, ==1 -> HP)
+//LP from fit in mZZ [650, 2800], HP in [500, 2800]
+const double extNorm_1J[2][2]={{198.801, 325.129}, {331.899, 563.395} };
+const double extNorm_1J_err[2][2]={{16.5968, 22.0264}, {21.4401, 28.2718}};
+const double extNorm_2J[2][1]={{0.0}, {0.0}};
+const double extNorm_2J_err[2][1]={{0.0}, {0.0}};
 
 //**********systematics***********
 

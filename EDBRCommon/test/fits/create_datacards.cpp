@@ -176,10 +176,11 @@ int main( int argc, char* argv[] ) {
 	  create_singleDatacard( mass,widths[i], lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
 	  create_singleDatacard( mass,widths[i], lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
 	}
-      if(jetCats>1&&mass<=800){
-	if(leptType=="ELE"||leptType=="ALL")create_singleDatacard( mass,widths[i], lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
-	if(leptType=="MU"||leptType=="ALL")create_singleDatacard( mass,widths[i], lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
-      }
+      //   if(jetCats>1&&mass<=800){
+      //	if(leptType=="ELE"||leptType=="ALL")create_singleDatacard( mass,widths[i], lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
+      //	if(leptType=="MU"||leptType=="ALL")create_singleDatacard( mass,widths[i], lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
+      // }
+
     } // for widths
   } //while masses
 
@@ -269,7 +270,11 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   ////->  get main variable from input workspace:
   if(nxj==2){mZZmin_=bins2[0];mZZmax_=bins2[nBins2-1];}//get in sync with was done in fitBackground for 2J category
   //  else {mZZmin_ =bins1[0];mZZmax_=bins1[nBins1-1];}//get in sync with was done in fitBackground for 2J category
-  else {mZZmin_ =500;mZZmax_=bins1[nBins1-1];}
+  else{
+    mZZmax_=bins1[nBins1-1];
+    if(pur==1) mZZmin_ =startFit;
+    else mZZmin_ =500.0;//650.0; use same range otherwise RooStats will get confused when merging cards
+  }
   RooRealVar* CMS_xzz_mZZ = new RooRealVar("mZZ","mZZ",mZZmin_,mZZmax_);//it works
   CMS_xzz_mZZ->setMin(mZZmin_);  
   std::cout<<"\n==== Printing multiline verbose of variable created on-the-fly: ===="<<endl;
@@ -353,7 +358,11 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   float rate_gg   = eff*hp.XSgg*hp.BRZZto2l2q*lumi; //xsect has both ee and mm
 
   ///////////////
-  //->  compute expected BG yield from observed sideband events:
+  //->  compute expected BG yield from observed sideband events.
+  //for ZZ: normalization in [500, 2800] always, also for LP
+  //reason is that one must create workspaces for HiggsComb tool
+  //using same RooRealVar otherwise mess with RooStats when 
+  //combining channels
   Double_t rate_background = DataCardUtils::get_backgroundNormalization(bgws , leptType_str);
   std::cout <<"Background rate: "<< rate_background << std::endl;
 
@@ -391,7 +400,18 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
 
   // syst done. now finish with sig and bkg shape parameters:
 	
-  double bgNorm = DataCardUtils::get_backgroundNormalization(bgws,leptType_str,nxj,pur,"dsDataSB");
+  double bgNorm = 0.0;
+  if(useVJetsNormFromMJFit&&nxj==1){
+    double bgNormUnc=0.0;
+    if(leptType_str=="ELE")bgNormUnc = extNorm_1J_err[0][pur];
+    else if(leptType_str=="MU")bgNormUnc = extNorm_1J_err[1][pur];
+    else if(leptType_str=="ALL")bgNormUnc = sqrt(extNorm_1J_err[0][pur]*extNorm_1J_err[0][pur] + extNorm_1J_err[1][pur]*extNorm_1J_err[1][pur]);
+    else bgNormUnc = 0.0;
+    bgNorm=bgNormUnc/rate_background;
+    cout<<"Bkgd Normalization Uncertainty for "<<leptType_str.c_str()<<" Pur="<<pur<<" -> "<<bgNormUnc<<" ; rel err = "<<bgNorm<<endl;
+  }
+  else bgNorm = DataCardUtils::get_backgroundNormalization(bgws,leptType_str,nxj,pur,"dsDataSB");
+
   char bgNorm_char[100];
   sprintf( bgNorm_char, "%.0lf", bgNorm);
   std::string bgNorm_str(bgNorm_char);
@@ -404,7 +424,8 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   char bgNormName[200];
   sprintf( bgNormName, "CMS_%s_bkg%dJ%s%s%sp0",channel_marker.c_str(), nxj,pur_str.c_str(), (DataCardUtils::leptType_datacards(leptType_str)).c_str(), (DataCardUtils::leptType_datacards(leptType_str)).c_str() );
   std::string bgNormName_str(bgNormName);
-  ofs << bgNormName_str << "\tgmN " << bgNorm_str << "\t---\t" << alpha_str << std::endl;
+  if(useVJetsNormFromMJFit)  ofs << bgNormName_str << "\tlnN    ---\t" <<(1.0+bgNorm)  << std::endl;
+  else   ofs << bgNormName_str << "\tgmN " << bgNorm_str << "\t---\t"  << alpha_str << std::endl;
   //std::cout << bgNormName_str << "\tgmN " << bgNorm_str << "\t-----\t-----\t" << alpha_str << std::endl;
 
   //  RooArgList bgPars = bgFitResult->floatParsFinal();

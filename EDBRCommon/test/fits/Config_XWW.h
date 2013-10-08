@@ -2,10 +2,11 @@
 const std::string myOutDir="FitSidebandsMJJ_CA8_WW_V24/";
 const string inDirSIG="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSigTree/";
 const string inDirSB ="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSBTree/";
+const bool unrollTrees=true;
 
-unsigned int jetCats = 1;//1 for only 1 jet case, 2 for both
-bool isZZChannel=false;//this will change only the file list
-string leptType="ELE";//"MU" //"ELE"//"ALL"
+const unsigned int jetCats = 1;//1 for only 1 jet case, 2 for both
+const bool isZZChannel=false;//this will change only the file list
+const string leptType="ELE";//"MU" //"ELE"//"ALL"
 const std::string InTreeName="SelectedCandidates";
 const bool useAlphaVV=false;
 const bool useMCHM=false;
@@ -13,7 +14,7 @@ const double DATAMC_HMSF[2]={1.0,1.0};//1JLP ; 1JHP
 const unsigned int nToys = 500;
 const float lumi =19531.85;//for ele
 //const float lumi =19538.85;//for mu
-
+const bool useVJetsNormFromMJFit=true;
 
 const bool doPseudoExp=false; //if true, for for different psuedo-alpha 
 const bool unblind=true;//default is not to plot the data in signal region
@@ -32,6 +33,18 @@ std::string dims = "1d";
 
 const std::string datacardDir("DataCards_XWW_V24/");
 float mZZmax_=3000;
+
+
+//********** Externally provided Normalizations *********
+//
+// From MJ sidebands fits; 
+//first index is lepton flavor (==0 -> ELE, ==1 ->MU), 
+//second index is the purity category (==0 -> LP, ==1 -> HP)
+const double extNorm_1J[2][2]={{546.608, 339.861}, {835.742, 536.198}};
+const double extNorm_1J_err[2][2]={{0.0, 0.0}, {0.0, 0.0}};
+const double extNorm_2J[2][1]={{0.0}, {0.0}};
+const double extNorm_2J_err[2][1]={{0.0}, {0.0}};
+
 
 //**********systematics***********
 ////0) Lepton trigger and id
