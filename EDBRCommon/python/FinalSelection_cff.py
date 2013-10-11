@@ -130,7 +130,7 @@ BestCandSelector=cms.EDProducer("DiElectronNJetEDBRBestCandidateSelector",
                                 srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
                                 tagSelectionList =cms.vstring("tag_SingleJetHP","tag_SingleJetLP","tag_DoubleJet"),#highest priority to lowest priority
                                 VMass            =cms.double(91.1876),
-                                Algo             =cms.string("UseVMass")##could be UseVMass or UseJetPt
+                                Algo             =cms.string("UseJetPt")##could be UseVMass or UseJetPt
                                 )
 
 BestSidebandSelector=cms.EDProducer("DiElectronNJetEDBRBestCandidateSelector",
@@ -138,7 +138,7 @@ BestSidebandSelector=cms.EDProducer("DiElectronNJetEDBRBestCandidateSelector",
                                     srcDoubleJet     =cms.InputTag("DiJetVBFTagger"),
                                     tagSelectionList =cms.vstring("tag_SingleJetSBHP","tag_SingleJetSBLP","tag_DoubleJetSB"),#highest priority to lowest priority
                                     VMass            =cms.double(91.1876),
-                                    Algo             =cms.string("UseVMass")##could be UseVMass or UseJetPt
+                                    Algo             =cms.string("UseJetPt")##could be UseVMass or UseJetPt
                                     )
 
 allSelectedEDBR = cms.EDProducer("CandViewMerger",
