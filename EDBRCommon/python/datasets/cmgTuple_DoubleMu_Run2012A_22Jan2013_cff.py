@@ -8,11 +8,11 @@ source = cms.Source("PoolSource",
                    )
 
 cmgFiles.extend([
-    '/store/cmst3/group/exovv/CMGtuple/productionv2c/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_0.root',
-    '/store/cmst3/group/exovv/CMGtuple/productionv2c/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_1.root',
-    '/store/cmst3/group/exovv/CMGtuple/productionv2c/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_2.root',
-    '/store/cmst3/group/exovv/CMGtuple/productionv2c/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_3.root',
-    '/store/cmst3/group/exovv/CMGtuple/productionv2c/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_4.root',
-    '/store/cmst3/group/exovv/CMGtuple/productionv2c/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_5.root',
-    '/store/cmst3/group/exovv/CMGtuple/productionv2c/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_6.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2g_HPTjet/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_0.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2g_HPTjet/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_1.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2g_HPTjet/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_2.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2g_HPTjet/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_3.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2g_HPTjet/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_4.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2g_HPTjet/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_5.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2g_HPTjet/Run2012/DoubleMu_Run2012A_22Jan2013/cmgTuple_6.root',
     ])
