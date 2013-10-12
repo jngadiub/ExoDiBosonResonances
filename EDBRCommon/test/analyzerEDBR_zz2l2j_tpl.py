@@ -34,7 +34,7 @@ from ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi import AnalyzerXZZ
 process.ANEDBR = AnalyzerXZZ.clone(
     debug=cms.bool(False),
     outFileName=cms.string("treeEDBR_<SAMPLE>.root"),
-    VType=cms.string("Z"),
+    VType=cms.string("W"),
     Ngen=cms.uint32(1),
     xsec=cms.double(1.0) ###in pb
     )
@@ -51,15 +51,15 @@ if processFullSel :
 #        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
 #        process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
 #        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
-        process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
-        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
-        process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
-        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
+#        process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
+#        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
+#        process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
+#        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
 
-#    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
-#    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
-#    process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
-#    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
+    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
+    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
+    process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
+    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
 
 
     #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestTTBarSelectorEle:doubleJet")
@@ -517,7 +517,126 @@ elif "<SAMPLE>"=="SingleElectron_Run2012D_PromptReco_xww" :
     process.ANEDBR.xsec=cms.double(1)
     process.ANEDBR.isMC=cms.bool(False)
    
-    
+#for 539
+#single mu
+elif "<SAMPLE>"=="SingleMu_Run2012A-22Jan2013_xww_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+elif "<SAMPLE>"=="SingleMu_Run2012B-22Jan2013_xww_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+elif "<SAMPLE>"=="SingleMu_Run2012C-22Jan2013_xww_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+elif "<SAMPLE>"=="SingleMu_Run2012D-22Jan2013_xww_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+#single ele
+elif "<SAMPLE>"=="SingleElectron_Run2012A-22Jan2013_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+elif "<SAMPLE>"=="SingleElectron_Run2012B-22Jan2013_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+elif "<SAMPLE>"=="SingleElectron_Run2012C-22Jan2013_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+elif "<SAMPLE>"=="SingleElectron_Run2012D-22Jan2013_xww" :
+    process.ANEDBR.Ngen=cms.uint32(1)
+    process.ANEDBR.xsec=cms.double(1)
+    process.ANEDBR.isMC=cms.bool(False)
+#signal 
+elif "BulkG_WW_inclusive_c0p2_M600_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50314) ### Checked
+    process.ANEDBR.xsec=cms.double(0.052087)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M700_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50825) ### Checked
+    process.ANEDBR.xsec=cms.double(0.019006)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M800_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50322) ### Checked
+    process.ANEDBR.xsec=cms.double(0.0079064)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M900_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50485) ### Checked
+    process.ANEDBR.xsec=cms.double(0.0036364)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M1000_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49992) ### Checked
+    process.ANEDBR.xsec=cms.double(0.0017742)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M1100_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50824) ### Checked
+    process.ANEDBR.xsec=cms.double(0.00091785)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M1200_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50654) ### Checked
+    process.ANEDBR.xsec=cms.double(0.00049262)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M1300_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50653) ### Checked
+    process.ANEDBR.xsec=cms.double(0.00027418)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+
+elif "BulkG_WW_inclusive_c0p2_M1400_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50479) ### Checked
+    process.ANEDBR.xsec=cms.double(0.00015697)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M1500_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(45992) ### Checked
+    process.ANEDBR.xsec=cms.double(9.2073e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M1600_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50481) ### Checked
+    process.ANEDBR.xsec=cms.double(5.4715e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M1700_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50824) ### Checked
+    process.ANEDBR.xsec=cms.double(3.3199e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M1800_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(36807) ### Checked
+    process.ANEDBR.xsec=cms.double(2.0367e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M1900_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(47995) ### Checked
+    process.ANEDBR.xsec=cms.double(1.2723e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M2000_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(48995) ### Checked
+    process.ANEDBR.xsec=cms.double(8.0046e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M2100_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50822) ### Checked
+    process.ANEDBR.xsec=cms.double(5.0566e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M2200_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49745) ### Checked
+    process.ANEDBR.xsec=cms.double(3.2608e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M2300_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50318) ### Checked
+    process.ANEDBR.xsec=cms.double(2.0938e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M2400_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50994) ### Checked
+    process.ANEDBR.xsec=cms.double(1.3566e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_c0p2_M2500_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(46612) ### Checked
+    process.ANEDBR.xsec=cms.double(8.8518e-07)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+
+
+
 else :
     print 'ERROR !!! Sample named <SAMPLE> was not recognized !'
 
@@ -537,8 +656,8 @@ if "BulkG_WW_lvjj_" in "<SAMPLE>" or "RSG_WW_lvjj_" in "<SAMPLE>" or "WW_xww"=="
 
 process.filterFinalSelPath = cms.EDFilter("HLTHighLevel",
                                        TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
-                                       #HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu"),
-                                       HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
+                                       HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu"),
+                                       #HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
                                        eventSetupPathsKey = cms.string(''),
                                        andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
                                        throw = cms.bool(True)    # throw exception on unknown path names
