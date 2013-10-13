@@ -8,9 +8,8 @@ source = cms.Source("PoolSource",
                    )
 
 cmgFiles.extend([
-    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_0.root',
-    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_1.root',
-    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_2.root',
-    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_3.root',
-    '/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/CMGtuple/productionV1e/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_4.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2g_HPTjet/none/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_0.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2g_HPTjet/none/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_1.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2g_HPTjet/none/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_2.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2g_HPTjet/none/Summer12//RSG_ZZ_lljj_c0p2_M1000/cmgTuple_3.root',
     ])
