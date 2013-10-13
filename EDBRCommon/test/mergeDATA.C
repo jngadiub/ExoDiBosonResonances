@@ -11,7 +11,7 @@ void mergeDATA(TString Tree="/afs/cern.ch/work/s/shuai/public/diboson/trees/prod
 
 	TChain * chain_SingleEle = new TChain(treename);
 	TChain * chain_SingleMu = new TChain(treename);
-
+/*
 	chain_SingleEle->Add(Tree+"/"+"treeEDBR_SingleElectron_Run2012A_13Jul2012_xww.root");
 	chain_SingleEle->Add(Tree+"/"+"treeEDBR_SingleElectron_Run2012A_recover_xww.root");
 	chain_SingleEle->Add(Tree+"/"+"treeEDBR_SingleElectron_Run2012B_13Jul2012_xww.root");
@@ -27,6 +27,19 @@ void mergeDATA(TString Tree="/afs/cern.ch/work/s/shuai/public/diboson/trees/prod
 	chain_SingleMu->Add(Tree+"/"+"treeEDBR_SingleMu_Run2012C_EcalRecove_xww.root");	
 	chain_SingleMu->Add(Tree+"/"+"treeEDBR_SingleMu_Run2012C_PromptReco_xww.root");	
 	chain_SingleMu->Add(Tree+"/"+"treeEDBR_SingleMu_Run2012D_PromptReco_xww.root");
+*/
+
+	chain_SingleMu->Add(Tree+"/"+"treeEDBR_SingleMu_Run2012A-22Jan2013_xww.root");
+	chain_SingleMu->Add(Tree+"/"+"treeEDBR_SingleMu_Run2012B-22Jan2013_xww.root");
+	chain_SingleMu->Add(Tree+"/"+"treeEDBR_SingleMu_Run2012C-22Jan2013_xww.root");
+	chain_SingleMu->Add(Tree+"/"+"treeEDBR_SingleMu_Run2012D-22Jan2013_xww.root");	
+
+	chain_SingleEle->Add(Tree+"/"+"treeEDBR_SingleElectron_Run2012A-22Jan2013_xww.root");
+	chain_SingleEle->Add(Tree+"/"+"treeEDBR_SingleElectron_Run2012B-22Jan2013_xww.root");
+	chain_SingleEle->Add(Tree+"/"+"treeEDBR_SingleElectron_Run2012C-22Jan2013_xww.root");
+	chain_SingleEle->Add(Tree+"/"+"treeEDBR_SingleElectron_Run2012D-22Jan2013_xww.root");
+
+
 
 	TChain * chain = new TChain(treename);
 	chain->Add(chain_SingleEle);
