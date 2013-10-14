@@ -40,32 +40,41 @@ process.ANEDBR = AnalyzerXZZ.clone(
     )
 
 
+if "WW"=="<ANALYSIS>" :
+    process.ANEDBR.VType = cms.string("W")
+else :
+    process.ANEDBR.VType = cms.string("Z")
+
+
 
 ### if false, use the default collections
 ### in ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi
 ### (i.e. all the cands passing pre-selection cuts)
-processFullSel=True
+processFullSel='<PROCESS>'
 
-if processFullSel :
-#	process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
-#        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
-#        process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
-#        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
-#        process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
-#        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
-#        process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
-#        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
-
-#    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
-#    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
-#    process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
-#    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
-
-
+if processFullSel == "fullsb" :
+    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
+    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
+    process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
+    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
+elif processFullSel == "fullsig" :
+    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
+    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
+    process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
+    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
+elif processFullSel == "fullrange" :
+    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
+    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
+    process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
+    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")  
+elif processFullSel == "ttbar" :
     process.ANEDBR.EDBREEJJColl=cms.InputTag("BestTTBarSelectorEle:doubleJet")
     process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestTTBarSelectorMu:doubleJet")
     process.ANEDBR.EDBREEJColl=cms.InputTag("BestTTBarSelectorEle:singleJet")
     process.ANEDBR.EDBRMMJColl=cms.InputTag("BestTTBarSelectorMu:singleJet")
+else :
+    print 'Processing preselected collections (default)'
+
 
 ##### set Ngen and xsect values ofr MC samples; xsect in pb !!! 
 if "TTBAR"=="<SAMPLE>":
@@ -697,15 +706,22 @@ if "BulkG_WW_lvjj_" in "<SAMPLE>" or "RSG_WW_lvjj_" in "<SAMPLE>" or "WW_xww"=="
        process.ANEDBR.VTaggingScaleFactorLP=cms.double(1.1)
 
 process.filterFinalSelPath = cms.EDFilter("HLTHighLevel",
-                                       TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
-                                       HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu"),
-                                       #HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
-                                       eventSetupPathsKey = cms.string(''),
-                                       andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
-                                       throw = cms.bool(True)    # throw exception on unknown path names
-                                       )
+                                          TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
+                                          HLTPaths = cms.vstring("FullPathDUMMYELE","FullPathDUMMYMU"),
+                                          #HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
+                                          eventSetupPathsKey = cms.string(''),
+                                          andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
+                                          throw = cms.bool(True)    # throw exception on unknown path names
+                                          )
 
-if processFullSel :
+if "WW"=="<ANALYSIS>" :
+    process.filterFinalSelPath.HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu")
+else :
+    process.filterFinalSelPath.HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu")
+        
+
+#AB: should we add also "ttbar" ?
+if processFullSel=="fullsb" or processFullSel=="fullsig" or processFullSel=="fullrange" :
     process.p=cms.Path(process.filterFinalSelPath+process.ANEDBR)
 else :
     process.p=cms.Path(process.ANEDBR)
