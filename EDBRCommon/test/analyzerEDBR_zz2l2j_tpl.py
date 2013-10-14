@@ -56,16 +56,16 @@ if processFullSel :
 #        process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
 #        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
 
-    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
-    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
-    process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
-    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
+#    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
+#    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
+#    process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
+#    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
 
 
-    #process.ANEDBR.EDBREEJJColl=cms.InputTag("BestTTBarSelectorEle:doubleJet")
-    #process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestTTBarSelectorMu:doubleJet")
-    #process.ANEDBR.EDBREEJColl=cms.InputTag("BestTTBarSelectorEle:singleJet")
-    #process.ANEDBR.EDBRMMJColl=cms.InputTag("BestTTBarSelectorMu:singleJet")
+    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestTTBarSelectorEle:doubleJet")
+    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestTTBarSelectorMu:doubleJet")
+    process.ANEDBR.EDBREEJColl=cms.InputTag("BestTTBarSelectorEle:singleJet")
+    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestTTBarSelectorMu:singleJet")
 
 ##### set Ngen and xsect values ofr MC samples; xsect in pb !!! 
 if "TTBAR"=="<SAMPLE>":
@@ -573,6 +573,20 @@ elif "BulkG_WW_inclusive_c0p2_M1000_xww" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(49992) ### Checked
     process.ANEDBR.xsec=cms.double(0.0017742)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+
+elif "BulkG_WW_inclusive_M1000_W50_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49789) ### Checked
+    process.ANEDBR.xsec=cms.double(0.0017742)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_M1000_W150_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49717) ### Checked
+    process.ANEDBR.xsec=cms.double(0.0017742)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_M1000_W300_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49260) ### Checked
+    process.ANEDBR.xsec=cms.double(0.0017742)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+
 elif "BulkG_WW_inclusive_c0p2_M1100_xww" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(50824) ### Checked
     process.ANEDBR.xsec=cms.double(0.00091785)
@@ -594,6 +608,20 @@ elif "BulkG_WW_inclusive_c0p2_M1500_xww" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(45992) ### Checked
     process.ANEDBR.xsec=cms.double(9.2073e-05)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+
+elif "BulkG_WW_inclusive_M1500_W75_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49938) ### Checked
+    process.ANEDBR.xsec=cms.double(9.2073e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_M1500_W225_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49667) ### Checked
+    process.ANEDBR.xsec=cms.double(9.2073e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_M1500_W450_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49122) ### Checked
+    process.ANEDBR.xsec=cms.double(9.2073e-05)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+
 elif "BulkG_WW_inclusive_c0p2_M1600_xww" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(50481) ### Checked
     process.ANEDBR.xsec=cms.double(5.4715e-05)
@@ -618,6 +646,20 @@ elif "BulkG_WW_inclusive_c0p2_M2100_xww" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(50822) ### Checked
     process.ANEDBR.xsec=cms.double(5.0566e-06)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+
+elif "BulkG_WW_inclusive_M2100_W105_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(50555) ### Checked
+    process.ANEDBR.xsec=cms.double(5.0566e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_M2100_W315_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49888) ### Checked
+    process.ANEDBR.xsec=cms.double(5.0566e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "BulkG_WW_inclusive_M2100_W630_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(49147) ### Checked
+    process.ANEDBR.xsec=cms.double(5.0566e-06)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+
 elif "BulkG_WW_inclusive_c0p2_M2200_xww" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(49745) ### Checked
     process.ANEDBR.xsec=cms.double(3.2608e-06)
