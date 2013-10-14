@@ -846,14 +846,20 @@ int SidebandFitter::smoothHist(TH1 &h, bool forceCorrZero,int smoothLevel){
     if((bincontP>3.0*runAvg) && (binerrP/bincontP>0.50) ){
       int i2=2;
       std::cout<<"Fixing outlier binPlus "<<bincontP<<" >> "<<runAvg<<endl;
-      while(bincontP>3.0*runAvg && (b+i2<nbins)){
-
-	 
-	bincontP=h.GetBinContent(b+i2);
-	binerrP=h.GetBinError(b+i2);
-	i2++;
-	 
-	
+      while( (bincontP>3.0*runAvg) && (binerrP/bincontP>0.50)){
+	int binNEW=b+i2;
+	if(binNEW>nbins){
+	  binNEW=nbins;
+	  bincontP=runAvg;
+	  binerrP=runAvg*2.0;
+	  break;
+	}
+	else{
+	  bincontP=h.GetBinContent(binNEW);
+	  binerrP=h.GetBinError(binNEW);
+	  i2++;
+	}
+	 	
       }//end while bincontP>3.0*runAvg
     }//end if bincontP>3.0*runAvg
     
