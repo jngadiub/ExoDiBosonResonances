@@ -40,44 +40,47 @@ process.ANEDBR = AnalyzerXZZ.clone(
     )
 
 
+if "WW"=="<ANALYSIS>" :
+    process.ANEDBR.VType = cms.string("W")
+else :
+    process.ANEDBR.VType = cms.string("Z")
+
+
 
 ### if false, use the default collections
 ### in ExoDiBosonResonances.EDBRCommon.analyzerEDBR_cfi
 ### (i.e. all the cands passing pre-selection cuts)
-processFullSel=True
+processFullSel='<PROCESS>'
 
-if processFullSel :
-#	process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
-#        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
-#        process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
-#        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
-#        process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
-#        process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
-#        process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
-#        process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
-
-#    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
-#    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
-#    process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
-#    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")
-
-
+if processFullSel == "fullsb" :
+    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestSidebandSelectorEle:doubleJet")
+    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestSidebandSelectorMu:doubleJet")
+    process.ANEDBR.EDBREEJColl=cms.InputTag("BestSidebandSelectorEle:singleJet")
+    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestSidebandSelectorMu:singleJet")
+elif processFullSel == "fullsig" :
+    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestCandSelectorEle:doubleJet")
+    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestCandSelectorMu:doubleJet")
+    process.ANEDBR.EDBREEJColl=cms.InputTag("BestCandSelectorEle:singleJet")
+    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestCandSelectorMu:singleJet")
+elif processFullSel == "fullrange" :
+    process.ANEDBR.EDBREEJJColl=cms.InputTag("BestFullRangeSelectorEle:doubleJet")
+    process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestFullRangeSelectorMu:doubleJet")
+    process.ANEDBR.EDBREEJColl=cms.InputTag("BestFullRangeSelectorEle:singleJet")
+    process.ANEDBR.EDBRMMJColl=cms.InputTag("BestFullRangeSelectorMu:singleJet")  
+elif processFullSel == "ttbarcontrol" :
     process.ANEDBR.EDBREEJJColl=cms.InputTag("BestTTBarSelectorEle:doubleJet")
     process.ANEDBR.EDBRMMJJColl=cms.InputTag("BestTTBarSelectorMu:doubleJet")
     process.ANEDBR.EDBREEJColl=cms.InputTag("BestTTBarSelectorEle:singleJet")
     process.ANEDBR.EDBRMMJColl=cms.InputTag("BestTTBarSelectorMu:singleJet")
+else :
+    print 'Processing preselected collections (default)'
+
 
 ##### set Ngen and xsect values ofr MC samples; xsect in pb !!! 
-if "TTBAR"=="<SAMPLE>":
+if "TTBAR"=="<SAMPLE>" or "TTBAR_xww"=="<SAMPLE>":
     process.ANEDBR.Ngen=cms.uint32(6540800)
     process.ANEDBR.xsec=cms.double(225.197)
-elif "TTBAR_xww"=="<SAMPLE>":
-    process.ANEDBR.Ngen=cms.uint32(6540800)
-    process.ANEDBR.xsec=cms.double(225.197)
-elif "TTBARpowheg"=="<SAMPLE>":
-    process.ANEDBR.Ngen=cms.uint32(21675970)
-    process.ANEDBR.xsec=cms.double(225.197)
-elif "TTBARpowheg_xww"=="<SAMPLE>":
+elif "TTBARpowheg"=="<SAMPLE>" or "TTBARpowheg_xww"=="<SAMPLE>":
     process.ANEDBR.Ngen=cms.uint32(21675970)
     process.ANEDBR.xsec=cms.double(225.197)
 elif "DYJetsPt50To70" in "<SAMPLE>" :
@@ -92,24 +95,14 @@ elif "DYJetsPt100" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(12511326)
     process.ANEDBR.xsec=cms.double(39.1) # 39.1 = 32.9 (from PREP) times 1.188
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
-elif "WW"=="<SAMPLE>":
+elif "WW"=="<SAMPLE>" or "WW_xww"=="<SAMPLE>":
     process.ANEDBR.Ngen=cms.uint32(10000431)
     process.ANEDBR.xsec=cms.double(57.1097)
-elif "WZ"=="<SAMPLE>":
+elif "WZ"=="<SAMPLE>" or "WZ_xww"=="<SAMPLE>":
     process.ANEDBR.Ngen=cms.uint32(9955839)
     process.ANEDBR.xsec=cms.double(33.21)
-elif "ZZ"=="<SAMPLE>":
+elif "ZZ"=="<SAMPLE>" or "ZZ_xww"=="<SAMPLE>":
     process.ANEDBR.Ngen=cms.uint32(9799908)
-    process.ANEDBR.xsec=cms.double(8.059)
-    process.ANEDBR.FillGenLevelCode=cms.uint32(3)
-elif "WW_xww"=="<SAMPLE>":
-    process.ANEDBR.Ngen=cms.uint32(3870000)
-    process.ANEDBR.xsec=cms.double(57.1097)
-elif "WZ_xww"=="<SAMPLE>":
-    process.ANEDBR.Ngen=cms.uint32(1910000)
-    process.ANEDBR.xsec=cms.double(33.21)
-elif "ZZ_xww"=="<SAMPLE>":
-    process.ANEDBR.Ngen=cms.uint32(485716)
     process.ANEDBR.xsec=cms.double(8.059)
     process.ANEDBR.FillGenLevelCode=cms.uint32(3)
 elif "WJetsPt50To70" in "<SAMPLE>" :
@@ -121,11 +114,11 @@ elif "WJetsPt70To100" in "<SAMPLE>" :
     process.ANEDBR.xsec=cms.double(529.3)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "WJetsPt100" in "<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(12106534)
+    process.ANEDBR.Ngen=cms.uint32(12742382)
     process.ANEDBR.xsec=cms.double(282.5)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "WJetsPt180" in "<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(9732165)
+    process.ANEDBR.Ngen=cms.uint32(9737030)
     process.ANEDBR.xsec=cms.double(29.00)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "SingleTopBarSchannel" in "<SAMPLE>" :
@@ -137,11 +130,11 @@ elif "SingleTopBarTWchannel" in "<SAMPLE>" :
     process.ANEDBR.xsec=cms.double(11.1)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)
 elif "SingleTopBarTchannel" in "<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(1904234)
+    process.ANEDBR.Ngen=cms.uint32(1935072)
     process.ANEDBR.xsec=cms.double(30.7)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)    
 elif "SingleTopSchannel" in "<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(209237)
+    process.ANEDBR.Ngen=cms.uint32(259961)
     process.ANEDBR.xsec=cms.double(3.79)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)    
 elif "SingleTopTWchannel" in "<SAMPLE>" :
@@ -149,7 +142,7 @@ elif "SingleTopTWchannel" in "<SAMPLE>" :
     process.ANEDBR.xsec=cms.double(11.1)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)    
 elif "SingleTopTchannel" in "<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(3750740)
+    process.ANEDBR.Ngen=cms.uint32(3758227)
     process.ANEDBR.xsec=cms.double(56.4)
     process.ANEDBR.FillGenLevelCode=cms.uint32(1)    
 ### MC signal
@@ -697,15 +690,22 @@ if "BulkG_WW_lvjj_" in "<SAMPLE>" or "RSG_WW_lvjj_" in "<SAMPLE>" or "WW_xww"=="
        process.ANEDBR.VTaggingScaleFactorLP=cms.double(1.1)
 
 process.filterFinalSelPath = cms.EDFilter("HLTHighLevel",
-                                       TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
-                                       HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu"),
-                                       #HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
-                                       eventSetupPathsKey = cms.string(''),
-                                       andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
-                                       throw = cms.bool(True)    # throw exception on unknown path names
-                                       )
+                                          TriggerResultsTag = cms.InputTag("TriggerResults","","CMG"),
+                                          HLTPaths = cms.vstring("FullPathDUMMYELE","FullPathDUMMYMU"),
+                                          #HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu"),
+                                          eventSetupPathsKey = cms.string(''),
+                                          andOr = cms.bool(True),  # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
+                                          throw = cms.bool(True)    # throw exception on unknown path names
+                                          )
 
-if processFullSel :
+if "WW"=="<ANALYSIS>" :
+    process.filterFinalSelPath.HLTPaths = cms.vstring("cmgEDBRWWEle","cmgEDBRWWMu")
+else :
+    process.filterFinalSelPath.HLTPaths = cms.vstring("cmgEDBRZZEle","cmgEDBRZZMu")
+        
+
+#AB: should we add also "ttbarcontrol" ? LS: yes
+if processFullSel=="fullsb" or processFullSel=="fullsig" or processFullSel=="fullrange" or processFullSel=="ttbarcontrol":
     process.p=cms.Path(process.filterFinalSelPath+process.ANEDBR)
 else :
     process.p=cms.Path(process.ANEDBR)

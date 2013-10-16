@@ -20,21 +20,30 @@ print 'querying database for source files'
 ## Basic options
 createPATtuple = True
 createCMGtuple = False
-skimEvents = False
+skimEventsRECO = False
+skimEventsGEN = False
 runOnMC    = True
 runOld5XGT = False
 runOnFastSim = False
 runQJets = True
 
-## Z-->ee/mumu filter
+## Z-->ee/mumu reco filter
 EE = ("patElectronsWithTrigger patElectronsWithTrigger")
 MUMU = ("patMuonsWithTrigger patMuonsWithTrigger")
 DILEPTON_KINCUT = ("70.0 < mass < 110.0 && pt > 80.0")
 
-## W-->enu/munu filter
+## W-->enu/munu reco filter
 ENU = ("patMETs patElectronsWithTrigger")
 MUNU = ("patMETs patMuonsWithTrigger")
 METLEPTON_KINCUT = ("pt > 80.0")
+
+## V-->leptonic gen filter
+VLEP_GENCUT = "(abs(pdgId)==23 || abs(pdgId)==24 ) && numberOfDaughters> 0 && abs(daughter(0).pdgId)>9 && status==3"
+NUM_VLEP_GEN = 1
+
+## V-->hadronic gen filter
+VHAD_GENCUT = "(abs(pdgId)==23 || abs(pdgId)==24 ) && numberOfDaughters> 0 && abs(daughter(0).pdgId)<9 && status==3"
+NUM_VHAD_GEN = 1
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -58,9 +67,15 @@ process.source.fileNames = process.source.fileNames[:20]
 #####process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/group/cmgtools/CMG/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PFAOD_0.root']
 #process.source.fileNames = ['file:root://eoscms//eos/cms/store/data/Run2012C/DoublePhotonHighPt/AOD/PromptReco-v2/000/200/600/0AA4E2BB-2BE5-E111-B3A8-00237DDC5C24.root']
 ##process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/bonato/patTuple/2012/EXOVVtest/BulkG_ZZllqq_M1000_c0p2_STEP3_AODSIM_24_1_fvt.root']
+#process.source.fileNames = [
+#    "/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/tomei/store/user/tomei/BulkG_ZZ_lljj_M2000_G120-JHU/BulkG_ZZ_lljj_M2000_G120-JHU/c8f8ed334db8a7d6f56c62266b1dfa5b/Bulk_AODSIM_6_1_GAz.root"
+#    ]
+#process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/santanas/Samples/AODSIM/BulkG_WW_inclusive_c0p2_M1100_AODSIM_E6E2BD75-6220-E311-98A7-003048FFD79C.root']
+process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/santanas/Samples/AODSIM/BulkG_WW_lvjj_c0p2_M1100-JHU-AODSIM.root']
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(50) )
 
 print sep_line
 print process.source.fileNames
@@ -490,13 +505,45 @@ process.WToMUNUskimSequence = cms.Sequence( process.WToMUNUcand * process.WToMUN
 process.WToMUNUskimPath = cms.Path( process.WToMUNUskimSequence )
 
 
+
+########################################################
+## Skim events (gen level)
+########################################################
+
+# Z or W with leptonic decays
+process.genSelectorVlep = cms.EDFilter("CandPtrSelector", 
+    src = cms.InputTag("genParticles"),
+    cut = cms.string(VLEP_GENCUT)
+)
+
+process.genSelectorVlepFilter = cms.EDFilter("CandViewCountFilter",
+                                             src = cms.InputTag("genSelectorVlep"),
+                                             minNumber = cms.uint32(NUM_VLEP_GEN) )
+
+# Z or W with hadronic decays
+process.genSelectorVhad = cms.EDFilter("CandPtrSelector", 
+    src = cms.InputTag("genParticles"),
+    cut = cms.string(VHAD_GENCUT)
+)
+
+process.genSelectorVhadFilter = cms.EDFilter("CandViewCountFilter",
+                                             src = cms.InputTag("genSelectorVhad"),
+                                             minNumber = cms.uint32(NUM_VHAD_GEN) )
+
+process.VHADplusVLEPskimSequence = cms.Sequence( process.genSelectorVlep * process.genSelectorVlepFilter * process.genSelectorVhad * process.genSelectorVhadFilter )
+process.VHADplusVLEPskimPath = cms.Path( process.VHADplusVLEPskimSequence )
+
 ########################################################
 ## PAT output definition
 ########################################################
 
 ## Define event selection
-EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath')
-if not skimEvents:
+EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath','VHADplusVLEPskimPath')
+if skimEventsRECO == True and skimEventsGEN == False:
+    EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath')
+if skimEventsRECO == False and skimEventsGEN == True:
+    EventSelection = cms.vstring('VHADplusVLEPskimPath')
+if skimEventsRECO == False and skimEventsGEN == False:
     EventSelection.append('p')
 
 ## Output Module Configuration (expects a path 'p')
@@ -590,6 +637,7 @@ process.schedule.append( process.ZToEEskimPath )
 process.schedule.append( process.ZToMUMUskimPath )
 process.schedule.append( process.WToENUskimPath )
 process.schedule.append( process.WToMUNUskimPath )
+process.schedule.append( process.VHADplusVLEPskimPath )
 
 ## Also add the TOBTEC Fakes Filter
 process.load("KStenson.TrackingFilters.tobtecfakesfilter_cfi")

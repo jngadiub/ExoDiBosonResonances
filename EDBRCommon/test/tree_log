@@ -142,7 +142,12 @@ For WW:
                       2) remove bad events from ecalLaserCorrection. (94 events out of 9303)
                       3) We did not make new trees for TTbar control region. 
                          We think these two updates will not change much the ttbar scale factor.
-        
+    
+	
+/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv12/
+	date         : 20131016
+	cmgtuple     : cmgTuple_1012
+	updates      : new pattuple production in 539. 22-jan-2013 data    
 
 
 ###################################################################################################################
@@ -159,3 +164,5 @@ For ZZ:
 	cmgtuple:	cmgTuple_cff/
 	EDBR tag:	edbr_vv_20130313
 	
+
+

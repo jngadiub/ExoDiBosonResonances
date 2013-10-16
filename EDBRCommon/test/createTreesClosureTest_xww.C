@@ -42,10 +42,10 @@ double deltaR(const double& eta1, const double& phi1,
 int createTreesClosureTest_xww()
 {
 	//########EDIT THIS PART###########
-	TString inTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/fullallrange";
-	TString outSigTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSigTree";
-	TString outSBTree="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv9/AnaSBTree";
+	TString InTreeLocation="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv12/";
 
+	int treetype=1; //1 for fullrange, 0 for ttbarcontrol
+	
 	const double A1Low=40.0;
 	const double A1High=55.0;
 
@@ -60,6 +60,19 @@ int createTreesClosureTest_xww()
 
 
 	//#########################
+	TString inTree, outSigTree , outSBTree;	
+	
+	if(treetype==1)
+	{
+		inTree=InTreeLocation+"/fullrange/";
+		outSigTree=InTreeLocation+"/AnaSigTree/";
+		outSBTree=InTreeLocation+"/AnaSBTree/";
+	}
+    if(treetype==0)    
+	{   inTree=InTreeLocation+"/ttbarcontrol/";
+        outSigTree=InTreeLocation+"/AnaSigTree_forTT/";
+        outSBTree=InTreeLocation+"/AnaSBTree_forTT/";
+    }
 
 
 	system("mkdir -p "+outSigTree);
@@ -307,20 +320,14 @@ int createTreesClosureTest_xww()
 				//else continue;
 
 				//cut from fermilab
-				if(deltaR_LJ>1.57 && deltaPhi_JMET>2. && deltaPhi_JWL>2.);
+				if((deltaR_LJ>1.57 && deltaPhi_JMET>2. && deltaPhi_JWL>2.&&treetype==1)||treetype==0);
 				else continue;
 
 				//b tag veto
-				if(nbtagsM[ivec]==0);
-				else continue;
-
-				//mt cut
-				//if(mt[ivec]>30);
-				//else continue;
-
+				if(nbtagsM[ivec]==0&&treetype==1);
 				//b control region
-				//if(nbtagscleanT[ivec]>=1);
-				//else continue;
+				else if(nbtagscleanM[ivec]>=1&&treetype==0);
+				else continue;
 
 				//if(ptlep1[ivec]>90&&met>80);//this is a test for muon channel: make the same cuts as electron, ad see closure test A->B
 				//else continue;
