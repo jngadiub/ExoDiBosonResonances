@@ -146,11 +146,11 @@ def processSubsample(file):
 
         eff_zlep=1.
         if flavor=="ele":
-            bin1 = histo_eff_ele.FindBin(genZlep.pt(),abs(genZlep.Rapidity()))
+            bin1 = histo_eff_ele.FindBin(genZlep.pt(),abs(genZlep.Eta()))
             eff_zlep = histo_eff_ele.GetBinContent(bin1)
             ngensel_ele +=1
         if flavor=="mu":
-            bin1 = histo_eff_mu.FindBin(genZlep.pt(),abs(genZlep.Rapidity()))
+            bin1 = histo_eff_mu.FindBin(genZlep.pt(),abs(genZlep.Eta()))
             eff_zlep = histo_eff_mu.GetBinContent(bin1)
             ngensel_mu +=1
                                         
