@@ -1,7 +1,7 @@
 
 const std::string myOutDir="FitSidebandsMJJ_ZZ_20131007_prodv2g_HighPtJet_ALL/";//_Unblinded
-const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2g/fullsig/";
-const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2g/fullsb/";
+const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2h/fullsig/";
+const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2h/fullsb/";
 const bool unrollTrees=true;
 
 const unsigned int jetCats = 1;//1 for only 1 jet case, 2 for both
@@ -24,16 +24,15 @@ const bool alphaPoisson=true;//use Poisson errors for alpha uncertainties
 const bool plotFitPull=false;//plot pull plot with the fit result
 const bool plotFixedBinning=false;//plot fit result with fixed binning
 const double FixedBinWidth =50;
-
-std::string channel_marker="xzz";
-
 std::string bkgd_decorr_name="levexp_dcr_xzz";
-
-std::string dims = "1d";
-
-
-const std::string datacardDir("DataCards_XZZ_20131007_prodv2g_HighPtJet");
 float mZZmax_=2800;
+
+//used by create_datacards
+std::string signalProcessName="Bulk";
+std::string channel_marker="xzz";
+std::string dims = "1d";
+const std::string datacardDir("DataCards_XZZ_prodv2g_TEST4");
+
 
 //********** Externally provided Normalizations *********
 //
@@ -85,5 +84,7 @@ const double CMS_scale_m = 1.01;
 const double CMS_sig1Jm_p1_scale = 0.006;
 const double CMS_sig1Jm_p2_scale = 0.018;
 
-
+////4) V-tagging systematics
+const double CMS_eff_vtag_tau21_sf_LP=0.30;
+const double CMS_eff_vtag_tau21_sf_HP=0.08;
 
