@@ -316,7 +316,7 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   ofs << "#jmax 1  number of backgrounds" << std::endl;
   ofs << "#kmax *  number of nuisance parameters (sources of systematical uncertainties)" << std::endl;
   ofs << "------------ " << std::endl;
-  ofs << "shapes sig"<< channel_marker <<" CMS_"<< channel_marker <<"_" << suffix_str << " "<< channel_marker <<"_" << suffix_str << ".input.root  w:" <<("signal"+rename_str).c_str()<< std::endl;
+  ofs << "shapes "<<signalProcessName<< channel_marker <<" CMS_"<< channel_marker <<"_" << suffix_str << " "<< channel_marker <<"_" << suffix_str << ".input.root  w:" <<(signalProcessName+rename_str).c_str()<< std::endl;
   ofs << "shapes background"<< channel_marker <<" CMS_"<< channel_marker <<"_" << suffix_str << " "<< channel_marker <<"_" << suffix_str << ".input.root w:"<<bkgd_shape_name.c_str()  << std::endl;
   ofs << "shapes data_obs   CMS_"<< channel_marker <<"_" << suffix_str << " "<< channel_marker <<"_" << suffix_str << ".input.root w:"<<("dataset_obs"+rename_str).c_str()  << std::endl;
   ofs << "------------ " << std::endl;
@@ -351,7 +351,7 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   ofs << "observation   " << observedYield << std::endl;
   ofs << "------------ " << std::endl;
   ofs << "bin                CMS_"<< channel_marker <<"_" << suffix <<  "\tCMS_"<< channel_marker <<"_" << suffix << std::endl;
-  ofs << "process            sig"<< channel_marker <<"\t\t\tbackground"<< channel_marker  << std::endl;
+  ofs << "process            "<<signalProcessName<< channel_marker <<"\t\t\tbackground"<< channel_marker  << std::endl;
   ofs << "process            0\t\t\t1" << std::endl;
 
   float eff = f1_eff_vs_mass->Eval(hp.mH);
@@ -389,7 +389,9 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
 
   ofs << "CMS_scale_j\t\tlnN\t" << systString(jetScaleSyst(hp.mH)) <<  "\t1.0" << std::endl;
 
-  ofs << "CMS_eff_vtag\t\tlnN\t" << systString(VTagEffSyst(leptType_str, nxj, hp.mH,pur),-1.) << "\t1.0" << std::endl;
+  ofs << "CMS_eff_vtag_tau21_sf\t\tlnN\t" << systString(VTagEffSyst(leptType_str, nxj, hp.mH,pur),-1.) << "\t1.0" << std::endl;
+  //  ofs << "CMS_eff_vtag_mass_sf\t\tlnN\t" << "1.0" << "\t1.0" << std::endl;
+  //  ofs << "CMS_eff_vtag_model\t\tlnN\t" << "1.0" << "\t1.0" << std::endl;
 
   ofs << "CMS_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
   std::cout << "CMS_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
@@ -670,11 +672,11 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
 
   // and import it:
   if(nxj==1){
-    CB_SIG->SetName(("signal"+rename_str).c_str());
+    CB_SIG->SetName((signalProcessName+rename_str).c_str());
     w->import(*CB_SIG, RooFit::RecycleConflictNodes());
   }
   if(nxj==2){
-    signal2J->SetName(("signal"+rename_str).c_str());
+    signal2J->SetName((signalProcessName+rename_str).c_str());
     w->import(*signal2J, RooFit::RecycleConflictNodes());
   }
 
@@ -694,8 +696,8 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
 
   bool doPlot=false;
   // if(mass==650||mass==1000||mass==1500||mass==1600||mass==1700||mass==1900||mass==2000||mass==2100||mass==2400||mass==2500)doPlot=true;
-  if(mass==650||mass==1000||mass==1750||mass==1900||mass==2250||mass==2500)doPlot=true;
-  // if(mass==2200)doPlot=true;
+  //if(mass==650||mass==1000||mass==1750||mass==1900||mass==2250||mass==2500)doPlot=true;
+  if(mass==2200)doPlot=true;
   if(doPlot){
     const int nBinsTMP=nBins1;
     double binsTMP[nBinsTMP];
@@ -1196,11 +1198,11 @@ std::pair<double,double> puSyst( double mass ) {
 std::pair<double,double> VTagEffSyst( const std::string& leptType_str, int nxj, double mass, int purity ) {
 
   std::pair<double,double> returnPair;
-  returnPair.first  = 0.70;//30% unc for 1JLP
-  returnPair.second = 1.30; 
+  returnPair.first  = (1.0 - CMS_eff_vtag_tau21_sf_LP);//taken from Config
+  returnPair.second = (1.0 + CMS_eff_vtag_tau21_sf_LP); 
   if(purity == 1){//1J HP
-    returnPair.first  = 1.08;//8% unc for 1JHP
-    returnPair.second = 0.92; 
+    returnPair.first  = (1.0 + CMS_eff_vtag_tau21_sf_HP);//sign must be oppostite of LP because they are anti-correlated
+    returnPair.second = (1.0 - CMS_eff_vtag_tau21_sf_HP); 
   }
 	
   return returnPair;

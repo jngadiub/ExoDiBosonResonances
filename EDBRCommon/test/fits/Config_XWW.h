@@ -26,13 +26,14 @@ const bool alphaPoisson=false;//use Poisson errors for alpha uncertainties
 const bool plotFitPull=true;//plot pull plot with the fit result
 const bool plotFixedBinning=true;//plot fit result with fixed binning
 const double FixedBinWidth =50;
-
 std::string bkgd_decorr_name="levexp_dcr_xww";
-
-std::string dims = "1d";
-
-const std::string datacardDir("DataCards_XWW_V24/");
 float mZZmax_=3000;
+
+//used by create_datacards
+std::string signalProcessName="Bulk";
+std::string dims = "1d";
+const std::string datacardDir("DataCards_XWW_V24/");
+
 
 
 //********** Externally provided Normalizations *********
@@ -81,6 +82,10 @@ const double CMS_sig1Jm_p2_scale = 0.005;
 
 ////4) Btagging scale: negligible
 
+
+////5) V-tagging systematics
+const double CMS_eff_vtag_tau21_sf_LP=0.30;
+const double CMS_eff_vtag_tau21_sf_HP=0.08;
 
 
 

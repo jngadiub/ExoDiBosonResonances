@@ -305,7 +305,32 @@ elif "BulkG_ZZ_lljj_c0p2_M1800-JHU-herwig" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(9680)
     process.ANEDBR.xsec=cms.double(9.65e-07) 
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)    
-###### RS Graviton, ZZ, c = 0.05
+###### RS Graviton, PYTHIA 6, ZZ, c = 0.05
+elif "<SAMPLE>"  == "RSG_ZZ_lljj_c0p05_M750_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(60192)
+    process.ANEDBR.xsec=cms.double(0.008968)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"  == "RSG_ZZ_lljj_c0p05_M1000_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(60192)
+    process.ANEDBR.xsec=cms.double(0.002378)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"  == "RSG_ZZ_lljj_c0p05_M1250_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(60192)
+    process.ANEDBR.xsec=cms.double(0.000778)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)    
+elif "<SAMPLE>"  == "RSG_ZZ_lljj_c0p05_M1500_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(60192)
+    process.ANEDBR.xsec=cms.double(0.000276)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"  == "RSG_ZZ_lljj_c0p05_M1750_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(60192)
+    process.ANEDBR.xsec=cms.double(0.000109)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"  == "RSG_ZZ_lljj_c0p05_M2000_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(60192)
+    process.ANEDBR.xsec=cms.double(0.000044)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+###### RS Graviton, JHUgen, ZZ, c = 0.05
 elif "RSG_ZZ_lljj_c0p05_M1000" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(38022)
     process.ANEDBR.xsec=cms.double(5.07e-03) ### Checked
@@ -556,8 +581,39 @@ elif "BulkG_WW_inclusive_c0p2_M2500_xww" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(11059) ### Checked
     process.ANEDBR.xsec=cms.double(3.895e-07)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-
-
+###### W' => WZ, PYTHIA 6, inclusive
+elif "<SAMPLE>"  == "WprimeWZ_inclusive_M750_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(30000)
+    process.ANEDBR.xsec=cms.double(0.727785)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"  == "WprimeWZ_inclusive_M1000_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(30000)
+    process.ANEDBR.xsec=cms.double(0.1958263)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"  == "WprimeWZ_inclusive_M1500_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(30000)
+    process.ANEDBR.xsec=cms.double(0.0234412)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"  == "WprimeWZ_inclusive_M1800_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(30000)
+    process.ANEDBR.xsec=cms.double(0.0077633)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"  == "WprimeWZ_inclusive_M2000_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(30000)
+    process.ANEDBR.xsec=cms.double(0.0039031)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"  == "WprimeWZ_inclusive_M2200_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(30000)
+    process.ANEDBR.xsec=cms.double(0.001977)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"  == "WprimeWZ_inclusive_M2500_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(30000)
+    process.ANEDBR.xsec=cms.double(0.000773)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "<SAMPLE>"  == "WprimeWZ_inclusive_M3000_PYTHIA6"  :
+    process.ANEDBR.Ngen=cms.uint32(30000)
+    process.ANEDBR.xsec=cms.double(0.000218)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 ### Data
 #zz--doublemu
 elif "<SAMPLE>"=="DoubleMu_Run2012A_22Jan2013" :
@@ -679,13 +735,13 @@ print '---> Ngen=',process.ANEDBR.Ngen,'  Xsect=',process.ANEDBR.xsec
 
 
 ###apply V-tagging scale factor only to signal MC samples
-if "BulkG_ZZ_lljj_" in "<SAMPLE>" or "RSG_ZZ_lljj_" in "<SAMPLE>" or "WW"=="<SAMPLE>" or "WZ"=="<SAMPLE>" or "ZZ"=="<SAMPLE>":
+if "BulkG_ZZ_lljj_" in "<SAMPLE>" or "RSG_ZZ_lljj_" in "<SAMPLE>" or "WprimeWZ_" in "<SAMPLE>" or "WW"=="<SAMPLE>" or "WZ"=="<SAMPLE>" or "ZZ"=="<SAMPLE>":
        process.ANEDBR.VTaggingScaleFactorHP=cms.double(0.891)
        process.ANEDBR.VTaggingScaleFactorLP=cms.double(1.277)
 
 
        
-if "BulkG_WW_inclusive_" in "<SAMPLE>" or "RSG_WW_lvjj_" in "<SAMPLE>" or "WW_xww"=="<SAMPLE>" or "WZ_xww"=="<SAMPLE>" or "ZZ_xww"=="<SAMPLE>":
+if "BulkG_WW_inclusive_" in "<SAMPLE>" or "RSG_WW_lvjj_" in "<SAMPLE>"  or "WprimeWZ_" in "<SAMPLE>" or "WW_xww"=="<SAMPLE>" or "WZ_xww"=="<SAMPLE>" or "ZZ_xww"=="<SAMPLE>":
        process.ANEDBR.VTaggingScaleFactorHP=cms.double(0.891)
        process.ANEDBR.VTaggingScaleFactorLP=cms.double(1.277)
 
