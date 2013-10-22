@@ -18,6 +18,25 @@ echo "Mass is $mass,   card is $card,   channel is $channel"
 
 subdir=$mass
 
+# create the crab.cfg file
+rm crab.cfg
+echo '[CRAB]' > crab.cfg
+echo 'jobtype = cmssw' >> crab.cfg
+echo 'scheduler = remoteGlidein' >> crab.cfg
+echo '' >> crab.cfg
+echo '[CMSSW]' >> crab.cfg
+echo 'datasetpath=none' >> crab.cfg
+echo 'pset=pset.py' >> crab.cfg
+echo 'events_per_job = 5000' >> crab.cfg
+echo 'number_of_jobs = 56' >> crab.cfg
+echo 'output_file = output.root' >> crab.cfg
+echo '' >> crab.cfg
+echo '[USER]' >> crab.cfg
+echo 'return_data = 1' >> crab.cfg
+echo 'additional_input_files='${card}',xzz*root,run_fullCLs_TF.py' >> crab.cfg
+echo 'script_exe=run_fullCLs_TF.sh' >> crab.cfg
+
+
 # copy the relevant files inside the mass subdirs
 echo "Copying files inside subdir $subdir"
 cp crab.cfg run_fullCLs_TF.py pset.py ${subdir}
