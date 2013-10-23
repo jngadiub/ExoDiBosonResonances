@@ -10,6 +10,35 @@ from array import array
 root.gROOT.SetBatch()        # don't pop up canvases
 root.gROOT.SetStyle('Plain') # white background
 
+#weights
+weight_Vtag = 0.93 #scale factor for HP category (0.93)
+weight_btagVeto = 0.92 #efficiency of b-tag veto (flat within 1% for all the masses) (0.92)
+weight_leptonVeto = 0.97 #efficiency of b-tag veto (flat within few % for all the masses) (0.97)
+def weight_HLT(flavour, eta): #trigger efficiencies (not applied in MC)
+    theWeight = 1
+    ###
+    if flavour == 1: #ele
+        if abs(eta)>0.0 and abs(eta)<1.4442:
+            theWeight = 0.991
+        if abs(eta)>1.566 and abs(eta)<2.5:
+            theWeight = 0.976
+        if abs(eta)>2.5:
+            theWeight = 0.
+    ###        
+    if flavour == 2: #mu
+        if abs(eta)>0.0 and abs(eta)<0.9:
+            theWeight = 0.94010
+        if abs(eta)>0.9 and abs(eta)<1.2:
+            theWeight = 0.84368
+        if abs(eta)>1.2 and abs(eta)<2.1:
+            theWeight = 0.82423
+        if abs(eta)>2.1:
+            theWeight = 0.
+    ###             
+    return theWeight;
+
+
+#histos
 elebins_pt  = [20,40,60,90,120,150,200,250,300,400,500,600,700,800,900,1000,1200,1500,2000]
 elebins_eta = [0.0,0.2,0.4,0.6,0.8,1.0,1.2,1.5,2.0,2.5,3.0]
 
@@ -19,7 +48,8 @@ jetbins_eta=  [0.,0.3,0.9,1.2,1.5,1.8,2.1,2.4]
 mubins_pt  =  elebins_pt
 mubins_eta =  [0.0,0.2,0.4,0.6,0.8,1.0,1.2,1.5,2.0,2.4,3.0]
 
-histo_ele_gen     = root.TH2F("ele_gen","ele_gen",len(elebins_pt)-1,array('d',elebins_pt),len(elebins_eta)-1,array('d',elebins_eta))    
+histo_ele_gen     = root.TH2F("ele_gen","ele_gen",len(elebins_pt)-1,array('d',elebins_pt),len(elebins_eta)-1,array('d',elebins_eta))
+histo_ele_gen.Sumw2()
 histo_ele_genMatch = histo_ele_gen.Clone("ele_genreco")  # gen gen quantitites eles matched between reco and gen
 histo_ele_reco     = histo_ele_gen.Clone("ele_reco")     # reco quantities for all passing objects
 histo_ele_recoMatch= histo_ele_gen.Clone("ele_recoMatch")# reco quantities for eles matched to gen-level
@@ -27,6 +57,7 @@ histo_ele_pur      = histo_ele_gen.Clone("ele_pur")      # reco quantities for e
 histo_ele_stab     = histo_ele_gen.Clone("ele_stab")     # gen  quantities for eles matched to gen-level, goint to the same histogram bin
 
 histo_mu_gen     = root.TH2F("mu_gen","mu_gen",len(mubins_pt)-1,array('d',mubins_pt),len(mubins_eta)-1,array('d',mubins_eta))    
+histo_mu_gen.Sumw2()
 histo_mu_genMatch = histo_mu_gen.Clone("mu_genreco")  # gen gen quantitites mus matched between reco and gen
 histo_mu_reco     = histo_mu_gen.Clone("mu_reco")     # reco quantities for all passing objects
 histo_mu_recoMatch= histo_mu_gen.Clone("mu_recoMatch")# reco quantities for mus matched to gen-level
@@ -34,17 +65,23 @@ histo_mu_pur      = histo_mu_gen.Clone("mu_pur")      # reco quantities for mus 
 histo_mu_stab     = histo_mu_gen.Clone("mu_stab")     # gen  quantities for mus matched to gen-level, goint to the same histogram bin
 
 histo_jet_gen      = root.TH2F("jet_gen","jet_gen",len(jetbins_pt)-1,array('d',jetbins_pt),len(jetbins_eta)-1,array('d',jetbins_eta)) # gen quantities of all resonances in accptance   
+histo_jet_gen.Sumw2()
 histo_jet_genMatch = histo_jet_gen.Clone("jet_genreco")  # gen gen quantitites jets matched between reco and gen
 histo_jet_reco     = histo_jet_gen.Clone("jet_reco")     # reco quantities for all passing objects
 histo_jet_recoMatch= histo_jet_gen.Clone("jet_recoMatch")# reco quantities for jets matched to gen-level
 histo_jet_pur      = histo_jet_gen.Clone("jet_pur")      # reco quantities for jets matched to gen-level, goint to the same histogram bin
 histo_jet_stab     = histo_jet_gen.Clone("jet_stab")     # gen  quantities for jets matched to gen-level, goint to the same histogram bin
 
-
 histo_jet_deltaR = root.TH1F("histo_jet_deltaR","histo_jet_deltaR",100,0,5)
+histo_jet_deltaR.Sumw2()
 histo_ele_deltaR = root.TH1F("histo_ele_deltaR","histo_ele_deltaR",100,0,5)
+histo_ele_deltaR.Sumw2()
 histo_mu_deltaR  = root.TH1F("histo_mu_deltaR","histo_mu_deltaR",100,0,5)    
+histo_mu_deltaR.Sumw2()
 
+histo_event_eff    = root.TH1F("histo_event_eff","histo_event_eff",1,0,1) # b-tag , lepton-veto
+histo_event_eff.Sumw2()
+histo_event_eff.SetBinContent(1,weight_btagVeto*weight_leptonVeto)
 
 #delta-R computation copied from CMSSW
 
@@ -186,9 +223,6 @@ def processSubsample(file):
         #            continue
         #print str(event.eventAuxiliary().event())
 
-        #FIXME: ADD B-tag veto, ADD lepton veto
-        
-
         # fill matched jets objects
         event.getByLabel ("jetIDMerged", jethandle)
         recojets = jethandle.product()
@@ -211,19 +245,19 @@ def processSubsample(file):
             if jet.sourcePtr().get().userFloat("tau2")/jet.sourcePtr().get().userFloat("tau1") > 0.5:
                 continue
             
-            histo_jet_reco.Fill(jet.pt(),abs(jet.eta()))
+            histo_jet_reco.Fill(jet.pt(),abs(jet.eta()),weight_Vtag)
             dr = deltaR(jet.eta(),jet.phi(),genjetp4.eta(),genjetp4.phi())
-            histo_jet_deltaR.Fill(dr)
-            if dr < closestDr:
+            histo_jet_deltaR.Fill(dr,weight_Vtag)
+            if dr < closestDr: 
                 closestDr = dr
                 closest = index
 
         if index != -1 and closestDr < 0.8: # found a matching VJet
-            histo_jet_genMatch.Fill(genjetp4.pt(),abs(genjetp4.eta()))
-            histo_jet_recoMatch.Fill(recojets[index].pt(),abs(recojets[index].eta()))
+            histo_jet_genMatch.Fill(genjetp4.pt(),abs(genjetp4.eta()),weight_Vtag)
+            #histo_jet_recoMatch.Fill(recojets[index].pt(),abs(recojets[index].eta()),weight_Vtag)
             if histo_jet_genMatch.FindBin(genjetp4.pt(),abs(genjetp4.eta())) == histo_jet_genMatch.FindBin(recojets[index].pt(),abs(recojets[index].eta())):
-                histo_jet_stab.Fill(genjetp4.pt(),abs(genjetp4.eta()))
-                histo_jet_pur.Fill(recojets[index].pt(),abs(recojets[index].eta()))
+                histo_jet_stab.Fill(genjetp4.pt(),abs(genjetp4.eta()),weight_Vtag)
+                histo_jet_pur.Fill(recojets[index].pt(),abs(recojets[index].eta()),weight_Vtag)
 
         #only proceed to leptons if event filters pass
         #this ensures trigger eff is taken into account
@@ -233,8 +267,6 @@ def processSubsample(file):
 #            #print "failed trigger"
 #            continue
 
-        #FIXME: ADD HLT weight only for lepton part
-
         #print "startele"
         # fill matched electrons objects
         if flavor == "ele":
@@ -243,27 +275,32 @@ def processSubsample(file):
             closest1 = -1
             closestDr1 = 99999.
             index1 = -1
+            closestVlepWeight1 = 1.
             for ele in recoeles:
                 index1 += 1
-            #acceptance cuts
+                #acceptance cuts
                 if ele.pt() < 200:
                     continue
                 if ele.leg2().getleppt() < 80:
                     continue            
+
+                VlepWeight1 = weight_HLT(1,ele.leg1().eta())
+                #print str(flavor) + " " + str(ele.leg1().eta()) + " " + str(VlepWeight1)
             
-                histo_ele_reco.Fill(ele.pt(),abs(ele.eta()))
+                histo_ele_reco.Fill(ele.pt(),abs(ele.eta()), VlepWeight1)
                 dr1 = deltaR(ele.eta(),ele.phi(),genVlep.eta(),genVlep.phi())
-                histo_ele_deltaR.Fill(dr1)
+                histo_ele_deltaR.Fill(dr1,VlepWeight1)
                 if dr1 < closestDr1 :
                     closestDr1 = dr1
                     closest1 = index1
+                    closestVlepWeight1 = VlepWeight1
 
             if index1 != -1 and closestDr1 < 1.0: # found a matching electron for genlepon1
-                histo_ele_genMatch.Fill(genVlep.pt(),abs(genVlep.Eta()))
+                histo_ele_genMatch.Fill(genVlep.pt(),abs(genVlep.Eta()),closestVlepWeight1)
+                #histo_ele_recoMatch.Fill(recoeles[index1].pt(),abs(recoeles[index1].eta()),closestVlepWeight1)
                 if histo_ele_genMatch.FindBin(genVlep.pt(),abs(genVlep.Eta())) == histo_ele_genMatch.FindBin(recoeles[index1].pt(),abs(recoeles[index1].eta())):
-                    histo_ele_stab.Fill(genVlep.pt(),abs(genVlep.Eta()))
-                    histo_ele_pur.Fill(recoeles[index1].pt(),abs(recoeles[index1].eta()))
-
+                    histo_ele_stab.Fill(genVlep.pt(),abs(genVlep.Eta()),closestVlepWeight1)
+                    histo_ele_pur.Fill(recoeles[index1].pt(),abs(recoeles[index1].eta()),closestVlepWeight1)
     
            
        # fill matched muon objects
@@ -273,28 +310,31 @@ def processSubsample(file):
             closest1 = -1
             closestDr1 = 99999.
             index1 = -1
+            closestVlepWeight1 = 1.
             for mu in recomus:
                 index1 += 1
             #acceptance cuts
                 if mu.pt() < 200:
                     continue
+
+                VlepWeight1 = weight_HLT(2,mu.leg1().eta())
+                #print str(flavor) + " " + str(mu.leg1().eta()) + " " + str(VlepWeight1)
                 
-                histo_mu_reco.Fill(mu.pt(),abs(mu.eta()))
+                histo_mu_reco.Fill(mu.pt(),abs(mu.eta()),VlepWeight1)
                 dr1 = deltaR(mu.eta(),mu.phi(),genVlep.eta(),genVlep.phi())
-                histo_mu_deltaR.Fill(dr1)
+                histo_mu_deltaR.Fill(dr1,VlepWeight1)
                 if dr1 < closestDr1 :
                     closestDr1 = dr1
                     closest1 = index1
+                    closestVlepWeight1 = VlepWeight1
 
 
             if index1 != -1 and closestDr1 < 1.0: # found a matching muctron for genlepon1
-                histo_mu_genMatch.Fill(genVlep.pt(),abs(genVlep.Eta()))
-                histo_mu_recoMatch.Fill(recomus[index1].pt(),abs(recomus[index1].eta()))
+                histo_mu_genMatch.Fill(genVlep.pt(),abs(genVlep.Eta()),closestVlepWeight1)
+                #histo_mu_recoMatch.Fill(recomus[index1].pt(),abs(recomus[index1].eta()),closestVlepWeight1)
                 if histo_mu_genMatch.FindBin(genVlep.pt(),abs(genVlep.Eta())) == histo_mu_genMatch.FindBin(recomus[index1].pt(),abs(recomus[index1].eta())):
-                    histo_mu_stab.Fill(genVlep.pt(),abs(genVlep.Eta()))
-                    histo_mu_pur.Fill(recomus[index1].pt(),abs(recomus[index1].eta()))
-
-           
+                    histo_mu_stab.Fill(genVlep.pt(),abs(genVlep.Eta()),closestVlepWeight1)
+                    histo_mu_pur.Fill(recomus[index1].pt(),abs(recomus[index1].eta()),closestVlepWeight1)
 
             
         
@@ -339,6 +379,7 @@ def makePlots():
         
     #eff
     output = root.TFile.Open("efficiency_WW.root","RECREATE")
+    histo_event_eff.Write()
     tmphist = histo_jet_genMatch.Clone("eff_jet")
     tmphist.Divide(histo_jet_gen)
     histo_jet_genMatch.Write()

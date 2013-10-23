@@ -15,7 +15,7 @@ histofile = root.TFile.Open("efficiency_WW.root")
 histo_eff_ele   = histofile.Get("eff_ele")
 histo_eff_mu   = histofile.Get("eff_mu")
 histo_eff_jet   = histofile.Get("eff_jet")
-
+histo_eff_event   = histofile.Get("histo_event_eff")
 
 def deltaPhi(phi1, phi2):
 
@@ -182,12 +182,15 @@ def processSubsample(file):
         bin = histo_eff_jet.FindBin( genjetp4.pt(),abs(genjetp4.eta()) )
         eff_jet = histo_eff_jet.GetBinContent(bin)
 
+        #Efficiency per event (b-tag, lepton-veto)
+        eff_event = histo_eff_event.GetBinContent(1)
+
         #Number of selected events (after efficiency re-weighting)
-        nsel += eff_jet * eff_Vlep
+        nsel += eff_jet * eff_Vlep * eff_event
         if flavor=="ele":
-            nsel_ele += eff_jet * eff_Vlep
+            nsel_ele += eff_jet * eff_Vlep * eff_event
         if flavor=="mu":
-            nsel_mu += eff_jet * eff_Vlep
+            nsel_mu += eff_jet * eff_Vlep * eff_event
 
     print "-----------------------------------------------------------------------------------------------------"
     print file  
