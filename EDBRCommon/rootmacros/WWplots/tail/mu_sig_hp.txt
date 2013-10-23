@@ -1,0 +1,847 @@
+
+Processing loopPlot.C++...
+Info in <TUnixSystem::ACLiC>: creating shared library /afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/./loopPlot_C.so
+In file included from /afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/./loopPlot.C:10,
+                 from /afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/loopPlot_C_ACLiC_dict.h:34,
+                 from /afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/loopPlot_C_ACLiC_dict.cxx:17:
+/afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/./EDBRHistoMaker.h: In member function ‘bool EDBRHistoMaker::eventPassesCut(int, double, double)’:
+/afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/./EDBRHistoMaker.h:945: warning: unused variable ‘passesVBF’
+/afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/./EDBRHistoMaker.h:946: warning: unused variable ‘passesVTag’
+/afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/./EDBRHistoMaker.h:947: warning: unused variable ‘passesMZZ’
+/afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/./EDBRHistoMaker.h: In member function ‘void EDBRHistoMaker::Loop(std::string)’:
+/afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/./EDBRHistoMaker.h:1040: warning: suggest parentheses around && within ||
+In file included from /afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/./loopPlot.C:11,
+                 from /afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/loopPlot_C_ACLiC_dict.h:34,
+                 from /afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/loopPlot_C_ACLiC_dict.cxx:17:
+/afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/./EDBRHistoPlotter.h: In member function ‘void EDBRHistoPlotter::makeStackPlots(std::string)’:
+/afs/cern.ch/work/s/shuai/public/diboson/update1009_gitcmg/CMGTools/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/rootmacros/WWplots/./EDBRHistoPlotter.h:539: warning: unused variable ‘binInt1’
+All strings set
+
+Start making histograms
+
+
+-------
+Running over data_xww
+The file is /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv12/fullrange/treeEDBR_data_xww.root
+We have 118 histograms 
+Lumi of this sample: xxx  /pb (dummy for data)
+Unitary weights set!
+195950:85:91266144
+91266144 * 195950 * 1837.07 * 55.0463 * 0.629897 * -0.573516 * 844.096 * -0.923339 * 75.0224 * 896.007 * 898.875 * 0.138387 * 2.22848 * 82.6697 * 0.426227
+
+195378:100:74204083
+74204083 * 195378 * 1805.72 * 98.391 * 1.49234 * -1.13987 * 164.963 * -0.768219 * 47.077 * 259.112 * 325.047 * -2.37537 * 2.39332 * 75.7419 * 0.423878
+
+194305:53:75786601
+75786601 * 194305 * 2440.03 * 354.909 * 2.0251 * -0.955547 * 199.611 * -0.903796 * 13.7728 * 554.348 * 551.887 * -0.918012 * 2.15317 * 81.6202 * 0.471396
+
+200091:1197:1356638830
+1356638830 * 200091 * 2042.36 * 183.35 * -1.37131 * 1.55472 * 157.028 * 1.43726 * 19.9206 * 339.795 * 333.848 * 2.36876 * -2.35393 * 81.5871 * 0.27685
+
+200600:161:255424075
+255424075 * 200600 * 2077.51 * 65.8684 * -1.34386 * -3.06969 * 460.54 * -3.08275 * 2.27495 * 526.404 * 494.167 * 1.71008 * 0.032626 * 85.7113 * 0.449632
+
+202504:1622:1752520102
+1752520102 * 202504 * 1747.31 * 311.305 * 1.82413 * 1.44278 * 195.145 * 1.0624 * 93.1907 * 497.803 * 456.329 * -0.574802 * -1.62968 * 94.1132 * 0.435236
+
+202973:168:185629135
+185629135 * 202973 * 2149.19 * 56.4544 * -1.09141 * 1.2556 * 543.126 * 0.869746 * 67.146 * 595.809 * 559.473 * 1.58593 * -2.29504 * 92.278 * 0.474216
+
+204601:684:800670825
+800670825 * 204601 * 1868.35 * 599.506 * -1.33911 * -1.54122 * 156.559 * -1.25646 * 86.947 * 751.049 * 809.732 * -0.158408 * 1.62044 * 91.5318 * 0.397456
+
+205667:179:188205107
+188205107 * 205667 * 2124.77 * 169.25 * 1.85125 * -2.86707 * 88.614 * 3.05555 * 43.9184 * 254.097 * 309.269 * -2.30047 * -0.159286 * 101.293 * 0.416431
+
+206246:478:463502107
+463502107 * 206246 * 1888.54 * 81.1232 * -1.65797 * 0.0879727 * 245.597 * 0.684251 * 82.924 * 316.022 * 317.488 * 1.82074 * -2.2489 * 100.486 * 0.369115
+
+From makeHisto: the histo with #vtx has 4492 entries
+Loop over data done
+
+-------
+Running over TTBARpowheg_xww
+The file is /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv12/fullrange/treeEDBR_TTBARpowheg_xww.root
+We have 118 histograms 
+Lumi of this sample: 96253.4  /pb
+1:64161:19244375
+19244375 * 1 * 1795.71 * 487.062 * -0.484715 * -1.11434 * 73.9639 * -1.38427 * 51.0796 * 558.696 * 697.833 * 1.34717 * 1.9921 * 95.002 * 0.319793
+
+1:16128:4837412
+4837412 * 1 * 2469.43 * 262.351 * -1.50731 * -1.60185 * 316.372 * -1.57115 * 8.8437 * 578.655 * 670.289 * 1.24486 * 1.74129 * 80.0362 * 0.378269
+
+1:6213:1863399
+1863399 * 1 * 2008.25 * 260.361 * -1.18145 * 1.15007 * 304.519 * 1.11324 * 10.3703 * 564.785 * 346.193 * 1.8771 * -2.14139 * 77.3246 * 0.489461
+
+1:4236:1270348
+1270348 * 1 * 1716.74 * 144.391 * 1.8072 * -2.66487 * 89.8263 * -1.72522 * 103.119 * 210.295 * 284.486 * -1.99078 * 0.981767 * 99.9661 * 0.189413
+
+From makeHisto: the histo with #vtx has 4856 entries
+
+-------
+Running over SingleTop_xww
+The file is /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv12/fullrange/treeEDBR_SingleTop_xww.root
+We have 118 histograms 
+Lumi of this sample: 79530.7  /pb
+From makeHisto: the histo with #vtx has 397 entries
+
+-------
+Running over VV_xww
+The file is /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv12/fullrange/treeEDBR_VV_xww.root
+We have 118 histograms 
+Lumi of this sample: 175109  /pb
+1:9842:5343758
+5343758 * 1 * 2464.41 * 427.467 * 1.75941 * -2.51491 * 106.44 * -2.15139 * 77.1164 * 528.308 * 522.293 * -1.23749 * 0.634917 * 82.4219 * 0.370967
+
+1:6799:3691480
+3691480 * 1 * 2144.71 * 422.276 * 0.258346 * -2.48576 * 557.139 * -2.47662 * 4.43398 * 979.406 * 975.883 * -0.691703 * 0.779003 * 74.0668 * 0.400978
+
+1:11098:6025962
+6025962 * 1 * 1716.72 * 550.118 * 0.215297 * -1.8547 * 354.997 * -0.879623 * 414.033 * 804.866 * 778.687 * 0.523001 * 1.64878 * 80.4656 * 0.377708
+
+1:79:42420
+42420 * 1 * 3076.74 * 915.006 * 1.12683 * 1.82177 * 167.644 * 1.79334 * 11.1324 * 1082.59 * 1055.03 * -0.710155 * -1.39734 * 75.9486 * 0.304286
+
+1:15365:8342779
+8342779 * 1 * 1768.25 * 177.948 * -0.905308 * -0.46483 * 619.361 * -0.323118 * 47.0067 * 795.922 * 795.513 * 0.154543 * 2.86619 * 89.1309 * 0.332643
+
+1:14807:8039943
+8039943 * 1 * 1714.46 * 724.532 * -0.984858 * -3.04345 * 70.0195 * 2.74146 * 111.072 * 786.749 * 781.728 * -0.167203 * 0.0667088 * 86.4821 * 0.220517
+
+1:8656:4700008
+4700008 * 1 * 2250.86 * 289.915 * -1.60378 * -2.80964 * 83.2769 * -2.06839 * 112.557 * 355.813 * 345.26 * 2.03802 * 0.570646 * 80.8379 * 0.295037
+
+1:573:311039
+311039 * 1 * 2130.23 * 167.951 * 0.225681 * -2.65577 * 883.929 * -2.51462 * 54.3409 * 1050.48 * 1071.03 * 0.0977833 * 0.591611 * 82.4835 * 0.446708
+
+1:16780:9111064
+9111064 * 1 * 1863.98 * 598.629 * -0.699371 * -1.05184 * 95.7606 * -1.20728 * 37.1778 * 693.393 * 726.866 * 0.850961 * 2.05873 * 94.8401 * 0.405446
+
+1:16579:9002374
+9002374 * 1 * 1736.15 * 192.742 * 0.670381 * -1.72599 * 647.6 * -1.90597 * 63.5002 * 837.939 * 873.305 * 0.292097 * 1.25063 * 86.8075 * 0.390943
+
+1:6216:3375002
+3375002 * 1 * 1994.06 * 536.043 * -0.751174 * 2.09903 * 62.0919 * 1.21649 * 155.836 * 577.478 * 620.408 * 1.41315 * -1.0951 * 76.3803 * 0.247176
+
+1:5590:3034896
+3034896 * 1 * 1825.61 * 446.279 * -1.72452 * -3.00614 * 498.851 * -2.92802 * 36.8496 * 944.411 * 501.21 * -0.102957 * 0.280321 * 69.987 * 0.464975
+
+1:14940:8111950
+8111950 * 1 * 1855.97 * 514.238 * 0.214267 * 3.02352 * 396.3 * 2.89495 * 57.9997 * 908.689 * 895.251 * -0.274418 * -0.191057 * 76.5844 * 0.209707
+
+1:8508:4619429
+4619429 * 1 * 1973.43 * 257.623 * 0.878617 * 2.7797 * 259.22 * 2.82179 * 10.8762 * 516.729 * 565.298 * -1.71129 * 0.293004 * 82.2939 * 0.412069
+
+1:9374:5089626
+5089626 * 1 * 1773.2 * 165.028 * 1.68784 * 2.50577 * 334.108 * 2.34453 * 37.8184 * 497.701 * 495.375 * -0.855734 * -0.692774 * 74.5368 * 0.408269
+
+1:10696:5807569
+5807569 * 1 * 2209.57 * 190.706 * 1.38842 * -1.55331 * 176.842 * -1.99942 * 81.2467 * 358.455 * 370.732 * -2.13032 * 1.34633 * 76.9054 * 0.224859
+
+1:11872:6446238
+6446238 * 1 * 2716.68 * 229.923 * -1.75073 * -0.0880488 * 247.359 * -0.381683 * 69.7751 * 472.154 * 500.129 * 1.69237 * 2.96986 * 76.7459 * 0.431021
+
+1:12232:6641643
+6641643 * 1 * 1797.34 * 406.821 * 1.3147 * 0.411688 * 411.871 * 2.59606 * 726.686 * 377.072 * 388.818 * 0.796728 * -1.576 * 83.0227 * 0.341814
+
+1:15826:8593246
+8593246 * 1 * 1934.37 * 475.41 * 0.348068 * -2.64933 * 673.412 * -1.02802 * 820.135 * 804.469 * 736.134 * -0.209079 * 1.50157 * 74.5982 * 0.356858
+
+1:16623:9026267
+9026267 * 1 * 1928.05 * 291.395 * -0.0921431 * -2.85263 * 552.451 * -2.6657 * 74.8918 * 840.516 * 749.472 * -1.3402 * 0.714135 * 80.0991 * 0.430636
+
+1:15674:8510768
+8510768 * 1 * 1823.83 * 327.149 * -1.17792 * 0.643386 * 210.527 * 0.541116 * 26.8279 * 537.006 * 579.351 * 1.06122 * -2.58515 * 74.2696 * 0.393992
+
+1:16195:8793571
+8793571 * 1 * 2097.35 * 164.607 * 1.34848 * 1.63278 * 671.862 * 1.84858 * 71.6269 * 833.397 * 792.421 * -0.206627 * -1.31862 * 75.0036 * 0.487723
+
+1:4438:2409303
+2409303 * 1 * 1746.23 * 140.101 * 0.490732 * 1.54559 * 751.231 * 2.38742 * 265.114 * 850.992 * 823.967 * 0.115604 * -0.910183 * 80.5595 * 0.374289
+
+1:45:24245
+24245 * 1 * 1827.05 * 211.825 * 1.16647 * -0.195256 * 662.698 * 0.0269919 * 83.0978 * 870.567 * 921.598 * 0.82901 * 3.08039 * 75.7492 * 0.339493
+
+1:956:518732
+518732 * 1 * 1874.52 * 482.748 * 0.126456 * -0.684909 * 311.067 * -0.736152 * 19.8553 * 793.567 * 762.953 * -1.19878 * 2.55044 * 78.76 * 0.152698
+
+1:13666:7420556
+7420556 * 1 * 1952.1 * 410.001 * -0.610633 * -1.75314 * 315.073 * -1.77541 * 8.00141 * 725.03 * 725.812 * 1.08458 * 1.41819 * 84.6176 * 0.293173
+
+1:2972:1613535
+1613535 * 1 * 1825.67 * 99.2006 * -1.97899 * 1.49826 * 388.685 * -1.78114 * 391.791 * 290.745 * 291.767 * -0.29948 * 1.26973 * 84.8904 * 0.388135
+
+1:1624:881457
+881457 * 1 * 1709.38 * 349.089 * 0.110938 * -1.34069 * 486.087 * -1.42923 * 36.4634 * 834.379 * 857.796 * -0.153129 * 1.76146 * 90.7359 * 0.40111
+
+1:5335:2896659
+2896659 * 1 * 1741.86 * 248.349 * -1.51027 * 0.578203 * 444.173 * 2.8901 * 607.914 * 331.701 * 330.163 * -0.536001 * -1.11274 * 100.013 * 0.330376
+
+1:9601:5021005
+5021005 * 1 * 1730.49 * 251.353 * -1.23019 * 0.558982 * 218.627 * 0.29518 * 61.6612 * 465.918 * 545.405 * 1.11777 * -2.95531 * 80.2715 * 0.444835
+
+1:18377:9611059
+9611059 * 1 * 2057.41 * 336.038 * 1.36679 * -2.49953 * 343.308 * -2.29047 * 70.8779 * 675.639 * 554.295 * -0.889127 * 0.759868 * 96.9628 * 0.343299
+
+1:10183:5325474
+5325474 * 1 * 2224.01 * 373.366 * 1.51915 * 2.10368 * 117.993 * 1.90999 * 40.5917 * 489.68 * 589.608 * -1.24708 * -1.13266 * 96.7664 * 0.463124
+
+1:14328:7493398
+7493398 * 1 * 2500.19 * 529.717 * 1.10261 * 0.97074 * 322.873 * 0.870531 * 41.425 * 851.583 * 865.343 * -0.790996 * -2.23095 * 87.8004 * 0.378288
+
+1:15578:8147020
+8147020 * 1 * 1744.92 * 58.1775 * 0.0495707 * -1.90932 * 427.961 * -2.37326 * 72.5495 * 480.694 * 491.31 * 2.21078 * 0.782735 * 94.488 * 0.366944
+
+1:17420:9110363
+9110363 * 1 * 1771.72 * 294.607 * -1.01366 * 0.291345 * 280.173 * 0.0600733 * 66.2963 * 570.944 * 553.4 * 1.09637 * -2.85864 * 91.7044 * 0.311256
+
+1:5173:2705469
+2705469 * 1 * 1702.36 * 93.6583 * 1.90341 * -0.601954 * 584.465 * -0.805883 * 47.6298 * 676.449 * 586.371 * 0.0671315 * 2.48692 * 94.0361 * 0.277016
+
+1:11336:5928575
+5928575 * 1 * 1720.71 * 746.984 * -0.147803 * 1.92017 * 72.5338 * 1.35228 * 130.417 * 809.075 * 882.121 * -0.376161 * -1.2987 * 95.5724 * 0.394538
+
+1:3589:1876725
+1876725 * 1 * 1930.28 * 84.6888 * -0.786517 * -1.45981 * 858.745 * -1.19272 * 71.8122 * 940.697 * 931.125 * -0.238393 * 1.94083 * 99.0531 * 0.23304
+
+1:2132:1114621
+1114621 * 1 * 2383.2 * 265.571 * -1.12165 * 0.479502 * 486.881 * 0.506349 * 9.65354 * 752.39 * 686.604 * 1.19347 * -2.55266 * 100.94 * 0.32625
+
+1:10709:5600288
+5600288 * 1 * 1864.87 * 766.137 * 0.140193 * 3.08889 * 143.323 * 2.87585 * 70.4591 * 906.727 * 888.337 * -0.397994 * -0.0235633 * 84.9006 * 0.267436
+
+1:909:415341
+415341 * 1 * 1939.33 * 399.521 * -1.54106 * 3.00759 * 66.3726 * 2.87126 * 22.1819 * 465.366 * 568.88 * 0.999628 * -0.113346 * 88.1772 * 0.237902
+
+1:10689:4884558
+4884558 * 1 * 1900.98 * 689.705 * -0.917695 * 1.48906 * 84.2409 * 1.47212 * 4.08436 * 773.935 * 742.047 * 0.496798 * -1.60466 * 87.2544 * 0.235171
+
+From makeHisto: the histo with #vtx has 4522 entries
+
+-------
+Running over WZJets_xww
+The file is /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv12/fullrange/treeEDBR_WJetsPt100_xww.root
+We have 118 histograms 
+Lumi of this sample: 45105.8  /pb
+1:258493:77532147
+77532147 * 1 * 1933.28 * 90.1759 * -1.56526 * -1.10386 * 173.225 * -0.509462 * 73.2002 * 253.025 * 341.348 * 2.27376 * 2.66314 * 94.1239 * 0.447824
+
+1:93996:28192981
+28192981 * 1 * 1862.57 * 455.226 * 0.367139 * -1.34888 * 457.587 * -1.21001 * 63.3301 * 910.614 * 927.83 * 0.558539 * 1.92337 * 74.4203 * 0.463243
+
+1:122786:36828482
+36828482 * 1 * 1808.63 * 205.471 * 1.77272 * 1.62943 * 328.806 * 1.42274 * 53.6288 * 531.579 * 529.061 * -0.601333 * -1.62515 * 66.2574 * 0.436409
+
+1:239596:71864365
+71864365 * 1 * 1725.7 * 246.062 * 1.67207 * -2.18268 * 118.825 * -2.37431 * 32.7169 * 363.418 * 282.545 * -1.73412 * 1.12725 * 65.5852 * 0.313228
+
+1:264016:79188884
+79188884 * 1 * 1803.22 * 551.331 * -0.642264 * -1.07599 * 217.29 * -0.989853 * 29.8031 * 768.043 * 756.605 * 0.585783 * 2.07295 * 79.9403 * 0.486252
+
+1:157821:47336616
+47336616 * 1 * 2125.04 * 79.2367 * 1.23625 * -0.79083 * 402.081 * -1.27121 * 84.9229 * 473.766 * 248.693 * -2.34385 * 1.98469 * 77.0758 * 0.307938
+
+1:180980:54282980
+54282980 * 1 * 1833.65 * 191.949 * 1.16955 * -1.53198 * 176.33 * -1.737 * 37.6525 * 366.349 * 475.38 * -1.83611 * 1.19312 * 102.105 * 0.171484
+
+From makeHisto: the histo with #vtx has 5352 entries
+Loop over MC done
+
+-------
+Running over BulkG_WW_inclusive_c0p2_M1500_xww
+The file is /afs/cern.ch/work/s/shuai/public/diboson/trees/productionv12/fullrange/treeEDBR_BulkG_WW_inclusive_c0p2_M1500_xww.root
+We have 118 histograms 
+Lumi of this sample: 2.73291e+08  /pb
+1:14:2623
+2623 * 1 * 1846.4 * 594.179 * 0.0369886 * -0.064552 * 291.587 * -0.106112 * 17.2977 * 885.597 * 947.922 * 0.119942 * 3.10555 * 78.8783 * 0.408347
+
+1:16:3159
+3159 * 1 * 1764.11 * 135.313 * 1.02477 * -1.26258 * 440.517 * -1.51073 * 60.4301 * 572.649 * 633.443 * -0.97488 * 1.63045 * 85.1398 * 0.352033
+
+1:116:23021
+23021 * 1 * 1775.19 * 184.146 * 0.0204639 * -2.53404 * 697.439 * -2.36606 * 60.1282 * 879.533 * 878.916 * -0.156317 * 0.689752 * 93.908 * 0.41105
+
+1:57:11393
+11393 * 1 * 2110.14 * 655.526 * 0.228963 * 0.275997 * 817.695 * 0.275235 * 0.557548 * 1473.22 * 721.21 * 0.551755 * -2.86122 * 78.896 * 0.274153
+
+1:61:12065
+12065 * 1 * 1819.1 * 206.995 * -1.29377 * -2.46144 * 282.247 * -2.27239 * 45.6287 * 487.11 * 945.157 * 0.443204 * 0.721255 * 73.5204 * 0.323656
+
+1:61:12195
+12195 * 1 * 1733.72 * 586.602 * -0.117936 * -2.82222 * 268.332 * -2.79716 * 9.94254 * 854.876 * 579.293 * -1.36241 * 0.290438 * 95.3914 * 0.457668
+
+1:63:12588
+12588 * 1 * 1795.84 * 366.266 * 1.04796 * -2.8952 * 488.698 * -3.02835 * 56.289 * 853.108 * 761.132 * 0.069239 * 0.284101 * 77.1655 * 0.439367
+
+1:134:26788
+26788 * 1 * 1715.79 * 311.941 * -0.905652 * -2.18837 * 498.174 * -2.14484 * 17.1563 * 809.934 * 913.966 * -1.02882 * 1.35079 * 93.34 * 0.281409
+
+1:23:4573
+4573 * 1 * 1742.13 * 303.47 * -0.0525156 * -1.71311 * 489.803 * -1.83929 * 48.6139 * 791.781 * 885.757 * -0.474504 * 1.40222 * 88.5918 * 0.212992
+
+1:82:16225
+16225 * 1 * 1751.43 * 466.128 * -0.198073 * 1.96411 * 356.639 * 2.10166 * 56.038 * 820.856 * 925.26 * -0.113864 * -1.03295 * 81.215 * 0.308556
+
+1:75:14980
+14980 * 1 * 1701.03 * 83.8287 * 0.201765 * -0.962966 * 695.684 * -0.967698 * 1.14278 * 779.511 * 788.226 * 0.758787 * 2.52556 * 92.2437 * 0.243234
+
+1:76:15047
+15047 * 1 * 1754.12 * 126.051 * 0.0146211 * -1.03114 * 405.315 * -0.707316 * 72.8754 * 526.345 * 489.651 * 2.16499 * 2.3106 * 103.031 * 0.4747
+
+1:76:15162
+15162 * 1 * 1719.47 * 348.208 * 0.200676 * -0.551427 * 504.751 * -0.5221 * 12.2942 * 852.87 * 768.668 * -0.590196 * 2.46112 * 78.6337 * 0.483
+
+1:236:47101
+47101 * 1 * 1719.34 * 425.357 * 0.85082 * -0.559122 * 72.5615 * -1.11887 * 97.0588 * 488.367 * 524.024 * -1.40055 * 1.89247 * 88.5604 * 0.434989
+
+1:1:36
+36 * 1 * 1759.43 * 197.424 * -1.02278 * -1.85965 * 381.919 * -2.20382 * 94.0414 * 571.659 * 565.821 * 0.965624 * 1.1497 * 84.1727 * 0.381989
+
+1:166:33114
+33114 * 1 * 1757.74 * 700.706 * -0.702463 * -2.84323 * 117.256 * -2.68269 * 45.9681 * 816.669 * 673.926 * 0.493949 * 0.304019 * 82.8354 * 0.404199
+
+1:170:33832
+33832 * 1 * 1785.54 * 295.808 * 0.140436 * -1.34326 * 531.292 * -1.37858 * 13.9996 * 826.981 * 871.071 * 0.608415 * 1.69724 * 91.6754 * 0.294914
+
+1:176:35040
+35040 * 1 * 1719.69 * 345.76 * -0.0279131 * 1.25417 * 428.066 * 1.29115 * 14.2243 * 773.695 * 763.464 * -0.848116 * -1.86824 * 85.8713 * 0.396616
+
+1:180:35873
+35873 * 1 * 1713.21 * 437.363 * -0.981316 * 1.72577 * 219.769 * 1.54419 * 56.2177 * 654.723 * 701.376 * 0.464983 * -1.48635 * 87.0879 * 0.429113
+
+1:193:38464
+38464 * 1 * 1701.3 * 481.731 * 0.0587967 * 0.43738 * 382.02 * 0.598254 * 68.9387 * 860.995 * 794.836 * 0.441062 * -2.47366 * 87.9893 * 0.349877
+
+1:195:38964
+38964 * 1 * 1754.95 * 68.3874 * 1.14986 * -2.48324 * 438.572 * -2.85083 * 63.3021 * 502.992 * 657.161 * -1.04113 * 0.271331 * 88.2979 * 0.482755
+
+1:101:20002
+20002 * 1 * 1783.05 * 264.547 * -1.15732 * -2.40031 * 527.945 * -2.00465 * 146.903 * 778.757 * 818.38 * -0.231989 * 0.879597 * 76.4544 * 0.408954
+
+1:101:20012
+20012 * 1 * 1730.2 * 390.22 * -0.146987 * 2.29813 * 385.724 * 2.31033 * 4.73301 * 775.93 * 771.93 * -0.975795 * -0.890066 * 87.7025 * 0.282389
+
+1:105:20996
+20996 * 1 * 1718.26 * 216.458 * 1.62402 * 2.5752 * 641.525 * 2.49946 * 28.2174 * 857.518 * 832.451 * 1.29846 * -0.618304 * 89.7878 * 0.498098
+
+1:121:24189
+24189 * 1 * 1742.14 * 185.062 * -1.08528 * 0.290373 * 508.27 * 0.250568 * 12.2073 * 693.225 * 708.649 * 0.433394 * -2.81664 * 92.9688 * 0.388986
+
+1:135:26936
+26936 * 1 * 1950.55 * 583.482 * -0.516939 * 2.26307 * 724.987 * 2.30258 * 25.6951 * 1308.22 * 718.067 * -0.367532 * -0.814255 * 78.6735 * 0.288562
+
+1:29:5774
+5774 * 1 * 1936.73 * 363.457 * 0.587698 * 1.91889 * 756.003 * 1.95237 * 17.5473 * 1119.32 * 773.22 * -0.0944262 * -0.971152 * 75.7125 * 0.496687
+
+1:29:5775
+5775 * 1 * 1720.04 * 413.826 * -0.133087 * 0.557128 * 401.697 * 0.422208 * 54.9676 * 813.668 * 730.089 * -0.995211 * -2.81881 * 92.9306 * 0.409918
+
+1:6:1186
+1186 * 1 * 1750.69 * 376.963 * -0.853164 * 1.24029 * 502.185 * 1.05225 * 81.6909 * 875.344 * 862.703 * -0.745943 * -2.03397 * 72.3763 * 0.279871
+
+1:104:20712
+20712 * 1 * 1763.23 * 89.3909 * 0.0807838 * -2.89639 * 627.521 * -3.13632 * 56.6908 * 714.667 * 875.443 * 0.788194 * 0.0507251 * 83.413 * 0.276411
+
+1:20:3834
+3834 * 1 * 1864.05 * 227.244 * 0.16384 * 2.13605 * 691.151 * 2.04603 * 35.6661 * 917.702 * 886.543 * -0.524332 * -0.780113 * 76.2648 * 0.433912
+
+1:74:14754
+14754 * 1 * 1702.7 * 377.887 * 0.116103 * -0.00933924 * 258.411 * -0.142278 * 41.5114 * 634.942 * 732.776 * -1.3321 * 2.96337 * 79.0411 * 0.342643
+
+1:56:11009
+11009 * 1 * 1703.44 * 586.248 * 0.858972 * 1.93104 * 195.924 * 1.66954 * 88.3724 * 777.164 * 776.697 * 0.0192939 * -1.37721 * 84.9101 * 0.301875
+
+1:230:45807
+45807 * 1 * 1708.34 * 122.979 * -0.666564 * 2.54336 * 611.916 * 2.4731 * 19.2707 * 734.642 * 753.679 * 0.615327 * -0.633197 * 84.67 * 0.240437
+
+1:58:11516
+11516 * 1 * 1945.95 * 104.586 * -1.38936 * 2.19694 * 352.06 * 1.80515 * 74.6987 * 450.496 * 723.329 * 0.963544 * -1.5706 * 103.434 * 0.332205
+
+1:155:30884
+30884 * 1 * 1787.83 * 766.793 * -0.558906 * 2.21164 * 173.786 * 1.99258 * 79.8062 * 937.188 * 868.868 * -0.271165 * -0.514406 * 91.5925 * 0.282597
+
+1:248:49417
+49417 * 1 * 1719.1 * 431.203 * 0.110127 * -1.06814 * 351.042 * -1.10211 * 13.2148 * 782.133 * 807.094 * -0.740504 * 2.06757 * 99.0645 * 0.306395
+
+1:86:17166
+17166 * 1 * 1751.23 * 313.714 * 0.131662 * 2.43015 * 549.65 * 2.54579 * 47.992 * 862.029 * 849.254 * -0.285043 * -0.549839 * 93.4711 * 0.422937
+
+1:110:21896
+21896 * 1 * 1849.43 * 50.8528 * -0.000616353 * 2.56933 * 623.772 * 2.62772 * 10.3969 * 674.545 * 815.245 * -0.965449 * -0.795302 * 86.1812 * 0.280962
+
+1:99:19617
+19617 * 1 * 1756.85 * 584.776 * 1.35442 * -0.802309 * 112.459 * -0.60065 * 51.6265 * 695.321 * 708.004 * -0.0346711 * 2.37756 * 92.9295 * 0.321379
+
+1:137:27280
+27280 * 1 * 1725.49 * 370.064 * -0.126868 * 0.687284 * 487.432 * 0.523515 * 69.4772 * 854.677 * 850.481 * -0.141401 * -2.5488 * 95.3628 * 0.323745
+
+1:151:30052
+30052 * 1 * 1705.33 * 480.398 * -0.936002 * 3.03317 * 300.339 * -3.041 * 79.2503 * 776.705 * 796.523 * -0.146218 * -0.0239508 * 79.362 * 0.406455
+
+1:237:47347
+47347 * 1 * 1750.64 * 278.416 * 0.542047 * -0.890551 * 539.127 * -0.76262 * 49.5306 * 816.042 * 812.938 * 1.16437 * 2.34407 * 89.623 * 0.27036
+
+1:208:41518
+41518 * 1 * 1712.27 * 134.677 * 0.464391 * -0.916075 * 778.849 * -1.12262 * 66.7756 * 911.082 * 757.421 * 0.792757 * 1.97337 * 88.5807 * 0.362996
+
+1:231:46193
+46193 * 1 * 1790.24 * 658.121 * 0.489346 * 2.59822 * 224.907 * 2.42018 * 68.4098 * 880.374 * 892.438 * 0.671317 * -0.620557 * 77.9466 * 0.169625
+
+1:240:47948
+47948 * 1 * 1884.74 * 423.504 * -0.498749 * 1.06425 * 417.34 * 1.12051 * 23.6503 * 840.511 * 947.467 * 0.218254 * -2.14165 * 75.1283 * 0.337863
+
+From makeHisto: the histo with #vtx has 2038 entries
+Loop over MC signal done
+
+Start looping over histograms
+
+Opening histos_TTBARpowheg_xww.root
+Histogram found: h_nCands
+Histogram found: h_cosThetaStar
+Histogram found: h_cosTheta1
+Histogram found: h_cosTheta2
+Histogram found: h_phi
+Histogram found: h_phiStar1
+Histogram found: h_ptlepton
+Histogram found: h_ptlepton
+Histogram found: h_ptlep2
+Histogram found: h_ptjet1
+Histogram found: h_ptjet1
+Histogram found: h_ptjet2
+Histogram found: h_ptWL
+Histogram found: h_ptWL
+Histogram found: h_ptWjj
+Histogram found: h_ptWjj
+Histogram found: h_yWL
+Histogram found: h_yWjj
+Histogram found: h_phiZll
+Histogram found: h_phiZjj
+Histogram found: h_etalep
+Histogram found: h_etalep
+Histogram found: h_etaneu
+Histogram found: h_etajet1
+Histogram found: h_etajet1
+Histogram found: h_etajet2
+Histogram found: h_philep1
+Histogram found: h_philep1
+Histogram found: h_philep2
+Histogram found: h_philep2
+Histogram found: h_phijet1
+Histogram found: h_phijet1
+Histogram found: h_phijet2
+Histogram found: h_lep
+Histogram found: h_region
+Histogram found: h_mWW
+Histogram found: h_mZZNoKinFit
+Histogram found: h_ptmzz
+Histogram found: h_ptmzzNoKinFit
+Histogram found: h_mWL
+Histogram found: h_mJJ
+Histogram found: h_mJJ
+Histogram found: h_prunedmass
+Histogram found: h_prunedmass
+Histogram found: h_mJJNoKinFit
+Histogram found: h_mJJNoKinFit
+Histogram found: h_met
+Histogram found: h_met
+Histogram found: h_metSign
+Histogram found: h_deltaREDBR
+Histogram found: h_deltaRleplep
+Histogram found: h_deltaRjetjet
+Histogram found: h_betajet1
+Histogram found: h_nXjets
+Histogram found: h_mdrop
+Histogram found: h_mdrop
+Histogram found: h_nsubj21
+Histogram found: h_nsubj21
+Histogram found: h_qjet
+Histogram found: h_qjet
+Histogram found: h_isomu1mod
+Histogram found: h_isomu2mod
+Histogram found: h_isoele1calo
+Histogram found: h_isoele2calo
+Histogram found: h_isoele1trk
+Histogram found: h_isoele2trk
+Histogram found: h_MCmatch
+Histogram found: h_nVtx
+Histogram found: h_nVtx
+Histogram found: h_nJets
+Histogram found: h_HLTweight
+Histogram found: h_BTagWeight
+Histogram found: h_PUweight
+Histogram found: h_LumiWeight
+Histogram found: h_GenWeight
+Histogram found: h_event
+Histogram found: h_run
+Histogram found: h_ls
+Histogram found: h_nVL
+Histogram found: h_VBFTag
+Histogram found: h_VBFmJJ
+Histogram found: h_VBFdeltaEta
+Histogram found: h_nLooseEle
+Histogram found: h_nLooseMu
+Histogram found: h_mt
+Histogram found: h_mt
+Histogram found: h_nbtagsL
+Histogram found: h_nbtagsM
+Histogram found: h_nbtagsT
+Histogram found: h_nbtagscleanL
+Histogram found: h_nbtagscleanM
+Histogram found: h_nbtagscleanT
+Histogram found: h_deltaR_LJ
+Histogram found: h_deltaPhi_JMET
+Histogram found: h_deltaPhi_JWL
+Histogram found: h_deltaPhi_LJ
+Histogram found: h_nAK5jets
+Histogram found: h_deltaPhi_LMET
+Histogram found: h_ptLoverJ
+Histogram found: h_eleid_sigmaIetaIeta
+Histogram found: h_eleid_deltaPhiSuperClusterTrackAtVtx
+Histogram found: h_eleid_deltaEtaSuperClusterTrackAtVtx
+Histogram found: h_eleid_hadronicOverEm
+Histogram found: h_eleid_numberOfHits
+Histogram found: h_eleid_dxy
+Histogram found: h_eleid_dz
+Histogram found: h_eleid_ecalDriven
+Histogram found: h_eleid_convDist
+Histogram found: h_eleid_convDcot
+Histogram found: h_eleid_isConv
+Histogram found: h_eleid_passConversionVeto
+Histogram found: h_eleid_passConversionVeto_old
+Histogram found: h_eleid_numberOfLostHits
+Histogram found: h_eleid_e1x5
+Histogram found: h_eleid_e2x5Max
+Histogram found: h_eleid_e5x5
+Histogram found: h_eleid_e1x5Over5x5
+Histogram found: h_eleid_e2x5MaxOver5x5
+Histogram found: h_mZZ_type0
+Histogram found: h_mZZ_type1
+Histogram found: h_mZZ_type2
+Histogram found: h_mZZ_type3
+Histogram found: h_mZZ_type4
+Histogram found: h_mZZ_type0_ptUncorrected
+Histogram found: h_mZZ_type1_ptUncorrected
+Histogram found: h_mZZ_type2_ptUncorrected
+Histogram found: h_mZZ_type3_ptUncorrected
+Histogram found: h_mZZ_type4_ptUncorrected
+Histogram found: h_pz_type0
+Histogram found: h_pz_type1
+Histogram found: h_pz_type2
+Histogram found: h_pz_type3
+Histogram found: h_pz_type4
+Histogram found: h_pt_neutrino
+Histogram found: h_pt_neutrino_corrected
+Histogram found: h_TOBTECjetsId
+Histogram found: h_mj_vs_mzz
+Target lumi is 19706.3 pb-1
+k factors for MC backgrounds are: 
+1 for histos_TTBARpowheg_xww.root
+1 for histos_SingleTop_xww.root
+1 for histos_VV_xww.root
+1 for histos_WZJets_xww.root
+10000 for histos_BulkG_WW_inclusive_c0p2_M1500_xww.root
+
+Set output dir
+./plots_WW_mu_signal_bvetoM_HP_v12_ratio_v1/pdf
+./plots_WW_mu_signal_bvetoM_HP_v12_ratio_v1/root
+./plots_WW_mu_signal_bvetoM_HP_v12_ratio_v1/png
+Making histo h_nCands
+WJetsScaleFactor 1.45049
+
+[1mRooFit v3.52 -- Developed by Wouter Verkerke and David Kirkby[0m 
+                Copyright (C) 2000-2012 NIKHEF, University of California & Stanford University
+                All rights reserved, please read http://roofit.sourceforge.net/license.txt
+
+Making histo h_cosThetaStar
+WJetsScaleFactor nan
+Making histo h_cosTheta1
+WJetsScaleFactor nan
+Making histo h_cosTheta2
+WJetsScaleFactor nan
+Making histo h_phi
+WJetsScaleFactor nan
+Making histo h_phiStar1
+WJetsScaleFactor nan
+Making histo h_ptlepton
+WJetsScaleFactor 1.45018
+Making histo h_ptlepton
+WJetsScaleFactor 1.45018
+Making histo h_ptlep2
+WJetsScaleFactor 1.45093
+Making histo h_ptjet1
+WJetsScaleFactor 1.45408
+Making histo h_ptjet1
+WJetsScaleFactor 1.45408
+Making histo h_ptjet2
+WJetsScaleFactor nan
+Making histo h_ptWL
+WJetsScaleFactor 1.45472
+Making histo h_ptWL
+WJetsScaleFactor 1.45472
+Making histo h_ptWjj
+WJetsScaleFactor 1.45058
+Making histo h_ptWjj
+WJetsScaleFactor 1.45058
+Making histo h_yWL
+WJetsScaleFactor 1.45049
+Making histo h_yWjj
+WJetsScaleFactor 1.45049
+Making histo h_phiZll
+WJetsScaleFactor nan
+Making histo h_phiZjj
+WJetsScaleFactor nan
+Making histo h_etalep
+WJetsScaleFactor 1.45049
+Making histo h_etalep
+WJetsScaleFactor 1.45049
+Making histo h_etaneu
+WJetsScaleFactor 1.45049
+Making histo h_etajet1
+WJetsScaleFactor 1.45049
+Making histo h_etajet1
+WJetsScaleFactor 1.45049
+Making histo h_etajet2
+WJetsScaleFactor nan
+Making histo h_philep1
+WJetsScaleFactor nan
+Making histo h_philep1
+WJetsScaleFactor nan
+Making histo h_philep2
+WJetsScaleFactor nan
+Making histo h_philep2
+WJetsScaleFactor nan
+Making histo h_phijet1
+WJetsScaleFactor nan
+Making histo h_phijet1
+WJetsScaleFactor nan
+Making histo h_phijet2
+WJetsScaleFactor nan
+Making histo h_lep
+WJetsScaleFactor nan
+Making histo h_region
+WJetsScaleFactor nan
+Making histo h_mWW
+WJetsScaleFactor 1.45053
+Making histo h_mZZNoKinFit
+WJetsScaleFactor nan
+Integral of total MC in range [600,2400] = nan +/- nan
+Integral of total DATA in range [600,2400] = 0 +/- 0
+Making histo h_ptmzz
+WJetsScaleFactor nan
+Making histo h_ptmzzNoKinFit
+WJetsScaleFactor nan
+Making histo h_mWL
+WJetsScaleFactor 1.454
+Making histo h_mJJ
+WJetsScaleFactor 1.45049
+Making histo h_mJJ
+WJetsScaleFactor 1.45049
+Making histo h_prunedmass
+WJetsScaleFactor 1.45049
+Making histo h_prunedmass
+WJetsScaleFactor 1.45049
+Making histo h_mJJNoKinFit
+WJetsScaleFactor 1.45049
+Making histo h_mJJNoKinFit
+WJetsScaleFactor 1.45049
+Making histo h_met
+WJetsScaleFactor 1.45406
+Making histo h_met
+WJetsScaleFactor 1.45406
+Making histo h_metSign
+WJetsScaleFactor nan
+Making histo h_deltaREDBR
+WJetsScaleFactor 1.45049
+Making histo h_deltaRleplep
+WJetsScaleFactor 1.4505
+Making histo h_deltaRjetjet
+WJetsScaleFactor 1.45049
+Making histo h_betajet1
+WJetsScaleFactor 1.45049
+Making histo h_nXjets
+WJetsScaleFactor 1.45049
+Making histo h_mdrop
+WJetsScaleFactor 1.45347
+Making histo h_mdrop
+WJetsScaleFactor 1.45347
+Making histo h_nsubj21
+WJetsScaleFactor 1.45091
+Making histo h_nsubj21
+WJetsScaleFactor 1.45091
+Making histo h_qjet
+WJetsScaleFactor 1.45092
+Making histo h_qjet
+WJetsScaleFactor 1.45092
+Making histo h_isomu1mod
+WJetsScaleFactor 1.45049
+Making histo h_isomu2mod
+WJetsScaleFactor nan
+Making histo h_isoele1calo
+WJetsScaleFactor nan
+Making histo h_isoele2calo
+WJetsScaleFactor nan
+Making histo h_isoele1trk
+WJetsScaleFactor nan
+Making histo h_isoele2trk
+WJetsScaleFactor nan
+Making histo h_MCmatch
+WJetsScaleFactor nan
+Making histo h_nVtx
+WJetsScaleFactor 1.45089
+Making histo h_nVtx
+WJetsScaleFactor 1.45089
+Making histo h_nJets
+WJetsScaleFactor 1.45049
+Making histo h_HLTweight
+WJetsScaleFactor -1.82638
+Making histo h_BTagWeight
+WJetsScaleFactor -1.82638
+Making histo h_PUweight
+WJetsScaleFactor -1.82638
+Making histo h_LumiWeight
+WJetsScaleFactor -1.82642
+Making histo h_GenWeight
+WJetsScaleFactor -1.82638
+Making histo h_event
+WJetsScaleFactor nan
+Making histo h_run
+WJetsScaleFactor nan
+Making histo h_ls
+WJetsScaleFactor nan
+Making histo h_nVL
+WJetsScaleFactor 1.45049
+Making histo h_VBFTag
+WJetsScaleFactor 1.45049
+Making histo h_VBFmJJ
+WJetsScaleFactor nan
+Making histo h_VBFdeltaEta
+WJetsScaleFactor nan
+Making histo h_nLooseEle
+WJetsScaleFactor 1.45049
+Making histo h_nLooseMu
+WJetsScaleFactor 1.45049
+Making histo h_mt
+WJetsScaleFactor 1.44951
+Making histo h_mt
+WJetsScaleFactor 1.44951
+Making histo h_nbtagsL
+WJetsScaleFactor 1.45049
+Making histo h_nbtagsM
+WJetsScaleFactor 1.45049
+Making histo h_nbtagsT
+WJetsScaleFactor 1.45049
+Making histo h_nbtagscleanL
+WJetsScaleFactor 1.45049
+Making histo h_nbtagscleanM
+WJetsScaleFactor 1.45049
+Making histo h_nbtagscleanT
+WJetsScaleFactor 1.45049
+Making histo h_deltaR_LJ
+WJetsScaleFactor 1.45049
+Making histo h_deltaPhi_JMET
+WJetsScaleFactor 1.45049
+Making histo h_deltaPhi_JWL
+WJetsScaleFactor 1.45049
+Making histo h_deltaPhi_LJ
+WJetsScaleFactor 1.45049
+Making histo h_nAK5jets
+WJetsScaleFactor -0.0169148
+Making histo h_deltaPhi_LMET
+WJetsScaleFactor 1.45049
+Making histo h_ptLoverJ
+WJetsScaleFactor 1.45001
+Making histo h_eleid_sigmaIetaIeta
+WJetsScaleFactor nan
+Making histo h_eleid_deltaPhiSuperClusterTrackAtVtx
+WJetsScaleFactor nan
+Making histo h_eleid_deltaEtaSuperClusterTrackAtVtx
+WJetsScaleFactor nan
+Making histo h_eleid_hadronicOverEm
+WJetsScaleFactor nan
+Making histo h_eleid_numberOfHits
+WJetsScaleFactor nan
+Making histo h_eleid_dxy
+WJetsScaleFactor nan
+Making histo h_eleid_dz
+WJetsScaleFactor nan
+Making histo h_eleid_ecalDriven
+WJetsScaleFactor nan
+Making histo h_eleid_convDist
+WJetsScaleFactor nan
+Making histo h_eleid_convDcot
+WJetsScaleFactor nan
+Making histo h_eleid_isConv
+WJetsScaleFactor nan
+Making histo h_eleid_passConversionVeto
+WJetsScaleFactor nan
+Making histo h_eleid_passConversionVeto_old
+WJetsScaleFactor 1.45049
+Making histo h_eleid_numberOfLostHits
+WJetsScaleFactor nan
+Making histo h_eleid_e1x5
+WJetsScaleFactor nan
+Making histo h_eleid_e2x5Max
+WJetsScaleFactor nan
+Making histo h_eleid_e5x5
+WJetsScaleFactor nan
+Making histo h_eleid_e1x5Over5x5
+WJetsScaleFactor nan
+Making histo h_eleid_e2x5MaxOver5x5
+WJetsScaleFactor nan
+Making histo h_mZZ_type0
+WJetsScaleFactor 1.45053
+Integral of total MC in range [600,2400] = 2526.77 +/- 35.3345
+Integral of total DATA in range [600,2400] = 2649 +/- 51.4684
+Making histo h_mZZ_type1
+WJetsScaleFactor 1.45053
+Integral of total MC in range [600,2400] = 2549.6 +/- 35.4936
+Integral of total DATA in range [600,2400] = 2672 +/- 51.6914
+Making histo h_mZZ_type2
+WJetsScaleFactor 1.45053
+Integral of total MC in range [600,2400] = 2489.1 +/- 35.075
+Integral of total DATA in range [600,2400] = 2615 +/- 51.1371
+Making histo h_mZZ_type3
+WJetsScaleFactor 1.45053
+Integral of total MC in range [600,2400] = 2634.58 +/- 36.0819
+Integral of total DATA in range [600,2400] = 2770 +/- 52.6308
+Making histo h_mZZ_type4
+WJetsScaleFactor 1.45053
+Integral of total MC in range [600,2400] = 2700.97 +/- 36.526
+Integral of total DATA in range [600,2400] = 2834 +/- 53.2353
+Making histo h_mZZ_type0_ptUncorrected
+WJetsScaleFactor 1.45053
+Integral of total MC in range [600,2400] = 2611.21 +/- 35.9048
+Integral of total DATA in range [600,2400] = 2714 +/- 52.0961
+Making histo h_mZZ_type1_ptUncorrected
+WJetsScaleFactor 1.45053
+Integral of total MC in range [600,2400] = 2634.03 +/- 36.0614
+Integral of total DATA in range [600,2400] = 2737 +/- 52.3163
+Making histo h_mZZ_type2_ptUncorrected
+WJetsScaleFactor 1.45053
+Integral of total MC in range [600,2400] = 2573.54 +/- 35.6495
+Integral of total DATA in range [600,2400] = 2680 +/- 51.7687
+Making histo h_mZZ_type3_ptUncorrected
+WJetsScaleFactor 1.45053
+Integral of total MC in range [600,2400] = 2719.02 +/- 36.6407
+Integral of total DATA in range [600,2400] = 2835 +/- 53.2447
+Making histo h_mZZ_type4_ptUncorrected
+WJetsScaleFactor 1.45053
+Integral of total MC in range [600,2400] = 2785.4 +/- 37.0781
+Integral of total DATA in range [600,2400] = 2899 +/- 53.8424
+Making histo h_pz_type0
+WJetsScaleFactor 1.44157
+Making histo h_pz_type1
+WJetsScaleFactor 1.44547
+Making histo h_pz_type2
+WJetsScaleFactor 1.44157
+Making histo h_pz_type3
+WJetsScaleFactor 1.45369
+Making histo h_pz_type4
+WJetsScaleFactor 1.46006
+Making histo h_pt_neutrino
+WJetsScaleFactor 1.45406
+Making histo h_pt_neutrino_corrected
+WJetsScaleFactor 1.45366
+Making histo h_TOBTECjetsId
+WJetsScaleFactor 1.45049
+Plotting done
