@@ -514,11 +514,6 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 		hs->GetYaxis()->SetTitle("Events / (5 GeV)");
 	}
 
-	if(histoName.find("mZZ")!=std::string::npos)
-    {   
-		hs->SetMaximum(maximumForStack*1000);
-    }
-
 
 	hs->GetXaxis()->SetTitleFont(42);
 	hs->GetXaxis()->SetLabelFont(42);
@@ -780,6 +775,10 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	}
 	//-- resize y axis --
 	hs->SetMaximum(10*maximumForStack);
+    if(histoName.find("mZZ")!=std::string::npos)
+    {   
+        hs->SetMaximum(maximumForStack*1000);
+    }
 	//
 	sprintf(buffer,"%s/pdf/LOG_can_%s.pdf",nameOutDir_.c_str(),histoName.c_str());
 	cv->SaveAs(buffer);
