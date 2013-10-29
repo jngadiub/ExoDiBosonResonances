@@ -203,6 +203,10 @@ void absolute_eff()
 
 	int indM=0;
 	double startM=750.0; double step=250.0;
+	if(!isZZChannel){
+		startM=600.0; 
+		step=100.0;
+	}
 	isig=0;
 	for(int i =0; i<ndata+nbkg+nsig; i++   )
 	  {
