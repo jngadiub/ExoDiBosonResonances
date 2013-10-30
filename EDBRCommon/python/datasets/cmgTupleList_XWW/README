@@ -48,3 +48,6 @@ cmgTuple_0627         :  add btag weight
 
 
 cmgTuple_1012         :   list for 539. data using 22-Jan2013 
+
+
+cmgTuple_1030_signalcmg_nocut   : use "selection=none" to produce signals
