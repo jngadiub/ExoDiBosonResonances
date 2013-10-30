@@ -408,14 +408,33 @@ process.selectedEDBRMergedCandFilterEle = process.selectedEDBRMergedCandFilter.c
                                                            )
 
 
+# assamble actual paths. Move Bad-Event & HLT filters to extra paths
+# for efficiency studies when no selection is required, so that
+# graviton reconstruction runs on every event
 
-if ( options.lepton == "both" or options.lepton == "ele"):
-     process.preselElePath = cms.Path(process.eventFilterSequence + process.analysisSequenceEVJJ + process.selectedEDBRKinFitCandFilterEle)
-     process.preselEleMergedPath = cms.Path(process.eventFilterSequence + process.analysisSequenceEVJ+process.selectedEDBRMergedCandFilterEle )
-     
-if ( options.lepton == "both" or options.lepton == "mu"):
-     process.preselMuPath = cms.Path(process.eventFilterSequence + process.analysisSequenceMVJJ + process.selectedEDBRKinFitCandFilterMu)
-     process.preselMuMergedPath = cms.Path(process.eventFilterSequence + process.analysisSequenceMVJ +process.selectedEDBRMergedCandFilterMu )
+if not options.selection == "none":
+     if ( options.lepton == "both" or options.lepton == "ele"):
+          process.preselElePath = cms.Path(process.eventFilterSequence + process.analysisSequenceEVJJ + process.selectedEDBRKinFitCandFilterEle)
+          process.preselEleMergedPath = cms.Path(process.eventFilterSequence + process.analysisSequenceEVJ+process.selectedEDBRMergedCandFilterEle )
+    
+     if ( options.lepton == "both" or options.lepton == "mu"):
+               process.preselMuPath = cms.Path(process.eventFilterSequence + process.analysisSequenceMVJJ + process.selectedEDBRKinFitCandFilterMu)
+               process.preselMuMergedPath = cms.Path(process.eventFilterSequence + process.analysisSequenceMVJ +process.selectedEDBRMergedCandFilterMu )
+
+
+else:
+     process.eventFilterPath = cms.Path(process.eventFilterSequence)
+     if ( options.lepton == "both" or options.lepton == "ele"):
+          process.preselElePath = cms.Path( process.analysisSequenceEVJJ + process.selectedEDBRKinFitCandFilterEle)
+          process.preselEleMergedPath = cms.Path( process.analysisSequenceEVJ+process.selectedEDBRMergedCandFilterEle )
+
+     if ( options.lepton == "both" or options.lepton == "mu"):
+          process.preselMuPath = cms.Path( process.analysisSequenceMVJJ + process.selectedEDBRKinFitCandFilterMu)
+          process.preselMuMergedPath = cms.Path( process.analysisSequenceMVJ +process.selectedEDBRMergedCandFilterMu )
+
+
+
+####################################
 
 
 ####################################
