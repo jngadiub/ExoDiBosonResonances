@@ -637,7 +637,7 @@ void SigModelFit(RooWorkspace* w, Float_t mass) {
       SigModelSet(w, params, c);
     }
 
-    bool redoFit = false;
+    bool redoFit = true;
     if(redoFit) {
       //MggSig[c]     ->fitTo(*sigToFit[c],Range(minMassFit,maxMassFit),SumW2Error(kTRUE));
       MggSig[c]     ->fitTo(*sigToFit[c],Range( TMath::Max(minMassFit,MASS-2.5*MASS*0.1) , MASS+2.5*MASS*0.1 ),SumW2Error(kTRUE));
