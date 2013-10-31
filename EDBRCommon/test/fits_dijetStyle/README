@@ -9,7 +9,8 @@ Dijet-like fit
    - Make sure the latest version of "combine" (HiggsAnalysis/CombinedLimit) 
      is uploaded and compiled. 
      See https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggsAnalysisCombinedLimit 
-     NOTE: the following code has been tested in CMSSW_5_3_3_patch3 and CMSSW_5_3_7
+     NOTE: the following code has been tested in CMSSW_5_3_3_patch3 and CMSSW_5_3_7 with V02-07-00
+     NOTE: the following code has been tested in CMSSW_5_3_9 with V02-07-03
      NOTE1: need to load lib (see below under R2JJFitter.cc)
 
 1) Make fits and workspaces
