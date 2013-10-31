@@ -582,38 +582,66 @@ elif "BulkG_WW_inclusive_c0p2_M2500_xww" in "<SAMPLE>" :
     process.ANEDBR.xsec=cms.double(3.895e-07)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 ###### W' => WZ, PYTHIA 6, inclusive
-elif "<SAMPLE>"  == "WprimeWZ_inclusive_M750_PYTHIA6"  :
+elif "WprimeWZ_inclusive_M750_PYTHIA6" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(30000)
     process.ANEDBR.xsec=cms.double(0.727785)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"  == "WprimeWZ_inclusive_M1000_PYTHIA6"  :
+elif "WprimeWZ_inclusive_M1000_PYTHIA6" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(30000)
     process.ANEDBR.xsec=cms.double(0.1958263)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"  == "WprimeWZ_inclusive_M1500_PYTHIA6"  :
+elif "WprimeWZ_inclusive_M1500_PYTHIA6" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(30000)
     process.ANEDBR.xsec=cms.double(0.0234412)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"  == "WprimeWZ_inclusive_M1800_PYTHIA6"  :
+elif "WprimeWZ_inclusive_M1800_PYTHIA6" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(30000)
     process.ANEDBR.xsec=cms.double(0.0077633)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"  == "WprimeWZ_inclusive_M2000_PYTHIA6"  :
+elif "WprimeWZ_inclusive_M2000_PYTHIA6" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(30000)
     process.ANEDBR.xsec=cms.double(0.0039031)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"  == "WprimeWZ_inclusive_M2200_PYTHIA6"  :
+elif "WprimeWZ_inclusive_M2200_PYTHIA6" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(30000)
     process.ANEDBR.xsec=cms.double(0.001977)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"  == "WprimeWZ_inclusive_M2500_PYTHIA6"  :
+elif "WprimeWZ_inclusive_M2500_PYTHIA6" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(30000)
     process.ANEDBR.xsec=cms.double(0.000773)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "<SAMPLE>"  == "WprimeWZ_inclusive_M3000_PYTHIA6"  :
+elif "WprimeWZ_inclusive_M3000_PYTHIA6" in "<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(30000)
     process.ANEDBR.xsec=cms.double(0.000218)
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+
+### RSG WW new sample
+elif "RSG_WW_lvjj_c0p05_M750_PYTHIA6_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(60192)
+    process.ANEDBR.xsec=cms.double(0.054381)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "RSG_WW_lvjj_c0p05_M1000_PYTHIA6_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(60192)
+    process.ANEDBR.xsec=cms.double(0.014457)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "RSG_WW_lvjj_c0p05_M1250_PYTHIA6_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(60192)
+    process.ANEDBR.xsec=cms.double(0.004749)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "RSG_WW_lvjj_c0p05_M1500_PYTHIA6_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(60192)
+    process.ANEDBR.xsec=cms.double(0.001681)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "RSG_WW_lvjj_c0p05_M1750_PYTHIA6_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(54173)
+    process.ANEDBR.xsec=cms.double(0.000669)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+elif "RSG_WW_lvjj_c0p05_M2000_PYTHIA6_xww" in "<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(60192)
+    process.ANEDBR.xsec=cms.double(0.000265)
+    process.ANEDBR.FillGenLevelCode=cms.uint32(7)
+
+
 ### Data
 #zz--doublemu
 elif "<SAMPLE>"=="DoubleMu_Run2012A_22Jan2013" :
