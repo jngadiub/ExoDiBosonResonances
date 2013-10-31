@@ -274,6 +274,11 @@ process.analysisSequenceMuons = cms.Sequence(
     )
 
 
+if options.selection=="none":
+     process.selectedWelenuCandFilter.minNumber=0
+if options.selection=="none":
+     process.selectedWmunuCandFilter.minNumber=0
+
 
 ##############
 # PU weights #
