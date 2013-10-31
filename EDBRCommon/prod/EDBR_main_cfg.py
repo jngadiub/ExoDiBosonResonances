@@ -232,7 +232,7 @@ if not ( options.lepton == "both" or options.lepton == "ele"): #only muon
      process.muonSequence.insert(0,process.PUseq)
 
 if options.selection=="none":
-     process.selectedZeeCandFilter.minNumber=0
+     process.selectedZmmCandFilter.minNumber=0
 
           
 
