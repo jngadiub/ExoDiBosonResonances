@@ -52,7 +52,7 @@ double linear_interp( double s2, double s1, double mass, double m2, double m1 ) 
 
 
 
-const float intLumi=19.5;
+const float intLumi=19.7;
 const float BRZZ2l2q=isZZChannel?0.0941:0.2882464;
 void plot_golfcourse_Asymptotic(bool unblind){
 
