@@ -11,7 +11,7 @@ root.gROOT.SetBatch()        # don't pop up canvases
 root.gROOT.SetStyle('Plain') # white background
 
 #weights
-weight_Vtag = 0.93 #scale factor for HP category 
+weight_Vtag = 0.891 #scale factor for HP category 
 weight_btagVeto = 0.915 #efficiency of b-tag veto (flat within 1% for all the masses)
 weight_leptonVeto = 0.983 #efficiency of b-tag veto (flat within 2% for all the masses) 
 def weight_HLT(flavour, eta): #trigger efficiencies (not applied in MC)
@@ -141,7 +141,7 @@ def processSubsample(file):
     
     for event in events:
         nevent += 1
-        if nevent % 1000 ==0:
+        if nevent % 1 ==0:
             print "event: " + str(nevent)
 
         #print str(event.eventAuxiliary().run())
@@ -289,11 +289,11 @@ def processSubsample(file):
             histo_tautomu_gen.Fill(genVlep.pt(),abs(genVlep.Eta()))
         histo_jet_gen.Fill(genjetp4.pt(),abs(genjetp4.eta()))
 
-        #        if(event.eventAuxiliary().event() ==  2434343111):# strange fualty event
-        #            continue
-        #        if(event.eventAuxiliary().event() ==  43111):# strange fualty event
-        #            continue
-        #print str(event.eventAuxiliary().event())
+#         if(event.eventAuxiliary().event() ==  38434):# strange fualty event
+#             continue
+#         if(event.eventAuxiliary().event() ==  38491):# strange fualty event
+#             continue
+#         print str(event.eventAuxiliary().event())
 
         # fill matched jets objects
         event.getByLabel ("jetIDMerged", jethandle)
@@ -421,11 +421,11 @@ def processSubsample(file):
 
 ##############
                     
-#     print "tot : " + str(nevent)
-#     print "W-->enu : " + str(nevent_Wenu)
-#     print "W-->munu : " + str(nevent_Wmunu)
-#     print "W-->taunu-->enununu : " + str(nevent_Wtaunu_tautoele)
-#     print "W-->taunu-->munununu : " + str(nevent_Wtaunu_tautomu)
+    print "tot : " + str(nevent)
+    print "W-->enu : " + str(nevent_Wenu)
+    print "W-->munu : " + str(nevent_Wmunu)
+    print "W-->taunu-->enununu : " + str(nevent_Wtaunu_tautoele)
+    print "W-->taunu-->munununu : " + str(nevent_Wtaunu_tautomu)
 
 def makePlots():
     canvas = root.TCanvas("c","c",400,400)
