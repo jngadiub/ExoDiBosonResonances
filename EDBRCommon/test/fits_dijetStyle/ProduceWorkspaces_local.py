@@ -10,7 +10,7 @@ masses =[800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2
 
 #NewDir = "mWWFit_DATA_06_06_2013_Scale1_From1000_v1"
 #NewDir = "mWWFit_DATA_16_07_2013_Scale1_FitFrom700_v2"
-NewDir = "mWWFit_DATA_31_10_2013_Scale1_FitFrom700_v1"
+NewDir = "mWWFit_DATA_04_11_2013_Scale1_FitFrom700_v1"
 #NewDir = "mWWFit_DATASB_M700_Bin100_v1"
 #NewDir = "mWWFit_DATASB_M700_Bin50_v1"
 #NewDir = "mWWFit_MCSB_M700_Bin100_v1"

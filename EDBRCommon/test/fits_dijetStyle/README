@@ -99,7 +99,7 @@ Dijet-like fit
   - Edit: plot_Significance.C
     -   TFile *fexp=new TFile("higgsCombineEXOZZExpSignif.ProfileLikelihood.TOTAL.root","READ");
     -   TFile *fobs=new TFile("higgsCombineEXOZZObsSignif.ProfileLikelihood.TOTAL.root","READ");
-    -   XMIN=1000; XMAX=2500;
+    -   XMIN=800; XMAX=2500;
 
   - Run : 
     root -b 
@@ -158,6 +158,7 @@ Dijet-like fit
       - wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,%g,%g]", c, mean, mean, mean)); //P3 fixed
     - MakeDataCard_1Channel
       - ScaleFactorSignal
+      - Change systematics if needed
 
 
 [2] Things to fix/check

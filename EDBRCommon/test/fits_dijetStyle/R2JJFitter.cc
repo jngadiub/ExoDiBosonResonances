@@ -2122,7 +2122,7 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   //== Uncertainties on SIGNAL NORMALIZATION ==
 
   //Lumi
-  outFile << "lumi_8TeV               lnN  0.956/1.044    - " << endl;
+  outFile << "lumi_8TeV               lnN  0.974/1.026    - " << endl;
   
   //Trigger
   outFile <<   "CMS_Trigger_eff_g      lnN    0.99/1.01    - " << endl;
@@ -2139,9 +2139,9 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
 
   //W-tag efficiency
   if(iChan==0 || iChan==2)
-    outFile << "CMS_VV_eff_g_LP         lnN  1.27/0.73      - # Signal Efficiency" << endl;
+    outFile << "CMS_VV_eff_g_LP         lnN  1.237/0.763      - # Signal Efficiency" << endl;
   if(iChan==1 || iChan==3)
-    outFile << "CMS_VV_eff_g_HP         lnN  0.91/1.09      - # Signal Efficiency" << endl;
+    outFile << "CMS_VV_eff_g_HP         lnN  0.906/1.094      - # Signal Efficiency" << endl;
 
 
   //== Uncertainties on SIGNAL SHAPE ==
