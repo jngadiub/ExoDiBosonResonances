@@ -19,19 +19,19 @@ def weight_HLT(flavour, eta): #trigger efficiencies (not applied in MC)
     ###
     if flavour == 1: #ele
         if abs(eta)>0.0 and abs(eta)<1.4442:
-            theWeight = 0.991
+            theWeight = 0.991*0.98
         if abs(eta)>1.566 and abs(eta)<2.5:
-            theWeight = 0.976
+            theWeight = 0.976*0.98
         if abs(eta)>2.5:
             theWeight = 0.
     ###        
     if flavour == 2: #mu
         if abs(eta)>0.0 and abs(eta)<0.9:
-            theWeight = 0.94010
+            theWeight = 0.94010*0.99
         if abs(eta)>0.9 and abs(eta)<1.2:
-            theWeight = 0.84368
+            theWeight = 0.84368*0.99
         if abs(eta)>1.2 and abs(eta)<2.1:
-            theWeight = 0.82423
+            theWeight = 0.82423*0.99
         if abs(eta)>2.1:
             theWeight = 0.
     ###             
@@ -141,7 +141,7 @@ def processSubsample(file):
     
     for event in events:
         nevent += 1
-        if nevent % 1 ==0:
+        if nevent % 1000 ==0:
             print "event: " + str(nevent)
 
         #print str(event.eventAuxiliary().run())
