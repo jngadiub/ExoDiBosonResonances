@@ -14,7 +14,7 @@ root.gROOT.SetStyle('Plain') # white background
 weight_Vtag = 0.891 #scale factor for HP category 
 weight_btagVeto = 0.915 #efficiency of b-tag veto (flat within 1% for all the masses)
 weight_leptonVeto = 0.983 #efficiency of b-tag veto (flat within 2% for all the masses) 
-def weight_HLT(flavour, eta): #trigger efficiencies (not applied in MC)
+def weight_HLT(flavour, eta): #trigger efficiencies (not applied in MC) X lepton ID
     theWeight = 1
     ###
     if flavour == 1: #ele
