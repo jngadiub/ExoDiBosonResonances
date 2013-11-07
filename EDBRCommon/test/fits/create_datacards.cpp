@@ -316,7 +316,7 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   ofs << "#jmax 1  number of backgrounds" << std::endl;
   ofs << "#kmax *  number of nuisance parameters (sources of systematical uncertainties)" << std::endl;
   ofs << "------------ " << std::endl;
-  ofs << "shapes "<<signalProcessName<< channel_marker <<" CMS_"<< channel_marker <<"_" << suffix_str << " "<< channel_marker <<"_" << suffix_str << ".input.root  w:" <<(signalProcessName+rename_str).c_str()<< std::endl;
+  ofs << "shapes "<<signalProcessName<<"_"<<channel_marker <<" CMS_"<< channel_marker <<"_" << suffix_str << " "<< channel_marker <<"_" << suffix_str << ".input.root  w:" <<(signalProcessName+rename_str).c_str()<< std::endl;
   ofs << "shapes background"<< channel_marker <<" CMS_"<< channel_marker <<"_" << suffix_str << " "<< channel_marker <<"_" << suffix_str << ".input.root w:"<<bkgd_shape_name.c_str()  << std::endl;
   ofs << "shapes data_obs   CMS_"<< channel_marker <<"_" << suffix_str << " "<< channel_marker <<"_" << suffix_str << ".input.root w:"<<("dataset_obs"+rename_str).c_str()  << std::endl;
   ofs << "------------ " << std::endl;
@@ -351,7 +351,7 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   ofs << "observation   " << observedYield << std::endl;
   ofs << "------------ " << std::endl;
   ofs << "bin                CMS_"<< channel_marker <<"_" << suffix <<  "\tCMS_"<< channel_marker <<"_" << suffix << std::endl;
-  ofs << "process            "<<signalProcessName<< channel_marker <<"\t\t\tbackground"<< channel_marker  << std::endl;
+  ofs << "process            "<<signalProcessName<<"_"<<channel_marker <<"\t\t\tbackground"<< channel_marker  << std::endl;
   ofs << "process            0\t\t\t1" << std::endl;
 
   float eff = f1_eff_vs_mass->Eval(hp.mH);
@@ -457,8 +457,8 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   //lepton scale 
   char sigSystp1_LepScale[200];//m
   char sigSystp2_LepScale[200];//width
-  sprintf(sigSystp1_LepScale,"CMS_%s_sig%dJ%s_p1_scale",channel_marker.c_str(),nxj,DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str());
-  sprintf(sigSystp2_LepScale,"CMS_%s_sig%dJ%s_p2_scale",channel_marker.c_str(),nxj,DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+  sprintf(sigSystp1_LepScale,"CMS_%s_sig%dJ_p1_%s_scale",channel_marker.c_str(),nxj,DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str());
+  sprintf(sigSystp2_LepScale,"CMS_%s_sig%dJ_p2_%s_scale",channel_marker.c_str(),nxj,DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
   //cout << "CB mean =" << CB_mean.getVal() << " CB sigma = " << CB_sigma.getVal() << endl;
   double peakSystFactor;
   double widthSystFactor;
@@ -470,14 +470,16 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   //lepton resolution omitted because small
   char sigSystp1_LepRes[200];//m
   char sigSystp2_LepRes[200];//width
-  sprintf(sigSystp1_LepRes,"CMS_%s_sig%dJ%s_p1_res",channel_marker.c_str(),nxj,DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str()
-  sprintf(sigSystp2_LepRes,"CMS_%s_sig%dJ%s_p2_res",channel_marker.c_str(),nxj,DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str());
+  sprintf(sigSystp1_LepRes,"CMS_%s_sig%dJ_p1_%s_res",channel_marker.c_str(),nxj,DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str()
+  sprintf(sigSystp2_LepRes,"CMS_%s_sig%dJ_p2_%s_res",channel_marker.c_str(),nxj,DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str());
 
   //jet scale: same and fully correlated between ele and mu
   char sigSystp1_JetScale[200];//m
   char sigSystp2_JetScale[200];//width	
-  sprintf(sigSystp1_JetScale,"CMS_%s_sig%dJ_p1_jes",channel_marker.c_str(),nxj);//,pur_str.c_str());
-  sprintf(sigSystp2_JetScale,"CMS_%s_sig%dJ_p2_jes",channel_marker.c_str(),nxj);//,pur_str.c_str());
+  //  sprintf(sigSystp1_JetScale,"CMS_%s_sig%dJ_p1_jes",channel_marker.c_str(),nxj);//,pur_str.c_str());
+  //  sprintf(sigSystp2_JetScale,"CMS_%s_sig%dJ_p2_jes",channel_marker.c_str(),nxj);//,pur_str.c_str());
+  sprintf(sigSystp1_JetScale,"CMS_sig_p1_jes");//,pur_str.c_str());
+  sprintf(sigSystp2_JetScale,"CMS_sig_p2_jes");
   peakSystFactor=CMS_sig1J_p1_jes; widthSystFactor=CMS_sig1J_p2_jes; // Defined in Config_XZZ.h and Config_XWW.h
   //for ww, use a line from 2% to 3% from 600 to 2500
   if(!isZZChannel)widthSystFactor = 0.02 + (0.03-0.02)/(2500-600)*(hp.mH-600);
@@ -489,13 +491,15 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   //jet resolution: same and fully correlated between ele and mu
   char sigSystp1_JetRes[200];//m
   char sigSystp2_JetRes[200];//width	
-  sprintf(sigSystp1_JetRes,"CMS_%s_sig%dJ_p1_jer",channel_marker.c_str(),nxj);//,pur_str.c_str());
-  sprintf(sigSystp2_JetRes,"CMS_%s_sig%dJ_p2_jer",channel_marker.c_str(),nxj);//,pur_str.c_str());
+  //sprintf(sigSystp1_JetRes,"CMS_%s_sig%dJ_p1_jer",channel_marker.c_str(),nxj);//,pur_str.c_str());
+  //sprintf(sigSystp2_JetRes,"CMS_%s_sig%dJ_p2_jer",channel_marker.c_str(),nxj);//,pur_str.c_str());
+  sprintf(sigSystp1_JetRes,"CMS_sig_p1_jer");//,pur_str.c_str());
+  sprintf(sigSystp2_JetRes,"CMS_sig_p2_jer");//,pur_str.c_str());
   peakSystFactor=CMS_sig1J_p1_jer;  // Defined in Config_XZZ.h and Config_XWW.h
   widthSystFactor=CMS_sig1J_p2_jer;  // Defined in Config_XZZ.h and Config_XWW.h
   //in ZZ, negligible size of syst on peak shift from JER, omit it
   if(!isZZChannel)ofs << std::string(sigSystp1_JetRes) << " param 1.0 "  << peakSystFactor << endl; 
-  ofs << std::string(sigSystp2_JetRes) << " param 1.0 "  << widthSystFactor << endl;
+  //ofs << std::string(sigSystp2_JetRes) << " param 1.0 "  << widthSystFactor << endl;
 	
   ofs.close();
   fitResultsFile->Close();

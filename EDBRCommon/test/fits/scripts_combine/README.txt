@@ -32,11 +32,16 @@ For 2d limits (requires datacard creation in 2d mode)
 
 For Full CLs limits (requires datacard creation in 1d mode)
 
-#### EXPLANATION ####
- We use CRAB to do these limits. Since I couldn't really understand how to adapt the official scripts for using combine with CRAB
- I decided to roll my own. Each CRAB task/directory takes care of one mass point. Each job in that task takes care of one value
- of the signal strength. In the ZZ analysis, the signal strengths excluded range from 1E-01 to 1E+03 [!!!]. The file run_fullCLs_TF.py
- has an array with the values from asymptotic limits; those values are used to delimit the range where combine should search for the limit.
+#### EXPLANATION #### 
+
+We use CRAB to do these limits. Since I couldn't
+ really understand how to adapt the official scripts for using combine
+ with CRAB I decided to roll my own. Each CRAB task/directory takes
+ care of one mass point. Each job in that task takes care of one value
+ of the signal strength. In the ZZ analysis, the signal strengths
+ excluded range from 1E-01 to 1E+03 [!!!]. The file run_fullCLs_TF.py
+ has an array with the values from asymptotic limits; those values are
+ used to delimit the range where combine should search for the limit.
 
 #0: copy all scripts in the directory of the cards and move there
 #1: for M in $( cat masses.txt ); do ./make_combined_cards.sh $M ; done
