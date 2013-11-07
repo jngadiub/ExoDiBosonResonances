@@ -31,7 +31,7 @@ float mZZmax_=2800;
 std::string signalProcessName="Bulk";
 std::string channel_marker="xzz";
 std::string dims = "1d";
-const std::string datacardDir("DataCards_XZZ_prodv2g_TEST4");
+const std::string datacardDir("DataCards_XZZ_prodv2h_TESTNEWSYST");
 
 
 //********** Externally provided Normalizations *********
