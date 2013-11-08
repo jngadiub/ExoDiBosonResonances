@@ -8,5 +8,5 @@ source = cms.Source("PoolSource",
                    )
 
 cmgFiles.extend([
-    '/store/cmst3/group/exovv/CMGtuple/productionv2h/Summer12//BulkG_ZZ_lljj_c0p2_M2300/cmgTuple_0.root',
+    '/store/cmst3/group/exovv/CMGtuple/productionv2i/Summer12//BulkG_ZZ_lljj_c0p2_M2300/cmgTuple_0.root',
     ])
