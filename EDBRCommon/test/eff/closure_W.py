@@ -11,13 +11,13 @@ from array import array
 root.gROOT.SetBatch()        # don't pop up canvases
 root.gROOT.SetStyle('Plain') # white background
 
-histofile = root.TFile.Open("/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_9_CMGrel_V5_15_0_ExoDiBosonResonances_GIT_production/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/eff/plotsEff_BulkG_c0p2_final_05_11_2013/efficiency_WW.root") #Bulk
-histofile1 = root.TFile.Open("/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_9_CMGrel_V5_15_0_ExoDiBosonResonances_GIT_production/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/eff/plotsEff_RSG_c0p2_final_05_11_2013/efficiency_WW.root") #RS
+histofile = root.TFile.Open("/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_9_CMGrel_V5_15_0_ExoDiBosonResonances_GIT_production/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/eff/plotsEff_BulkG_c0p2_plus_wideRes_final_05_11_2013/efficiency_WW_forClosure.root") #Bulk (narrow + wide)
+histofile1 = root.TFile.Open("/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_9_CMGrel_V5_15_0_ExoDiBosonResonances_GIT_production/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/eff/plotsEff_RSG_c0p2_final_05_11_2013/efficiency_WW_forClosure.root") #RS
 
 histo_eff_ele   = histofile.Get("eff_ele")
 histo_eff_mu   = histofile.Get("eff_mu")
-histo_eff_tautoele   = histofile.Get("eff_tautoele")
-histo_eff_tautomu   = histofile.Get("eff_tautomu")
+#histo_eff_tautoele   = histofile.Get("eff_tautoele")
+#histo_eff_tautomu   = histofile.Get("eff_tautomu")
 histo_eff_event   = histofile.Get("histo_event_eff")
 #histo_eff_jet   = histofile.Get("eff_jet")
 histo_eff_jet   = histofile1.Get("eff_jet")
@@ -246,11 +246,15 @@ def processSubsample(file):
             bin1 = histo_eff_mu.FindBin( genVlep.pt(),abs(genVlep.Eta()) )
             eff_Vlep = histo_eff_mu.GetBinContent(bin1)
         if flavor=="tautoele":
-            bin1 = histo_eff_tautoele.FindBin( genVlep.pt(),abs(genVlep.Eta()) )
-            eff_Vlep = histo_eff_tautoele.GetBinContent(bin1)
+            #bin1 = histo_eff_tautoele.FindBin( genVlep.pt(),abs(genVlep.Eta()) )
+            #eff_Vlep = histo_eff_tautoele.GetBinContent(bin1)
+            bin1 = histo_eff_ele.FindBin( genVlep.pt(),abs(genVlep.Eta()) )
+            eff_Vlep = histo_eff_ele.GetBinContent(bin1)
         if flavor=="tautomu":
-            bin1 = histo_eff_tautomu.FindBin( genVlep.pt(),abs(genVlep.Eta()) )
-            eff_Vlep = histo_eff_tautomu.GetBinContent(bin1)
+            #bin1 = histo_eff_tautomu.FindBin( genVlep.pt(),abs(genVlep.Eta()) )
+            #eff_Vlep = histo_eff_tautomu.GetBinContent(bin1)
+            bin1 = histo_eff_mu.FindBin( genVlep.pt(),abs(genVlep.Eta()) )
+            eff_Vlep = histo_eff_mu.GetBinContent(bin1)
                                         
         #Efficiency hadronic V
         bin = histo_eff_jet.FindBin( genjetp4.pt(),abs(genjetp4.eta()) )
