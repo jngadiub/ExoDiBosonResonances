@@ -19,8 +19,9 @@ histo_eff_mu   = histofile.Get("eff_mu")
 #histo_eff_tautoele   = histofile.Get("eff_tautoele")
 #histo_eff_tautomu   = histofile.Get("eff_tautomu")
 histo_eff_event   = histofile.Get("histo_event_eff")
-#histo_eff_jet   = histofile.Get("eff_jet")
-histo_eff_jet   = histofile1.Get("eff_jet")
+histo_eff_jet   = histofile.Get("eff_jet")
+#histo_eff_jet   = histofile1.Get("eff_jet")
+#FOR THE JET: change below at "#flat correction factor from Bulk (W_L) to RS (W_T)" if needed
 
 def deltaPhi(phi1, phi2):
 
@@ -259,6 +260,7 @@ def processSubsample(file):
         #Efficiency hadronic V
         bin = histo_eff_jet.FindBin( genjetp4.pt(),abs(genjetp4.eta()) )
         eff_jet = histo_eff_jet.GetBinContent(bin)
+        #eff_jet = histo_eff_jet.GetBinContent(bin)*0.8 #flat correction factor from Bulk (W_L) to RS (W_T)
 
         #Efficiency per event (b-tag, lepton-veto)
         eff_event = histo_eff_event.GetBinContent(1)
