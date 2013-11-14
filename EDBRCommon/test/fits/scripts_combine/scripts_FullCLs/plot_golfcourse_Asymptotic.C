@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <math.h>
+#include <algorithm> 
 //#include <cstdlib>
 #include "TTree.h"
 #include "TH1D.h"
@@ -15,9 +16,9 @@
 #include "TStyle.h"
 #include "TPaveText.h"
 //void getSigmaBands(string fileName);
-void plot_Graviton();
+void plot_golfcourse_Asymptotic(bool unblind=false, char* width=0);
 void setFPStyle();
-
+bool isZZChannel=true;
 double expo_interp(double s2, double s1,  double newM,double m2,double m1){
 
   if(m1>m2){
@@ -51,65 +52,82 @@ double linear_interp( double s2, double s1, double mass, double m2, double m1 ) 
 
 
 
-const float intLumi=4.9;
-const float BRZZ2l2q=0.0937;
-void plot_Graviton(){
+const float intLumi=19.5;
+const float BRZZ2l2q=isZZChannel?0.0941:0.2882464;
+void plot_golfcourse_Asymptotic(bool unblind, char* width){
 
   bool useNewStyle=true;
   if(useNewStyle)  setFPStyle();
 
-  TFile *fFREQ=new TFile("higgsCombineGrav2L2Q_CLs.ADPSGrav10.root","READ");
-  // TFile *fFREQ=new TFile("higgsCombineGrav2L2Q_MCMC.RSGrav05.root","READ");
-   // TFile *fFREQ=new TFile("higgsCombineGrav2L2Q_Asymptotic.RSGrav05.root","READ");
+  TFile *fFREQ=0;
+  if(width==0)
+    fFREQ = new TFile("higgsCombineEXOZZ.Asymptotic.TOTAL.root","READ");
+  else{
+    char fnam[50];
+    sprintf(fnam,"higgsCombineEXOZZ.Asymptotic.%s.TOTAL.root",width);
+    fFREQ=new TFile(fnam,"READ");
+  }
 
   TTree *t=(TTree*)fFREQ->Get("limit");
 
   double mh,limit;
-  //double
-float quant;
+  float quant;
   t->SetBranchAddress("mh",&mh);
   t->SetBranchAddress("limit",&limit);
   t->SetBranchAddress("quantileExpected",&quant);
 
-  vector<double> v_mh, v_median,v_68l,v_68h,v_95l,v_95h, v_obs;
-
+  //1st loop on tree for preparing mH ordered list
+  vector<double> v_mhTMP;
   for(int i=0;i<t->GetEntries();i++){
-    // int i=j;
-    // if(j==t->GetEntries())i=0;
     t->GetEntry(i);
-    //cout<<"i "<<i<<flush<<"  m = "<<mh<<endl;
-    // if(mh==600)cout<<"$$$$$$$$$ TREE 600 $$$$$$$$$$$$$$"<<endl;
-
     if(quant>-1.01&&quant<-0.99){
-      v_obs.push_back(limit);
-      v_mh.push_back(mh);
+      v_mhTMP.push_back(mh);
     }
-    else if(quant>0.02&&quant<0.03)v_95l.push_back(limit);
-    else if(quant>0.15&&quant<0.17)v_68l.push_back(limit);
-    else if(quant>0.49&&quant<0.51)v_median.push_back(limit);
-    else if(quant>0.83&&quant<0.85)v_68h.push_back(limit);
-    else if(quant>0.965&&quant<0.98){
-      //   cout<<"95% -> at M="<<mh<<" I found "<<limit<<endl;
-      v_95h.push_back(limit);
-    }
-    else {cout<<"Error! Quantile =  "<<quant<<endl;}
   }
-  cout<<"Out of the loop !"<<endl;
+  std::sort(v_mhTMP.begin(),v_mhTMP.end());
 
- 
+  int nMH=v_mhTMP.size();
+  int iMH=0;
+  vector<double> v_mh, v_median,v_68l,v_68h,v_95l,v_95h, v_obs;
+  while(iMH<nMH){
+    double mhTMP=v_mhTMP.at(iMH);
+    for(int i=0;i<t->GetEntries();i++){
+      // int i=j;
+      // if(j==t->GetEntries())i=0;
+      t->GetEntry(i);
+      //cout<<"i "<<i<<flush<<"  m = "<<mh<<endl;
+      // if(mh==600)cout<<"$$$$$$$$$ TREE 600 $$$$$$$$$$$$$$"<<endl;
+
+      if(mh!=mhTMP)continue;//follow exactly the order of v_mhTMP
+
+      if(quant>-1.01&&quant<-0.99){
+	v_obs.push_back(limit);
+	v_mh.push_back(mh);
+      }
+      else if(quant>0.02&&quant<0.03)v_95l.push_back(limit);
+      else if(quant>0.15&&quant<0.17)v_68l.push_back(limit);
+      else if(quant>0.49&&quant<0.51)v_median.push_back(limit);
+      else if(quant>0.83&&quant<0.85)v_68h.push_back(limit);
+      else if(quant>0.965&&quant<0.98){
+	//   cout<<"95% -> at M="<<mh<<" I found "<<limit<<endl;
+	v_95h.push_back(limit);
+      }
+
+      else {cout<<"Error! Quantile =  "<<quant<<endl;}
+    }
+    iMH++;
+  }//end while loop
+  cout<<"Out of the loop !"<<endl;
   ////////////////////////////////////////
   ///
  //read in theoretical values from text files
   // bool   applyExtraTherUnc=true;
-   string xsect_file_th="./RSGravXSectTimesBRToZZ_AgasheHapola_c10.txt";
-   string xsect_file_interpol="./RSGravXSectTimesBRToZZ_AgasheHapola_c10_EXPOINTERP.txt";
- 
-  string xsect_file_th03="./RSGravXSectTimesBRToZZ_AgasheHapola_c0.3.txt";
-  string xsect_file_interpol03="./RSGravXSectTimesBRToZZ_AgasheHapola_c03_EXPOINTERP.txt";
- 
+  string xsect_file_th="../../../data/xsect_BulkG_ZZ_c0p5_xsect_in_pb.txt";
+  if(!isZZChannel)xsect_file_th="../../../data/xsect_BulkG_WW_c0p5_xsect_in_pb.txt";
   //  make_interpolated_xsect(xsect_file_th, xsect_file_interpol);
-  // ifstream xsect_file("./RSGravXSectTimesBRToZZ_Pythia_c05.txt",ios::in);
-  ifstream xsect_file(xsect_file_interpol.c_str(),ios::in);
+  // string xsect_file_interpol="./RSGravXSectTimesBRToZZ_AgasheHapola_c10_EXPOINTERP.txt";
+ 
+  ifstream xsect_file(xsect_file_th.c_str(),ios::in);
   if (! xsect_file.is_open()){ cout<<"Failed to open file with xsections"<<endl;}
   float mH, CS;
  
@@ -117,10 +135,10 @@ float quant;
   vector<float> v_mhxs, v_xs,  v_brzz2l2q,v_toterrh,v_toterrl;
   while(xsect_file.good()){
     xsect_file >> mH>> CS;
-    if(mH==600)cout<<"~~~~~ 600 theor ~~~~~~~~~~~~~"<<endl;
-    if(mH<300.0)continue;
+    if(mH==1200)cout<<"~~~~~ 1200 theor ~~~~~~~~~~~~~"<<endl;
+    if(mH<600.0)continue;
     v_mhxs.push_back(mH);
-    v_xs.push_back(CS);// /1000.0*BRZZ2l2q
+    v_xs.push_back(CS);//*BRZZ2l2q (multyply by BRZZ2l2q only if exp rates in cards are for process X->ZZ->2l2q !)
    
     //unavailable theor errors for graviton   
 
@@ -133,30 +151,18 @@ float quant;
   cout<<"Size of theor "<<v_mhxs.size()<<endl;
   xsect_file.close();
 
- ifstream xsect_file03(xsect_file_interpol03.c_str(),ios::in);
-  if (! xsect_file03.is_open()){ cout<<"Failed to open file with xsections c=0.3"<<endl;}
-  
-
-  vector<float> v_mhxs03, v_xs03;
-  while(xsect_file03.good()){
-    xsect_file03 >> mH>> CS;
-    if(mH<300.0)continue;
-    v_mhxs03.push_back(mH);
-    v_xs03.push_back(CS);
-    
-  }
-
-  string xsect_file_interpol2="./RSGravXSectTimesBRToZZ_AgasheHapola_c05_EXPOINTERP.txt";
+  string xsect_file_interpol2="../../../data/xsect_BulkG_ZZ_c0p2_xsect_in_pb.txt";
+  if(!isZZChannel)xsect_file_interpol2="../../../data/xsect_BulkG_WW_c0p2_xsect_in_pb.txt";
   ifstream xsect_file2(xsect_file_interpol2.c_str(),ios::in);
-  if (! xsect_file2.is_open()){ cout<<"Failed to open file with xsections (c=0.05)"<<endl;}
+  if (! xsect_file2.is_open()){ cout<<"Failed to open file with xsections (c=0.10)"<<endl;}
   float mH2,CS10;
  
   vector<float>  v_xs10;
   while(xsect_file2.good()){
     xsect_file2 >> mH2>> CS10;
     if(mH2==975)cout<<"~~~~~ 975 theor ~~~~~~~~~~~~~"<<endl;
-    if(mH2<300.0)continue;
-    v_xs10.push_back(CS10);//  /1000.0*BRZZ2l2q
+    if(mH2<600.0)continue;
+    v_xs10.push_back(CS10);//*BRZZ2l2q
    
     //unavailable theor errors for graviton   
     float tot_err_p=0.0;
@@ -183,23 +189,23 @@ float quant;
   int nexcluded=0;
   bool excl; 
   for(int im=0;im<nMass;im++){
-    // if( mass[nMassEff-1]>490.) cout<<"Array "<<im<<flush<<"  m = "<<v_mh.at(im)<<endl;;
+    if( mass[nMassEff-1]>1600.) cout<<"Array "<<im<<flush<<"  m = "<<v_mh.at(im)<<endl;;
     //protection against messed up jobs
     excl=false;
-    //   if(v_68h.at(im)>=v_95h.at(im) || v_68l.at(im)<=v_95l.at(im) ){
-   if(false ){
-      cout<<"Point at M = "<<v_mh.at(im) <<" excluded"<<endl;
+    if(v_68h.at(im)>=v_95h.at(im) || v_68l.at(im)<=v_95l.at(im) ){
+      cout<<"Point at M = "<<v_mh.at(im) <<" excluded: "<<v_95l.at(im)<<"  "<<v_68l.at(im)<<"  "<<v_median.at(im)<<"  "<<v_68h.at(im)<<"  "<<v_95h.at(im)<< endl;
       nexcluded++;
-     
+      // continue;
       excl=true; 
     }
     //    if(im%2==1)excl=true;//sample only one half of the points
 
     //search for right index in theor vectors
     bool found=false;
-    int indtmp=0,ind=-1;
+    int indtmp=0,ind=-1, swapind=-1;
     while(!found){
       if(v_mhxs.at(indtmp)==v_mh.at(im)){found=true;ind=indtmp;}
+      if(swapind==-1 && v_mh.at(im)<v_mhxs.at(indtmp)){swapind=indtmp;}
       indtmp++;
       if(indtmp==v_mhxs.size()){
 	cout<<"!!! m="<<flush<<v_mh.at(im)<<" NOT found in theor matrix."<<endl;
@@ -207,17 +213,25 @@ float quant;
       }
     }//end while    
    
-  
+    if(!found && swapind!=-1){
+      ind = swapind;
+    }
 
+    double fl_xs=double(v_xs.at(ind));//*1000.0
+    double fl_xs10=double(v_xs10.at(ind));//*1000.0
+  
     if(!found){
       cout<<"(2) m="<<v_mh.at(im)<<" NOT found in theor matrix."<<endl;
-      continue;
+      fl_xs  = expo_interp(v_xs.at(ind),v_xs.at(ind-1),v_mh.at(im),v_mhxs.at(ind),v_mhxs.at(ind-1));
+      fl_xs10  = expo_interp(v_xs10.at(ind),v_xs10.at(ind-1),v_mh.at(im),v_mhxs.at(ind),v_mhxs.at(ind-1));
+
+      //continue;
     }
+
   
-    double fl_xs=double(v_xs.at(ind));
-    double fl_xs03=double(v_xs03.at(ind));
-    double fl_xs10=double(v_xs10.at(ind));
-    //  if(im==0||im==8)std::cout<<"Ratio of theoretical xsect: "<<fl_xs10/fl_xs<<std::endl;
+   
+    if(fl_xs<fl_xs10)cout<<"WARNING ABOUT XSECT! XS="<<fl_xs<<"  XS10="<<fl_xs10<<endl;
+
     mass[nMassEff]=v_mh.at(im);
     //if( mass[nMassEff]==600.0)cout<<"=============> 600 !!!"<<endl;
     obs_lim_cls[nMassEff]=v_obs.at(im)*fl_xs;
@@ -227,13 +241,14 @@ float quant;
       medianD[nMassEff1]=v_median.at(im)*fl_xs;
       up68err[nMassEff1]=(v_68h.at(im)-v_median.at(im))*fl_xs;
       down68err[nMassEff1]=(v_median.at(im)-v_68l.at(im))*fl_xs;
-
+      cout<<"M="<<mass1[nMassEff1]<<"  Median="<<medianD[nMassEff1]<<endl;
       
-      xs[nMassEff1]=fl_xs03;
+      //scale factor 100 for making the xsect visible
+      xs[nMassEff1]=fl_xs;//*100.0;
       xs_uperr[nMassEff1]=double( v_toterrh.at(ind))*xs[nMassEff1]- xs[nMassEff1];
       xs_downerr[nMassEff1]=  xs[nMassEff1]- double( v_toterrl.at(ind))* xs[nMassEff1];
 
-      xs10[nMassEff1]=fl_xs10;
+      xs10[nMassEff1]=fl_xs10;//*100.0;
       xs10_uperr[nMassEff1]=double( v_toterrh.at(ind))*xs10[nMassEff1]- xs10[nMassEff1];
       xs10_downerr[nMassEff1]=  xs10[nMassEff1]- double( v_toterrl.at(ind))* xs10[nMassEff1];
     
@@ -251,7 +266,7 @@ float quant;
       up95err[nM95]=(v_95h.at(im)-v_median.at(im))*fl_xs;
       down95err[nM95]=(v_median.at(im)-v_95l.at(im))*fl_xs;
    
-      //      cout<<"M95: "<< mass95[nM95]<<" "<<median95[nM95]<<" +"<<up95err[nM95]<<"   -"<< down95err[nM95]<<
+      //  cout<<"M95: "<< mass95[nM95]<<" "<<median95[nM95]<<" +"<<up95err[nM95]<<"   -"<< down95err[nM95]<<
       //	" ("<<v_95h.at(im) <<" - "<<v_median.at(im) <<")"<<endl;
       nM95++; 
     }//end if not excluded mass point
@@ -262,25 +277,26 @@ float quant;
 
 
   //  cout<<"Working on TGraph"<<endl;
-  TGraph *grobslim_cls=new TGraphAsymmErrors(nMassEff,mass,obs_lim_cls);
+  TGraphAsymmErrors *grobslim_cls=new TGraphAsymmErrors(nMassEff,mass,obs_lim_cls);
   grobslim_cls->SetName("LimitObservedCLs");
-  TGraph *grmedian_cls=new TGraphAsymmErrors(nMassEff1,mass1,medianD);
+  TGraphAsymmErrors *grmedian_cls=new TGraphAsymmErrors(nMassEff1,mass1,medianD);
   grmedian_cls->SetName("LimitExpectedCLs");
   TGraphAsymmErrors *gr68_cls=new TGraphAsymmErrors(nMassEff1,mass1,medianD,0,0,down68err,up68err);
   gr68_cls->SetName("Limit68CLs");
   TGraphAsymmErrors *gr95_cls=new TGraphAsymmErrors(nM95,mass95,median95,0,0,down95err,up95err);
   gr95_cls->SetName("Limit95CLs");
 
-  //  TGraphAsymmErrors *grthSM=new TGraphAsymmErrors(nMassEff1,mass1,xs,0,0,0,0);//xs_downerr,xs_uperr);
-  TGraph *grthSM=new TGraph(nMassEff1,mass1,xs10);//xs_downerr,xs_uperr);
+  // TGraphAsymmErrors *grthSM=new TGraphAsymmErrors(nMassEff1,mass1,xs,0,0,0,0);//xs_downerr,xs_uperr);
+  TGraph *grthSM=new TGraph(nMassEff1,mass1,xs);//xs_downerr,xs_uperr);
   grthSM->SetName("SMXSection");
 
-  //  TGraphAsymmErrors *grthSM10=new TGraphAsymmErrors(nMassEff1,mass1,xs10,0,0,0,0);
-  TGraph *grthSM10=new TGraph(nMassEff1,mass1,xs);
-  grthSM10->SetName("SMXSection_c.10");
+  // TGraphAsymmErrors *grthSM10=new TGraphAsymmErrors(nMassEff1,mass1,xs10,0,0,0,0);
+  TGraph *grthSM10=new TGraph(nMassEff1,mass1,xs10);
+  grthSM10->SetName("SMXSection_2nd");
  
   // cout<<"Plotting"<<endl;
-  double fr_left=390.0, fr_down=0.01,fr_right=1220.0,fr_up=10.0;
+  double fr_left=590.0, fr_down=0.0005,fr_right=2020.0,fr_up=1.0;
+  if(!isZZChannel){fr_left=500.0, fr_down=0.0000005,fr_right=2600.0,fr_up=10.0;}
   TCanvas *cMCMC=new TCanvas("c_lim_Asymp","canvas with limits for Asymptotic CLs",630,600);
   cMCMC->cd();
   cMCMC->SetGridx(1);
@@ -288,8 +304,10 @@ float quant;
   // draw a frame to define the range
 
   TH1F *hr = cMCMC->DrawFrame(fr_left,fr_down,fr_right,fr_up,"");
+  TString VV = "ZZ";
+  if(!isZZChannel)VV="WW";
   hr->SetXTitle("M_{1} [GeV]");
-  hr->SetYTitle("#sigma_{95%} #times BR(G_{KK} #rightarrow ZZ) [pb]");// #rightarrow 2l2q
+  hr->SetYTitle("#sigma_{95%} #times BR(G #rightarrow "+VV+") [pb]");// #rightarrow 2l2q
   // cMCMC->GetFrame()->SetFillColor(21);
   //cMCMC->GetFrame()->SetBorderSize(12);
   
@@ -298,7 +316,7 @@ float quant;
   gr95_cls->SetLineStyle(kDashed);
   gr95_cls->SetLineWidth(3);
   gr95_cls->GetXaxis()->SetTitle("M_{1} [GeV]");
-  gr95_cls->GetYaxis()->SetTitle("#sigma_{95%} #times BR(G_{KK} #rightarrow ZZ) [pb]");// #rightarrow 2l2q
+  gr95_cls->GetYaxis()->SetTitle("#sigma_{95%} #times BR(G #rightarrow "+VV+") [pb]");// #rightarrow 2l2q
   gr95_cls->GetXaxis()->SetRangeUser(fr_left,fr_right);
   
   gr95_cls->Draw("3");
@@ -309,7 +327,7 @@ float quant;
   gr68_cls->SetLineWidth(3);
   gr68_cls->Draw("3same");
   grmedian_cls->GetXaxis()->SetTitle("M_{1} [GeV]");
-  grmedian_cls->GetYaxis()->SetTitle("#sigma_{95%} #times BR(G_{KK} #rightarrow ZZ) [pb]");// #rightarrow 2l2q
+  grmedian_cls->GetYaxis()->SetTitle("#sigma_{95%} #times BR(G #rightarrow "+VV+") [pb]");// #rightarrow 2l2q
   grmedian_cls->SetMarkerStyle(24);//25=hollow squre
   grmedian_cls->SetMarkerColor(kBlack);
   grmedian_cls->SetLineStyle(2);
@@ -325,41 +343,37 @@ float quant;
   
   grthSM->SetLineColor(kRed);
   grthSM->SetLineWidth(2);
-  grthSM->SetLineStyle(kSolid); //kDashed
+  grthSM->SetLineStyle(kSolid);
   grthSM->SetFillColor(kRed);
   grthSM->SetFillStyle(3344);
 
   grthSM10->SetLineColor(kRed);
   grthSM10->SetLineWidth(2);
+  grthSM10->SetLineStyle(1);
   grthSM10->SetLineStyle(kDashed);
   grthSM10->SetFillColor(kRed);
   grthSM10->SetFillStyle(3344);
 
-  grthSM->Draw("L");
-  grthSM10->Draw("L");
+  grthSM->Draw("L3");
+  grthSM10->Draw("L3");
   grmedian_cls->Draw("L");
-  grobslim_cls->Draw("LP");
+  if(unblind)grobslim_cls->Draw("LP");
 
   /*
-  //take limits from external files
-  TFile *fmcmc=new TFile("MCMC_TGraph.root","READ");
-  TGraph *gr_mcmc=(TGraph*)fmcmc->Get("LimitObservedCLs");
-  gr_mcmc->SetName("LimitObservedMCMC");
-  gr_mcmc->SetMarkerColor(kBlue);
-  gr_mcmc->SetLineColor(kBlue);
-  gr_mcmc->SetMarkerStyle(25);
-  
-
-  TFile *fasympt=new TFile("AsymptoticCLs_Agashe_TGraph.root","READ");
-  TGraph *gr_asympt=(TGraph*)fasympt->Get("LimitObservedCLs");
-  gr_asympt->SetName("LimitObservedAsymptotic");
-  gr_asympt->SetMarkerColor(kMagenta);
-  gr_asympt->SetLineColor(kMagenta);
-  gr_asympt->SetMarkerStyle(27);
-  //    gr_mcmc->Draw("P");
-  // gr_asympt->Draw("P");
+  TFile *fUnMPlus=new TFile("AsymptoticCLs_UnmatchedPlus_TGraph.root","READ");
+  TGraph *grobs_ump=(TGraph*)fUnMPlus->Get("LimitObservedCLs");
+  TGraph *grmedian_ump=(TGraph*)fUnMPlus->Get("LimitExpectedCLs");
+  grobs_ump->SetName("LimitObs_UnmatchedPlus");
+  grmedian_ump->SetName("LimitExp_UnmatchedPlus");
+  grobs_ump->SetMarkerColor(kBlue);
+  grobs_ump->SetLineColor(kBlue);
+  grobs_ump->SetMarkerStyle(25);
+  grmedian_ump->SetMarkerColor(kBlue);
+  grmedian_ump->SetLineColor(kBlue);
+  grmedian_ump->SetMarkerStyle(25);
+  grobs_ump->Draw("P");
+  grmedian_ump->Draw("L");
   */
-  
 
  //draw grid on top of limits
   gStyle->SetOptStat(0);
@@ -377,57 +391,47 @@ float quant;
    gPad->RedrawAxis("");
   // hr->GetYaxis()->DrawClone();
    cMCMC->Update();
- 
+  
 
 
   //more graphics
-  TLegend *leg = new TLegend(.52,.70,.92,.92);
+  TLegend *leg = new TLegend(.46,.75,.94,.92);
   //   TLegend *leg = new TLegend(.35,.71,.90,.90);
    leg->SetFillColor(0);
    leg->SetShadowColor(0);
    leg->SetTextFont(42);
    leg->SetTextSize(0.025);
    //   leg->SetBorderMode(0);
-   // leg->AddEntry((TObject*)0,"U.L. on ADSP Graviton","");
-   leg->AddEntry(grobslim_cls, "CL_{s} Observed", "LP");
-   leg->AddEntry(gr68_cls, "CL_{s} Expected #pm 1#sigma", "LF");
-   leg->AddEntry(gr95_cls, "CL_{s} Expected #pm 2#sigma", "LF");
-   // //  leg->AddEntry(grthSM, "#sigma_{LO}(pp#rightarrow RSG) x BR(G #rightarrow ZZ), c=0.05", "LF");// #rightarrow 2l2q
-   //// leg->AddEntry(grthSM10, "#sigma_{LO}(pp#rightarrow RSG) x BR(G #rightarrow ZZ), c=0.10", "LF");// #rightarrow 2l2q
-   ////  leg->AddEntry(gr_asympt, "Asymptotic CL_{s} Observed", "P");
-   //// leg->AddEntry(gr_mcmc, "Bayesian MCMC Observed", "P");
-   //leg->AddEntry(grthSM, "#sigma_{LO} x BR(G #rightarrow ZZ), #tilde{k}=0.05", "L");// #rightarrow 2l2q
-   //leg->AddEntry(grthSM10, "#sigma_{LO} x BR(G #rightarrow ZZ), #tilde{k}=0.10", "L");// #rightarrow 2l2q
-   leg->AddEntry(grthSM10, "#sigma_{LO} x BR (ADPS model,  #tilde{k}=0.3)", "L");// #rightarrow 2l2q
-   leg->AddEntry(grthSM, "#sigma_{LO} x BR (ADPS model,  #tilde{k}=0.5)", "L");// #rightarrow 2l2q
-   // leg->AddEntry(grthSM10, "#sigma_{LO} x BR (ADPS model,  #tilde{k}=1.0)", "L");// #rightarrow 2l2q
+   if(unblind)leg->AddEntry(grobslim_cls, "Asympt. CL_{S} Observed", "LP");
+   leg->AddEntry(gr68_cls, "Asympt. CL_{S}  Expected #pm 1#sigma", "LF");
+   leg->AddEntry(gr95_cls, "Asympt. CL_{S}  Expected #pm 2#sigma", "LF");
+   leg->AddEntry(grthSM, "#sigma_{TH} x BR(G #rightarrow "+VV+"), #tilde{k}=0.50", "L" );// #rightarrow 2l2q
+   leg->AddEntry(grthSM10, "#sigma_{TH} x BR(G #rightarrow "+VV+"), #tilde{k}=0.20", "L");// #rightarrow 2l2q
    leg->Draw();
    
  if(useNewStyle){
    TPaveText* cmslabel = new TPaveText( 0.145, 0.953, 0.6, 0.975, "brNDC");
    cmslabel->SetFillColor(kWhite);
-   // cmslabel->SetFillColor(0);
-   cmslabel->SetTextSize(0.035);
+   cmslabel->SetTextSize(0.038);
    cmslabel->SetTextAlign(11);
    cmslabel->SetTextFont(62);
    cmslabel->SetBorderSize(0);
-   //std::string leftText = "CMS preliminary 2011";
+   //   std::string leftText = "CMS Preliminary 2011";
    std::string leftText = "CMS";
    std::string units = "fb ^{-1}";
    char lumiText[300];
    sprintf( lumiText, "%.1f %s", intLumi, units.c_str());
-   cmslabel->AddText(Form("%s", leftText.c_str()));
+   cmslabel->AddText(Form("%s,  #sqrt{s} = 8 TeV, %s", leftText.c_str(), lumiText));
    //cmslabel->Draw();
 
-   TPaveText* label_sqrt = new TPaveText(0.775,0.953,0.96,0.975, "brNDC");
+   TPaveText* label_sqrt = new TPaveText(0.4,0.953,0.96,0.975, "brNDC");
    label_sqrt->SetFillColor(kWhite);
    label_sqrt->SetBorderSize(0);
-   label_sqrt->SetTextSize(0.035);
+   label_sqrt->SetTextSize(0.038);
    label_sqrt->SetTextFont(62);   
    label_sqrt->SetTextAlign(31); // align right
    // label_sqrt->AddText("#sqrt{s} = 7 TeV");
-   // label_sqrt->AddText(Form("L = %s at  #sqrt{s} = 7 TeV",  lumiText));
-   label_sqrt->AddText(Form("%s, L = %s at  #sqrt{s} = 7 TeV", leftText.c_str(), lumiText));
+   label_sqrt->AddText(Form("%s, L = %s at  #sqrt{s} = 8 TeV", leftText.c_str(), lumiText));
    label_sqrt->Draw();
 
    }
@@ -438,8 +442,8 @@ float quant;
    latex->SetTextSize(0.04);
    latex->SetTextAlign(31);
    latex->SetTextAlign(11); // align left 
-   latex->DrawLatex(0.18, 0.96, "CMS preliminary 2011");
-   latex->DrawLatex(0.60,0.96,Form("%.1f fb^{-1} at #sqrt{s} = 7 TeV",intLumi));
+   latex->DrawLatex(0.18, 0.96, "CMS preliminary 2012");
+   latex->DrawLatex(0.60,0.96,Form("%.1f fb^{-1} at #sqrt{s} = 8 TeV",intLumi));
    
    }
 
@@ -455,21 +459,41 @@ float quant;
    gPad->RedrawAxis("");
    // hr->GetYaxis()->DrawClone();
    cMCMC->Update();
-   cMCMC->SaveAs("Grav2l2q_UL_Agashe_CLs.root");//_withMCMC
-   cMCMC->SaveAs("Grav2l2q_UL_Agashe_CLs.eps");
-   cMCMC->SaveAs("Grav2l2q_UL_Agashe_CLs.pdf");
-   cMCMC->SaveAs("Grav2l2q_UL_Agashe_CLs.png");
-   gPad->SetLogy();
-   cMCMC->SaveAs("Grav2l2q_UL_Agashe_CLs_log.eps");
-   cMCMC->SaveAs("Grav2l2q_UL_Agashe_CLs_log.pdf");
-   cMCMC->SaveAs("Grav2l2q_UL_Agashe_CLs_log.png");
+   char fnam[50];
+   if(width != 0){
+     sprintf(fnam,"EXOZZ_2l2q_UL_Asymptotic_%s.root",width);
+     cMCMC->SaveAs(fnam);
+     sprintf(fnam,"EXOZZ_2l2q_UL_Asymptotic_%s.eps",width);
+     cMCMC->SaveAs(fnam);
+     sprintf(fnam,"EXOZZ_2l2q_UL_Asymptotic_%s.png",width);
+     cMCMC->SaveAs(fnam);
+     gPad->SetLogy();
+     sprintf(fnam,"EXOZZ_2l2q_UL_Asymptotic_%s_log.eps",width);
+     cMCMC->SaveAs(fnam);
+     sprintf(fnam,"EXOZZ_2l2q_UL_Asymptotic_%s_log.png",width);
+     cMCMC->SaveAs(fnam);
+   }
+   else{
+     cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.root");
+     cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.eps");
+     cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic.png");
+     gPad->SetLogy();
+     cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.eps");
+     cMCMC->SaveAs("EXOZZ_2l2q_UL_Asymptotic_log.png");
   // cMCMC->SaveAs("ClsLimit_1fb.png");
+   }
 
-   TFile *fout=new TFile("CLs_Agashe_TGraph.root","RECREATE");
-   fout->cd();
-   grobslim_cls->Write();
+   if(width==0)
+     sprintf(fnam,"AsymptoticCLs_TGraph.root");
+   else
+     sprintf(fnam,"AsymptoticCLs_TGraph_%s.root",width);
+
+   TFile *outfile=new TFile(fnam,"RECREATE");
+   outfile->cd();
+   if(unblind)grobslim_cls->Write();
    grmedian_cls->Write();
-   fout->Close();
+   outfile->Close();
+
 
 }//end main
 
