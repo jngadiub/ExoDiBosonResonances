@@ -368,19 +368,19 @@ elif "RSG_ZZ_lljj_c0p2_M1500" in "<SAMPLE>" :
     
 #ww (old, used for PAS)
 ##RSG WW, c=0.2
-elif "RSG_WW_lvjj_c0p2_M600"=="<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(31785)
+elif "RSG_WW_lvjj_c0p2_M600_xww"=="<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(27456)
     process.ANEDBR.xsec=cms.double(8.42e+00) ### Checked
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "RSG_WW_lvjj_c0p2_M1000"=="<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(34541)
+elif "RSG_WW_lvjj_c0p2_M1000_xww"=="<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(33186)
     process.ANEDBR.xsec=cms.double(4.81e-01) ### Checked
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
-elif "RSG_WW_lvjj_c0p2_M1500"=="<SAMPLE>" :
+elif "RSG_WW_lvjj_c0p2_M1500_xww"=="<SAMPLE>" :
     process.ANEDBR.Ngen=cms.uint32(23879)
     process.ANEDBR.xsec=cms.double(3.69e-02) ### Checked
-elif "RSG_WW_lvjj_c0p05_M1000"=="<SAMPLE>" :
-    process.ANEDBR.Ngen=cms.uint32(35421)
+elif "RSG_WW_lvjj_c0p05_M1000_xww"=="<SAMPLE>" :
+    process.ANEDBR.Ngen=cms.uint32(27705)
     process.ANEDBR.xsec=cms.double(3.11e-02) ### Checked
     process.ANEDBR.FillGenLevelCode=cms.uint32(7)
 ##Bulk WW, c=1.0
