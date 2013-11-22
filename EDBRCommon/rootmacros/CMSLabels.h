@@ -36,6 +36,7 @@ TLatex* makeCMSFinalURC(int energy = 7, double x = 0.67, double y = 0.85) {
   return tex;
 }
 
+/*
 TLatex* makeCMSFinalTop(int energy = 7, double x = 0.15, double y = 0.94) {
   char buffer[256];
   sprintf(buffer,"CMS        #sqrt{s} = %i TeV",energy);
@@ -45,6 +46,18 @@ TLatex* makeCMSFinalTop(int energy = 7, double x = 0.15, double y = 0.94) {
   tex->Draw();
   return tex;
 }
+*/
+TLatex* makeCMSFinalTop(double x = 0.15, double y = 0.94) {
+  char buffer[256];
+  sprintf(buffer,"CMS ");
+  TLatex* tex = new TLatex(x,y,buffer);
+  tex->SetNDC();
+  tex->SetTextFont(42);
+  tex->Draw();
+  return tex;
+}
+
+
 
 TLatex* makeCMSPreliminaryTop(int energy = 7, double x = 0.15, double y = 0.94) {
   char buffer[256];
@@ -57,9 +70,21 @@ TLatex* makeCMSPreliminaryTop(int energy = 7, double x = 0.15, double y = 0.94) 
   return tex;
 }
 
+/*
 TLatex* makeCMSLumi(double lumi = 5.0, double x = 0.666, double y = 0.72) {
   char buffer[256];
   sprintf(buffer,"#int L dt = %4.1lf fb^{-1}",lumi);
+  TLatex* tex = new TLatex(x,y,buffer);
+  tex->SetNDC();
+  tex->SetTextFont(42);
+  tex->SetTextSize(0.030);
+  tex->Draw();
+  return tex;
+}
+*/
+TLatex* makeCMSLumi(int energy = 7,double lumi = 5.0, double x = 0.666, double y = 0.72) {
+  char buffer[256];
+  sprintf(buffer,"#sqrt{s} = %i TeV,  #int L dt = %4.1lf fb^{-1}",energy,lumi);
   TLatex* tex = new TLatex(x,y,buffer);
   tex->SetNDC();
   tex->SetTextFont(42);
