@@ -14,7 +14,12 @@ channel="ZZ"
 
 ### Information
 mass=$1
+echo
+echo
+echo "====================================================="
 echo "Mass is $mass,   card is $card,   channel is $channel"
+
+
 
 subdir=$mass
 
@@ -44,9 +49,55 @@ cp crab.cfg run_fullCLs_TF.py pset.py ${subdir}
 # go inside the subdir and quickly run combine (asymptotic) 
 # to get a handle of what the limit should be. In this way
 # we avoid the big array of limits
-echo "Running asymptotic limit to get a hint of where the limit should lie"
+
+
+#set ad hoc boundaries for Asymptotic, otherwise it crashes 
+maxBoundary=5
+minBoundary=0.005
+
+#change range of scan specifically for BulkG->ZZ with c=0.5
+if [ $mass -gt 2000 ]
+    then
+    maxBoundary=100000
+    minBoundary=1
+    echo "High mass $mass > 2000: boundary of combine is $minBoundary - $maxBoundary "
+elif [ $mass -gt 1500 ]
+    then
+    maxBoundary=10000
+    minBoundary=1
+    echo "High mass $mass 1500-2000: boundary of combine is $minBoundary - $maxBoundary "
+elif [ $mass -gt 1000 ]
+    then
+    maxBoundary=200
+    minBoundary=0.1
+    echo "Medium mass $mass 1000 - 1500: boundary of combine is $minBoundary - $maxBoundary "
+else
+    maxBoundary=50
+    minBoundary=0.1
+    echo "Low mass $mass <1000: boundary of combine is $minBoundary - $maxBoundary "
+fi
+
 cd ${subdir}
-ASYMPTOTICLIMIT=`combine ${card} -M Asymptotic 2> /dev/null | grep 'Observed Limit' | awk '{print $5}'`
+echo "Running asymptotic limit to get a hint of where the limit should lie"
+#combine ${card} -M Asymptotic -m $mass --rMin $minBoundary --rMax $maxBoundary
+ASYMPTOTICLIMIT=`combine ${card} -M Asymptotic -m $mass --rMin $minBoundary --rMax $maxBoundary 2> /dev/null | grep 'Observed Limit' | awk '{print $5}'`
+
+if [ $? != 0 ]
+    then
+    echo "Something went wrong when running the asymptotic limit... Exiting"
+    exit 100
+fi
+
+ASYMPTBAD=$( echo "$ASYMPTOTICLIMIT <= 0" | bc ) #use bc for floating point comparison
+
+if [ $ASYMPTBAD -eq 1  ]
+    then #it shouldn't be. Something went wrong
+    echo "Error in calculation of Asymptotic limit. Observed limit was $ASYMPTOTICLIMIT ( -> ASYMPTBAD=${ASYMPTBAD}). Exiting."
+    exit 101
+else
+    echo "Observed limit is valid: $ASYMPTOTICLIMIT"
+fi
+
 cd -
 
 echo "Preparing executable script for CRAB"

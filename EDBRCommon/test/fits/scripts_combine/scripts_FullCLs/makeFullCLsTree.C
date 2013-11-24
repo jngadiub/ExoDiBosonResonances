@@ -2,6 +2,7 @@
   double limit;
   double mh;
   float quantileExpected;
+  ifstream massesfile ("masses.txt");
   ifstream limitOfile ("observedLimit.txt");
   ifstream limitE0file ("expectedLimit.txt");
   ifstream limitM2file ("limitM2.txt");
@@ -16,9 +17,12 @@
   t->Branch("quantileExpected",&quantileExpected,"quantileExpected/F");
 
 
-  for(int i=600; i!=2550; i=(i+50)) {
+  //  for(int i=600; i!=2550; i=(i+50)) {
+  int mass;
+  while (massesfile.good()) {
     
-    int mass = i;
+    //    int mass = i;
+    massesfile>>mass;
     mh = mass;
     
     limitM2file >> limit;
