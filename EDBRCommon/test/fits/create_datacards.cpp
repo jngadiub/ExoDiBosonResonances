@@ -457,8 +457,8 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   //lepton scale 
   char sigSystp1_LepScale[200];//m
   char sigSystp2_LepScale[200];//width
-  sprintf(sigSystp1_LepScale,"CMS_%s_sig%dJ_p1_%s_scale",channel_marker.c_str(),nxj,DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str());
-  sprintf(sigSystp2_LepScale,"CMS_%s_sig%dJ_p2_%s_scale",channel_marker.c_str(),nxj,DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
+  sprintf(sigSystp1_LepScale,"CMS_sig_p1_scale_%s",DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str());
+  sprintf(sigSystp2_LepScale,"CMS_sig_p2_scale_%s",DataCardUtils::leptType_datacards(leptType_str).c_str());//,pur_str.c_str(),DataCardUtils::leptType_datacards(leptType_str).c_str());
   char sigSystp1_TmpName[200];//m
   char sigSystp2_TmpName[200];//width
   sprintf(sigSystp1_TmpName,"%s_NomUnc",sigSystp1_LepScale);

@@ -958,7 +958,7 @@ bool EDBRHistoMaker::eventPassesCut(int i, double ptZll_threshold, double ptlep1
   bool passesLeptonicZPt = eventPassesLeptonicZPtCut(i, ptZll_threshold);
   bool passesLep1Pt  = eventPassesLep1PtCut(i, ptlep1_threshold);
   bool passesVBF     = eventPassesVBFCut(i);
-  bool passesVTag = (nXjets[i]!=1) || (vTagPurity[i]==1);//==1 -> HighPurity
+  bool passesVTag = (nXjets[i]!=1) || (vTagPurity[i]==0);//==1 -> HighPurity
   bool passesMZZ=mZZ[i]>=500.0&&mZZ[i]<1400.0;
 
 

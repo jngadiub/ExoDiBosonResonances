@@ -20,8 +20,8 @@ void loopPlot(){
   
   //#####################EDIT THE OPTIONS##############################
   /// Boolean flags to steer the histogram making
-  bool wantElectrons = true; // Will make histograms for electrons
-  bool wantMuons     = false; // Will make histograms for muons
+  bool wantElectrons = false; // Will make histograms for electrons
+  bool wantMuons     = true; // Will make histograms for muons
   bool wantSideband  = false; // Will make histograms for sideband region
   bool wantSignal    = true; // Will make histograms for signal region
   bool wantFullRange = false; // Will not check signal or sideband, ie, pick all jet mass range
@@ -49,21 +49,21 @@ void loopPlot(){
   /// Path to wherever the files with the trees are. 
   //CA8 (cmgTuple_08032013_CA8)
 
-  std::string pathToTrees="/afs/cern.ch/user/b/bonato/scratch0/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2d/fullsig/";
+  std::string pathToTrees="/afs/cern.ch/user/b/bonato/scratch0/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2i/fullsig/";
 
   /// Path to wherever you want to put the histograms (figures) in.
-  std::string outputDir = "./plots_productionv2d_fullsig_1JHP_ELE";
+  std::string outputDir = "./plots_productionv2i_fullsig_1JLP_MU";
  
 
   /// Setup names of data files for trees.
  
-  /*
+  
  const int nDATA=4;
  std::string dataLabels[nDATA]={"DoubleMu_Run2012A_22Jan2013",
 				"DoubleMuParked_Run2012B_22Jan2013",
 				"DoubleMuParked_Run2012C_22Jan2013",
 				"DoubleMuParked_Run2012D_22Jan2013"};
-  */
+  /*
   
   const int nDATA=4;//set to zero if you don't want to plot
   std::string dataLabels[nDATA]={"Photon_Run2012A_22Jan2013",
@@ -71,7 +71,7 @@ void loopPlot(){
                                 "DoublePhotonHighPt_Run2012C_22Jan2013",
                                 "DoublePhotonHighPt_Run2012D_22Jan2013"
 				};
-  
+  */
 
   /*
   const int nDATA=8;//set to zero if you don't want to plot

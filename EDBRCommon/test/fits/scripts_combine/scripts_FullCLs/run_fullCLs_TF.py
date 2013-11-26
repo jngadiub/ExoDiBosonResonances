@@ -11,7 +11,7 @@ cardname = sys.argv[4]
 chan = sys.argv[5]
 
 ### Total number of toys is numtoys*numiters
-numtoys=20
+numtoys=50
 numiters=600
 ### End changes
 
@@ -71,7 +71,8 @@ outputfile.write("SEED=100"+str(Njob)+"\n")
 outputfile.write("MASS="+str(mass)+"\n\n")
 outputfile.write('echo "CARD is ${CARD}"\n')
 outputfile.write('echo "NJob is ${JOBNUM}"\n\n')
-outputfile.write("echo; echo "+commandCombine)
+outputfile.write("echo; echo \"Executing the following command\: "+commandCombine+"   \"\n")
+outputfile.write('echo \"Path to combine program: $( which combine )\"; echo ;\n')
 outputfile.write(commandCombine)
 outputfile.write("ls -lhrt * ; echo ; echo -----; echo \n")                     
 outputfile.write("mv higgsCombineXZZ_CLs_"+str(mass)+".HybridNew.mH"+str(mass)+".100"+str(Njob)+".root output.root")

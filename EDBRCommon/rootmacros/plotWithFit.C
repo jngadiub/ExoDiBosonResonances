@@ -56,15 +56,24 @@ void plotWithFit(){
   string purType[3]={"1JLP","1JHP","2J"};
   const double targetLumi=19538.0;//in pb
 
-  const double bkgNorm[2][3]={{419.4, 398.1, 1577.2},//ee1JLP, ee1JHP, ee2J
-			      {598.3, 545.4, 2240.9}//mm1JLP, mm1JHP, mm2J			      
+  /***
+   //these normalizations use the range [650, inf] for the LP category:
+  const double bkgNorm[2][3]={{198.278, 323.593, 1577.2},//ee1JLP, ee1JHP, ee2J
+			      {328.374, 562.107, 2240.9}//mm1JLP, mm1JHP, mm2J			      
   };
-  
-  const double bkgPar1[2][3]={{185.0, 193.3, 85.94},//ee1JLP, ee1JHP, ee2J
-			      {185.0, 193.3, 85.94}//mm1JLP, mm1JHP,mm2J
+  ***/
+
+
+  //these normalizations use the range [500, inf] for the LP category:
+  const double bkgNorm[2][3]={{408.2, 323.593, 1577.2},//ee1JLP, ee1JHP, ee2J
+			      {671.4, 562.107, 2240.9}//mm1JLP, mm1JHP, mm2J			      
   };
-  const double bkgPar2[2][3]={{0.028, 0.0026, 0.05976},//ee1JLP, ee1JHP
-			      {0.028, 0.0026, 0.05976},//mm1JLP, mm1JHP
+
+  const double bkgPar1[2][3]={{190.2, 211.3, 85.94},//ee1JLP, ee1JHP, ee2J
+			      {190.2, 211.3, 85.94}//mm1JLP, mm1JHP,mm2J
+  };
+  const double bkgPar2[2][3]={{0.023, -0.0013, 0.05976},//ee1JLP, ee1JHP
+			      {0.023, -0.0013, 0.05976},//mm1JLP, mm1JHP
   };
   double fitLow=500;
   double fitHigh=2800;
@@ -120,7 +129,7 @@ void plotWithFit(){
       //if(ilep!=1)continue;
 
       cout<<"Starting with lep="<<leptType[ilep]<<"  Pur="<<purType[ipur]<<endl;
-      string inDir="plots_productionv2d_fullsig_"+purType[ipur]+"_"+leptType[ilep]+"_postARC/";
+      string inDir="plots_productionv2i_fullsig_"+purType[ipur]+"_"+leptType[ilep]+"/";
       //string inDir="plots_productionv2d_fullsig_"+purType[ipur]+"_"+leptType[ilep]+"_testDip/";
       
 
@@ -444,13 +453,17 @@ void plotWithFit(){
   gPad->RedrawAxis();
 
   // Nice labels
+  /*
   TLatex* txt1 = makeCMSPreliminaryTop(8,0.10,0.945);
   txt1->Draw();
-  txt1 = makeCMSLumi(19.8,0.75,0.945);
-  txt1->Draw();
-  //  l = makeChannelLabel(wantNXJets_,flavour_,isZZchannel_);
-  //l->Draw();
+  txt1 = makeCMSLumi(19.7,0.75,0.945);
+   txt1->Draw();
+  */
 
+  TLatex* txt1 = makeCMSFinalTop(0.10,0.945);
+  txt1->Draw();
+  txt1 = makeCMSLumi(8,19.7,0.58,0.945);
+  txt1->Draw();
 
   char outName[128];
   sprintf(outName,"%s/%s_withFit.root",inDir.c_str(),canName.c_str());
