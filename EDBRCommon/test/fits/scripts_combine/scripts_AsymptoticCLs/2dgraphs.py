@@ -1,6 +1,6 @@
 import ROOT as root
 from array import *
-
+import math
 
 def createColors(i):
 ##     r = [0., 0.0, 1.0, 1.0, 1.0]
@@ -18,16 +18,43 @@ def createColors(i):
     FI = root.TColor.CreateGradientColorTable(3, stopa, ra, ga, ba, i);
     
 def setColors2d():
-    r = [0., 0.0, 1.0, 1.0, 1.0]
-    g = [0., 0.0, 0.0, 1.0, 1.0]
-    b = [0., 1.0, 0.0, 0.0, 1.0]
-    stop = [0., .25, .50, .75, 1.0]
+    #   black  blue  red  yellow   white
+#    r = [0.,   0.0,  1.0, 1.0,     1.0]
+#    g = [0.,   0.0,  0.0, 1.0,     1.0]
+#    b = [0.,   1.0,  0.0, 0.0,     1.0]
+
+    #   purple  blue   light-blue cyan  light-green  darker-green    yellow  dark-yell   orange    red
+    #   r = [0.3,   0.0,    0.0,      0.2 ,   0.2,      0.0 ,  0.6 ,    1.0 ,    0.6,  1.0 ,    0.8]
+    #   g = [0.,    0.0,    0.5,      1.0 ,   1.0,      1.0 , 1.0 ,     1.0 ,    0.6,   0.5 ,    0.0]
+    #   b = [0.6,   1.0,    1.0,      1.0 ,   0.6,      0.0 , 0.2 ,     0.0 ,    0.0,  0.0 ,    0.0]
+    r = [0.3,   0.0,    0.0,      0.2 ,     0.2 , 0.4, 0.7, 0.6 ,    1.0 ,    0.6,  1.0 ,    0.8]
+    g = [0.,    0.0,    0.5,      1.0 ,     1.0 , 1.0, 1.0, 1.0 ,     1.0 ,    0.6,   0.5 ,    0.0]
+    b = [0.6,   1.0,    1.0,      1.0 ,     0.6 , 0.4, 0.4, 0.2 ,     0.0 ,    0.0,  0.0 ,    0.0]
+
+    stop = [0., 0.04, 0.08, 0.12,0.16, 0.20, 0.24,  0.36, 0.50, 0.675, 0.75, 1.0]
     ra= array('d',r)
     ga= array('d',g)
     ba= array('d',b)
     stopa= array('d',stop)
-    FI = root.TColor.CreateGradientColorTable(5, stopa, ra, ga, ba, 100);
-    
+    FI = root.TColor.CreateGradientColorTable(12, stopa, ra, ga, ba, 200);
+#    for i in 1,200:
+#        MyDensePalette[i] = FI+i;
+
+
+    #   purple  blue   light-blue   light-green  darker-green    yellow  orange    red
+    r = [0.3,   0.0,    0.0,         0.2,        0.6 ,           1.0 ,   1.0 ,    0.8]
+    g = [0.,    0.0,    0.5,         1.0,        1.0 ,           1.0 ,  0.5 ,    0.0]
+    b = [0.6,   1.0,    1.0,         0.6,        0.2 ,           0.0 ,  0.0 ,    0.0]
+    stop = [0., 0.125, 0.25, 0.375, 0.50, 0.675, 0.75, 0.875, 1.0]
+    ## stop = [0.,0.06, 0.125, 0.18, 0.25,0.375, 0.50, 0.75, 1.0]
+    ##stop = [0.,  0.25,  0.50, 0.675, 0.75, 0.80, 0.875, 0.92, 1.0]
+    ra= array('d',r)
+    ga= array('d',g)
+    ba= array('d',b)
+    stopa= array('d',stop)
+    FI2 = root.TColor.CreateGradientColorTable(8, stopa, ra, ga, ba, 100);
+   
+
 
 def setFPStyle():
     
@@ -97,6 +124,7 @@ def setFPStyle():
   root.gStyle.SetTitleFillColor(10)
   root.gStyle.SetTitleFontSize(0.05)
 
+  root.gStyle.SetOptStat(0)
 
   for i in xrange(10):
       lsstr = "[12 12"
@@ -105,6 +133,8 @@ def setFPStyle():
       print lsstr
       root.gStyle.SetLineStyleString(11+i,lsstr)
 
+
+  
 
 
 
@@ -117,7 +147,7 @@ def main():
 
     f = open('widths.txt')
     for line in iter(f):
-        widths.append(line.strip())
+        if float(line.strip())<=0.4 : widths.append(line.strip())
 
 
     createColors(len(widths))
@@ -141,10 +171,11 @@ def main():
     cMCMC.SetGridx(1)
     cMCMC.SetGridy(1)
 
-    hr = cMCMC.DrawFrame(600,0.001,2000,1,"")
-    hr.SetXTitle("M_{1} [GeV]")
-    hr.SetYTitle("N_{events}") #rightarrow 2l2q
-
+    hr = cMCMC.DrawFrame(600,0.8,2500,400.0,"")
+    hr.SetXTitle("M_{X} [GeV]")
+    hr.SetYTitle("N_{events} excl. at 95% C.L.") #rightarrow 2l2q
+    hr.GetXaxis().SetNdivisions(505);
+    
     n=0
     for width in sw:
         expected_graphs[width].SetLineStyle(11+n)
@@ -164,29 +195,49 @@ def main():
     #leg.AddEntry(gr68_cls, "Asympt. CL_{S}  Expected #pm 1#sigma", "LF");
     #leg.AddEntry(gr95_cls, "Asympt. CL_{S}  Expected #pm 2#sigma", "LF");
     for width in sw:        
-        leg.AddEntry(expected_graphs[width], "#Gamma= "+width+" #times M1", "L" ) #rightarrow 2l2q
+        leg.AddEntry(expected_graphs[width], "#Gamma= "+width+" #times M_{X}", "L" ) #rightarrow 2l2q
 
     leg.Draw();
 
 
+    banner1 = root.TLatex(0.15,0.96,"CMS");
+    banner1.SetNDC();
+    banner1.SetTextSize(0.04);
+    banner1.SetTextFont(42);
+    banner1.Draw();
+    #      banner2 = TLatex(0.68,0.96,("%.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
+    banner2 = root.TLatex(0.64,0.96,("%.1f fb^{-1} at #sqrt{s}=8TeV"%(19.7)));
+    banner2.SetNDC();
+    banner2.SetTextSize(0.04);
+    banner2.SetTextFont(42);
+    banner2.Draw();
+
     root.gPad.RedrawAxis("")
     cMCMC.Update()
     cMCMC.SaveAs("test.eps")
-    cMCMC.SaveAs("test.png")
+    cMCMC.SaveAs("test.pdf")
+    cMCMC.SaveAs("test.root")
     root.gPad.SetLogy();
     cMCMC.SaveAs("test_log.eps")
-    cMCMC.SaveAs("test_log.png")
-
+    cMCMC.SaveAs("test_log.pdf")
+    root.gPad.SetLogy(False);
 
     #plot as 2d histo
-    binsy = [0.001]
+    binsy = [0.000]
     for i in xrange(len(sw)):
-        if i != len(sw)-1:
+       ## if i==0: sw[i]=0.0 #### it is 0.001 in array but we pretend it is 0
+        print 'Width: ',sw[i]
+    
+        if i==0:
+            binsy.append(0.5*float(sw[i+1]))
+        elif i != len(sw)-1:
             binsy.append(0.5*(float(sw[i])+float(sw[i+1])))
         else:
-            binsy.append(1.5*float(sw[i]))
+            binsy.append(float(sw[i])+0.025)
+            binsy.append(float(sw[i])+0.040)#extra margin at the top
 
-    print binsy
+            
+    print "Bins of Y-axis of 2D histo: ",binsy
 
     binsx=[]
     d1, d2 = root.Double(0), root.Double(0)
@@ -208,20 +259,49 @@ def main():
     for w in sw:
         for m in xrange( expected_graphs[w].GetN()):
             expected_graphs[w].GetPoint( m , d1, d2 )
-            limhist.Fill(d1,float(w),d2)
+            #            limhist.Fill(d1,float(w),math.log10(d2) )
+            limhist.Fill(d1,float(w),d2 )
 
     
     setColors2d()
+    limhist.GetXaxis().SetNdivisions(504)
+    #limhist.GetXaxis().SetNdivisions(limhist.GetNbinsX())
+    limhist.GetXaxis().SetTitle("M_{X} [GeV]")
+    limhist.GetXaxis().SetTitleFont(42)
+    limhist.GetXaxis().SetTitleSize(0.06)
+    limhist.GetXaxis().SetTitleOffset(1.05)
+
+    limhist.GetYaxis().SetNdivisions(limhist.GetNbinsY())
+    limhist.GetYaxis().SetTitle("#Gamma / M_{X}")
+    limhist.GetYaxis().SetTitleFont(42)
+    limhist.GetYaxis().SetTitleSize(0.06)
+    limhist.GetYaxis().SetTitleOffset(1.05)
     
-    limhist.Draw("COLZ")
+    limhist.GetZaxis().SetTitle("N_{events} excl. at 95% C.L.")
+    limhist.GetZaxis().SetTitleFont(42)
+    limhist.GetZaxis().SetTitleSize(0.04)
+    limhist.GetZaxis().SetTitleOffset(1.1)
+    
+    root.gPad.SetRightMargin(0.17)
+    root.gPad.SetGridx()
+    root.gPad.SetGridy()
+    ###root.gStyle.SetPaintTextFormat(".2f")
+    limhist.Draw("COLZ ")
+
+
+    banner1.Draw();
+    banner2.SetX(0.55);
+    banner2.Draw();
     
     #root.gPad.RedrawAxis("")
     #cMCMC.Update()
     cMCMC.SaveAs("test2d.eps")
+    cMCMC.SaveAs("test2d.pdf")
     cMCMC.SaveAs("test2d.png")
-##     root.gPad.SetLogZ();
-##     cMCMC.SaveAs("test2d_log.eps")
-##     cMCMC.SaveAs("test2d_log.png")
+    cMCMC.SaveAs("test2d.root")
+    ##cMCMC.SetLogZ(1);
+    cMCMC.SaveAs("test2d_logZ.eps")
+    cMCMC.SaveAs("test2d_logZ.pdf")
 
 
 if __name__ == "__main__":

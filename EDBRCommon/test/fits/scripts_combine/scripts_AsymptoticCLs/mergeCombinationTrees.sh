@@ -32,7 +32,7 @@ else
 fi
 
 
-DIR="output_EXOZZ_Asymptotic_comb_xzz"
+DIR="output_EXOZZ_Asymptotic_xzz_emem1JHP.${MASS}"
 LISTFILES_EXP=""
 LISTFILES_OBS=""
 LISTFILES_ASYMPT=""
@@ -44,17 +44,17 @@ STEMASYMPT="higgsCombineEXOZZ.Asymptotic.mH${MASS}."
 STEMEXPSIGNIF="higgsCombineEXOZZExpSignif.ProfileLikelihood.mH${MASS}."
 STEMOBSSIGNIF="higgsCombineEXOZZObsSignif.ProfileLikelihood.mH${MASS}."
 
-for file in $( /bin/ls "${BASED}/${DIR}/${STEMEXP}"[0-9]*root  )
-  do
- # echo $file
-  LISTFILES_EXP=${LISTFILES_EXP}" $file "
-done
+# for file in $( /bin/ls "${BASED}/${DIR}/${STEMEXP}"[0-9]*root  )
+#   do
+#  # echo $file
+#   LISTFILES_EXP=${LISTFILES_EXP}" $file "
+# done
 
-for file in $( /bin/ls "${BASED}/${DIR}/${STEMOBS}"[0-9]*root  )
-  do
- # echo $file
-  LISTFILES_OBS=${LISTFILES_OBS}" $file "
-done
+# for file in $( /bin/ls "${BASED}/${DIR}/${STEMOBS}"[0-9]*root  )
+#   do
+#  # echo $file
+#   LISTFILES_OBS=${LISTFILES_OBS}" $file "
+# done
 
 for file in $( /bin/ls "${BASED}/${DIR}/${STEMASYMPT}"[0-9]*root  )
   do
@@ -91,6 +91,10 @@ hadd -f ${BASED}/$DIR/${STEMASYMPT}${FMOD}"TOTAL.root" $LISTFILES_ASYMPT
 hadd -f ${BASED}/$DIR/${STEMEXPSIGNIF}${FMOD}"TOTAL.root" $LISTFILES_EXPSIGNIF
 hadd -f ${BASED}/$DIR/${STEMOBSSIGNIF}${FMOD}"TOTAL.root" $LISTFILES_OBSSIGNIF
 
-mkdir harvestedTrees/
+if [ ! -d harvestedTrees/ ]
+    then
+    mkdir harvestedTrees/
+fi
+
 cp ${BASED}/$DIR/*"TOTAL.root" harvestedTrees/
 

@@ -38,25 +38,35 @@ chmod 744 combine_exec.sh
 
 while [ $ijob -le $NMAXJOBS ]
 do
+
   myrand=$RANDOM #random number generator (short integer: [0-32767])
-  JOBNAME="combine_${myrand}"
-  LOGFILE="${LOGDIRNAME}/log_batch_combine_${myrand}.out"
+  JOBNAME="combine_${myrand}_${mass}"
+  LOGFILE="${LOGDIRNAME}/log_parallelizeCombine_${myrand}.out"
+  LOGFULL=${OUTDIR}/${mass}/$LOGFILE
+
+  if [ $twod -eq 1 ]
+    then
+      JOBNAME=${JOBNAME}"_${width}"
+      LOGFULL=${OUTDIR}/${mass}_${width}/$LOGFILE
+  fi
+
+
 
   if [ $RUN_LOCALLY -eq 1 ]
       then
       if [ $twod -eq 1 ]
 	  then
-	  ${startdir}/combine_exec.sh $myrand $mass $width &> ${OUTDIR}/${mass}_${width}/$LOGFILE
+	  ${startdir}/combine_exec.sh $myrand $mass $width >> ${LOGFULL} 2>&1
       else
-	  ${startdir}/combine_exec.sh $myrand $mass &> ${OUTDIR}/${mass}/$LOGFILE
+	  ${startdir}/combine_exec.sh $myrand $mass >> ${LOGFULL} 2>&1
       fi
 
   else
       if [ $twod -eq 1 ]
 	  then
-	  bsub -q $queue -J $JOBNAME -oo ${OUTDIR}/${mass}_${width}/$LOGFILE ${startdir}/combine_exec.sh $myrand $mass $width
+	  bsub -q $queue -J $JOBNAME -oo ${LOGFULL} ${startdir}/combine_exec.sh $myrand $mass $width ${LOGFULL}
       else
-	  bsub -q $queue -J $JOBNAME -oo ${OUTDIR}/${mass}/$LOGFILE ${startdir}/combine_exec.sh $myrand $mass
+	  bsub -q $queue -J $JOBNAME -oo ${LOGFULL} ${startdir}/combine_exec.sh $myrand $mass ${LOGFULL}
       fi
   fi
   let ijob=ijob+1

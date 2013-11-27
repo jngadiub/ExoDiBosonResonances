@@ -21,23 +21,23 @@ LISTFILES_OBS=""
 LISTFILES_ASYMPT=""
 LISTFILES_EXPSIGNIF=""
 LISTFILES_OBSSIGNIF=""
-STEMEXP="higgsCombineEXOZZ.exp.MarkovChainMC."
-STEMOBS="higgsCombineEXOZZ.obs.MarkovChainMC."
+#STEMEXP="higgsCombineEXOZZ.exp.MarkovChainMC."
+#STEMOBS="higgsCombineEXOZZ.obs.MarkovChainMC."
 STEMASYMPT="higgsCombineEXOZZ.Asymptotic."
 STEMEXPSIGNIF="higgsCombineEXOZZExpSignif.ProfileLikelihood."
 STEMOBSSIGNIF="higgsCombineEXOZZObsSignif.ProfileLikelihood."
 
-for file in $( /bin/ls "harvestedTrees/${STEMEXP}"*"${FMOD}"TOTAL.root  )
-  do
- # echo $file
-  LISTFILES_EXP=${LISTFILES_EXP}" $file "
-done
+# for file in $( /bin/ls "harvestedTrees/${STEMEXP}"*"${FMOD}"TOTAL.root  )
+#   do
+#  # echo $file
+#   LISTFILES_EXP=${LISTFILES_EXP}" $file "
+# done
 
-for file in $( /bin/ls "harvestedTrees/${STEMOBS}"*"${FMOD}"TOTAL.root  )
-  do
- # echo $file
-  LISTFILES_OBS=${LISTFILES_OBS}" $file "
-done
+# for file in $( /bin/ls "harvestedTrees/${STEMOBS}"*"${FMOD}"TOTAL.root  )
+#   do
+#  # echo $file
+#   LISTFILES_OBS=${LISTFILES_OBS}" $file "
+# done
 
 for file in $( /bin/ls "harvestedTrees/${STEMASYMPT}"*"${FMOD}"TOTAL.root  )
   do

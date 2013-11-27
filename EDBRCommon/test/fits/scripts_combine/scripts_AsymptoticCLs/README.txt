@@ -25,10 +25,11 @@ For 2d limits (requires datacard creation in 2d mode)
 #5: wait for the jobs on LXB to be finished
 #6: edit paths and names in mergeCombinationTrees.sh
 #7: edit paths and names in mergeHarvestedCombinationTrees.sh
-#8: for M in $( cat masses.txt ); do for W in $( cat widths.txt );do ./mergeCombinationTrees.sh $M $W ; done ; done
-#9 for W in $( cat widths.txt );do ./mergeHarvestedCombinationTrees.sh $W ; done#10: edit paths and names in plot_golfcourse_Asymptotic.C
-#11: for W in $( cat widths.txt );do root -b -q plot_golfcourse_Asymptotic.C+\(1,\"$W\"\) ; done
-#12 python 2dgraphs.py
+#8: for M in $( cat masses.txt ); do for W in $( cat widths.txt );do ./mergeCombinationTrees.sh $M $W >> log_mergeCombTrees.out ; done ; done
+#9: for W in $( cat widths.txt );do ./mergeHarvestedCombinationTrees.sh $W ; done
+#10: edit paths and names in plot_golfcourse_Asymptotic.C
+#11: for W in $( cat widths.txt );do root -b -q plot_golfcourse_Asymptotic_Nevents.C+\(1,\"$W\"\) ; done
+#12: python 2dgraphs.py
 
 For Full CLs limits (requires datacard creation in 1d mode)
 
