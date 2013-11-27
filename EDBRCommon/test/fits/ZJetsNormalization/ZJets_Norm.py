@@ -63,6 +63,7 @@ class doFit_wj_and_wlvj:
         RooAbsPdf.defaultIntegratorConfig().setEpsAbs(1e-9) ;
 
         self.channel=in_channel;#el or muon
+        ###self.purity=in_purity;#HP or LP
         self.signal_sample=in_signal_sample;
 
         self.BinWidth_mlvj=100.;
@@ -2921,16 +2922,24 @@ class doFit_wj_and_wlvj:
 
         #if self.channel == "el": channellable="LP"
         #if self.channel == "mu": channellable="HP"
-        banner = TLatex(0.18,0.96,("CMS Preliminary, %.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
-        banner.SetNDC(); banner.SetTextSize(0.028);
-        banner.Draw();
+#        banner1 = TLatex(0.18,0.96,("CMS, %.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
+        banner1 = TLatex(0.18,0.96,"CMS");
+        banner1.SetNDC();
+        banner1.SetTextSize(0.028);
+        banner1.SetTextFont(42);
+        banner1.Draw();
+        banner2 = TLatex(0.68,0.96,("%.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
+        banner2.SetNDC();
+        banner2.SetTextSize(0.028);
+        banner2.SetTextFont(42);
+        banner2.Draw();
 
         theLeg = TLegend(0.65, 0.57, 0.92, 0.87, "", "NDC");
         theLeg.SetName("theLegend"); theLeg.SetBorderSize(0); theLeg.SetLineColor(0); theLeg.SetFillColor(0);
         theLeg.SetFillStyle(0); theLeg.SetLineWidth(0); theLeg.SetLineStyle(0); theLeg.SetTextFont(42);
-        theLeg.SetTextSize(.045);
+        theLeg.SetTextSize(.095);
         
-        theLeg.AddEntry(hist_WJets, "ZJets","F");
+        theLeg.AddEntry(hist_WJets, "GRRRRRZJets","F");
         theLeg.AddEntry(hist_TTbar, "TTbar","F");
         theLeg.AddEntry(hist_STop, "Single-T","F");
         theLeg.AddEntry(hist_VV, "VV","F");
@@ -3114,7 +3123,13 @@ class doFit_wj_and_wlvj:
         scale_model_to_data=1;#rrv_number_data_mj.getVal()/rdataset_data_mj.sumEntries();
         
         if label=="_WJets0":
+
+            #graphics are defined inside "def draw_canvas_with_pull"
             mplot = rrv_mass_j.frame(RooFit.Title(""));
+            
+            mplot.SetXTitle("Pruned jet mass [GeV]");
+           
+            mplot.SetYTitle("Events / 5 GeV");
             rdataset_data_mj.plotOn(mplot, RooFit.Name("data_invisible"));
     
             model_data.plotOn(mplot,RooFit.Name("VV"), RooFit.Components("model%s_%s_mj,model_TTbar_%s_mj,model_VV_%s_mj"%(label,self.channel,self.channel,self.channel)),RooFit.DrawOption("F"), RooFit.FillColor(self.color_palet["VV"]), RooFit.LineColor(self.color_palet["VV"]),RooFit.NormRange("sb_lo,sb_hi"), RooFit.VLines());
@@ -3125,9 +3140,6 @@ class doFit_wj_and_wlvj:
             model_data.plotOn(mplot,RooFit.Name("TTbar_invisible"), RooFit.Components("model%s_%s_mj,model_TTbar_%s_mj"%(label,self.channel,self.channel)),RooFit.DrawOption("F"), RooFit.FillColor(self.color_palet["TTbar"]), RooFit.LineColor(self.color_palet["TTbar"]),RooFit.FillStyle(3003),RooFit.Range(rrv_mass_j.getMin(),rrv_mass_j.getMax()),RooFit.NormRange("sb_lo,sb_hi"), RooFit.VLines());
             model_data.plotOn(mplot,RooFit.Name("WJets_invisible"), RooFit.Components("model%s_%s_mj"%(label,self.channel)),RooFit.DrawOption("F"), RooFit.FillColor(self.color_palet["ZJets"]),RooFit.FillStyle(3003),RooFit.Range(rrv_mass_j.getMin(),rrv_mass_j.getMax()), RooFit.LineColor(self.color_palet["ZJets"]),RooFit.NormRange("sb_lo,sb_hi"), RooFit.VLines());
     
-
-
-
 
 
             #model_data.plotOn(mplot,RooFit.Name("_invisible"),RooFit.VisualizeError(rfresult,1,kFALSE),RooFit.DrawOption("F"),RooFit.FillColor(self.color_palet["Uncertainty"]),RooFit.FillStyle(3013),RooFit.LineColor(self.color_palet["Uncertainty"]),RooFit.Range(rrv_mass_j.getMin(),rrv_mass_j.getMax()),RooFit.NormRange("sb_lo,sb_hi"), RooFit.VLines());
@@ -3143,18 +3155,22 @@ class doFit_wj_and_wlvj:
             rdataset_data_mj.plotOn(mplot, RooFit.Name("data_invisible"));
 
     
-            #pull
+            #pull; graphics are defined inside "def draw_canvas_with_pull"
             hpull=mplot.pullHist();
             mplot_pull = rrv_mass_j.frame(RooFit.Title("Pull Distribution"));
             mplot_pull.addPlotable(hpull,"P");
             mplot_pull.SetTitle("PULL");
+ 
+            mplot_pull.SetXTitle("Pruned jet mass [GeV]");
+           
+            mplot_pull.SetYTitle("#frac{DATA - FIT}{FIT}");
             mplot_pull.GetYaxis().SetRangeUser(-5,5);
             #signal window
             lowerLine = TLine(self.mj_signal_min,0.,self.mj_signal_min,mplot.GetMaximum()); lowerLine.SetLineWidth(2); lowerLine.SetLineColor(kGray+2); lowerLine.SetLineStyle(9);
             upperLine = TLine(self.mj_signal_max,0.,self.mj_signal_max,mplot.GetMaximum()); upperLine.SetLineWidth(2); upperLine.SetLineColor(kGray+2); upperLine.SetLineStyle(9);
             mplot.addObject(lowerLine); mplot.addObject(upperLine);
     
-            leg=self.legend4Plot(mplot,0,1, 0.15, 0);
+            leg=self.legend4Plot(mplot,0,1, 0.10, 0);
             mplot.addObject(leg);            
 
             parameters_list=model_data.getParameters(rdataset_data_mj);
@@ -3913,13 +3929,8 @@ class doFit_wj_and_wlvj:
                 theLeg.SetFillStyle(1001);
             else:
                 theLeg.SetFillStyle(0);
-            theLeg.SetLineWidth(0);
-            theLeg.SetLineStyle(0);
-            theLeg.SetTextFont(42);
-            theLeg.SetTextSize(.04);
-            #theLeg.SetTextSize(.045);
         else:
-            theLeg = TLegend(0.47+xoffset, 0.66+yoffset, 0.76+xoffset+x_right_offset, 0.93+yoffset+y_upper_offset, "", "NDC");
+            theLeg = TLegend(0.47+xoffset, 0.66+yoffset, 0.83+xoffset+x_right_offset, 0.93+yoffset+y_upper_offset, "", "NDC");
             theLeg.SetFillColor(0);
             if isFill:
                 theLeg.SetFillStyle(1001);
@@ -3930,7 +3941,19 @@ class doFit_wj_and_wlvj:
         theLeg.SetLineColor(0);
         theLeg.SetLineWidth(0);
         theLeg.SetLineStyle(0);
-        
+        theLeg.SetLineWidth(0);
+        theLeg.SetLineStyle(0);
+        theLeg.SetTextFont(43);
+        theLeg.SetTextSize(24);
+        #theLeg.SetTextSize(.045);
+        legHeader="PIPPO"
+        if options.category==0: legHeader="ee 1JLP"
+        elif options.category==1: legHeader="ee 1JHP"
+        elif options.category==2: legHeader="#mu#mu 1JLP"
+        elif options.category==3: legHeader="#mu#mu 1JHP"
+        else: legHeader="PLUTO"
+        theLeg.AddEntry(0,legHeader,"h");
+
         entryCnt = 0;
         objName_before = "";
         for obj in range(int(plot.numItems()) ):
@@ -3952,6 +3975,7 @@ class doFit_wj_and_wlvj:
                     elif TString(objName).Data()=="VV"    : theLeg.AddEntry(theObj, "WW/WZ/ZZ","F");
                     elif TString(objName).Data()=="WJets" : theLeg.AddEntry(theObj, "Z+jets","F");
                     elif TString(objName).Contains("vbfH"): theLeg.AddEntry(theObj, (TString(objName).ReplaceAll("vbfH","qqH")).Data() ,"L");
+                    elif TString(objName).Data()=="data" : theLeg.AddEntry(theObj, "CMS 2012",drawoption);
                     else : theLeg.AddEntry(theObj, objTitle,drawoption);
                 entryCnt=entryCnt+1;
             objName_before=objName;
@@ -3964,26 +3988,50 @@ class doFit_wj_and_wlvj:
     ######## ++++++++++++++
     def draw_canvas_with_pull(self, mplot, mplot_pull,parameters_list,in_directory, in_file_name, in_model_name="", show_constant_parameter=0, logy=0):# mplot + pull + parameters
 
-        mplot.GetXaxis().SetTitleOffset(1.1);
-        mplot.GetYaxis().SetTitleOffset(1.3);
-        mplot.GetXaxis().SetTitleSize(0.03);
-        mplot.GetYaxis().SetTitleSize(0.03);
-        mplot.GetXaxis().SetLabelSize(0.03);
-        mplot.GetYaxis().SetLabelSize(0.03);
-        #mplot_pull.GetYaxis().SetTitleOffset(0.50);
-    	mplot_pull.GetXaxis().SetLabelSize(0.09);
-    	mplot_pull.GetYaxis().SetLabelSize(0.13);
-    	mplot_pull.GetYaxis().SetNdivisions(205);
+        mplot.SetLabelFont(43,"X");
+        mplot.SetLabelSize(30,"X");
+        mplot.SetTitleFont(43,"X");
+        mplot.SetTitleSize(40,"X");
+        mplot.SetTitleOffset(1.15,"X");
+        mplot.SetLabelFont(43,"Y");
+        mplot.SetLabelSize(30,"Y");
+        mplot.SetTitleFont(43,"Y");
+        mplot.SetTitleSize(40,"Y");
+        mplot.SetTitleOffset(1.15,"Y");
+            
+        mplot_pull.SetLabelFont(43,"X");
+        mplot_pull.SetLabelSize(20,"X");
+        mplot_pull.SetTitleFont(43,"X");
+        mplot_pull.SetTitleSize(25,"X");
+        mplot_pull.SetLabelFont(43,"Y");
+        mplot_pull.SetLabelSize(20,"Y");
+        mplot_pull.SetTitleFont(43,"Y");
+        mplot_pull.SetTitleSize(25,"Y");
+        mplot_pull.SetTitleOffset(1.15,"Y");
 
-        mplot_pull.GetYaxis().SetTitle("PULL");
-        mplot_pull.GetYaxis().SetTitleOffset(0.50);
-        mplot_pull.GetYaxis().SetTitleSize(0.08);
+####ORIGINAL SETTINGS
+        #  mplot.GetXaxis().SetTitleOffset(1.1);
+        #         mplot.GetYaxis().SetTitleOffset(1.3);
+        #         mplot.GetXaxis().SetTitleSize(0.03);
+        #         mplot.GetYaxis().SetTitleSize(0.03);
+        #         mplot.GetXaxis().SetLabelSize(0.03);
+        #         mplot.GetYaxis().SetLabelSize(0.03);
+        #         #mplot_pull.GetYaxis().SetTitleOffset(0.50);
+        #     	mplot_pull.GetXaxis().SetLabelSize(0.09);
+        #     	mplot_pull.GetYaxis().SetLabelSize(0.13);
+        #     	mplot_pull.GetYaxis().SetNdivisions(205);
+        
+        #         mplot_pull.GetYaxis().SetTitle("PULL");
+        #         mplot_pull.GetYaxis().SetTitleOffset(0.50);
+        #         mplot_pull.GetYaxis().SetTitleSize(0.08);
+        
+
         mplot_pull.GetYaxis().SetRangeUser(-5,5);
         rrv_x = self.workspace4fit_.var("rrv_mass_j")
         medianLine = TLine(rrv_x.getMin(),0.,rrv_x.getMax(),0); medianLine.SetLineWidth(2); medianLine.SetLineColor(kRed); 
         mplot_pull.addObject(medianLine);
 
-        cMassFit = TCanvas("cMassFit","cMassFit", 600,600);
+        cMassFit = TCanvas("cMassFit","cMassFit", 900,900);
         # if parameters_list is empty, don't draw pad3
         par_first=parameters_list.createIterator();
         par_first.Reset();
@@ -3997,21 +4045,39 @@ class doFit_wj_and_wlvj:
             pad2.Draw();
             pad3.Draw();
         else:
-            pad1=TPad("pad1","pad1",0.,0. ,0.99,0.2);
-            pad2=TPad("pad2","pad2",0.,0.2,0.99,1. );
+            pad1=TPad("pad1","pad1",0.,0. ,0.99,0.25);
+            pad2=TPad("pad2","pad2",0.,0.25,0.99,1. );
+            pad1.SetBottomMargin(0.25);
             pad1.Draw();
             pad2.Draw();
 
         pad2.cd();
         mplot.Draw();
-        #if self.channel == "el": channellable="LP"
-        #if self.channel == "mu": channellable="HP"
-        banner = TLatex(0.18,0.96,("CMS Preliminary, %.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
-        banner.SetNDC(); banner.SetTextSize(0.028);
-        banner.Draw();
 
         pad1.cd();
+        mplot_pull.SetTitleOffset(2.95,"X");
         mplot_pull.Draw();
+ 
+
+###### =====> <======== ###### 
+###### ZZ USES THIS !!! ###### 
+        #if self.channel == "el": channellable="LP"
+        #if self.channel == "mu": channellable="HP"
+        ###   banner = TLatex(0.18,0.96,("CMS Preliminary, %.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
+        ##banner.SetNDC(); banner.SetTextSize(0.028);
+        ##banner.Draw();
+        pad2.cd();
+        banner1 = TLatex(0.18,0.96,"CMS");
+        banner1.SetNDC();
+        banner1.SetTextSize(0.04);
+        banner1.SetTextFont(42);
+        banner1.Draw();
+        #      banner2 = TLatex(0.68,0.96,("%.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
+        banner2 = TLatex(0.68,0.96,("%.1f fb^{-1} at #sqrt{s}=8TeV"%(self.GetLumi())));
+        banner2.SetNDC();
+        banner2.SetTextSize(0.04);
+        banner2.SetTextFont(42);
+        banner2.Draw();
 
         if param_first and doParameterPlot != 0:
             pad3.cd();
@@ -4082,9 +4148,22 @@ class doFit_wj_and_wlvj:
 
         #if self.channel == "el": channellable="LP"
         #if self.channel == "mu": channellable="HP"
-        banner = TLatex(0.18,0.96,("CMS Preliminary, %.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
-        banner.SetNDC(); banner.SetTextSize(0.028);
-        banner.Draw();
+##        banner = TLatex(0.18,0.96,("CMS Preliminary, %.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
+  ##      banner.SetNDC(); banner.SetTextSize(0.028);
+    ##    banner.Draw();
+
+        banner1 = TLatex(0.18,0.96,"CMS");
+        banner1.SetNDC();
+        banner1.SetTextSize(0.028);
+        banner1.SetTextFont(42);
+        banner1.Draw();
+        banner2 = TLatex(0.68,0.96,("%.1f fb^{-1} at #sqrt{s}=8TeV  2%s-1j"%(self.GetLumi(),self.channel)));
+        banner2.SetNDC();
+        banner2.SetTextSize(0.028);
+        banner2.SetTextFont(42);
+        banner2.Draw();
+
+        
 
         Directory=TString(in_directory+self.signal_sample+"_%02d_%02d/"%(options.cprime,options.BRnew));
         if not Directory.EndsWith("/"):Directory=Directory.Append("/");
@@ -4112,11 +4191,11 @@ class doFit_wj_and_wlvj:
     ######## ++++++++++++++
     def GetLumi(self):
         if options.fitwtagger or options.fitwtaggersim:
-            if self.channel=="el": return 19.8#13.9;
-            if self.channel=="mu": return 19.8#14.0;
+            if self.channel=="el": return 19.7#13.9;
+            if self.channel=="mu": return 19.7#14.0;
 
-        if self.channel=="el": return 19.8#13.9;
-        if self.channel=="mu": return 19.8#14.0;
+        if self.channel=="el": return 19.7#13.9;
+        if self.channel=="mu": return 19.7#14.0;
 
     ######## ++++++++++++++
     def get_data(self):
