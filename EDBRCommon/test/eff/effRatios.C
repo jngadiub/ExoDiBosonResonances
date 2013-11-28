@@ -3,8 +3,16 @@
   gStyle->SetPaintTextFormat(".2f");
   gStyle->SetOptStat(0);
 
-  TFile *FileEffBulk = new TFile("/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_9_CMGrel_V5_15_0_ExoDiBosonResonances_GIT_production/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/eff/plotsEff_BulkG_c0p2_plus_wideRes_final_05_11_2013/efficiency_WW_forClosure.root","READ");
-  TFile *FileEffRS = new TFile("/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_9_CMGrel_V5_15_0_ExoDiBosonResonances_GIT_production/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/eff/plotsEff_RSG_c0p2_final_05_11_2013/efficiency_WW_forClosure.root","READ");
+  //==> denominator
+  TFile *FileEffBulk = new TFile("/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_9_CMGrel_V5_15_0_ExoDiBosonResonances_GIT_production/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/eff/plotsEff_BulkG_c0p2_plus_wideRes_final_05_11_2013/efficiency_WW_forClosure.root","READ"); //bulk
+  //TFile *FileEffBulk = new TFile("/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_9_CMGrel_V5_15_0_ExoDiBosonResonances_GIT_production/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/eff/plotsEff_RSG_Madgraph_final_05_11_2013/efficiency_WW_forClosure.root","READ"); //rs madgraph
+  
+  //==> numerator
+  //TFile *FileEffRS = new TFile("/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_9_CMGrel_V5_15_0_ExoDiBosonResonances_GIT_production/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/eff/plotsEff_RSG_c0p2_final_05_11_2013/efficiency_WW_forClosure.root","READ"); //rs pythia
+  TFile *FileEffRS = new TFile("/afs/cern.ch/work/s/santanas/Releases/CMSSW_5_3_9_CMGrel_V5_15_0_ExoDiBosonResonances_GIT_production/CMSSW_5_3_9/src/ExoDiBosonResonances/EDBRCommon/test/eff/plotsEff_RSG_Madgraph_final_05_11_2013/efficiency_WW_forClosure.root","READ"); //rs madgraph
+  
+
+
 
   TH2D *eff_ele_Bulk = (TH2D*) FileEffBulk.Get("eff_ele");
   TH2D *eff_mu_Bulk = (TH2D*) FileEffBulk.Get("eff_mu");

@@ -259,8 +259,8 @@ def processSubsample(file):
                                         
         #Efficiency hadronic V
         bin = histo_eff_jet.FindBin( genjetp4.pt(),abs(genjetp4.eta()) )
-        eff_jet = histo_eff_jet.GetBinContent(bin)
-        #eff_jet = histo_eff_jet.GetBinContent(bin)*0.8 #flat correction factor from Bulk (W_L) to RS (W_T)
+        #eff_jet = histo_eff_jet.GetBinContent(bin)
+        eff_jet = histo_eff_jet.GetBinContent(bin)*0.8 #flat correction factor from Bulk (W_L) to RS (W_T)
 
         #Efficiency per event (b-tag, lepton-veto)
         eff_event = histo_eff_event.GetBinContent(1)
