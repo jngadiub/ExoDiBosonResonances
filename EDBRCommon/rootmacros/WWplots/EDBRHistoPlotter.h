@@ -34,6 +34,7 @@ class EDBRHistoPlotter {
 				bool scaleOnlyWJets,
 				bool makeRatio,
 				bool isSignalStackOnBkg,
+				TString times,
 				std::vector<double> kFactorsMC,
 				std::vector<double> kFactorsMCSig)
 		{
@@ -53,6 +54,7 @@ class EDBRHistoPlotter {
 			scaleOnlyWJets_ = scaleOnlyWJets;
 			makeRatio_     = makeRatio;
 			isSignalStackOnBkg_ = isSignalStackOnBkg;
+			times_=times;
 			debug_         = true;
 			if(fileNamesDATA.size() != 0)
 				isDataPresent_ = true;
@@ -110,6 +112,7 @@ class EDBRHistoPlotter {
 		std::vector<int>         EDBRLineColors;
 		std::vector<double>      kFactorsMC_;
 		std::vector<double>      kFactorsSig_;
+		TString times_;
 
 		std::string nameInDir_;
 		std::string nameOutDir_;
@@ -349,7 +352,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 
 		if(debug_)cout<<"filesMC.at(i)->GetName()   "<<filesMC.at(i)->GetName()<<endl;
 		TString filename = filesMC.at(i)->GetName();
-		if(filename.Contains("WZJets")) sumWJets+=(histo->Integral() * targetLumi_);
+		if(filename.Contains("WJets")) sumWJets+=(histo->Integral() * targetLumi_);
 		else sumBkgOther+=(histo->Integral() * targetLumi_);
 	}
 	if(debug_)cout<<sumBkgAtTargetLumi<<" "<<sumWJets<<" "<<sumBkgOther<<" "<<sumWJets+sumBkgOther<<endl;
@@ -366,7 +369,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 
 		TString filename = filesMC.at(i)->GetName();
 		histo->Scale(kFactorsMC_.at(i));
-		if(filename.Contains("WZJets"))histo->Scale(WJetsScaleFactor);
+		if(filename.Contains("WJets"))histo->Scale(WJetsScaleFactor);
 		histosMC.push_back(histo);
 	}
 
@@ -506,7 +509,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	{
 		hs->GetXaxis()->SetTitle("#tau_{21}");//#tau2/#tau1
 		hs->GetYaxis()->SetTitle("Events / 0.03");
-		//hs->SetMaximum(maximumForStack*1.15);
+		hs->SetMaximum(maximumForStack*2);
 	}
 	if(histoName.find("prunedmass")!=std::string::npos)
 	{
@@ -579,7 +582,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	   TLegend * leg   = (TLegend*) cg2->FindObject("TPave");
 	   cv->cd();
 	 */
-
+	/*
 	TString times ;
 	if(isTTcontrol_==false)
 	{
@@ -587,7 +590,9 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 		if(kFactorsSig_.at(0)==10000)times="#times10^{4}";
 		if(kFactorsSig_.at(0)==30000)times="#times3#times10^{4}";
 		if(kFactorsSig_.at(0)==300000)times="#times3#times10^{5}";
+		if(kFactorsSig_.at(0)==3000)times="#times3#times10^{3}";
 	}
+	*/
 
 	//TString legendfile;
 	//if(isTTcontrol_==false)legendfile="legend.root";
@@ -596,7 +601,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	TFile * fl2 = new TFile("legend.root");
 	TLegend * leg   = (TLegend*) fl2->Get("TPave");
 	if(isTTcontrol_==false)leg->AddEntry("","","");
-	if(isTTcontrol_==false)leg->AddEntry(histosMCSig.at(0),"Bulk Graviton M=1.5TeV #tilde{k}=0.2 ("+times+")","L");
+	if(isTTcontrol_==false)leg->AddEntry(histosMCSig.at(0),"Bulk Graviton M=1TeV #tilde{k}=0.2 ("+times_+")","L");
 	leg->Draw();
 
 
@@ -612,6 +617,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	TString LepTs;
 	if(flavour_==11)LepTs = "e";
 	else if (flavour_==13) LepTs = "#mu"; 
+	else if (flavour_==-1) LepTs = "e/#mu";
 
 	TString sPur;
 	if(wantPurity_==0) sPur = " LP";
@@ -619,7 +625,7 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	if(wantPurity_==-1) sPur = "";//ALLP
 
 
-	TLatex *   tex = new TLatex(0.22651,0.928322,"CMS Preliminary, 19.5 fb^{-1} at #sqrt{s}=8TeV, W#rightarrow " + LepTs +"#nu"+sPur);
+	TLatex *   tex = new TLatex(0.22651,0.928322,"CMS Preliminary, 19.7 fb^{-1} at #sqrt{s}=8TeV, W#rightarrow " + LepTs +"#nu"+sPur);
 	tex->SetNDC();
 	if(makeRatio_==false)tex->SetTextSize(0.044);//for ratio, 0.045. for pas, 0.038
 	if(makeRatio_==true)tex->SetTextSize(0.048);//for ratio, 0.045. for pas, 0.038

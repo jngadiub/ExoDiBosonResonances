@@ -977,6 +977,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 		Long64_t ientry = LoadTree(jentry);
 		if (ientry < 0) break;
 		nb = fChain->GetEntry(jentry);   nbytes += nb;
+		//if(run!=196019)continue;
 		if(jentry==0){
 			//      printf("Entry number %i...\n",(int)jentry);
 			float genLumi=1.0/LumiWeight;
@@ -1062,7 +1063,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 					//if(fabs(etalep1[ivec])<1.442);
 					//else continue;
 
-					if(wantMuons_||(wantElectrons_&&met>80));
+					if((wantMuons_&&lep[ivec]==1)||(wantElectrons_&&met>80&&lep[ivec]==0));
 					else continue;
 
 					//n b jet cut
@@ -1080,7 +1081,7 @@ void EDBRHistoMaker::Loop(std::string outFileName){
 
 					//Printout for debugging	
 					/*				       		       
-					if(mZZ_type2_ptUncorrected[ivec]>1800)
+					if(mZZ_type2_ptUncorrected[ivec]>1700)
 					  {
 					    //RunNumber:LumiSection:EvtNumber
 					    cout << run << ":" << ls << ":" << event << endl;

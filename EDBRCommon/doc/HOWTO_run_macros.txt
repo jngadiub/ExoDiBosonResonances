@@ -14,11 +14,12 @@ All the changes need OLNY to be done in loopPlot.C. (somehow smarter than
 before)
 There are options for ele/mu, LP/ALLP/HP, signal,sideband,or signal+sideband.
 
-change the ratio for signal here: (note this code is not smart for this number. only 60000 and 30000 can appear on the legend. You can modify EDBRHistoPlotter.h for other numbers)
+change the ratio for signal here:
   const int nMCSig=1;//set to zero if you don't want to plot
   std::string mcLabelsSig[nMCSig]={"BulkG_WW_inclusive_c0p2_M1500_xww"
                                   };  
   double kFactorsSig_array[nMCSig] = {60000};//60000 for mu, 30000 for ele (PAS)
+  TString times="#times1#times10^{2}";//what to write on the legend
 
 ---
 NOTE: If you want to do ttbar control region plots, please be careful to change the 
@@ -34,19 +35,12 @@ pathToTrees="/afs/cern.ch/work/s/shuai/public/diboson/trees/productionv12/ttbarc
 4.  change the output name also
 std::string outputDir = "./plots_WW_mu_fullrange_btagCM_HP_v12_ratio_v1"; (or
 whatever you like)
-5. use this list to dral ttbar on top
-  //list for ttbar control region (draw ttbar on top)
-  std::string mcLabels[nMC]={
-                "SingleTop_xww",
-                "VV_xww",
-                "WZJets_xww",
-                "TTBARpowheg_xww"
-                 };
-6. use no signal
+5. use no signal,uncomment this part of the code
   const int nMCSig=0;//set to zero if you don't want to plot
   std::string mcLabelsSig[nMCSig]={
                                   };
   double kFactorsSig_array[nMCSig] = {};
+  TString times="";//what to write on the legend
 
 At the end, do root -l -b loopPlot.C++
 
