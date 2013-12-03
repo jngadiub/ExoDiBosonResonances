@@ -501,9 +501,11 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 
 	if(histoName.find("ptWj")!=std::string::npos) 
 	{
-		hs->GetXaxis()->SetTitle("p_{T}W_{had} (GeV)");
+		//hs->GetXaxis()->SetTitle("p_{T}W_{had} (GeV)");
+		hs->GetXaxis()->SetTitle("p_{T, V-Jet} [GeV]");
 		hs->GetXaxis()->SetTitleFont(132);
 		hs->GetYaxis()->SetTitle("Events / (10 GeV)");
+		hs->SetMaximum(maximumForStack*1.5);
 	}
 	if(histoName.find("nsubj21")!=std::string::npos) 
 	{
@@ -560,22 +562,22 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	   entry=leg->AddEntry(histosMCSig.at(0),"Bulk G, M=1.5 TeV ( #times 100)","L");
 	   entry=leg->AddEntry(sumDATA,"data","PE");
 	 */
-	/*
-	   TLegend * leg= new TLegend(0.65, 0.57, 0.92, 0.87, "", "NDC");
-	   leg->SetName("leg->nd"); leg->SetBorderSize(0); leg->SetLineColor(0); leg->SetFillColor(0);
+	
+	   TLegend * leg= new TLegend(0.178, 0.58, 0.656, 0.844, "", "NDC");
+	   leg->SetName("leg"); leg->SetBorderSize(0); leg->SetLineColor(0); leg->SetFillColor(0);
 	   leg->SetFillStyle(0); leg->SetLineWidth(0); leg->SetLineStyle(0); leg->SetTextFont(42);
-	   leg->SetTextSize(.045);
+	   leg->SetTextSize(0.0385);
 
-	   leg->AddEntry(histosMC.at(3), "WJets","F");
-	   leg->AddEntry(histosMC.at(0), "TTbar","F");
-	   leg->AddEntry(histosMC.at(1), "Single-T","F");
-	   leg->AddEntry(histosMC.at(2), "VV","F");
-	   leg->AddEntry(histosMCSig.at(0), "Bulk G, M=1.5 TeV ( #times 100)","L");
-	   leg->AddEntry(sumDATA, "data","ep");
-	   leg->SetY1NDC(0.9 - 0.05*6 - 0.005);
-	   leg->SetY1(leg->GetY1NDC());
+	   leg->AddEntry(sumDATA, "CMS Data","ep");
+	   leg->AddEntry(histosMC.at(3), "W+Jets","F");
+	   leg->AddEntry(histosMC.at(2), "WW/WZ/ZZ","F");
+	   leg->AddEntry(histosMC.at(0), "t#bar{t}","F");
+	   leg->AddEntry(histosMC.at(1), "Single Top","F");
+	   leg->AddEntry(histosMCSigOrig.at(0),"Bulk G* M=1TeV #tilde{k}=0.5 ("+times_+")" ,"lf");
+	   //leg->SetY1NDC(0.9 - 0.05*6 - 0.005);
+	   //leg->SetY1(leg->GetY1NDC());
 	   leg->Draw();
-	 */
+	 
 	/*
 	   TFile * fg2 = new TFile("~/www/plots/EXODiBosonResonances/Plots_0722/pasplots/plot4Pas/plot4Pas/mlvj_sb_el_HP.root");	
 	   TCanvas * cg2 = (TCanvas*) fg2->Get("cMassFit");
@@ -597,13 +599,13 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	//TString legendfile;
 	//if(isTTcontrol_==false)legendfile="legend.root";
 	//if(isTTcontrol_==true)legendfile="legend_tt.root";
-
+/*
 	TFile * fl2 = new TFile("legend.root");
 	TLegend * leg   = (TLegend*) fl2->Get("TPave");
 	if(isTTcontrol_==false)leg->AddEntry("","","");
-	if(isTTcontrol_==false)leg->AddEntry(histosMCSig.at(0),"Bulk Graviton M=1TeV #tilde{k}=0.2 ("+times_+")","L");
+	if(isTTcontrol_==false)leg->AddEntry(histosMCSig.at(0),"Bulk Graviton M=1TeV #tilde{k}=0.5 ("+times_+")","L");
 	leg->Draw();
-
+*/
 
 	// Nice labels
 	/*
@@ -615,16 +617,16 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	   l->Draw();
 	 */
 	TString LepTs;
-	if(flavour_==11)LepTs = "e";
-	else if (flavour_==13) LepTs = "#mu"; 
-	else if (flavour_==-1) LepTs = "e/#mu";
+	if(flavour_==11)LepTs = "e#nu";
+	else if (flavour_==13) LepTs = "#mu#nu"; 
+	else if (flavour_==-1) LepTs = "e#nu / #mu#nu";
 
 	TString sPur;
 	if(wantPurity_==0) sPur = " LP";
 	if(wantPurity_==1) sPur = " HP";
 	if(wantPurity_==-1) sPur = "";//ALLP
 
-
+/*
 	TLatex *   tex = new TLatex(0.22651,0.928322,"CMS Preliminary, 19.7 fb^{-1} at #sqrt{s}=8TeV, W#rightarrow " + LepTs +"#nu"+sPur);
 	tex->SetNDC();
 	if(makeRatio_==false)tex->SetTextSize(0.044);//for ratio, 0.045. for pas, 0.038
@@ -635,6 +637,41 @@ void EDBRHistoPlotter::makeStackPlots(std::string histoName) {
 	tex->SetY(0.9406);
 	tex->SetLineWidth(2);
 	tex->Draw();
+*/
+
+    TLatex *   tex = new TLatex(0.22651,0.928322,"CMS");
+    tex->SetNDC();
+    if(makeRatio_==false)tex->SetTextSize(0.044);//for ratio, 0.045. for pas, 0.038
+    if(makeRatio_==true)tex->SetTextSize(0.048);//for ratio, 0.045. for pas, 0.038
+    tex->SetTextFont(42);
+    if(makeRatio_==false)tex->SetX(0.183);
+    if(makeRatio_==true)tex->SetX(0.194902);
+    tex->SetY(0.928);
+    tex->SetLineWidth(2);
+    tex->Draw();
+
+    TLatex *   tex2 = new TLatex(0.22651,0.928322,"L = 19.7 fb^{-1} at #sqrt{s}=8TeV");
+    tex2->SetNDC();
+    if(makeRatio_==false)tex2->SetTextSize(0.044);//for ratio, 0.045. for pas, 0.038
+    if(makeRatio_==true)tex2->SetTextSize(0.048);//for ratio, 0.045. for pas, 0.038
+    tex2->SetTextFont(42);
+    if(makeRatio_==false)tex2->SetX(0.513);
+    if(makeRatio_==true)tex2->SetX(0.194902);
+    tex2->SetY(0.923);
+    tex2->SetLineWidth(2);
+    tex2->Draw();
+
+    TLatex *   tex3 = new TLatex(0.22651,0.928322,LepTs);
+    tex3->SetNDC();
+    if(makeRatio_==false)tex3->SetTextSize(0.044);//for ratio, 0.045. for pas, 0.038
+    if(makeRatio_==true)tex3->SetTextSize(0.048);//for ratio, 0.045. for pas, 0.038
+    tex3->SetTextFont(42);
+    if(makeRatio_==false)tex3->SetX(0.195);
+    if(makeRatio_==true)tex3->SetX(0.194902);
+    tex3->SetY(0.85);
+    tex3->SetLineWidth(2);
+    tex3->Draw();
+
 
 	/*
 	//============ Save the full background histogram ============
