@@ -44,7 +44,7 @@ void loopPlot(){
 	/// Should we plot the Data/Bkg and Data-Bkg/Error ratios?
 	bool makeRatio = false;
 	/// Should we REDO histograms?
-	bool redoHistograms = false;
+	bool redoHistograms = true;
 	/// Should we put the signal MC stacked on top of the background (or just plot the signal alone)?
 	bool isSignalStackOnBkg = false;
 
