@@ -8,26 +8,34 @@ root.gStyle.SetOptStat(0) # white background
 root.gStyle.SetOptTitle(0)
 root.gStyle.SetPadRightMargin(0.12)
 root.gStyle.SetPaintTextFormat(".2f")
+root.gStyle.SetNumberContours(500)
 
 def plotPretty(histo,filename,type):
     c=root.TCanvas("c","c",600,600)
-    fPads1=root.TPad("fPads1", "", 0.07, 0.03, 0.9, 1)
-    fPads1.Draw()
-    fPads1.cd()
-
+    c.SetFillStyle(4000)
+    c.SetTicks(1,1)
+    c.SetRightMargin(0.2)
+    #fPads1=root.TPad("fPads1", "", 0.07, 0.03, 0.9, 1)
+    #fPads1.Draw()
+    #fPads1.cd()
+    histo.SetMaximum(1)
     histo.GetXaxis().SetTitle("p_{T,W} [GeV]")
     histo.GetYaxis().SetTitle("|#eta_{W}|    ")    
     histo.GetZaxis().SetTitle("Reconstruction #times ID Efficiency")
-    histo.GetXaxis().SetTitleOffset(0.95)
-    histo.GetYaxis().SetTitleOffset(1.)
+    histo.GetXaxis().SetTitleOffset(1.1)
+    histo.GetYaxis().SetTitleOffset(1.2)
     histo.GetZaxis().SetTitleOffset(1.6)
-    histo.GetXaxis().SetTitleSize(0.045)
-    histo.GetYaxis().SetTitleSize(0.045)
+    #histo.GetXaxis().SetTitleSize(0.045)
+    #histo.GetYaxis().SetTitleSize(0.045)
     histo.GetXaxis().SetNdivisions(505)
     histo.GetYaxis().SetNdivisions(506)
+    if type==0 or type==4:
+        histo.GetYaxis().SetRangeUser(0,2.499)
+    else:
+        histo.GetYaxis().SetRangeUser(0,2.399)
     histo.GetZaxis().SetRangeUser(0,1)
     #histo.GetYaxis().SetLimits(0,2.399)
-    histo.GetYaxis().SetRangeUser(0,2.399)
+    #histo.GetYaxis().SetRangeUser(0,2.399)
     histo.SetMarkerSize(1.25)
     #histo.Draw("COLZ,TEXT90")
     histo.Draw()
@@ -48,7 +56,7 @@ def plotPretty(histo,filename,type):
     tex2.Draw()
 
     if type==0:
-        tex3 = root.TLatex(0.509497,0.83042,"W #rightarrow e#nu_{e} / e#nu_{e}#nu_{#tau}#nu_{#tau}")
+        tex3 = root.TLatex(0.409497,0.83042,"W #rightarrow e#nu_{e} / e#nu_{e}#nu_{#tau}#nu_{#tau}")
         tex3.SetNDC()
         tex3.SetTextSize(0.044)
         tex3.SetTextFont(42)
@@ -56,7 +64,7 @@ def plotPretty(histo,filename,type):
         tex3.Draw()            
 
     if type==1:
-        tex3 = root.TLatex(0.509497,0.83042,"W #rightarrow #mu#nu_{#mu} / #mu#nu_{#mu}#nu_{#tau}#nu_{#tau}")
+        tex3 = root.TLatex(0.409497,0.83042,"W #rightarrow #mu#nu_{#mu} / #mu#nu_{#mu}#nu_{#tau}#nu_{#tau}")
         tex3.SetNDC()
         tex3.SetTextSize(0.044)
         tex3.SetTextFont(42)
@@ -64,7 +72,7 @@ def plotPretty(histo,filename,type):
         tex3.Draw()            
 
     if type==4:
-        tex3 = root.TLatex(0.509497,0.83042,"W_{L} #rightarrow q#bar{q'} #rightarrow 1 jet")
+        tex3 = root.TLatex(0.409497,0.83042,"W_{L} #rightarrow q#bar{q'} #rightarrow 1 jet")
         tex3.SetNDC()
         tex3.SetTextSize(0.044)
         tex3.SetTextFont(42)
@@ -85,9 +93,9 @@ def plotPretty(histo,filename,type):
 #         tex5.SetLineWidth(2)
 #         tex5.Draw()
 
-    root.gPad.RedrawAxis()
-    root.gPad.Modified()
-    root.gPad.Update()
+    c.RedrawAxis()
+    #root.gPad.Modified()
+    #root.gPad.Update()
     c.Update()
 
     c.SaveAs(filename)
@@ -165,9 +173,9 @@ elif advancedPlots == 1:
     plotPretty(histo_eff_ele,"histo_eff_ele_WW.png",0)
     plotPretty(histo_eff_mu,"histo_eff_mu_WW.png",1)
     plotPretty(histo_eff_jet,"histo_eff_jet_WW.png",4)
-    plotPretty(histo_eff_ele,"histo_eff_ele_WW.pdf",0)
-    plotPretty(histo_eff_mu,"histo_eff_mu_WW.pdf",1)
-    plotPretty(histo_eff_jet,"histo_eff_jet_WW.pdf",4)
+    plotPretty(histo_eff_ele,"histo_eff_ele_WW.eps",0)
+    plotPretty(histo_eff_mu,"histo_eff_mu_WW.eps",1)
+    plotPretty(histo_eff_jet,"histo_eff_jet_WW.eps",4)
 
     output = root.TFile.Open("efficiency_WW_forClosure.root","RECREATE")
     histo_eff_ele.Write()
