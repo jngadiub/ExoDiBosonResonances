@@ -385,6 +385,114 @@ process.selectedPatJetsCHS.cut = 'pt()>10'
 ###
 #
 
+####################################################
+######## CLEANED JET COLLECTION FOR MU-TAUH ########
+####################################################
+print "Cleaning the jet collection for mu-tauh channel"
+from PhysicsTools.PatAlgos.tools.helpers import massSearchReplaceAnyInputTag
+process.load("ExoDiBosonResonances.PATtupleProduction.CleanJets_cff")
+process.PATCMGSequence += process.CleanJetsMuTauSequence
+process.PATCMGTauSequenceMuTau = cloneProcessingSnippet(process,process.PATCMGTauSequence, "MuTau")
+massSearchReplaceAnyInputTag(process.PATCMGTauSequenceMuTau,cms.InputTag("pfJetsForHPSTauMuTau"),cms.InputTag("ak5PFJetsNoMu"))
+process.PATCMGTauSequenceMuTau.replace( process.pfJetsForHPSTauMuTau, process.CleanJetsMuTauSequence )
+process.PATCMGSequence += process.PATCMGTauSequenceMuTau
+patEventContentCMG+=['keep *_*selectedPatTausMuTau*_*_*']
+
+#####################################################
+######### CLEANED JET COLLECTION FOR EL-TAUH ########
+#####################################################
+print "Cleaning the jet collection for ele-tauh channel"
+process.PATCMGSequence += process.CleanJetsETauSequence
+process.PATCMGTauSequenceEleTau = cloneProcessingSnippet(process,process.PATCMGTauSequence, "EleTau")
+massSearchReplaceAnyInputTag(process.PATCMGTauSequenceEleTau,cms.InputTag("pfJetsForHPSTauEleTau"),cms.InputTag("ak5PFJetsNoEle"))
+process.PATCMGTauSequenceEleTau.replace( process.pfJetsForHPSTauEleTau, process.CleanJetsETauSequence )
+process.PATCMGSequence += process.PATCMGTauSequenceEleTau
+patEventContentCMG+=['keep *_*selectedPatTausEleTau*_*_*']
+
+######################################################
+###################### TAUH-TAUH #####################
+######################################################
+print "Adding tau collection using subjet as seed"
+process.load("RecoTauTag/Configuration/boostedHPSPFTaus_cff")
+process.PATCMGTauSequenceBoosted = cloneProcessingSnippet(process,process.PATCMGTauSequence, "Boosted")
+process.produceAndDiscriminateBoostedHPSPFTaus.replace( process.PFTau, process.PFTauBoosted )
+process.PATCMGTauSequenceBoosted.replace( process.PFTauBoosted, process.produceAndDiscriminateBoostedHPSPFTaus )
+process.recoTauAK5PFJets08RegionBoosted.src = cms.InputTag('boostedTauSeeds')
+process.recoTauAK5PFJets08RegionBoosted.pfCandSrc = cms.InputTag('pfNoPileUpForBoostedTaus')
+process.recoTauAK5PFJets08RegionBoosted.pfCandAssocMapSrc = cms.InputTag('boostedTauSeeds', 'pfCandAssocMapForIsolation')
+process.ak5PFJetsLegacyHPSPiZerosBoosted.jetSrc = cms.InputTag('boostedTauSeeds')
+process.ak5PFJetsRecoTauChargedHadronsBoosted.jetSrc = cms.InputTag('boostedTauSeeds')
+process.ak5PFJetsRecoTauChargedHadronsBoosted.builders[1].dRcone = cms.double(0.3)
+process.ak5PFJetsRecoTauChargedHadronsBoosted.builders[1].dRconeLimitedToJetArea = cms.bool(True)
+process.combinatoricRecoTausBoosted.jetSrc = cms.InputTag('boostedTauSeeds')
+process.combinatoricRecoTausBoosted.builders[0].pfCandSrc = cms.InputTag('pfNoPileUpForBoostedTaus')
+process.combinatoricRecoTausBoosted.modifiers.remove(process.combinatoricRecoTausBoosted.modifiers[3])
+process.selectedPatTausBoosted.cut = 'abs(pfJetRef().eta()) < 2.3 & pfJetRef().pt() > 10.'
+process.PATCMGSequence += process.PATCMGTauSequenceBoosted
+patEventContentCMG+=['keep *_*selectedPatTausBoosted*_*_*']
+
+#######################################################################
+###################### Modified PF Muon Isolation #####################
+#######################################################################
+# compute muon isolation sums excluding particles contained in other subjet
+process.load("PhysicsTools/IsolationAlgos/boostedMuonIsolation_cff")
+process.PATCMGMuonSequenceBoosted = cloneProcessingSnippet(process,process.PATCMGMuonSequence, "Boosted")
+process.PATCMGMuonSequenceBoosted.replace( process.pfMuonIsolationSequenceBoosted, process.boostedMuonPFIsolationSequence )
+process.muPFIsoDepositChargedForBoostedMuons.src = cms.InputTag('tunePmuons')
+process.muPFIsoDepositNeutralForBoostedMuons.src = cms.InputTag('tunePmuons')
+process.muPFIsoDepositGammaForBoostedMuons.src = cms.InputTag('tunePmuons')
+process.muPFIsoDepositChargedAllForBoostedMuons.src = cms.InputTag('tunePmuons')
+process.muPFIsoDepositPUforBoostedTauStudy.src = cms.InputTag('tunePmuons')
+process.PATCMGMuonSequenceBoosted.replace( process.patMuonsBoosted, process.patBoostedMuons )
+process.selectedPatMuonsBoosted.src = cms.InputTag("patBoostedMuons")
+process.PATCMGSequence += process.PATCMGMuonSequenceBoosted
+
+#######################################################################
+###################### Modified PF Electron Isolation #####################
+#######################################################################
+#--------------------------------------------------------------------------------
+# compute electron isolation sums excluding particles contained in other subjet
+process.load("PhysicsTools/IsolationAlgos/boostedElectronIsolation_cff")
+process.PATCMGElectronSequenceBoosted = cloneProcessingSnippet(process,process.PATElectronSequence, "Boosted")
+process.PATCMGElectronSequenceBoosted.replace( process.pfElectronIsolationSequenceBoosted, process.boostedElectronPFIsolationSequence )
+process.PATCMGElectronSequenceBoosted.replace( process.patElectronsBoosted, process.patBoostedElectrons )
+process.PATCMGSequence += process.PATCMGElectronSequenceBoosted
+
+# Modified Isolation from TSW
+process.heepIdNoIsoBoosted = process.heepIdNoIso.clone()
+process.heepIdNoIsoBoosted.barrelCuts.cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:e2x5Over5x5:nrMissHits:dxy")
+process.heepIdNoIsoBoosted.endcapCuts.cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:nrMissHits:dxy")
+process.heepIdNoIsoElesBoosted = process.heepIdNoIsoEles.clone(cutValueMap = cms.InputTag("heepIdNoIsoBoosted"),)
+process.modElectronIsoBoosted = process.modElectronIso.clone(vetoGsfEles = cms.InputTag("heepIdNoIsoElesBoosted"))
+
+process.patBoostedElectrons.userIsolation.user.append( cms.PSet(src = cms.InputTag("modElectronIso","track")) )
+process.patBoostedElectrons.userIsolation.user.append( cms.PSet(src = cms.InputTag("modElectronIso","ecal")) )
+process.patBoostedElectrons.userIsolation.user.append( cms.PSet(src = cms.InputTag("modElectronIso","hcalDepth1")) )
+
+# And now redo the PAT electrons with Mathias' module
+process.heepPatElectronsBoosted = process.heepPatElectrons.clone( eleLabel = cms.InputTag("patBoostedElectrons"), )
+process.heepPatElectronsBoosted.barrelCuts.cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:e2x5Over5x5:nrMissHits:dxy")
+process.heepPatElectronsBoosted.endcapCuts.cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:nrMissHits:dxy")
+
+
+process.PATCMGElectronSequenceBoosted.replace(process.patBoostedElectrons,
+                               process.heepIdNoIsoBoosted +
+                               process.heepIdNoIsoElesBoosted +
+                               process.modElectronIsoBoosted +
+                               process.patBoostedElectrons +
+                               process.heepPatElectronsBoosted
+)
+# Finally, change the source of the selectedPatElectronsBoosted.
+# The changes trickle down from here.
+process.selectedPatElectronsBoosted.src = cms.InputTag("heepPatElectronsBoosted")
+process.patBoostedElectrons.isolationValues = cms.PSet()
+process.patBoostedElectrons.isolationValuesNoPFId = cms.PSet()
+patEventContentCMG+=['keep *_boostedTauSeeds_*_*']
+patEventContentCMG+=['keep *_ca8PFJetsCHSprunedForBoostedTaus_*_*']
+patEventContentCMG+=['keep *_patMuonsWithTriggerBoosted_*_*']
+patEventContentCMG+=['keep *_patElectronsWithTriggerBoosted_*_*']
+
+
 ########################################################
 ## Path definition
 ########################################################

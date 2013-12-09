@@ -2,9 +2,9 @@ import FWCore.ParameterSet.Config as cms
 
 ##MU-TAUH CHANNEL
 ak5PFJetsNoMu = cms.EDProducer(
-    "CleanJetsProducer"
+    "CleanJetsMuTauProducer"
     )
-CleanJetsSequence = cms.Sequence(ak5PFJetsNoMu)
+CleanJetsMuTauSequence = cms.Sequence(ak5PFJetsNoMu)
 
 
 ##ELE-TAUH CHANNEL
