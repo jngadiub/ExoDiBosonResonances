@@ -388,14 +388,16 @@ process.selectedPatJetsCHS.cut = 'pt()>10'
 ####################################################
 ######## CLEANED JET COLLECTION FOR MU-TAUH ########
 ####################################################
+process.load('CMGTools.Common.PAT.addFilterPaths_cff')
 print "Cleaning the jet collection for mu-tauh channel"
 from PhysicsTools.PatAlgos.tools.helpers import massSearchReplaceAnyInputTag
 process.load("ExoDiBosonResonances.PATtupleProduction.CleanJets_cff")
+process.PATCMGSequence += process.primaryVertexFilter
 process.PATCMGSequence += process.CleanJetsMuTauSequence
-process.PATCMGTauSequenceMuTau = cloneProcessingSnippet(process,process.PATCMGTauSequence, "MuTau")
-massSearchReplaceAnyInputTag(process.PATCMGTauSequenceMuTau,cms.InputTag("pfJetsForHPSTauMuTau"),cms.InputTag("ak5PFJetsNoMu"))
-process.PATCMGTauSequenceMuTau.replace( process.pfJetsForHPSTauMuTau, process.CleanJetsMuTauSequence )
-process.PATCMGSequence += process.PATCMGTauSequenceMuTau
+process.PATTauSequenceMuTau = cloneProcessingSnippet(process,process.PATTauSequence, "MuTau")
+massSearchReplaceAnyInputTag(process.PATTauSequenceMuTau,cms.InputTag("pfJetsForHPSTauMuTau"),cms.InputTag("ak5PFJetsNoMu"))
+process.PATTauSequenceMuTau.replace( process.pfJetsForHPSTauMuTau, process.primaryVertexFilter+process.CleanJetsMuTauSequence )
+process.PATCMGSequence += process.PATTauSequenceMuTau
 patEventContentCMG+=['keep *_*selectedPatTausMuTau*_*_*']
 
 #####################################################
@@ -403,10 +405,10 @@ patEventContentCMG+=['keep *_*selectedPatTausMuTau*_*_*']
 #####################################################
 print "Cleaning the jet collection for ele-tauh channel"
 process.PATCMGSequence += process.CleanJetsETauSequence
-process.PATCMGTauSequenceEleTau = cloneProcessingSnippet(process,process.PATCMGTauSequence, "EleTau")
-massSearchReplaceAnyInputTag(process.PATCMGTauSequenceEleTau,cms.InputTag("pfJetsForHPSTauEleTau"),cms.InputTag("ak5PFJetsNoEle"))
-process.PATCMGTauSequenceEleTau.replace( process.pfJetsForHPSTauEleTau, process.CleanJetsETauSequence )
-process.PATCMGSequence += process.PATCMGTauSequenceEleTau
+process.PATTauSequenceEleTau = cloneProcessingSnippet(process,process.PATTauSequence, "EleTau")
+massSearchReplaceAnyInputTag(process.PATTauSequenceEleTau,cms.InputTag("pfJetsForHPSTauEleTau"),cms.InputTag("ak5PFJetsNoEle"))
+process.PATTauSequenceEleTau.replace( process.pfJetsForHPSTauEleTau, process.primaryVertexFilter+process.CleanJetsETauSequence )
+process.PATCMGSequence += process.PATTauSequenceEleTau
 patEventContentCMG+=['keep *_*selectedPatTausEleTau*_*_*']
 
 ######################################################
@@ -414,9 +416,9 @@ patEventContentCMG+=['keep *_*selectedPatTausEleTau*_*_*']
 ######################################################
 print "Adding tau collection using subjet as seed"
 process.load("RecoTauTag/Configuration/boostedHPSPFTaus_cff")
-process.PATCMGTauSequenceBoosted = cloneProcessingSnippet(process,process.PATCMGTauSequence, "Boosted")
+process.PATTauSequenceBoosted = cloneProcessingSnippet(process,process.PATTauSequence, "Boosted")
 process.produceAndDiscriminateBoostedHPSPFTaus.replace( process.PFTau, process.PFTauBoosted )
-process.PATCMGTauSequenceBoosted.replace( process.PFTauBoosted, process.produceAndDiscriminateBoostedHPSPFTaus )
+process.PATTauSequenceBoosted.replace( process.PFTauBoosted, process.produceAndDiscriminateBoostedHPSPFTaus )
 process.recoTauAK5PFJets08RegionBoosted.src = cms.InputTag('boostedTauSeeds')
 process.recoTauAK5PFJets08RegionBoosted.pfCandSrc = cms.InputTag('pfNoPileUpForBoostedTaus')
 process.recoTauAK5PFJets08RegionBoosted.pfCandAssocMapSrc = cms.InputTag('boostedTauSeeds', 'pfCandAssocMapForIsolation')
@@ -428,7 +430,7 @@ process.combinatoricRecoTausBoosted.jetSrc = cms.InputTag('boostedTauSeeds')
 process.combinatoricRecoTausBoosted.builders[0].pfCandSrc = cms.InputTag('pfNoPileUpForBoostedTaus')
 process.combinatoricRecoTausBoosted.modifiers.remove(process.combinatoricRecoTausBoosted.modifiers[3])
 process.selectedPatTausBoosted.cut = 'abs(pfJetRef().eta()) < 2.3 & pfJetRef().pt() > 10.'
-process.PATCMGSequence += process.PATCMGTauSequenceBoosted
+process.PATCMGSequence += process.PATTauSequenceBoosted
 patEventContentCMG+=['keep *_*selectedPatTausBoosted*_*_*']
 
 #######################################################################
@@ -499,7 +501,6 @@ patEventContentCMG+=['keep *_patElectronsWithTriggerBoosted_*_*']
 
 process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
-process.load('CMGTools.Common.PAT.addFilterPaths_cff')
 process.p = cms.Path(
     process.prePathCounter + 
     process.PATCMGSequence +

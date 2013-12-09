@@ -122,8 +122,8 @@ CleanJetsMuTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.getByLabel("muons", muons);
 
   Handle<reco::VertexCollection> vertices;
-  iEvent.getByLabel("offlinePrimaryVertices", vertices);
-  //iEvent.getByLabel("primaryVertexFilter", vertices);
+  //iEvent.getByLabel("offlinePrimaryVertices", vertices);
+  iEvent.getByLabel("primaryVertexFilter", vertices);
   reco::Vertex primaryVertex;
   primaryVertex = vertices->at(0);
   
