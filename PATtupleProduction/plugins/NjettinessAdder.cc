@@ -18,6 +18,8 @@ void NjettinessAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetu
     newCand.addUserFloat("tau1", getTau(1, jetPtr ) );
     newCand.addUserFloat("tau2", getTau(2, jetPtr ) );
     newCand.addUserFloat("tau3", getTau(3, jetPtr ) );
+    newCand.addUserFloat("tau4", getTau(4, jetPtr ) );
+    newCand.addUserFloat("tau5", getTau(5, jetPtr ) );
     outJets.push_back(newCand);
   }
 

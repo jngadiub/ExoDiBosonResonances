@@ -46,6 +46,10 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
+#include "EGamma/EGammaAnalysisTools/interface/EGammaMvaEleEstimator.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
 
 
 using namespace edm;
@@ -75,6 +79,7 @@ private:
   virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
   virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
 
+  EGammaMvaEleEstimator* myMVANonTrig;
  
 
   //HISTOGRAMS
@@ -101,6 +106,25 @@ CleanJetsETauProducer::CleanJetsETauProducer(const edm::ParameterSet& iConfig)
    //now do what ever initialization is needed
   //produces<PFJetCollection>( "ak5PFJetsNoMu" );
   produces<PFJetCollection>( );
+
+  // NOTE: It is safer and crab-compliant to get the files locally, i.e in EGamma/EGammaAnalysisTools/data
+  // (see the downloard.url file in that directory)
+  // Alternatively (for tests), they can be read from AFS:
+  std::vector<std::string> myManualCatWeigths;
+  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat1.weights.xml");
+  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat2.weights.xml");
+  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat3.weights.xml");
+  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat4.weights.xml");
+  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat5.weights.xml");
+  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat6.weights.xml");
+
+  Bool_t manualCat = true;
+  myMVANonTrig = new EGammaMvaEleEstimator();
+  myMVANonTrig->initialize("BDT",
+            EGammaMvaEleEstimator::kNonTrig,
+            manualCat, 
+            myManualCatWeigths);
+
 }
 
 
@@ -134,6 +158,14 @@ CleanJetsETauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   //iEvent.getByLabel("primaryVertexFilter", vertices);
   reco::Vertex primaryVertex;
   primaryVertex = vertices->at(0);
+
+  InputTag  reducedEBRecHitCollection(string("reducedEcalRecHitsEB"));
+  InputTag  reducedEERecHitCollection(string("reducedEcalRecHitsEE"));
+  EcalClusterLazyTools lazyTools(iEvent, iSetup, reducedEBRecHitCollection, reducedEERecHitCollection);
+  edm::ESHandle<TransientTrackBuilder> trackBuilder_;
+  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilder_);  
+  const TransientTrackBuilder thebuilder = *(trackBuilder_.product());
+  bool debugMVAclass = false;
   
   for(reco::PFJetCollection::const_iterator iJet = PFJets->begin(); iJet != PFJets->end(); ++iJet){
     
@@ -148,7 +180,30 @@ CleanJetsETauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
       
       if (pfCand.particleId() == 2){ //the PFCandidate is a electron
 	reco::GsfElectronRef theRecoElectron = pfCand.gsfElectronRef();
+	double myMVANonTrigValue = myMVANonTrig->mvaValue(*theRecoElectron,primaryVertex,thebuilder,lazyTools,debugMVAclass);
 	bool selected = false;
+	float thiseta = fabs(theRecoElectron->superCluster()->eta());
+
+	//CUTS TAKEN FROM https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentification
+	if(theRecoElectron->pt()>7 && theRecoElectron->pt()<10 && thiseta<2.5
+	   //&& theRecoElectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits()<=1
+	   //&& ip3dSig<4
+	   //&& iso<0.4
+	   ){
+	  if(thiseta<0.8                    && myMVANonTrigValue>0.47 ) selected=true;
+	  if(thiseta>0.8   && thiseta<1.479 && myMVANonTrigValue>0.004) selected=true;
+	  if(thiseta>1.479 && thiseta<2.5   && myMVANonTrigValue>0.295) selected=true;
+	}
+	if(theRecoElectron->pt()>10 && thiseta<2.5
+	   //&& theRecoElectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits()<=1
+	   //&& ip3dSig<4
+	   //&& iso<0.4
+	   ){
+	  if(thiseta<0.8                    && myMVANonTrigValue>-0.34) selected=true;
+	  if(thiseta>0.8   && thiseta<1.479 && myMVANonTrigValue>-0.65) selected=true;
+	  if(thiseta>1.479 && thiseta<2.5   && myMVANonTrigValue>0.60 ) selected=true;
+	}
+	/*
 	if(theRecoElectron->pt()>8){
 	  if(fabs(theRecoElectron->superCluster()->eta())<=1.479 
 	     && theRecoElectron->deltaEtaSuperClusterTrackAtVtx()<0.007 
@@ -168,7 +223,8 @@ CleanJetsETauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	    selected=true;
 	  }
 	}
-	
+	*/
+
 	if(selected){
 	  //cout<<iJet->pt()<<" "<<theRecoElectron->pt()<<endl;
 	  specs.mElectronEnergy -= pfCand.p4().e();
