@@ -71,11 +71,14 @@ process.source.fileNames = process.source.fileNames[:20]
 #    "/store/group/phys_exotica/leptonsPlusJets/ExoDiBosonResonances/tomei/store/user/tomei/BulkG_ZZ_lljj_M2000_G120-JHU/BulkG_ZZ_lljj_M2000_G120-JHU/c8f8ed334db8a7d6f56c62266b1dfa5b/Bulk_AODSIM_6_1_GAz.root"
 #    ]
 #process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/santanas/Samples/AODSIM/BulkG_WW_inclusive_c0p2_M1100_AODSIM_E6E2BD75-6220-E311-98A7-003048FFD79C.root']
-process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/santanas/Samples/AODSIM/BulkG_WW_lvjj_c0p2_M1100-JHU-AODSIM.root']
+####################process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/santanas/Samples/AODSIM/BulkG_WW_lvjj_c0p2_M1100-JHU-AODSIM.root']
+process.source.fileNames = [
+'file:root://osg-se.sprace.org.br//store/user/caber/AbelianZprime_M-2000_hZ_tautauqq_LHCC_NEW-Madgraph5_31072013/AbelianZprime_M-2000_hZ_tautauqq_LHCC-Madgraph5_03082013_V2_AODSIM/c8f8ed334db8a7d6f56c62266b1dfa5b/HZ_TAUTAUJJ_AODSIM_1_1_C6P.root'
+]
 
 ## Maximal Number of Events
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(50) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 print sep_line
 print process.source.fileNames
@@ -149,6 +152,11 @@ patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHSwithNsub_*_*']
 process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQjets
 patEventContentCMG+=['drop patJets_selectedPatJetsCA8CHSwithNsub_*_*']
 
+#### Adding Variables For Boosted Tau Analysis - Fully Hadronic channel
+process.load("ExoDiBosonResonances.PATtupleProduction.PAT_boostedtaus_cff")
+process.PATCMGSequence += process.selectedPatJetsCA8CHSprunedForBoostedTaus
+process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQJetsForBoostedTaus
+
 ######ADD PU JET ID
 
 from  CMGTools.External.pujetidsequence_cff import puJetId, puJetMva
@@ -160,6 +168,11 @@ process.PATCMGSequence += process.puJetIdAK7CHS
 patEventContentCMG+=['keep *_puJetIdAK7CHS_*_*']
 process.puJetIdCA8CHS = puJetId.clone(
     jets ='selectedPatJetsCA8CHSwithQjets',
+    jec = 'AK7chs'
+    )
+
+process.puJetIdCA8CHSwithQJetsForBoostedTaus = puJetId.clone(
+    jets ='selectedPatJetsCA8CHSwithQJetsForBoostedTaus',
     jec = 'AK7chs'
     )
 
@@ -184,9 +197,16 @@ process.puJetMvaCA8CHS= puJetMva.clone(
     algos =  chsalgos
     )
 
+process.puJetMvaCA8CHSwithQJetsForBoostedTaus = puJetMva.clone(
+    jetids = cms.InputTag("puJetIdCA8CHSwithQJetsForBoostedTaus"),
+    jets ='selectedPatJetsCA8CHSwithQJetsForBoostedTaus',
+    algos =  chsalgos
+    )
+
 process.puJetIdAK5Sequence = cms.Sequence(                      process.puJetMvaAK5CHS)
 process.puJetIdAK7Sequence = cms.Sequence(process.puJetIdAK7CHS+process.puJetMvaAK7CHS)
-process.puJetIdCA8Sequence = cms.Sequence(process.puJetIdCA8CHS+process.puJetMvaCA8CHS)
+#process.puJetIdCA8Sequence = cms.Sequence(process.puJetIdCA8CHS+process.puJetMvaCA8CHS)
+process.puJetIdCA8Sequence = cms.Sequence(process.puJetIdCA8CHS+process.puJetMvaCA8CHS+process.puJetIdCA8CHSwithQJetsForBoostedTaus+process.puJetMvaCA8CHSwithQJetsForBoostedTaus)
 #### these are moved down below this same cfg, after having built AK5 CHS jets
 #process.PATCMGSequence += process.puJetIdAK5Sequence
 #process.PATCMGSequence += process.puJetIdAK7Sequence
@@ -196,6 +216,8 @@ patEventContentCMG+=['keep *_puJetIdCA8CHS_*_*']
 patEventContentCMG+=['keep *_puJetMvaAK5CHS_*_*']
 patEventContentCMG+=['keep *_puJetMvaAK7CHS_*_*']
 patEventContentCMG+=['keep *_puJetMvaCA8CHS_*_*']
+patEventContentCMG+=['keep *_puJetIdCA8CHSwithQJetsForBoostedTaus_*_*']
+patEventContentCMG+=['keep *_puJetMvaCA8CHSwithQJetsForBoostedTaus_*_*']
 
 if runOnMC is False:
     # removing MC stuff
