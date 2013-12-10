@@ -74,6 +74,7 @@ cp /afs/cern.ch/work/c/caber/public/ForNewPatTuplizer08Dec2013/ElectronIso/boost
 cp /afs/cern.ch/work/c/caber/public/ForNewPatTuplizer08Dec2013/PATTaus/PATTaus_cff.py CMGTools/Common/python/PAT/
 cp /afs/cern.ch/work/a/aspiezia/public/PattuplesTau/PATJets_cff.py CMGTools/Common/python/PAT/
 cp /afs/cern.ch/work/a/aspiezia/public/PattuplesTau/boostedHPSPFTaus_cff.py RecoTauTag/Configuration/python/
+cp EGamma/EGammaAnalysisTools/data/Electrons_BDTG_NonTrigV0_Cat* ExoDiBosonResonances/PATtupleProduction/prod/submitJobsWithCrab/
 
 emacs CMGTools/Common/src/TauFactory.cc &
 # change every PFCandidateRef -> PFCandidatePtr

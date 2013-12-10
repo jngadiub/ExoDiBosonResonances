@@ -110,20 +110,20 @@ CleanJetsETauProducer::CleanJetsETauProducer(const edm::ParameterSet& iConfig)
   // NOTE: It is safer and crab-compliant to get the files locally, i.e in EGamma/EGammaAnalysisTools/data
   // (see the downloard.url file in that directory)
   // Alternatively (for tests), they can be read from AFS:
-  std::vector<std::string> myManualCatWeigths;
-  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat1.weights.xml");
-  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat2.weights.xml");
-  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat3.weights.xml");
-  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat4.weights.xml");
-  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat5.weights.xml");
-  myManualCatWeigths.push_back("/afs/cern.ch/cms/data/CMSSW/RecoEgamma/ElectronIdentification/data/Electrons_BDTG_NonTrigV0_Cat6.weights.xml");
+  std::vector<std::string> myManualWeigths;
+  myManualWeigths.push_back("Electrons_BDTG_NonTrigV0_Cat1.weights.xml");
+  myManualWeigths.push_back("Electrons_BDTG_NonTrigV0_Cat2.weights.xml");
+  myManualWeigths.push_back("Electrons_BDTG_NonTrigV0_Cat3.weights.xml");
+  myManualWeigths.push_back("Electrons_BDTG_NonTrigV0_Cat4.weights.xml");
+  myManualWeigths.push_back("Electrons_BDTG_NonTrigV0_Cat5.weights.xml");
+  myManualWeigths.push_back("Electrons_BDTG_NonTrigV0_Cat6.weights.xml");
 
   Bool_t manualCat = true;
   myMVANonTrig = new EGammaMvaEleEstimator();
   myMVANonTrig->initialize("BDT",
             EGammaMvaEleEstimator::kNonTrig,
             manualCat, 
-            myManualCatWeigths);
+            myManualWeigths);
 
 }
 
