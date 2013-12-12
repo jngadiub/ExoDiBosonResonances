@@ -469,6 +469,21 @@ process.selectedPatTausBoosted.cut = 'abs(pfJetRef().eta()) < 2.3 & pfJetRef().p
 process.PATCMGSequence += process.PATTauSequenceBoosted
 patEventContentCMG+=['keep *_*selectedPatTausBoosted*_*_*']
 
+if runOnMC is False:
+    process.PATTauSequenceBoosted.remove( process.tauMatchBoosted )
+    process.PATTauSequenceBoosted.remove( process.tauGenJetsBoosted )
+    process.PATTauSequenceBoosted.remove( process.tauGenJetsSelectorAllHadronsBoosted )
+    process.PATTauSequenceBoosted.remove( process.tauGenJetMatchBoosted )
+    process.PATTauSequenceMuTau.remove( process.tauMatchMuTau )
+    process.PATTauSequenceMuTau.remove( process.tauGenJetsMuTau )
+    process.PATTauSequenceMuTau.remove( process.tauGenJetsSelectorAllHadronsMuTau )
+    process.PATTauSequenceMuTau.remove( process.tauGenJetMatchMuTau )
+    process.PATTauSequenceEleTau.remove( process.tauMatchEleTau )
+    process.PATTauSequenceEleTau.remove( process.tauGenJetsEleTau )
+    process.PATTauSequenceEleTau.remove( process.tauGenJetsSelectorAllHadronsEleTau )
+    process.PATTauSequenceEleTau.remove( process.tauGenJetMatchEleTau )
+
+
 #######################################################################
 ###################### Modified PF Muon Isolation #####################
 #######################################################################
@@ -797,8 +812,9 @@ process.schedule.append( process.ZToEEskimPath )
 process.schedule.append( process.ZToMUMUskimPath )
 process.schedule.append( process.WToENUskimPath )
 process.schedule.append( process.WToMUNUskimPath )
-process.schedule.append( process.VHADplusVLEPskimPath )
 process.schedule.append( process.JetMETskimPath )
+if runOnMC:
+    process.schedule.append( process.VHADplusVLEPskimPath )
 
 ## Also add the TOBTEC Fakes Filter
 process.load("KStenson.TrackingFilters.tobtecfakesfilter_cfi")
