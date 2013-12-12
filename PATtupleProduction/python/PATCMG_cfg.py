@@ -37,6 +37,10 @@ ENU = ("patMETs patElectronsWithTrigger")
 MUNU = ("patMETs patMuonsWithTrigger")
 METLEPTON_KINCUT = ("pt > 80.0")
 
+## H-->tautau reco filter
+JET_KINCUT = ("pt > 200.0")
+MET_KINCUT = ("et > 30.0")
+
 ## V-->leptonic gen filter
 VLEP_GENCUT = "(abs(pdgId)==23 || abs(pdgId)==24 ) && numberOfDaughters> 0 && abs(daughter(0).pdgId)>9 && status==3"
 NUM_VLEP_GEN = 1
@@ -385,6 +389,38 @@ process.selectedPatJetsCHS.cut = 'pt()>10'
 ###
 #
 
+##########################################################
+######### Met Sequence: apply met phi correction #########
+##########################################################
+process.load("JetMETCorrections/Type1MET/pfMETsysShiftCorrections_cfi")
+if runOnMC is False :
+ process.pfMEtSysShiftCorr.parameter = cms.PSet(
+      numJetsMin = cms.int32(-1),
+      numJetsMax = cms.int32(-1),
+      px = cms.string("+0.2661 + 0.3217*Nvtx"),
+      py = cms.string("-0.2251 - 0.1747*Nvtx")
+ )
+else :
+ process.pfMEtSysShiftCorr.parameter = cms.PSet(
+      numJetsMin = cms.int32(-1),
+      numJetsMax = cms.int32(-1),
+      px = cms.string("+0.1166 + 0.0200*Nvtx"),
+      py = cms.string("+0.2764 - 0.1280*Nvtx")
+      )
+process.patMetShiftCorrected = cms.EDProducer("CorrectedPATMETProducer",
+                                               src = cms.InputTag('patMETs'),
+                                               applyType1Corrections = cms.bool(True),
+                                               srcType1Corrections = cms.VInputTag(
+                                               cms.InputTag('pfMEtSysShiftCorr')),
+                                               applyType2Corrections = cms.bool(False)
+                                              )
+process.metphiCorretionSequence = cms.Sequence(
+        process.pfMEtSysShiftCorrSequence *
+        process.patMetShiftCorrected
+        )
+process.PATCMGSequence += process.metphiCorretionSequence
+patEventContentCMG+=['keep *_patMetShiftCorrected_*_*']
+
 ####################################################
 ######## CLEANED JET COLLECTION FOR MU-TAUH ########
 ####################################################
@@ -613,6 +649,21 @@ process.WToMUNUfilter = cms.EDFilter("CandViewCountFilter",
 process.WToMUNUskimSequence = cms.Sequence( process.WToMUNUcand * process.WToMUNUfilter )
 process.WToMUNUskimPath = cms.Path( process.WToMUNUskimSequence )
 
+### HToTAUTAU
+process.selectedPatJetsForCut = process.selectedPatJetsCA8CHS.clone(
+                                    cut = cms.string(JET_KINCUT),
+                                    filter = cms.bool(True)
+                                    )
+
+process.selectedPatMETs = cms.EDFilter( "PATMETSelector",
+                                        src = cms.InputTag("patMETs"),
+                                        cut = cms.string(MET_KINCUT),
+                                        filter = cms.bool(True)
+                                        )
+
+process.JetMETskimSequence = cms.Sequence( process.selectedPatMETs * process.selectedPatJetsForCut )
+process.JetMETskimPath = cms.Path( process.JetMETskimSequence )
+
 
 
 ########################################################
@@ -647,9 +698,9 @@ process.VHADplusVLEPskimPath = cms.Path( process.VHADplusVLEPskimSequence )
 ########################################################
 
 ## Define event selection
-EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath','VHADplusVLEPskimPath')
+EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath','VHADplusVLEPskimPath','JetMETskimPath')
 if skimEventsRECO == True and skimEventsGEN == False:
-    EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath')
+    EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath','JetMETskimPath')
 if skimEventsRECO == False and skimEventsGEN == True:
     EventSelection = cms.vstring('VHADplusVLEPskimPath')
 if skimEventsRECO == False and skimEventsGEN == False:
@@ -747,6 +798,7 @@ process.schedule.append( process.ZToMUMUskimPath )
 process.schedule.append( process.WToENUskimPath )
 process.schedule.append( process.WToMUNUskimPath )
 process.schedule.append( process.VHADplusVLEPskimPath )
+process.schedule.append( process.JetMETskimPath )
 
 ## Also add the TOBTEC Fakes Filter
 process.load("KStenson.TrackingFilters.tobtecfakesfilter_cfi")
