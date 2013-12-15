@@ -99,6 +99,8 @@ std::pair<double,double> puSyst( double mass );
 std::pair<double,double> VTagEffSyst( const std::string& leptType_str, int nxj, double mass , int purity);
 std::pair<double,double> bTagEffSyst( const std::string& leptType_str, int nbtag, double mass );
 
+std::pair<double,double> half(std::pair<double,double> in);
+
 //double backgroundNorm( const std::string& dataset, const std::string& leptType_str, int nxj );
 
 
@@ -110,6 +112,13 @@ int main( int argc, char* argv[] ) {
   float lumi_MU;
   lumi_ELE=19712.; //pb^-1
   lumi_MU =19671.; //pb^-1
+
+  float lumiavg = 0.5*(lumi_ELE + lumi_MU);
+  if(dims=="2d"){//average lumi for simplified 2d limits
+    lumi_ELE=lumiavg;
+    lumi_MU=lumiavg;
+  }
+
 
   std::cout<<"Starting card creation with the following settings:"<<endl;
   std::cout<<"InputDir with fits: "<<myOutDir.c_str()<<endl;
@@ -126,6 +135,11 @@ int main( int argc, char* argv[] ) {
   TF1* f1_eff_vs_mass_ELE_1JLP = get_eff_vs_mass("ELE", 1,0, mZZmin_, 2500);
   TF1* f1_eff_vs_mass_ELE_2J   = 0;
   if(jetCats>1)f1_eff_vs_mass_ELE_2J = get_eff_vs_mass("ELE", 2,-1, mZZmin_, 1400);
+
+  TF1* f1_eff_vs_mass_ALL_1JHP = get_eff_vs_mass("ALL", 1,1, mZZmin_, 2500);
+  TF1* f1_eff_vs_mass_ALL_1JLP = get_eff_vs_mass("ALL", 1,0, mZZmin_, 2500);
+  TF1* f1_eff_vs_mass_ALL_2J   = 0;
+  if(jetCats>1)f1_eff_vs_mass_ALL_2J = get_eff_vs_mass("ALL", 2,-1, mZZmin_, 1400);
 
   std::ifstream ifs;
   if(isZZChannel)
@@ -176,6 +190,10 @@ int main( int argc, char* argv[] ) {
 	  create_singleDatacard( mass,widths[i], lumi_MU,   "MU", 1,1, f1_eff_vs_mass_MU_1JHP);
 	  create_singleDatacard( mass,widths[i], lumi_MU,   "MU", 1,0, f1_eff_vs_mass_MU_1JLP);
 	}
+      if(leptType=="SIMPLIFIED"){
+	create_singleDatacard( mass,widths[i], lumi_ELE, "ALL", 1,1, f1_eff_vs_mass_ALL_1JHP);
+
+      }
       //   if(jetCats>1&&mass<=800){
       //	if(leptType=="ELE"||leptType=="ALL")create_singleDatacard( mass,widths[i], lumi_ELE, "ELE", 2,-1, f1_eff_vs_mass_ELE_2J);
       //	if(leptType=="MU"||leptType=="ALL")create_singleDatacard( mass,widths[i], lumi_MU,   "MU", 2,-1, f1_eff_vs_mass_MU_2J);
@@ -195,7 +213,7 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   std::cout<<"\n------------------------------------------------"<<std::endl;
   std::cout<<"Creating new datacard: "<< leptType_str.c_str()<<"  "<<nxj<<"J ; Purity="<<pur<<std::endl;
 
-  if( leptType_str!="ELE" && leptType_str!="MU" ) {
+  if( leptType_str!="ELE" && leptType_str!="MU" && leptType_str!="ALL") {
     std::cout << "Unkown Lept Type '" << leptType_str.c_str() << "'. Exiting." << std::endl;
     exit(12333);
   }
@@ -214,9 +232,12 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   ssnxj << nxj;
   rename_str += "_"+channel_marker+"_"+leptType_str+ssnxj.str()+"J"+pur_str;
 
+  std::string lt = leptType;
+  if(lt=="SIMPLIFIED") // use "ALL" fit result for simplified limit
+    lt="ALL";
   /////////////
   //-> open fitResults file (all lept types):
-  std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, leptType.c_str() ,myOutDir.c_str(),channel_marker);
+  std::string fitResultsFileName = DataCardUtils::get_fitResultsRootFileName( nxj,pur_str, lt.c_str() ,myOutDir.c_str(),channel_marker);
   std::cout << "reading results from: "<< fitResultsFileName.c_str() << std::endl;
   TFile* fitResultsFile = TFile::Open(fitResultsFileName.c_str());
   // fitResultsFile->ls();
@@ -229,7 +250,7 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   //  sprintf( fitResultName, "resultsExpoFit_%s_%dJ_%s_%s",channel_marker.c_str(),nxj,pur_str.c_str(),leptType.c_str() );
   // }
   //else {
-  sprintf( fitResultName, "resultsExpLevelledFit_%s_%dJ_%s_%s_decorr",channel_marker.c_str(), nxj ,pur_str.c_str(),leptType.c_str());
+  sprintf( fitResultName, "resultsExpLevelledFit_%s_%dJ_%s_%s_decorr",channel_marker.c_str(), nxj ,pur_str.c_str(),lt.c_str());
   //}
   cout<<"Trying to pick RooFitResult :"<<fitResultName<<endl;
   RooFitResult* bgFitResult = (RooFitResult*)fitResultsFile->Get(fitResultName);
@@ -239,7 +260,7 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   ////////////////
   //->  get workspace:
   char workspaceName[200];
-  sprintf( workspaceName, "ws_alpha_%s_%dJ_%s_%s",channel_marker.c_str(), nxj,pur_str.c_str(),leptType.c_str() );
+  sprintf( workspaceName, "ws_alpha_%s_%dJ_%s_%s",channel_marker.c_str(), nxj,pur_str.c_str(),lt.c_str() );
   RooWorkspace* bgws = (RooWorkspace*)fitResultsFile->Get(workspaceName);
   // cout<<"\n\nPrinting contents of the WorkSpace: "<<endl;
   //  bgws->Print("v");
@@ -355,7 +376,11 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   ofs << "process            0\t\t\t1" << std::endl;
 
   float eff = f1_eff_vs_mass->Eval(hp.mH);
-  float rate_gg   = eff*hp.XSgg*hp.BRZZto2l2q*lumi; //xsect has both ee and mm
+  float rate_gg  =0;
+  if(leptType_str!="ALL" )
+    rate_gg = eff*hp.XSgg*hp.BRZZto2l2q*lumi; //xsect has both ee and mm
+  else
+    rate_gg=1;
 
   ///////////////
   //->  compute expected BG yield from observed sideband events.
@@ -372,6 +397,16 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
 
   ////////////////////
   //->  and now systematics:
+  ////////////
+  //WARNING ABOUT SYSTEMATICS FOR ONE CATEGORY ANALYSIS 
+  // in the standard analysis, if we say that the ele scale unc on the signal yield
+  // is 2%, it's 2% for the ele-only channel and zero for the muon.
+  // Now we are summing up the muon, so the 2% err is only on a fraction of the
+  // total. The fraction is not exactly 50-50, because the efficiencies are different.
+  // However, the differences in eff are relatively small and the gain in simplicity is 
+  // large. Consider also that the dominant systematic is on the jet side, so the
+  // final impact of this approximation is very small: instead of saying the the ele
+  // scale unc is 1.007, we say it is 1.010 ...
 
   ofs << "lumi_8TeV\t\t\tlnN\t1.026\t\t\t1.0" << std::endl;
 
@@ -381,22 +416,35 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   //std::pair<double,double> QCDscale_ggH = theorSyst( hp.XSgg_m, hp.XSgg_p);
   //ofs << "QCDscale_ggH\tlnN\t" << systString(QCDscale_ggH) << "\t1.0" << std::endl;
 
-  ofs << "CMS_"<<channel_marker.c_str() <<"_trigger_" << DataCardUtils::leptType_datacards(leptType_str) << "\tlnN\t" << systString(leptTriggerSyst(leptType_str)) << "\t1.0" << std::endl;
+  if(leptType_str!="ALL"){
+    ofs << "CMS_"<<channel_marker.c_str() <<"_trigger_" << DataCardUtils::leptType_datacards(leptType_str) << "\tlnN\t" << systString(leptTriggerSyst(leptType_str)) << "\t1.0" << std::endl;
+    ofs << "CMS_eff_" << DataCardUtils::leptType_datacards(leptType_str) << "\t\tlnN\t" << systString(leptEffSyst(leptType_str)) << "\t1.0" << std::endl;
+    ofs << "CMS_scale_" << DataCardUtils::leptType_datacards(leptType_str) << "\t\tlnN\t" << systString(leptScaleSyst(leptType_str)) <<  "\t1.0" << std::endl;
+  }
+  else{// special case for simplified limit
+    std::pair<double,double> tmpsyst;
+    ofs << "CMS_"<<channel_marker.c_str() <<"_trigger_e \tlnN\t" << systString(half(leptTriggerSyst("ELE"))) << "\t1.0" << std::endl;
+    ofs << "CMS_"<<channel_marker.c_str() <<"_trigger_m \tlnN\t" << systString(half(leptTriggerSyst("MU"))) << "\t1.0" << std::endl;
+    
+    ofs << "CMS_eff_e \t\tlnN\t" << systString(half(leptEffSyst("ELE"))) << "\t1.0" << std::endl;
+    ofs << "CMS_eff_m \t\tlnN\t" << systString(half(leptEffSyst("MU"))) << "\t1.0" << std::endl;
+    
+    ofs << "CMS_scale_e \t\tlnN\t" << systString(half(leptScaleSyst("ELE"))) <<  "\t1.0" << std::endl;
+    ofs << "CMS_scale_m \t\tlnN\t" << systString(half(leptScaleSyst("MU"))) <<  "\t1.0" << std::endl;
 
-  ofs << "CMS_eff_" << DataCardUtils::leptType_datacards(leptType_str) << "\t\tlnN\t" << systString(leptEffSyst(leptType_str)) << "\t1.0" << std::endl;
+    ofs << "CMS_parameff\t\tlnN\t"<<"1.15\t\t\t1.0" << std::endl;//extra 10% systematic because of unc on parametrized eff.
+  }
 
-  ofs << "CMS_scale_" << DataCardUtils::leptType_datacards(leptType_str) << "\t\tlnN\t" << systString(leptScaleSyst(leptType_str)) <<  "\t1.0" << std::endl;
-
+  //uncertainties that are the same for simplified and normal limit
   ofs << "CMS_scale_j\t\tlnN\t" << systString(jetScaleSyst(hp.mH)) <<  "\t1.0" << std::endl;
 
   ofs << "CMS_eff_vtag_tau21_sf\t\tlnN\t" << systString(VTagEffSyst(leptType_str, nxj, hp.mH,pur),-1.) << "\t1.0" << std::endl;
-  //  ofs << "CMS_eff_vtag_mass_sf\t\tlnN\t" << "1.0" << "\t1.0" << std::endl;
-  //  ofs << "CMS_eff_vtag_model\t\tlnN\t" << "1.0" << "\t1.0" << std::endl;
 
   ofs << "CMS_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
   std::cout << "CMS_pu\t\tlnN\t"<<systString(puSyst(hp.mH)) <<"\t\t\t1.0" << std::endl;
 
   ofs << "CMS_"<< channel_marker <<"_alphanorm"<<nxj<<"b\t\tlnN\t 1.0 "<<"\t\t\t" << 1.+globalAlphaErr << std::endl;
+
 
 
 
@@ -468,13 +516,29 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   double peakSystFactor=0.0,widthSystFactor=0.0;
   if(leptType_str == "ELE") {peakSystFactor=CMS_sig1Je_p1_scale; widthSystFactor=CMS_sig1Je_p2_scale;}//ele width negligible. we won't consider it // Defined in Config_XZZ.h and Config_XWW.h
   if(leptType_str == "MU") {peakSystFactor=CMS_sig1Jm_p1_scale; widthSystFactor=CMS_sig1Jm_p2_scale;}  // Defined in Config_XZZ.h and Config_XWW.h
+
+  ////////////
+  //WARNING ABOUT SIGNAL SHAPE SYSTEMATICS FOR ONE CATEGORY ANALYSIS
+  //
+  // same argument as above: we have only one category and the two uncertainties
+  // (shape unc for electron cands and shape unc for mu cands) mix up.
+  // Following the same reasoning as above, we take the average of the two effects
+  // and apply it to all candidates
+
+  if(leptType_str == "ALL") {
+    peakSystFactor=(CMS_sig1Je_p1_scale+CMS_sig1Jm_p1_scale)/2.0;
+    widthSystFactor=(CMS_sig1Je_p2_scale+CMS_sig1Jm_p2_scale)/2.0;
+  }
+
+
   RooRealVar shapeSystPeak_LepScale(sigSystp1_TmpName,sigSystp1_TmpName,peakSystFactor);
   RooRealVar shapeSystWidth_LepScale(sigSystp2_TmpName,sigSystp2_TmpName,widthSystFactor);
   shapeSystPeak_LepScale.setConstant(kTRUE);
   shapeSystWidth_LepScale.setConstant(kTRUE);
   ofs << std::string(sigSystp1_LepScale) << " param 0.0 1.0 "  <<endl;// peakSystFactor << endl; 
   if(leptType_str == "MU")ofs << std::string(sigSystp2_LepScale) << " param 0.0 1.0 "  <<endl;// widthSystFactor << endl;
-  	
+  if(leptType_str == "ALL")ofs << std::string(sigSystp2_LepScale) << " param 0.0 1.0 "  <<endl;
+
   //lepton resolution omitted because small
   char sigSystp1_LepRes[200];//m
   char sigSystp2_LepRes[200];//width
@@ -649,11 +713,14 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
   }
 
   RooRealVar zero("zero","zero",0);
-  
+  RooDoubleCB *Resol=0;
+  RooBreitWigner*   Core =0; 
+  RooDoubleCB *Resol2=0;
+
   if(dims=="2d"){
-    RooDoubleCB* Resol = new RooDoubleCB("CB_SIG","Crystal Ball",*CMS_xzz_mZZ,zero,CB_sigma,CB_alpha1_nom,CB_n1_nom,CB_alpha2_nom,CB_n2_nom);
-  
-    RooBreitWigner* Core = new RooBreitWigner("Core","Core",*CMS_xzz_mZZ,CB_mean,CB_gamma_nom);
+    Resol = new RooDoubleCB("CB_SIG","Crystal Ball",*CMS_xzz_mZZ,zero,CB_sigma,CB_alpha1_nom,CB_n1_nom,CB_alpha2_nom,CB_n2_nom);
+    Resol2 = new RooDoubleCB("CB_SIG2","Crystal Ball",*CMS_xzz_mZZ,CB_mean,CB_sigma,CB_alpha1_nom,CB_n1_nom,CB_alpha2_nom,CB_n2_nom);//,mMin,mMax);
+    Core = new RooBreitWigner("Core","Core",*CMS_xzz_mZZ,CB_mean,CB_gamma_nom);
     
     RooFFTConvPdf* CB_TMP = new RooFFTConvPdf("PlotFunc","PlotFunc",*CMS_xzz_mZZ, *Core, *Resol);
     
@@ -739,12 +806,13 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
       binsTMP[ibtmp]= bins1[ibtmp];
     }
 	  
-    double sigSF=200.0;//just for plotting
+    double sigSF=10.0;//just for plotting //200
     //    if(mass<1050)sigSF=100.0;
     TCanvas *can1=new TCanvas("canvasCardsMZZ1", "MZZ-cards-CANVAS1",800,800);
     can1->cd();
     RooPlot *xf=CMS_xzz_mZZ->frame();
-    //    std::stringstream ssbtag;
+    RooPlot *xfSIG=CMS_xzz_mZZ->frame();
+   //    std::stringstream ssbtag;
     //ssbtag << nxj;
     std::stringstream ssM;
     ssM << mass;
@@ -770,7 +838,28 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
       //  }//end else  if(pur==1&&isZZChannel)
 
     if(nxj==1){
+      bool stackSig=true;
+      if(stackSig){
+	RooRealVar *bkgNormTmp=new RooRealVar("bkgNormTmp","bkgNormTmp",rate_background/(rate_background+rate_gg*sigSF));
+	RooRealVar *sigNormTmp=new RooRealVar("sigNormTmp","sigNormTmp",rate_gg*sigSF/(rate_background+rate_gg*sigSF));
+	RooAddPdf *SigBkg=new RooAddPdf("SignalPlusBkgd","SignalPlusBkgd",RooArgList( *background_decorr,*CB_SIG),RooArgList(*bkgNormTmp,*sigNormTmp));
+	SigBkg->plotOn(xf,RooFit::Normalization(rate_background+rate_gg*sigSF,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	CB_SIG->plotOn(xf,RooFit::Normalization(rate_gg*sigSF,RooAbsPdf::NumEvent), RooFit::LineColor(kTeal+2),RooFit::LineStyle(kDashed),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+      }
+      else{
       CB_SIG->plotOn(xf,RooFit::Normalization(MATCH.getVal()*rate_gg*sigSF,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+      }
+
+      //AB
+      if(dims=="2d") {
+	cout<<"Plot 2D sig shapes: "<<flush;
+	CB_SIG->plotOn(xfSIG,RooFit::Normalization(1.0,RooAbsPdf::NumEvent), RooFit::LineColor(kBlue),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	cout<<" CB_SIG -> OK! "<<flush;
+	Resol2->plotOn(xfSIG,RooFit::Normalization(1.0,RooAbsPdf::NumEvent), RooFit::LineColor(kGreen+3),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	cout<<" Resol2 -> OK! "<<flush;
+	Core->plotOn(xfSIG,RooFit::Normalization(1.0,RooAbsPdf::NumEvent), RooFit::LineColor(kRed),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
+	cout<<" Core -> OK! "<<endl;
+      }
     }
     else{
       TRI_SMEAR->plotOn(xf,RooFit::Normalization((1-MATCH.getVal())*rate_gg,RooAbsPdf::NumEvent), RooFit::LineColor(kOrange+3),RooFit::NormRange("plotRange"),RooFit::Range("plotRange"));
@@ -780,22 +869,42 @@ void create_singleDatacard( float mass,float width, float lumi, const std::strin
     if(unblind)dataset_obs_reduced->plotOn(xf,RooFit::Binning(RooBinning(nBinsTMP-1,binsTMP)),RooFit::MarkerStyle(20),RooFit::MarkerColor(kBlack));
     std::cout<<" 5 "<<std::flush;
 	  
+    std::stringstream ssW;
+    ssW << width;
     char mkdir_command[100];
     sprintf( mkdir_command, "mkdir -p %s/fitPlotCards", datacardDir.c_str());
     system(mkdir_command);
     string canvasname= datacardDir+"/fitPlotCards/fitPlotCards_"+channel_marker.c_str() +"_"+ssnxj.str()+"J"+pur_str+"_"+leptType_str;
     std::cout<<canvasname.c_str()<<std::endl;
-    xf->Draw();
-    can1->SaveAs((canvasname+"_M"+ssM.str()+".eps").c_str());
+    xf->Draw();    
+    can1->SaveAs((canvasname+"_M"+ssM.str()+"_"+ssW.str()+".eps").c_str());
     double mymax=nxj==2?100:250.0;
+    if(hp.mH<800)mymax*=4.0;
+    else if(hp.mH<1000)mymax*=2.0;
     double mymin=nxj==2?0.0008:0.003;
     xf->SetMinimum(mymin);
     xf->SetMaximum(mymax);
     gPad->SetLogy();
     xf->Draw();
-    can1->SaveAs((canvasname+"_M"+ssM.str()+"_log.eps").c_str());
+    can1->SaveAs((canvasname+"_M"+ssM.str()+"_"+ssW.str()+"_log.eps").c_str());
     delete xf;
     delete can1;
+    
+    if(dims=="2d"){
+      TCanvas *can2=new TCanvas("canvasSIGSHAPES","SIGNAL SHAPES",900,900);
+      can2->cd();
+      xfSIG->SetMinimum(0.0008);
+      xfSIG->SetMaximum(1.00);
+      xfSIG->Draw();
+     
+      canvasname= datacardDir+"/fitPlotCards/signalShape2D_"+channel_marker.c_str() +"_"+ssnxj.str()+"J"+pur_str+"_"+leptType_str;
+      can2->SaveAs((canvasname+"_M"+ssM.str()+"_"+ssW.str()+".eps").c_str());
+      gPad->SetLogy();
+      xfSIG->Draw();
+      can2->SaveAs((canvasname+"_M"+ssM.str()+"_"+ssW.str()+"_log.eps").c_str());
+      delete xfSIG;
+      delete can2;
+    }
 	  
   }//end if doPlot
 
@@ -1006,6 +1115,11 @@ double expo_interp(double s2, double s1,  double newM,double m2,double m1){
 
 
 double get_signalParameter(int nxj,  const std::string& purType_str,const  std::string& leptType_str, double massH, std::string varname) {
+
+  if(leptType_str == "ALL" ||leptType_str == "SIMPLIFIED" ){// use avrage for simplified approach
+    return 0.5*(get_signalParameter(nxj,  purType_str,"ELE", massH, varname)
+		+get_signalParameter(nxj, purType_str,"MU" , massH, varname));
+  }
 
   // std::string leptType_str2="ELE";//hack for using only ELE shapes
 
@@ -1299,6 +1413,14 @@ std::pair<double,double> bTagEffSyst( const std::string& leptType_str, int nxj, 
 
 }
 
+std::pair<double,double> half(std::pair<double,double> in){
+  std::pair<double,double> out;
+  
+  out.first = 1.0+((in.first-1.0) /2.0);
+  out.second = 1.0+((in.second-1.0) /2.0);
+
+  return out;
+}
 
 
 // double backgroundNorm( const std::string& dataset, const std::string& leptType_str, int nxj ) {

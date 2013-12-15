@@ -1,12 +1,12 @@
 
 const std::string myOutDir="FitSidebandsMJJ_ZZ_20131007_prodv2g_HighPtJet_ALL/";//_Unblinded
-const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2h/fullsig/";
-const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2h/fullsb/";
+const string inDirSIG="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2i/fullsig/";
+const string inDirSB ="/afs/cern.ch/user/b/bonato/work/PhysAnalysis/EXOVV_2012/analyzer_trees/productionv2i/fullsb/";
 const bool unrollTrees=true;
 
 const unsigned int jetCats = 1;//1 for only 1 jet case, 2 for both
 const bool isZZChannel=true;//this will change only the file list
-const string leptType="ALL";//"MU" //"ELE"//"ALL"
+const string leptType="SIMPLIFIED";//"MU" //"ELE"//"ALL"//"SIMPLIFIED"=ELE+MU
 const std::string InTreeName="SelectedCandidates";
 const bool useAlphaVV=false;//include VV into alpha (true) or take it directly from MC (false)
 const bool useMCHM=true;
@@ -30,8 +30,8 @@ float mZZmax_=2800;
 //used by create_datacards
 std::string signalProcessName="Bulk";
 std::string channel_marker="xzz";
-std::string dims = "1d";
-const std::string datacardDir("DataCards_XZZ_prodv2h_TESTNEWSYST");
+std::string dims = "2d";
+const std::string datacardDir("DataCards_XZZ_prodv2h_SIMPLIFIED2D");
 
 
 //********** Externally provided Normalizations *********

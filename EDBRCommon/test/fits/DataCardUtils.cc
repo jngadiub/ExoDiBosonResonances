@@ -1,5 +1,6 @@
 #include "DataCardUtils.h"
-    
+#include <sstream>
+
 int DataCardUtils::convert_leptType( const std::string& leptType ) {
   
   if( leptType!="ELE" && leptType!="MU" ) {
@@ -20,6 +21,7 @@ std::string DataCardUtils::leptType_datacards( const std::string& leptType_str )
 
   if( leptType_str=="MU" ) returnString = "m";
   if( leptType_str=="ELE" ) returnString = "e";
+  if( leptType_str=="ALL" ) returnString = "em";
   
   return returnString;
 
@@ -28,7 +30,11 @@ std::string DataCardUtils::leptType_datacards( const std::string& leptType_str )
 std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory, const std::string& leptType , const std::string&  channel_marker) {
   
   char fitResultsFileName[500];              
-  sprintf( fitResultsFileName, "FitSidebands_MJJ/workspace_%s_%dJ%s_new.root",channel_marker.c_str(), nxjCategory, leptType.c_str() );
+  std::string lt = leptType;
+  if(lt=="SIMPLIFIED")
+    lt="ALL";
+  
+  sprintf( fitResultsFileName, "FitSidebands_MJJ/workspace_%s_%dJ%s_new.root",channel_marker.c_str(), nxjCategory, lt.c_str() );
   
   std::string fitResultsFileName_str(fitResultsFileName);
   
@@ -39,7 +45,11 @@ std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory, const st
 std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory,const std::string& purType , const std::string& leptType , std::string myDir ,const std::string&  channel_marker) {
   
   char fitResultsFileName[500];              
-  sprintf( fitResultsFileName, "/workspace_%s_%dJ_%s_%s_new.root",channel_marker.c_str(), nxjCategory,purType.c_str(), leptType.c_str() );
+  std::string lt = leptType;
+  if(lt=="SIMPLIFIED")
+    lt="ALL";
+
+  sprintf( fitResultsFileName, "/workspace_%s_%dJ_%s_%s_new.root",channel_marker.c_str(), nxjCategory,purType.c_str(), lt.c_str() );
   
   std::string fitResultsFileName_str(myDir+fitResultsFileName);
   
@@ -50,7 +60,11 @@ std::string DataCardUtils::get_fitResultsRootFileName( int nxjCategory,const std
 std::string DataCardUtils::get_fitResultsRootFileName(double mass, int nxjCategory,const std::string& purType , const std::string& leptType , std::string myDir ,const std::string&  channel_marker) {
   
   char fitResultsFileName[500];              
-  sprintf( fitResultsFileName, "/workspace_%s_M%d_%dJ_%s_%s_new.root",channel_marker.c_str(), int(mass), nxjCategory,purType.c_str(), leptType.c_str() );
+  std::string lt = leptType;
+  if(lt=="SIMPLIFIED")
+    lt="ALL";
+
+  sprintf( fitResultsFileName, "/workspace_%s_M%d_%dJ_%s_%s_new.root",channel_marker.c_str(), int(mass), nxjCategory,purType.c_str(), lt.c_str() );
   
   std::string fitResultsFileName_str(myDir+fitResultsFileName);
   
@@ -62,9 +76,19 @@ RooDataSet* DataCardUtils::get_observedDataset( RooWorkspace* bgws  , std::strin
   string dName="dsDataSIGfull";
   if(datasetName!="")dName=datasetName;
   char cutstring[200];
-  if(purity<0)sprintf(cutstring,"nXjets==%d && lep==%d",nxj,convert_leptType(leptType_str));
-  else sprintf(cutstring,"nXjets==%d && lep==%d &&vTagPurity==%d",nxj,convert_leptType(leptType_str),purity);
-  return dynamic_cast<RooDataSet*>(bgws->data(dName.c_str())->reduce(cutstring));
+
+  std::stringstream cutstream;
+  cutstream << "nXjets=="<<nxj;
+  if (leptType_str=="MU" || leptType_str=="ELE")
+    cutstream << "&& lep=="<<convert_leptType(leptType_str);
+  if(purity >= 0)
+    cutstream <<"&&vTagPurity=="<<purity;
+
+  //std::cout << cutstream.str() << std::endl;
+  //exit(0);
+
+
+  return dynamic_cast<RooDataSet*>(bgws->data(dName.c_str())->reduce(cutstream.str().c_str()));
 }
 
 
@@ -72,18 +96,27 @@ double DataCardUtils::get_backgroundNormalization( RooWorkspace* bgws  , std::st
   string dName="dsDataSB2";
   if(BkgDatasetName!="")dName=BkgDatasetName;
   char cutstring[200];
-  if(purity<0)sprintf(cutstring,"nXjets==%d && lep==%d",nxj,convert_leptType(leptType_str));
-  else  sprintf(cutstring,"nXjets==%d && lep==%d &&vTagPurity==%d",nxj,convert_leptType(leptType_str),purity);
-  std::cout<<"DataCardUtils::get_backgroundNormalization , dSet: "<<dName.c_str()<<"  "<< bgws->data(dName.c_str())->reduce(cutstring)->numEntries()<<" ("<<  bgws->data(dName.c_str())->reduce(cutstring)->sumEntries()<<std::endl;
+
+  std::stringstream cutstream;
+  cutstream << "nXjets=="<<nxj;
+  if (leptType_str=="MU" || leptType_str=="ELE")
+    cutstream << "&& lep=="<<convert_leptType(leptType_str);
+  if(purity >= 0)
+    cutstream <<"&&vTagPurity=="<<purity;
+
+  //std::cout << cutstream.str() << std::endl;
+  //exit(0);
+
+  std::cout<<"DataCardUtils::get_backgroundNormalization , dSet: "<<dName.c_str()<<"  "<< bgws->data(dName.c_str())->reduce(cutstream.str().c_str())->numEntries()<<" ("<<  bgws->data(dName.c_str())->reduce(cutstream.str().c_str())->sumEntries()<<std::endl;
  
-  return bgws->data(dName.c_str())->reduce(cutstring)->sumEntries();
+  return bgws->data(dName.c_str())->reduce(cutstream.str().c_str())->sumEntries();
 }
 
 double DataCardUtils::get_backgroundNormalization( RooWorkspace* bgws, std::string leptType_str  ){
 
   //  RooRealVar *N=bgws->var("bkgdNormalization"); 
   std::string varName="bkgdNormalization";
-  if(!(leptType_str=="" || leptType_str=="ALL" )){//if it is ELE or MU
+  if(!(leptType_str=="" || leptType_str=="ALL" ||leptType_str=="SIMPLIFIED"   )){//if it is ELE or MU
     varName=varName+"500"+leptType_str ;
   }
   else varName=varName+"500";//"FitRange";
