@@ -146,7 +146,7 @@ void plot_golfcourse_Asymptotic_Nevents(bool unblind, char* width){
    
  
   }
-  cout<<"Size of theor "<<v_mhxs.size()<<endl;
+  cout<<"Size of theor"<<v_mhxs.size()<<endl;
   xsect_file.close();
   ///////////////
 
@@ -175,15 +175,15 @@ void plot_golfcourse_Asymptotic_Nevents(bool unblind, char* width){
     //search for right index in theor vectors
     bool found=false;
     int indtmp=0,ind=-1, swapind=-1;
-    while(!found){
-      if(v_mhxs.at(indtmp)==v_mh.at(im)){found=true;ind=indtmp;}
-      if(swapind==-1 && v_mh.at(im)<v_mhxs.at(indtmp)){swapind=indtmp;}
-      indtmp++;
-      if(size_t(indtmp)==v_mhxs.size()){
-	cout<<"!!! m="<<flush<<v_mh.at(im)<<" NOT found in theor matrix."<<endl;
-	break;
-      }
-    }//end while    
+    //   while(!found){
+    //  if(v_mhxs.at(indtmp)==v_mh.at(im)){found=true;ind=indtmp;}
+    //  if(swapind==-1 && v_mh.at(im)<v_mhxs.at(indtmp)){swapind=indtmp;}
+    //  indtmp++;
+    //  if(size_t(indtmp)==v_mhxs.size()){
+    //7cout<<"!!! m="<<flush<<v_mh.at(im)<<" NOT found in theor matrix."<<endl;
+    //	break;
+    //  }
+    //}//end while    
    
     if(!found && swapind!=-1){
       ind = swapind;
@@ -192,28 +192,28 @@ void plot_golfcourse_Asymptotic_Nevents(bool unblind, char* width){
     
     //if you want the limit on the nr of events, just don't multiply for the th xsect
     //(cards had to be prepared properly, though)
-    double fl_xs=double(v_xs.at(ind));
+    //double fl_xs=double(v_xs.at(ind));
 
     if(!found){
       cout<<"(2) m="<<v_mh.at(im)<<" NOT found in array of BW fractions"<<endl;
       //      fl_xs  = expo_interp(v_xs.at(ind),v_xs.at(ind-1),v_mh.at(im),v_mhxs.at(ind),v_mhxs.at(ind-1));
-      continue;
+      //continue;
     }
 
 
     mass[nMassEff]=v_mh.at(im);
     //if( mass[nMassEff]==600.0)cout<<"=============> 600 !!!"<<endl;
-    obs_lim_cls[nMassEff]=v_obs.at(im)*fl_xs;
+    obs_lim_cls[nMassEff]=v_obs.at(im);
     nMassEff++;
     if(!excl){
       mass1[nMassEff1]=v_mh.at(im);
-      medianD[nMassEff1]=v_median.at(im)*fl_xs;
-      up68err[nMassEff1]=(v_68h.at(im)-v_median.at(im))*fl_xs;
-      down68err[nMassEff1]=(v_median.at(im)-v_68l.at(im))*fl_xs;
+      medianD[nMassEff1]=v_median.at(im);
+      up68err[nMassEff1]=(v_68h.at(im)-v_median.at(im));
+      down68err[nMassEff1]=(v_median.at(im)-v_68l.at(im));
       cout<<"M="<<mass1[nMassEff1]<<"  Median="<<medianD[nMassEff1]<<endl;
       
       //scale factor 100 for making the xsect visible
-      xs[nMassEff1]=fl_xs;//*100.0;
+      xs[nMassEff1]=1;//*100.0;
 
       nMassEff1++;
       
@@ -222,9 +222,9 @@ void plot_golfcourse_Asymptotic_Nevents(bool unblind, char* width){
       
       if(skip95 )continue;
       mass95[nM95]=v_mh.at(im);
-      median95[nM95]=v_median.at(im)*fl_xs;
-      up95err[nM95]=(v_95h.at(im)-v_median.at(im))*fl_xs;
-      down95err[nM95]=(v_median.at(im)-v_95l.at(im))*fl_xs;
+      median95[nM95]=v_median.at(im);
+      up95err[nM95]=(v_95h.at(im)-v_median.at(im));
+      down95err[nM95]=(v_median.at(im)-v_95l.at(im));
    
       //  cout<<"M95: "<< mass95[nM95]<<" "<<median95[nM95]<<" +"<<up95err[nM95]<<"   -"<< down95err[nM95]<<
       //	" ("<<v_95h.at(im) <<" - "<<v_median.at(im) <<")"<<endl;
@@ -251,7 +251,7 @@ void plot_golfcourse_Asymptotic_Nevents(bool unblind, char* width){
   grthSM->SetName("SMXSection");
  
   // cout<<"Plotting"<<endl;
-  double fr_left=590.0, fr_down=0.0005,fr_right=2020.0,fr_up=1.0;
+  double fr_left=590.0, fr_down=1,fr_right=2020.0,fr_up=100;
   if(!isZZChannel){fr_left=500.0, fr_down=0.005,fr_right=2600.0,fr_up=30.0;}
   TCanvas *cMCMC=new TCanvas("c_lim_Asymp","canvas with limits for Asymptotic CLs",630,600);
   cMCMC->cd();
