@@ -17,8 +17,9 @@ For 1d limits (requires datacard creation in 1d mode)
 
 
 For 2d limits (requires datacard creation in 2d mode)
+WARNING: the BW(X)DCB signal shape requires a recent version of combine, 6_1_1 works, 5_3_9 does not.
 #0: copy all scripts in the directory of the cards and move there
-#1: for M in $( cat masses.txt ); do for W in $( cat widths.txt );do ./make_combined_cards.sh $M $W ; done ; done
+#1: Skip this step for simplified limits (there's only one card per point to begin with):  for M in $( cat masses.txt ); do for W in $( cat widths.txt );do ./make_combined_cards.sh $M $W ; done ; done
 #2: edit paths and names in combine_exec.sh
 #3: edit paths and names in parallelizeCombine.sh
 #4: for M in $( cat masses.txt ); do for W in $( cat widths.txt );do ./parallelizeCombine.sh $M $W ; done ; done
