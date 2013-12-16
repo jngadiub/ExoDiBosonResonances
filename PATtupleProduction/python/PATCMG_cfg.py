@@ -153,6 +153,11 @@ patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHSwithNsub_*_*']
 process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQjets
 patEventContentCMG+=['drop patJets_selectedPatJetsCA8CHSwithNsub_*_*']
 
+#### Adding Variables For Boosted Tau Analysis - Fully Hadronic channel
+process.load("ExoDiBosonResonances.PATtupleProduction.PAT_boostedtaus_cff")
+process.PATCMGSequence += process.selectedPatJetsCA8CHSprunedForBoostedTaus
+process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQJetsForBoostedTaus
+
 ######ADD PU JET ID
 
 from  CMGTools.External.pujetidsequence_cff import puJetId, puJetMva
@@ -164,6 +169,11 @@ process.PATCMGSequence += process.puJetIdAK7CHS
 patEventContentCMG+=['keep *_puJetIdAK7CHS_*_*']
 process.puJetIdCA8CHS = puJetId.clone(
     jets ='selectedPatJetsCA8CHSwithQjets',
+    jec = 'AK7chs'
+    )
+
+process.puJetIdCA8CHSwithQJetsForBoostedTaus = puJetId.clone(
+    jets ='selectedPatJetsCA8CHSwithQJetsForBoostedTaus',
     jec = 'AK7chs'
     )
 
@@ -188,9 +198,16 @@ process.puJetMvaCA8CHS= puJetMva.clone(
     algos =  chsalgos
     )
 
+process.puJetMvaCA8CHSwithQJetsForBoostedTaus = puJetMva.clone(
+    jetids = cms.InputTag("puJetIdCA8CHSwithQJetsForBoostedTaus"),
+    jets ='selectedPatJetsCA8CHSwithQJetsForBoostedTaus',
+    algos =  chsalgos
+    )
+
 process.puJetIdAK5Sequence = cms.Sequence(                      process.puJetMvaAK5CHS)
 process.puJetIdAK7Sequence = cms.Sequence(process.puJetIdAK7CHS+process.puJetMvaAK7CHS)
-process.puJetIdCA8Sequence = cms.Sequence(process.puJetIdCA8CHS+process.puJetMvaCA8CHS)
+#process.puJetIdCA8Sequence = cms.Sequence(process.puJetIdCA8CHS+process.puJetMvaCA8CHS)
+process.puJetIdCA8Sequence = cms.Sequence(process.puJetIdCA8CHS+process.puJetMvaCA8CHS+process.puJetIdCA8CHSwithQJetsForBoostedTaus+process.puJetMvaCA8CHSwithQJetsForBoostedTaus)
 #### these are moved down below this same cfg, after having built AK5 CHS jets
 #process.PATCMGSequence += process.puJetIdAK5Sequence
 #process.PATCMGSequence += process.puJetIdAK7Sequence
@@ -200,6 +217,8 @@ patEventContentCMG+=['keep *_puJetIdCA8CHS_*_*']
 patEventContentCMG+=['keep *_puJetMvaAK5CHS_*_*']
 patEventContentCMG+=['keep *_puJetMvaAK7CHS_*_*']
 patEventContentCMG+=['keep *_puJetMvaCA8CHS_*_*']
+patEventContentCMG+=['keep *_puJetIdCA8CHSwithQJetsForBoostedTaus_*_*']
+patEventContentCMG+=['keep *_puJetMvaCA8CHSwithQJetsForBoostedTaus_*_*']
 
 if runOnMC is False:
     # removing MC stuff
