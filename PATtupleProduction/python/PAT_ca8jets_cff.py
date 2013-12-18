@@ -5,7 +5,7 @@ import FWCore.ParameterSet.Config as cms
 from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
 ca8PFJetsCHS = ak5PFJets.clone(
     src = 'pfNoPileUp',
-    jetPtMin = cms.double(30.0),
+    jetPtMin = cms.double(25.0),
     doAreaFastjet = cms.bool(True),
     rParam = cms.double(0.8),
     jetAlgorithm = cms.string("CambridgeAachen"),
@@ -118,7 +118,7 @@ from RecoJets.Configuration.RecoGenJets_cff import ak7GenJetsNoNu
 ca8GenJetsNoNu = ak7GenJetsNoNu.clone()
 ca8GenJetsNoNu.rParam = 0.8
 ca8GenJetsNoNu.jetAlgorithm = "CambridgeAachen"
-ca8GenJetsNoNu.jetPtMin = 30
+ca8GenJetsNoNu.jetPtMin = 25
 ca8GenJetsNoNu.doAreaFastjet = True
 
 
@@ -160,7 +160,7 @@ PATCMGJetSequenceCA8CHS = cms.Sequence(
 from RecoJets.JetProducers.ak5PFJetsPruned_cfi import ak5PFJetsPruned
 ca8PFJetsCHSpruned = ak5PFJetsPruned.clone(
     src = 'pfNoPileUp',
-    jetPtMin = cms.double(30.0),
+    jetPtMin = cms.double(25.0),
     doAreaFastjet = cms.bool(True),
     rParam = cms.double(0.8),
     jetAlgorithm = cms.string("CambridgeAachen"),
@@ -278,7 +278,7 @@ ca8PrunedGenJetsNoNu.jetCollInstanceName = cms.string("SubJets")
 ca8PrunedGenJetsNoNu.nFilt = cms.int32(2)
 ca8PrunedGenJetsNoNu.zcut = cms.double(0.1)
 ca8PrunedGenJetsNoNu.rcut_factor = cms.double(0.5)
-ca8PrunedGenJetsNoNu.jetPtMin = 30
+ca8PrunedGenJetsNoNu.jetPtMin = 25
 
 patGenJetsCA8CHSpruned = patJets.clone()
 patGenJetsCA8CHSpruned.jetSource = 'ca8PrunedGenJetsNoNu'
@@ -357,7 +357,7 @@ PATCMGJetSequenceCA8CHSpruned = cms.Sequence(
 from RecoJets.JetProducers.ak5PFJetsTrimmed_cfi import ak5PFJetsTrimmed
 ca8PFJetsCHStrimmed = ak5PFJetsTrimmed.clone(
     src = 'pfNoPileUp',
-    jetPtMin = cms.double(30.0),
+    jetPtMin = cms.double(25.0),
     doAreaFastjet = cms.bool(True),
     rParam = cms.double(0.8),
     jetAlgorithm = cms.string("CambridgeAachen"),
@@ -434,7 +434,7 @@ ca8TrimmedGenJetsNoNu.useExplicitGhosts = cms.bool(True)
 ca8TrimmedGenJetsNoNu.writeCompound = cms.bool(True)
 ca8TrimmedGenJetsNoNu.rFilt = cms.double(0.1)
 ca8TrimmedGenJetsNoNu.trimPtFracMin = cms.double(0.03)
-ca8TrimmedGenJetsNoNu.jetPtMin = 30
+ca8TrimmedGenJetsNoNu.jetPtMin = 25
 
 patGenJetsCA8CHStrimmed = patJets.clone()
 patGenJetsCA8CHStrimmed.jetSource = 'ca8TrimmedGenJetsNoNu'
