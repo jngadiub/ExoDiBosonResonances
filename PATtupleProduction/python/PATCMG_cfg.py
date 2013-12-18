@@ -73,12 +73,13 @@ process.source.fileNames = process.source.fileNames[:20]
 #process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/santanas/Samples/AODSIM/BulkG_WW_inclusive_c0p2_M1100_AODSIM_E6E2BD75-6220-E311-98A7-003048FFD79C.root']
 ####################process.source.fileNames = ['file:root://eoscms//eos/cms/store/cmst3/user/santanas/Samples/AODSIM/BulkG_WW_lvjj_c0p2_M1100-JHU-AODSIM.root']
 process.source.fileNames = [
-'file:root://osg-se.sprace.org.br//store/user/caber/AbelianZprime_M-2000_hZ_tautauqq_LHCC_NEW-Madgraph5_31072013/AbelianZprime_M-2000_hZ_tautauqq_LHCC-Madgraph5_03082013_V2_AODSIM/c8f8ed334db8a7d6f56c62266b1dfa5b/HZ_TAUTAUJJ_AODSIM_1_1_C6P.root'
+#'file:root://osg-se.sprace.org.br//store/user/caber/AbelianZprime_M-2000_hZ_tautauqq_LHCC_NEW-Madgraph5_31072013/AbelianZprime_M-2000_hZ_tautauqq_LHCC-Madgraph5_03082013_V2_AODSIM/c8f8ed334db8a7d6f56c62266b1dfa5b/HZ_TAUTAUJJ_AODSIM_1_1_C6P.root'
+ 'dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/jngadiub/Wprime_WH_lvqq/AOD-SIM/Wprime_WH_lvqq_AODSIM_551.root'
 ]
 
 ## Maximal Number of Events
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-Mat1) )
 
 print sep_line
 print process.source.fileNames
@@ -93,6 +94,11 @@ print 'loading the main CMG sequence'
 
 process.load('CMGTools.Common.PAT.PATCMG_cff')
 from CMGTools.Common.eventContent.patEventContentCMG_cff import patEventContentCMG
+
+##JEN
+#### Adding AK5 jets
+patEventContentCMG+=['keep *_selectedPatJets_*_*']
+##JEN
 
 #### Adding AK7 jets
 
@@ -117,6 +123,7 @@ process.PATCMGSequence += process.PATCMGJetSequenceCA8CHS
 process.PATCMGSequence += process.PATCMGJetSequenceCA8CHSpruned
 patEventContentCMG+=['keep *_ca8PFJetsCHSpruned_SubJets_*']
 patEventContentCMG+=['keep *_ca8GenJetsNoNu_*_*']
+patEventContentCMG+=['keep *_patJetsCA8CHSprunedSubjets_*_*']
 
 
 #### Adding Nsubjetiness
@@ -150,7 +157,7 @@ if not runQJets:
 process.PATCMGSequence += process.selectedPatJetsAK7CHSwithQjets
 patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHSwithNsub_*_*']
 process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQjets
-patEventContentCMG+=['drop patJets_selectedPatJetsCA8CHSwithNsub_*_*']
+patEventContentCMG+=['keep patJets_selectedPatJetsCA8CHSwithNsub_*_*']
 
 #### Adding Variables For Boosted Tau Analysis - Fully Hadronic channel
 process.load("ExoDiBosonResonances.PATtupleProduction.PAT_boostedtaus_cff")
