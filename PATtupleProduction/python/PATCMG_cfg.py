@@ -37,6 +37,10 @@ ENU = ("patMETs patElectronsWithTrigger")
 MUNU = ("patMETs patMuonsWithTrigger")
 METLEPTON_KINCUT = ("pt > 80.0")
 
+## H-->tautau reco filter
+JET_KINCUT = ("pt > 200.0")
+MET_KINCUT = ("et > 30.0")
+
 ## V-->leptonic gen filter
 VLEP_GENCUT = "(abs(pdgId)==23 || abs(pdgId)==24 ) && numberOfDaughters> 0 && abs(daughter(0).pdgId)>9 && status==3"
 NUM_VLEP_GEN = 1
@@ -102,18 +106,18 @@ patEventContentCMG+=['keep *_selectedPatJets_*_*']
 
 #### Adding AK7 jets
 
-process.load("ExoDiBosonResonances.PATtupleProduction.PAT_ak7jets_cff")
-process.PATCMGSequence += process.PATCMGJetSequenceAK7CHS
+#process.load("ExoDiBosonResonances.PATtupleProduction.PAT_ak7jets_cff")
+#process.PATCMGSequence += process.PATCMGJetSequenceAK7CHS
 
 #### Adding AK7 pruned jets
 
-process.load("CMGTools.Common.PAT.jetSubstructure_cff")
-process.PATCMGSequence.remove(process.PATCMGJetSequenceCHSpruned) # don't produce the AK5 pruned collections
-process.jetMCSequenceAK7CHSpruned.remove(process.ak7GenJetsNoNu) # don't cluster the ak7GenJetsNoNu twice
-process.selectedPatJetsAK7CHSpruned.cut = 'pt()>20'
-process.PATCMGSequence += process.PATCMGJetSequenceAK7CHSpruned
-patEventContentCMG+=['keep *_ak7PFJetsCHSpruned_SubJets_*']
-patEventContentCMG+=['keep *_ak7GenJetsNoNu_*_*']
+#process.load("CMGTools.Common.PAT.jetSubstructure_cff")
+#process.PATCMGSequence.remove(process.PATCMGJetSequenceCHSpruned) # don't produce the AK5 pruned collections
+#process.jetMCSequenceAK7CHSpruned.remove(process.ak7GenJetsNoNu) # don't cluster the ak7GenJetsNoNu twice
+#process.selectedPatJetsAK7CHSpruned.cut = 'pt()>20'
+#process.PATCMGSequence += process.PATCMGJetSequenceAK7CHSpruned
+#patEventContentCMG+=['keep *_ak7PFJetsCHSpruned_SubJets_*']
+#patEventContentCMG+=['keep *_ak7GenJetsNoNu_*_*']
 
 
 #### Adding CA8 jets and CA8 pruned jets
@@ -121,41 +125,42 @@ patEventContentCMG+=['keep *_ak7GenJetsNoNu_*_*']
 process.load("ExoDiBosonResonances.PATtupleProduction.PAT_ca8jets_cff")
 process.PATCMGSequence += process.PATCMGJetSequenceCA8CHS
 process.PATCMGSequence += process.PATCMGJetSequenceCA8CHSpruned
-patEventContentCMG+=['keep *_ca8PFJetsCHSpruned_SubJets_*']
+patEventContentCMG+=['keep *_patJetsCA8CHSprunedSubjets_*_*']
+patEventContentCMG+=['drop patJets_selectedPatJetsCA8CHSprunedPre_*_*']
 patEventContentCMG+=['keep *_ca8GenJetsNoNu_*_*']
 patEventContentCMG+=['keep *_patJetsCA8CHSprunedSubjets_*_*']
 
 
 #### Adding Nsubjetiness
 
-process.selectedPatJetsAK7CHSwithNsub = cms.EDProducer("NjettinessAdder",
-                              src=cms.InputTag("selectedPatJetsAK7CHS"),
-                              cone=cms.double(0.7)
-                              )
-process.PATCMGSequence += process.selectedPatJetsAK7CHSwithNsub
-patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHS_*_*']
+#process.selectedPatJetsAK7CHSwithNsub = cms.EDProducer("NjettinessAdder",
+#                              src=cms.InputTag("selectedPatJetsAK7CHS"),
+#                              cone=cms.double(0.7)
+#                              )
+#process.PATCMGSequence += process.selectedPatJetsAK7CHSwithNsub
+#patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHS_*_*']
 process.PATCMGSequence += process.selectedPatJetsCA8CHSwithNsub
 patEventContentCMG+=['drop patJets_selectedPatJetsCA8CHS_*_*']
 
 #### Adding QJets
 
-process.selectedPatJetsAK7CHSwithQjets = cms.EDProducer("QjetsAdder",
-			   src=cms.InputTag("selectedPatJetsAK7CHSwithNsub"),
-			   zcut=cms.double(0.1),
-			   dcutfctr=cms.double(0.5),
-			   expmin=cms.double(0.0),
-			   expmax=cms.double(0.0),
-			   rigidity=cms.double(0.1),
-			   ntrial = cms.int32(50),
-			   cutoff=cms.double(100.0),
-			   jetRad= cms.double(0.7),
-			   jetAlgo=cms.string("AK"),
-			   preclustering = cms.int32(30),
-			  )
-if not runQJets:
-    process.selectedPatJetsAK7CHSwithQjets.cutoff=100000.0
-process.PATCMGSequence += process.selectedPatJetsAK7CHSwithQjets
-patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHSwithNsub_*_*']
+#process.selectedPatJetsAK7CHSwithQjets = cms.EDProducer("QjetsAdder",
+#			   src=cms.InputTag("selectedPatJetsAK7CHSwithNsub"),
+#			   zcut=cms.double(0.1),
+#			   dcutfctr=cms.double(0.5),
+#			   expmin=cms.double(0.0),
+#			   expmax=cms.double(0.0),
+#			   rigidity=cms.double(0.1),
+#			   ntrial = cms.int32(50),
+#			   cutoff=cms.double(100.0),
+#			   jetRad= cms.double(0.7),
+#			   jetAlgo=cms.string("AK"),
+#			   preclustering = cms.int32(30),
+#			  )
+#if not runQJets:
+#    process.selectedPatJetsAK7CHSwithQjets.cutoff=100000.0
+#process.PATCMGSequence += process.selectedPatJetsAK7CHSwithQjets
+#patEventContentCMG+=['drop patJets_selectedPatJetsAK7CHSwithNsub_*_*']
 process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQjets
 patEventContentCMG+=['keep patJets_selectedPatJetsCA8CHSwithNsub_*_*']
 
@@ -164,15 +169,22 @@ process.load("ExoDiBosonResonances.PATtupleProduction.PAT_boostedtaus_cff")
 process.PATCMGSequence += process.selectedPatJetsCA8CHSprunedForBoostedTaus
 process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQJetsForBoostedTaus
 
+#### Adding Variables For Boosted Tau Analysis - Fully Hadronic channel
+process.load("ExoDiBosonResonances.PATtupleProduction.PAT_boostedtaus_cff")
+process.PATCMGSequence += process.selectedPatJetsCA8CHSprunedForBoostedTaus
+process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQJetsForBoostedTaus
+patEventContentCMG+=['drop patJets_selectedPatJetsCA8CHSpruned_*_*']
+patEventContentCMG+=['drop patJets_selectedPatJetsCA8CHSwithQjets_*_*']
+
 ######ADD PU JET ID
 
 from  CMGTools.External.pujetidsequence_cff import puJetId, puJetMva
-process.puJetIdAK7CHS = puJetId.clone(
-    jets ='selectedPatJetsAK7CHSwithQjets',
-    jec = 'AK7chs'
-    )
-process.PATCMGSequence += process.puJetIdAK7CHS
-patEventContentCMG+=['keep *_puJetIdAK7CHS_*_*']
+#process.puJetIdAK7CHS = puJetId.clone(
+#    jets ='selectedPatJetsAK7CHSwithQjets',
+#    jec = 'AK7chs'
+#    )
+#process.PATCMGSequence += process.puJetIdAK7CHS
+#patEventContentCMG+=['keep *_puJetIdAK7CHS_*_*']
 process.puJetIdCA8CHS = puJetId.clone(
     jets ='selectedPatJetsCA8CHSwithQjets',
     jec = 'AK7chs'
@@ -192,11 +204,11 @@ process.puJetMvaAK5CHS= puJetMva.clone(
     algos =  chsalgos
     )
 
-process.puJetMvaAK7CHS= puJetMva.clone(
-    jetids = cms.InputTag("puJetIdAK7CHS"),
-    jets ='selectedPatJetsAK7CHSwithQjets',
-    algos =  chsalgos
-    )
+#process.puJetMvaAK7CHS= puJetMva.clone(
+#    jetids = cms.InputTag("puJetIdAK7CHS"),
+#    jets ='selectedPatJetsAK7CHSwithQjets',
+#    algos =  chsalgos
+#    )
 
 process.puJetMvaCA8CHS= puJetMva.clone(
     jetids = cms.InputTag("puJetIdCA8CHS"),
@@ -211,17 +223,17 @@ process.puJetMvaCA8CHSwithQJetsForBoostedTaus = puJetMva.clone(
     )
 
 process.puJetIdAK5Sequence = cms.Sequence(                      process.puJetMvaAK5CHS)
-process.puJetIdAK7Sequence = cms.Sequence(process.puJetIdAK7CHS+process.puJetMvaAK7CHS)
+#process.puJetIdAK7Sequence = cms.Sequence(process.puJetIdAK7CHS+process.puJetMvaAK7CHS)
 #process.puJetIdCA8Sequence = cms.Sequence(process.puJetIdCA8CHS+process.puJetMvaCA8CHS)
 process.puJetIdCA8Sequence = cms.Sequence(process.puJetIdCA8CHS+process.puJetMvaCA8CHS+process.puJetIdCA8CHSwithQJetsForBoostedTaus+process.puJetMvaCA8CHSwithQJetsForBoostedTaus)
 #### these are moved down below this same cfg, after having built AK5 CHS jets
 #process.PATCMGSequence += process.puJetIdAK5Sequence
 #process.PATCMGSequence += process.puJetIdAK7Sequence
 #process.PATCMGSequence += process.puJetIdCA8Sequence
-patEventContentCMG+=['keep *_puJetIdAK7CHS_*_*']
+#patEventContentCMG+=['keep *_puJetIdAK7CHS_*_*']
 patEventContentCMG+=['keep *_puJetIdCA8CHS_*_*']
 patEventContentCMG+=['keep *_puJetMvaAK5CHS_*_*']
-patEventContentCMG+=['keep *_puJetMvaAK7CHS_*_*']
+#patEventContentCMG+=['keep *_puJetMvaAK7CHS_*_*']
 patEventContentCMG+=['keep *_puJetMvaCA8CHS_*_*']
 patEventContentCMG+=['keep *_puJetIdCA8CHSwithQJetsForBoostedTaus_*_*']
 patEventContentCMG+=['keep *_puJetMvaCA8CHSwithQJetsForBoostedTaus_*_*']
@@ -246,12 +258,12 @@ if runOnMC is False:
     process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
     process.patJetsCHSpruned.addGenJetMatch = False
     process.patJetsCHSpruned.addGenPartonMatch = False
-    process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
-    process.patJetsAK7CHS.addGenJetMatch = False
-    process.patJetsAK7CHS.addGenPartonMatch = False
-    process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
-    process.patJetsAK7CHSpruned.addGenJetMatch = False
-    process.patJetsAK7CHSpruned.addGenPartonMatch = False
+    #process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
+    #process.patJetsAK7CHS.addGenJetMatch = False
+    #process.patJetsAK7CHS.addGenPartonMatch = False
+    #process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
+    #process.patJetsAK7CHSpruned.addGenJetMatch = False
+    #process.patJetsAK7CHSpruned.addGenPartonMatch = False
     process.PATCMGJetSequenceCA8CHS.remove( process.jetMCSequenceCA8CHS )
     process.patJetsCA8CHS.addGenJetMatch = False
     process.patJetsCA8CHS.addGenPartonMatch = False
@@ -280,8 +292,8 @@ if runOnMC is False:
 
      ###   if isNewerThan('CMSSW_5_2_0'):
     process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
-    process.patJetCorrFactorsAK7CHS.levels.append('L2L3Residual')
-    process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
+    #process.patJetCorrFactorsAK7CHS.levels.append('L2L3Residual')
+    #process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
     process.patJetCorrFactorsCA8CHS.levels.append('L2L3Residual')
     process.patJetCorrFactorsCA8CHSpruned.levels.append('L2L3Residual')
     
@@ -414,6 +426,38 @@ process.selectedPatJetsCHS.cut = 'pt()>10'
 ###
 #
 
+##########################################################
+######### Met Sequence: apply met phi correction #########
+##########################################################
+process.load("JetMETCorrections/Type1MET/pfMETsysShiftCorrections_cfi")
+if runOnMC is False :
+ process.pfMEtSysShiftCorr.parameter = cms.PSet(
+      numJetsMin = cms.int32(-1),
+      numJetsMax = cms.int32(-1),
+      px = cms.string("+0.2661 + 0.3217*Nvtx"),
+      py = cms.string("-0.2251 - 0.1747*Nvtx")
+ )
+else :
+ process.pfMEtSysShiftCorr.parameter = cms.PSet(
+      numJetsMin = cms.int32(-1),
+      numJetsMax = cms.int32(-1),
+      px = cms.string("+0.1166 + 0.0200*Nvtx"),
+      py = cms.string("+0.2764 - 0.1280*Nvtx")
+      )
+process.patMetShiftCorrected = cms.EDProducer("CorrectedPATMETProducer",
+                                               src = cms.InputTag('patMETs'),
+                                               applyType1Corrections = cms.bool(True),
+                                               srcType1Corrections = cms.VInputTag(
+                                               cms.InputTag('pfMEtSysShiftCorr')),
+                                               applyType2Corrections = cms.bool(False)
+                                              )
+process.metphiCorretionSequence = cms.Sequence(
+        process.pfMEtSysShiftCorrSequence *
+        process.patMetShiftCorrected
+        )
+process.PATCMGSequence += process.metphiCorretionSequence
+patEventContentCMG+=['keep *_patMetShiftCorrected_*_*']
+
 ####################################################
 ######## CLEANED JET COLLECTION FOR MU-TAUH ########
 ####################################################
@@ -461,6 +505,21 @@ process.combinatoricRecoTausBoosted.modifiers.remove(process.combinatoricRecoTau
 process.selectedPatTausBoosted.cut = 'abs(pfJetRef().eta()) < 2.3 & pfJetRef().pt() > 10.'
 process.PATCMGSequence += process.PATTauSequenceBoosted
 patEventContentCMG+=['keep *_*selectedPatTausBoosted*_*_*']
+
+if runOnMC is False:
+    process.PATTauSequenceBoosted.remove( process.tauMatchBoosted )
+    process.PATTauSequenceBoosted.remove( process.tauGenJetsBoosted )
+    process.PATTauSequenceBoosted.remove( process.tauGenJetsSelectorAllHadronsBoosted )
+    process.PATTauSequenceBoosted.remove( process.tauGenJetMatchBoosted )
+    process.PATTauSequenceMuTau.remove( process.tauMatchMuTau )
+    process.PATTauSequenceMuTau.remove( process.tauGenJetsMuTau )
+    process.PATTauSequenceMuTau.remove( process.tauGenJetsSelectorAllHadronsMuTau )
+    process.PATTauSequenceMuTau.remove( process.tauGenJetMatchMuTau )
+    process.PATTauSequenceEleTau.remove( process.tauMatchEleTau )
+    process.PATTauSequenceEleTau.remove( process.tauGenJetsEleTau )
+    process.PATTauSequenceEleTau.remove( process.tauGenJetsSelectorAllHadronsEleTau )
+    process.PATTauSequenceEleTau.remove( process.tauGenJetMatchEleTau )
+
 
 #######################################################################
 ###################### Modified PF Muon Isolation #####################
@@ -534,7 +593,9 @@ process.p = cms.Path(
     process.prePathCounter + 
     process.PATCMGSequence +
     process.PATCMGJetCHSSequence+
-    process.puJetIdAK5Sequence+process.puJetIdAK7Sequence+process.puJetIdCA8Sequence
+    process.puJetIdAK5Sequence+
+    #process.puJetIdAK7Sequence+
+    process.puJetIdCA8Sequence
     )
 
 process.p += process.postPathCounter
@@ -642,6 +703,21 @@ process.WToMUNUfilter = cms.EDFilter("CandViewCountFilter",
 process.WToMUNUskimSequence = cms.Sequence( process.WToMUNUcand * process.WToMUNUfilter )
 process.WToMUNUskimPath = cms.Path( process.WToMUNUskimSequence )
 
+### HToTAUTAU
+process.selectedPatJetsForCut = process.selectedPatJetsCA8CHS.clone(
+                                    cut = cms.string(JET_KINCUT),
+                                    filter = cms.bool(True)
+                                    )
+
+process.selectedPatMETs = cms.EDFilter( "PATMETSelector",
+                                        src = cms.InputTag("patMETs"),
+                                        cut = cms.string(MET_KINCUT),
+                                        filter = cms.bool(True)
+                                        )
+
+process.JetMETskimSequence = cms.Sequence( process.selectedPatMETs * process.selectedPatJetsForCut )
+process.JetMETskimPath = cms.Path( process.JetMETskimSequence )
+
 
 
 ########################################################
@@ -676,9 +752,9 @@ process.VHADplusVLEPskimPath = cms.Path( process.VHADplusVLEPskimSequence )
 ########################################################
 
 ## Define event selection
-EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath','VHADplusVLEPskimPath')
+EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath','VHADplusVLEPskimPath','JetMETskimPath')
 if skimEventsRECO == True and skimEventsGEN == False:
-    EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath')
+    EventSelection = cms.vstring('ZToEEskimPath','ZToMUMUskimPath','WToENUskimPath','WToMUNUskimPath','JetMETskimPath')
 if skimEventsRECO == False and skimEventsGEN == True:
     EventSelection = cms.vstring('VHADplusVLEPskimPath')
 if skimEventsRECO == False and skimEventsGEN == False:
@@ -775,7 +851,9 @@ process.schedule.append( process.ZToEEskimPath )
 process.schedule.append( process.ZToMUMUskimPath )
 process.schedule.append( process.WToENUskimPath )
 process.schedule.append( process.WToMUNUskimPath )
-process.schedule.append( process.VHADplusVLEPskimPath )
+process.schedule.append( process.JetMETskimPath )
+if runOnMC:
+    process.schedule.append( process.VHADplusVLEPskimPath )
 
 ## Also add the TOBTEC Fakes Filter
 process.load("KStenson.TrackingFilters.tobtecfakesfilter_cfi")
