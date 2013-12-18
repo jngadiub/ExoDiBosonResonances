@@ -64,9 +64,9 @@ do
   else
       if [ $twod -eq 1 ]
 	  then
-	  bsub -q $queue -J $JOBNAME -oo ${LOGFULL} ${startdir}/combine_exec.sh $myrand $mass $width ${LOGFULL}
+	  bsub -q $queue -J $JOBNAME -oo ${LOGFULL} ${startdir}/combine_exec.sh $myrand $mass $width LOG=${LOGFULL}
       else
-	  bsub -q $queue -J $JOBNAME -oo ${LOGFULL} ${startdir}/combine_exec.sh $myrand $mass ${LOGFULL}
+	  bsub -q $queue -J $JOBNAME -oo ${LOGFULL} ${startdir}/combine_exec.sh $myrand $mass LOG=${LOGFULL}
       fi
   fi
   let ijob=ijob+1

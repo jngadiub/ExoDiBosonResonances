@@ -29,7 +29,7 @@ void loopPlot(){
 	bool isTTcontrol   = false;   //if ttbar control region
 	int  wantNXJets    = 1; // Will make histograms for 1 or 2 jet topology
 	int  isZZchannel   = 0; //plot label for zz (1) or ww (0)
-	int  flavour = 0; 
+	int  flavour = 0; //no need to change
 	if(wantElectrons) flavour=11; if(wantMuons) flavour=13;
 	if(wantElectrons&&wantMuons)flavour=-1;
 
@@ -122,8 +122,9 @@ void loopPlot(){
 	const int nMCSig=1;//set to zero if you don't want to plot
 	std::string mcLabelsSig[nMCSig]={"BulkG_WW_inclusive_c0p2_M1000_xww"
 	};
-	double kFactorsSig_array[nMCSig] = {3732};//60000 for mu, 30000 for ele (PAS)
-	TString times="#times1#times10^{2}";//what to write on the legend
+	double kFactorsSig_array[nMCSig] = {2488};//60000 for mu, 30000 for ele (PAS)
+	//TString times="#times1#times10^{2}";//what to write on the legend
+	TString times="#times100";//what to write on the legend
 
 
 

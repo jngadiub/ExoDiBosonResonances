@@ -5,8 +5,15 @@ mass=$2
 
 ONED=0
 LOG="dummy.log"
-if [[ "$3" == "" ]]; then ONED=1 ; else width=$3 ;fi;
 if [[ "$4" == "" ]]; then LOG=/dev/null ; else LOG=$4 ;fi;
+if [[ "$3" == "" ]]; then ONED=1 ;
+else
+    if [[ "$3" =~ "LOG=" ]] ; then
+	LOG=${3:4} ; ONED=1;
+    else
+	width=$3 ;
+    fi;
+fi;
 
 OUTDIR=DataCards_XZZ_prodv2i_20131127_ModIndepScan
 echo "Starting HiggsCombination with seed=$myrand at $( date +%c ) on $hostname." >> ${LOG}
